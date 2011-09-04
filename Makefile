@@ -351,10 +351,10 @@ CC		= $(srctree)/scripts/gcc-wrapper.py $(REAL_CC)
 
 CHECKFLAGS     := -D__linux__ -Dlinux -D__STDC__ -Dunix -D__unix__ \
 		  -Wbitwise -Wno-return-void $(CF)
-CFLAGS_MODULE   =
+CFLAGS_MODULE   = -munaligned-access
 AFLAGS_MODULE   =
 LDFLAGS_MODULE  =
-CFLAGS_KERNEL	=
+CFLAGS_KERNEL	= -munaligned-access
 AFLAGS_KERNEL	=
 CFLAGS_GCOV	= -fprofile-arcs -ftest-coverage
 
@@ -373,14 +373,14 @@ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -Werror-implicit-function-declaration \
 		   -Wno-format-security \
 		   -fno-delete-null-pointer-checks \
-		   -march=armv7-a -mtune=cortex-a8 -mfpu=neon \
-           -ffast-math -fsingle-precision-constant \
+		   -mcpu=cortex-a8 -march=armv7-a -mtune=cortex-a8 -mfpu=neon \
+           -ffast-math -funsafe-math-optimizations -fsingle-precision-constant \
            -fgcse-lm -fgcse-sm -fsched-spec-load -fforce-addr
 KBUILD_AFLAGS_KERNEL :=
-KBUILD_CFLAGS_KERNEL := -mtune=cortex-a8 -march=armv7-a -mfpu=neon
+KBUILD_CFLAGS_KERNEL := -mcpu=cortex-a8 -mtune=cortex-a8 -march=armv7-a -mfpu=neon
 KBUILD_AFLAGS   := -D__ASSEMBLY__
 KBUILD_AFLAGS_MODULE  := -DMODULE
-KBUILD_CFLAGS_MODULE  := -DMODULE -mtune=cortex-a8 -march=armv7-a -mfpu=neon
+KBUILD_CFLAGS_MODULE  := -DMODULE -mcpu=cortex-a8 -mtune=cortex-a8 -march=armv7-a -mfpu=neon
 KBUILD_LDFLAGS_MODULE := -T $(srctree)/scripts/module-common.lds
 
 # Read KERNELRELEASE from include/config/kernel.release (if it exists)

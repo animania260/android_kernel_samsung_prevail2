@@ -308,7 +308,11 @@ int __init pci_xen_init(void)
 
 int __init pci_xen_hvm_init(void)
 {
+<<<<<<< HEAD
 	if (!xen_feature(XENFEAT_hvm_pirqs))
+=======
+	if (!xen_have_vector_callback || !xen_feature(XENFEAT_hvm_pirqs))
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		return 0;
 
 #ifdef CONFIG_ACPI

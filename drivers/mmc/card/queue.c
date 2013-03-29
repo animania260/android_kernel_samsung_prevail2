@@ -29,8 +29,11 @@
  */
 static int mmc_prep_request(struct request_queue *q, struct request *req)
 {
+<<<<<<< HEAD
 	struct mmc_queue *mq = q->queuedata;
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	/*
 	 * We only like normal block requests and discards.
 	 */
@@ -39,9 +42,12 @@ static int mmc_prep_request(struct request_queue *q, struct request *req)
 		return BLKPREP_KILL;
 	}
 
+<<<<<<< HEAD
 	if (mq && mmc_card_removed(mq->card))
 		return BLKPREP_KILL;
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	req->cmd_flags |= REQ_DONTPREP;
 
 	return BLKPREP_OK;
@@ -51,6 +57,7 @@ static int mmc_queue_thread(void *d)
 {
 	struct mmc_queue *mq = d;
 	struct request_queue *q = mq->queue;
+<<<<<<< HEAD
 	struct request *req;
 
 #ifdef CONFIG_MMC_PERF_PROFILING
@@ -59,12 +66,18 @@ static int mmc_queue_thread(void *d)
 	unsigned long bytes_xfer;
 #endif
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	current->flags |= PF_MEMALLOC;
 
 	down(&mq->thread_sem);
 	do {
+<<<<<<< HEAD
 		req = NULL;	/* Must be set to NULL at each iteration */
+=======
+		struct request *req = NULL;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 		spin_lock_irq(q->queue_lock);
 		set_current_state(TASK_INTERRUPTIBLE);
@@ -84,6 +97,7 @@ static int mmc_queue_thread(void *d)
 		}
 		set_current_state(TASK_RUNNING);
 
+<<<<<<< HEAD
 #ifdef CONFIG_MMC_PERF_PROFILING
 		if (host->perf_enable) {
 			bytes_xfer = blk_rq_bytes(req);
@@ -108,6 +122,9 @@ static int mmc_queue_thread(void *d)
 #else
 			mq->issue_fn(mq, req);
 #endif
+=======
+		mq->issue_fn(mq, req);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	} while (1);
 	up(&mq->thread_sem);
 

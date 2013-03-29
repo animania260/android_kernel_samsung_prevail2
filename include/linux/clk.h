@@ -11,8 +11,11 @@
 #ifndef __LINUX_CLK_H
 #define __LINUX_CLK_H
 
+<<<<<<< HEAD
 #include <linux/kernel.h>
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 struct device;
 
 /*
@@ -43,6 +46,7 @@ struct clk;
 struct clk *clk_get(struct device *dev, const char *id);
 
 /**
+<<<<<<< HEAD
  * clk_prepare - prepare a clock source
  * @clk: clock source
  *
@@ -61,13 +65,18 @@ static inline int clk_prepare(struct clk *clk)
 #endif
 
 /**
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
  * clk_enable - inform the system when the clock source should be running.
  * @clk: clock source
  *
  * If the clock can not be enabled/disabled, this should return success.
  *
+<<<<<<< HEAD
  * May be called from atomic contexts.
  *
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
  * Returns success (0) or negative errno.
  */
 int clk_enable(struct clk *clk);
@@ -79,8 +88,11 @@ int clk_enable(struct clk *clk);
  * Inform the system that a clock source is no longer required by
  * a driver and may be shut down.
  *
+<<<<<<< HEAD
  * May be called from atomic contexts.
  *
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
  * Implementation detail: if the clock source is shared between
  * multiple drivers, clk_enable() calls must be balanced by the
  * same number of clk_disable() calls for the clock source to be
@@ -88,6 +100,7 @@ int clk_enable(struct clk *clk);
  */
 void clk_disable(struct clk *clk);
 
+<<<<<<< HEAD
 
 /**
  * clk_unprepare - undo preparation of a clock source
@@ -129,6 +142,8 @@ static inline void clk_disable_unprepare(struct clk *clk)
 	clk_unprepare(clk);
 }
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 /**
  * clk_get_rate - obtain the current clock rate (in Hz) for a clock source.
  *		  This is only valid once the clock source has been enabled.

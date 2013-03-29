@@ -5,7 +5,10 @@
  * Copyright (C) 2008 by David Brownell
  * Copyright (C) 2008 by Nokia Corporation
  * Copyright (C) 2009 by Samsung Electronics
+<<<<<<< HEAD
  * Copyright (c) 2011 Code Aurora Forum. All rights reserved.
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
  * Author: Michal Nazarewicz (m.nazarewicz@samsung.com)
  *
  * This software is distributed under the terms of the GNU General
@@ -272,8 +275,11 @@ static struct usb_gadget_strings *acm_strings[] = {
 	NULL,
 };
 
+<<<<<<< HEAD
 static int acm_notify_serial_state(struct f_acm *acm);
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 /*-------------------------------------------------------------------------*/
 
 /* ACM control ... data handling is delegated to tty library code.
@@ -369,9 +375,12 @@ static int acm_setup(struct usb_function *f, const struct usb_ctrlrequest *ctrl)
 		 * that bit, we should return to that no-flow state.
 		 */
 		acm->port_handshake_bits = w_value;
+<<<<<<< HEAD
 #ifdef CONFIG_USB_DUN_SUPPORT
 		notify_control_line_state((unsigned long)w_value);
 #endif
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		break;
 
 	default:
@@ -411,10 +420,17 @@ static int acm_set_alt(struct usb_function *f, unsigned intf, unsigned alt)
 			usb_ep_disable(acm->notify);
 		} else {
 			VDBG(cdev, "init acm ctrl interface %d\n", intf);
+<<<<<<< HEAD
 		}
 		acm->notify_desc = ep_choose(cdev->gadget,
 				acm->hs.notify,
 				acm->fs.notify);
+=======
+			acm->notify_desc = ep_choose(cdev->gadget,
+					acm->hs.notify,
+					acm->fs.notify);
+		}
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		usb_ep_enable(acm->notify, acm->notify_desc);
 		acm->notify->driver_data = acm;
 
@@ -424,11 +440,19 @@ static int acm_set_alt(struct usb_function *f, unsigned intf, unsigned alt)
 			gserial_disconnect(&acm->port);
 		} else {
 			DBG(cdev, "activate acm ttyGS%d\n", acm->port_num);
+<<<<<<< HEAD
 		}
 		acm->port.in_desc = ep_choose(cdev->gadget,
 				acm->hs.in, acm->fs.in);
 		acm->port.out_desc = ep_choose(cdev->gadget,
 				acm->hs.out, acm->fs.out);
+=======
+			acm->port.in_desc = ep_choose(cdev->gadget,
+					acm->hs.in, acm->fs.in);
+			acm->port.out_desc = ep_choose(cdev->gadget,
+					acm->hs.out, acm->fs.out);
+		}
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		gserial_connect(&acm->port, acm->port_num);
 
 	} else
@@ -514,8 +538,13 @@ static int acm_notify_serial_state(struct f_acm *acm)
 	if (acm->notify_req) {
 		DBG(cdev, "acm ttyGS%d serial state %04x\n",
 				acm->port_num, acm->serial_state);
+<<<<<<< HEAD
 		status = acm_cdc_notify(acm, USB_CDC_NOTIFY_SERIAL_STATE, 0,
 				&acm->serial_state, sizeof(acm->serial_state));
+=======
+		status = acm_cdc_notify(acm, USB_CDC_NOTIFY_SERIAL_STATE,
+				0, &acm->serial_state, sizeof(acm->serial_state));
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	} else {
 		acm->pending = true;
 		status = 0;
@@ -542,6 +571,7 @@ static void acm_cdc_notify_complete(struct usb_ep *ep, struct usb_request *req)
 		acm_notify_serial_state(acm);
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_USB_DUN_SUPPORT
 void acm_notify(void *dev, u16 state)
 {
@@ -553,6 +583,8 @@ void acm_notify(void *dev, u16 state)
 	}
 }
 #endif
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 /* connect == the TTY link is open */
 
 static void acm_connect(struct gserial *port)
@@ -672,8 +704,11 @@ acm_bind(struct usb_configuration *c, struct usb_function *f)
 
 		/* copy descriptors, and track endpoint copies */
 		f->hs_descriptors = usb_copy_descriptors(acm_hs_function);
+<<<<<<< HEAD
 		if (!f->hs_descriptors)
 			goto fail;
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 		acm->hs.in = usb_find_endpoint(acm_hs_function,
 				f->hs_descriptors, &acm_hs_in_desc);
@@ -688,6 +723,7 @@ acm_bind(struct usb_configuration *c, struct usb_function *f)
 			gadget_is_dualspeed(c->cdev->gadget) ? "dual" : "full",
 			acm->port.in->name, acm->port.out->name,
 			acm->notify->name);
+<<<<<<< HEAD
 #ifdef CONFIG_USB_DUN_SUPPORT
 	modem_register(acm);
 #endif
@@ -699,6 +735,11 @@ fail:
 	if (f->descriptors)
 		usb_free_descriptors(f->descriptors);
 
+=======
+	return 0;
+
+fail:
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	if (acm->notify_req)
 		gs_free_req(acm->notify, acm->notify_req);
 
@@ -724,11 +765,15 @@ acm_unbind(struct usb_configuration *c, struct usb_function *f)
 		usb_free_descriptors(f->hs_descriptors);
 	usb_free_descriptors(f->descriptors);
 	gs_free_req(acm->notify, acm->notify_req);
+<<<<<<< HEAD
 	kfree(acm->port.func.name);
 	kfree(acm);
 #ifdef CONFIG_USB_DUN_SUPPORT
 	modem_unregister();
 #endif
+=======
+	kfree(acm);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 /* Some controllers can't support CDC ACM ... */
@@ -799,11 +844,15 @@ int acm_bind_config(struct usb_configuration *c, u8 port_num)
 	acm->port.disconnect = acm_disconnect;
 	acm->port.send_break = acm_send_break;
 
+<<<<<<< HEAD
 	acm->port.func.name = kasprintf(GFP_KERNEL, "acm%u", port_num);
 	if (!acm->port.func.name) {
 		kfree(acm);
 		return -ENOMEM;
 	}
+=======
+	acm->port.func.name = "acm";
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	acm->port.func.strings = acm_strings;
 	/* descriptors are per-instance copies */
 	acm->port.func.bind = acm_bind;

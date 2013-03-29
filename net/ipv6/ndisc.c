@@ -615,7 +615,11 @@ static void ndisc_send_unsol_na(struct net_device *dev)
 {
 	struct inet6_dev *idev;
 	struct inet6_ifaddr *ifa;
+<<<<<<< HEAD
 	struct in6_addr mcaddr;
+=======
+	struct in6_addr mcaddr = IN6ADDR_LINKLOCAL_ALLNODES_INIT;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	idev = in6_dev_get(dev);
 	if (!idev)
@@ -623,7 +627,10 @@ static void ndisc_send_unsol_na(struct net_device *dev)
 
 	read_lock_bh(&idev->lock);
 	list_for_each_entry(ifa, &idev->addr_list, if_list) {
+<<<<<<< HEAD
 		addrconf_addr_solict_mult(&ifa->addr, &mcaddr);
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		ndisc_send_na(dev, NULL, &mcaddr, &ifa->addr,
 			      /*router=*/ !!idev->cnf.forwarding,
 			      /*solicited=*/ false, /*override=*/ true,
@@ -1244,7 +1251,11 @@ static void ndisc_router_discovery(struct sk_buff *skb)
 	rt = rt6_get_dflt_router(&ipv6_hdr(skb)->saddr, skb->dev);
 
 	if (rt)
+<<<<<<< HEAD
 		neigh = rt->rt6i_nexthop;
+=======
+		neigh = dst_get_neighbour(&rt->dst);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	if (rt && lifetime == 0) {
 		neigh_clone(neigh);
@@ -1265,7 +1276,11 @@ static void ndisc_router_discovery(struct sk_buff *skb)
 			return;
 		}
 
+<<<<<<< HEAD
 		neigh = rt->rt6i_nexthop;
+=======
+		neigh = dst_get_neighbour(&rt->dst);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		if (neigh == NULL) {
 			ND_PRINTK0(KERN_ERR
 				   "ICMPv6 RA: %s() got default router without neighbour.\n",

@@ -29,7 +29,11 @@
 
 struct uvc_request_data
 {
+<<<<<<< HEAD
 	unsigned int length;
+=======
+	__s32 length;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	__u8 data[60];
 };
 

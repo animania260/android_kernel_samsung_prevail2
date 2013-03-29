@@ -28,7 +28,11 @@
 #include <linux/platform_device.h>
 #include <linux/workqueue.h>
 #include <linux/i2c/twl.h>
+<<<<<<< HEAD
 #include <linux/mfd/twl4030-audio.h>
+=======
+#include <linux/mfd/twl4030-codec.h>
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #include <linux/input.h>
 #include <linux/slab.h>
 
@@ -67,7 +71,11 @@ static void vibra_enable(struct vibra_info *info)
 {
 	u8 reg;
 
+<<<<<<< HEAD
 	twl4030_audio_enable_resource(TWL4030_AUDIO_RES_POWER);
+=======
+	twl4030_codec_enable_resource(TWL4030_CODEC_RES_POWER);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	/* turn H-Bridge on */
 	twl_i2c_read_u8(TWL4030_MODULE_AUDIO_VOICE,
@@ -75,7 +83,11 @@ static void vibra_enable(struct vibra_info *info)
 	twl_i2c_write_u8(TWL4030_MODULE_AUDIO_VOICE,
 			 (reg | TWL4030_VIBRA_EN), TWL4030_REG_VIBRA_CTL);
 
+<<<<<<< HEAD
 	twl4030_audio_enable_resource(TWL4030_AUDIO_RES_APLL);
+=======
+	twl4030_codec_enable_resource(TWL4030_CODEC_RES_APLL);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	info->enabled = true;
 }
@@ -90,8 +102,13 @@ static void vibra_disable(struct vibra_info *info)
 	twl_i2c_write_u8(TWL4030_MODULE_AUDIO_VOICE,
 			 (reg & ~TWL4030_VIBRA_EN), TWL4030_REG_VIBRA_CTL);
 
+<<<<<<< HEAD
 	twl4030_audio_disable_resource(TWL4030_AUDIO_RES_APLL);
 	twl4030_audio_disable_resource(TWL4030_AUDIO_RES_POWER);
+=======
+	twl4030_codec_disable_resource(TWL4030_CODEC_RES_APLL);
+	twl4030_codec_disable_resource(TWL4030_CODEC_RES_POWER);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	info->enabled = false;
 }
@@ -196,7 +213,11 @@ static SIMPLE_DEV_PM_OPS(twl4030_vibra_pm_ops,
 
 static int __devinit twl4030_vibra_probe(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct twl4030_vibra_data *pdata = pdev->dev.platform_data;
+=======
+	struct twl4030_codec_vibra_data *pdata = pdev->dev.platform_data;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	struct vibra_info *info;
 	int ret;
 

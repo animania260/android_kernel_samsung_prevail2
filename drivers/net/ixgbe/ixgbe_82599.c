@@ -360,6 +360,11 @@ static enum ixgbe_media_type ixgbe_get_media_type_82599(struct ixgbe_hw *hw)
 	case IXGBE_DEV_ID_82599_SFP_FCOE:
 	case IXGBE_DEV_ID_82599_SFP_EM:
 	case IXGBE_DEV_ID_82599_SFP_SF2:
+<<<<<<< HEAD
+=======
+	case IXGBE_DEV_ID_82599EN_SFP:
+	case IXGBE_DEV_ID_82599_SFP_SF_QP:
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		media_type = ixgbe_media_type_fiber;
 		break;
 	case IXGBE_DEV_ID_82599_CX4:

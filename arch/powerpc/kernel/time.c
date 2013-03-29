@@ -168,13 +168,22 @@ EXPORT_SYMBOL_GPL(ppc_tb_freq);
 #ifdef CONFIG_VIRT_CPU_ACCOUNTING
 /*
  * Factors for converting from cputime_t (timebase ticks) to
+<<<<<<< HEAD
  * jiffies, milliseconds, seconds, and clock_t (1/USER_HZ seconds).
+=======
+ * jiffies, microseconds, seconds, and clock_t (1/USER_HZ seconds).
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
  * These are all stored as 0.64 fixed-point binary fractions.
  */
 u64 __cputime_jiffies_factor;
 EXPORT_SYMBOL(__cputime_jiffies_factor);
+<<<<<<< HEAD
 u64 __cputime_msec_factor;
 EXPORT_SYMBOL(__cputime_msec_factor);
+=======
+u64 __cputime_usec_factor;
+EXPORT_SYMBOL(__cputime_usec_factor);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 u64 __cputime_sec_factor;
 EXPORT_SYMBOL(__cputime_sec_factor);
 u64 __cputime_clockt_factor;
@@ -192,8 +201,13 @@ static void calc_cputime_factors(void)
 
 	div128_by_32(HZ, 0, tb_ticks_per_sec, &res);
 	__cputime_jiffies_factor = res.result_low;
+<<<<<<< HEAD
 	div128_by_32(1000, 0, tb_ticks_per_sec, &res);
 	__cputime_msec_factor = res.result_low;
+=======
+	div128_by_32(1000000, 0, tb_ticks_per_sec, &res);
+	__cputime_usec_factor = res.result_low;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	div128_by_32(1, 0, tb_ticks_per_sec, &res);
 	__cputime_sec_factor = res.result_low;
 	div128_by_32(USER_HZ, 0, tb_ticks_per_sec, &res);
@@ -859,6 +873,7 @@ void update_vsyscall(struct timespec *wall_time, struct timespec *wtm,
 
 void update_vsyscall_tz(void)
 {
+<<<<<<< HEAD
 	/* Make userspace gettimeofday spin until we're done. */
 	++vdso_data->tb_update_count;
 	smp_mb();
@@ -866,6 +881,10 @@ void update_vsyscall_tz(void)
 	vdso_data->tz_dsttime = sys_tz.tz_dsttime;
 	smp_mb();
 	++vdso_data->tb_update_count;
+=======
+	vdso_data->tz_minuteswest = sys_tz.tz_minuteswest;
+	vdso_data->tz_dsttime = sys_tz.tz_dsttime;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 static void __init clocksource_init(void)
@@ -889,6 +908,18 @@ static void __init clocksource_init(void)
 	       clock->name, clock->mult, clock->shift);
 }
 
+<<<<<<< HEAD
+=======
+void decrementer_check_overflow(void)
+{
+	u64 now = get_tb_or_rtc();
+	struct decrementer_clock *decrementer = &__get_cpu_var(decrementers);
+
+	if (now >= decrementer->next_tb)
+		set_dec(1);
+}
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 static int decrementer_set_next_event(unsigned long evt,
 				      struct clock_event_device *dev)
 {

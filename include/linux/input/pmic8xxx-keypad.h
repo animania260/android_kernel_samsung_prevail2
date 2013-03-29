@@ -49,6 +49,9 @@ struct pm8xxx_keypad_platform_data {
 	bool rep;
 };
 
+<<<<<<< HEAD
 extern struct class *sec_class;
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #endif /*__PMIC8XXX_KEYPAD_H__ */

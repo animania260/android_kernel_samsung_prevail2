@@ -263,7 +263,16 @@ found:
 							xip_pfn);
 		if (err == -ENOMEM)
 			return VM_FAULT_OOM;
+<<<<<<< HEAD
 		BUG_ON(err);
+=======
+		/*
+		 * err == -EBUSY is fine, we've raced against another thread
+		 * that faulted-in the same page
+		 */
+		if (err != -EBUSY)
+			BUG_ON(err);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		return VM_FAULT_NOPAGE;
 	} else {
 		int err, ret = VM_FAULT_OOM;

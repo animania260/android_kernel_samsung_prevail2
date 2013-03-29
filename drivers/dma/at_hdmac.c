@@ -237,10 +237,13 @@ static void atc_dostart(struct at_dma_chan *atchan, struct at_desc *first)
 
 	vdbg_dump_regs(atchan);
 
+<<<<<<< HEAD
 	/* clear any pending interrupt */
 	while (dma_readl(atdma, EBCISR))
 		cpu_relax();
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	channel_writel(atchan, SADDR, 0);
 	channel_writel(atchan, DADDR, 0);
 	channel_writel(atchan, CTRLA, 0);
@@ -678,7 +681,11 @@ atc_prep_slave_sg(struct dma_chan *chan, struct scatterlist *sgl,
 			flags);
 
 	if (unlikely(!atslave || !sg_len)) {
+<<<<<<< HEAD
 		dev_dbg(chan2dev(chan), "prep_dma_memcpy: length is zero!\n");
+=======
+		dev_dbg(chan2dev(chan), "prep_slave_sg: sg length is zero!\n");
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		return NULL;
 	}
 
@@ -706,6 +713,14 @@ atc_prep_slave_sg(struct dma_chan *chan, struct scatterlist *sgl,
 
 			mem = sg_dma_address(sg);
 			len = sg_dma_len(sg);
+<<<<<<< HEAD
+=======
+			if (unlikely(!len)) {
+				dev_dbg(chan2dev(chan),
+					"prep_slave_sg: sg(%d) data length is zero\n", i);
+				goto err;
+			}
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			mem_width = 2;
 			if (unlikely(mem & 3 || len & 3))
 				mem_width = 0;
@@ -740,6 +755,14 @@ atc_prep_slave_sg(struct dma_chan *chan, struct scatterlist *sgl,
 
 			mem = sg_dma_address(sg);
 			len = sg_dma_len(sg);
+<<<<<<< HEAD
+=======
+			if (unlikely(!len)) {
+				dev_dbg(chan2dev(chan),
+					"prep_slave_sg: sg(%d) data length is zero\n", i);
+				goto err;
+			}
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			mem_width = 2;
 			if (unlikely(mem & 3 || len & 3))
 				mem_width = 0;
@@ -773,6 +796,10 @@ atc_prep_slave_sg(struct dma_chan *chan, struct scatterlist *sgl,
 
 err_desc_get:
 	dev_err(chan2dev(chan), "not enough descriptors available\n");
+<<<<<<< HEAD
+=======
+err:
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	atc_desc_put(atchan, first);
 	return NULL;
 }
@@ -1279,7 +1306,11 @@ static int __init at_dma_probe(struct platform_device *pdev)
 
 		tasklet_init(&atchan->tasklet, atc_tasklet,
 				(unsigned long)atchan);
+<<<<<<< HEAD
 		atc_enable_irq(atchan);
+=======
+		atc_enable_chan_irq(atdma, i);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	}
 
 	/* set base routines */
@@ -1348,7 +1379,11 @@ static int __exit at_dma_remove(struct platform_device *pdev)
 		struct at_dma_chan	*atchan = to_at_dma_chan(chan);
 
 		/* Disable interrupts */
+<<<<<<< HEAD
 		atc_disable_irq(atchan);
+=======
+		atc_disable_chan_irq(atdma, chan->chan_id);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		tasklet_disable(&atchan->tasklet);
 
 		tasklet_kill(&atchan->tasklet);

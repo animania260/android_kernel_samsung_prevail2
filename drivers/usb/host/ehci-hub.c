@@ -734,6 +734,7 @@ ehci_hub_descriptor (
 }
 
 /*-------------------------------------------------------------------------*/
+<<<<<<< HEAD
 #ifdef CONFIG_USB_EHCI_EHSET
 
 #define EHSET_TEST_SINGLE_STEP_SET_FEATURE 0x06
@@ -879,6 +880,8 @@ cleanup:
 }
 #endif
 /*-------------------------------------------------------------------------*/
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 static int ehci_hub_control (
 	struct usb_hcd	*hcd,
@@ -1200,6 +1203,7 @@ static int ehci_hub_control (
 					|| (temp & PORT_RESET) != 0)
 				goto error;
 
+<<<<<<< HEAD
 			ehci_writel(ehci, temp | PORT_SUSPEND, status_reg);
 #ifdef	CONFIG_USB_OTG
 			if (hcd->self.otg_port == (wIndex + 1) &&
@@ -1210,6 +1214,8 @@ static int ehci_hub_control (
 				break;
 			}
 #endif
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			/* After above check the port must be connected.
 			 * Set appropriate bit thus could put phy into low power
 			 * mode if we have hostpc feature
@@ -1272,6 +1278,7 @@ static int ehci_hub_control (
 		 * about the EHCI-specific stuff.
 		 */
 		case USB_PORT_FEAT_TEST:
+<<<<<<< HEAD
 			if (selector && selector <= 5) {
 				ehci_quiesce(ehci);
 				ehci_halt(ehci);
@@ -1289,6 +1296,26 @@ static int ehci_hub_control (
 #endif
 			else
 				goto error;
+=======
+			if (!selector || selector > 5)
+				goto error;
+			ehci_quiesce(ehci);
+
+			/* Put all enabled ports into suspend */
+			while (ports--) {
+				u32 __iomem *sreg =
+						&ehci->regs->port_status[ports];
+
+				temp = ehci_readl(ehci, sreg) & ~PORT_RWC_BITS;
+				if (temp & PORT_PE)
+					ehci_writel(ehci, temp | PORT_SUSPEND,
+							sreg);
+			}
+			ehci_halt(ehci);
+			temp = ehci_readl(ehci, status_reg);
+			temp |= selector << 16;
+			ehci_writel(ehci, temp, status_reg);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			break;
 
 		default:
@@ -1316,7 +1343,11 @@ static void ehci_relinquish_port(struct usb_hcd *hcd, int portnum)
 	set_owner(ehci, --portnum, PORT_OWNER);
 }
 
+<<<<<<< HEAD
 static int __maybe_unused ehci_port_handed_over(struct usb_hcd *hcd, int portnum)
+=======
+static int ehci_port_handed_over(struct usb_hcd *hcd, int portnum)
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 {
 	struct ehci_hcd		*ehci = hcd_to_ehci(hcd);
 	u32 __iomem		*reg;

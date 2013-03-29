@@ -231,6 +231,25 @@ static void __init omap_3430sdp_init_early(void)
 	omap2_init_common_devices(hyb18m512160af6_sdrc_params, NULL);
 }
 
+<<<<<<< HEAD
+=======
+static int sdp3430_batt_table[] = {
+/* 0 C*/
+30800, 29500, 28300, 27100,
+26000, 24900, 23900, 22900, 22000, 21100, 20300, 19400, 18700, 17900,
+17200, 16500, 15900, 15300, 14700, 14100, 13600, 13100, 12600, 12100,
+11600, 11200, 10800, 10400, 10000, 9630,   9280,   8950,   8620,   8310,
+8020,   7730,   7460,   7200,   6950,   6710,   6470,   6250,   6040,   5830,
+5640,   5450,   5260,   5090,   4920,   4760,   4600,   4450,   4310,   4170,
+4040,   3910,   3790,   3670,   3550
+};
+
+static struct twl4030_bci_platform_data sdp3430_bci_data = {
+	.battery_tmp_tbl	= sdp3430_batt_table,
+	.tblsize		= ARRAY_SIZE(sdp3430_batt_table),
+};
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 static struct omap2_hsmmc_info mmc[] = {
 	{
 		.mmc		= 1,
@@ -276,6 +295,17 @@ static struct twl4030_gpio_platform_data sdp3430_gpio_data = {
 	.setup		= sdp3430_twl_gpio_setup,
 };
 
+<<<<<<< HEAD
+=======
+static struct twl4030_usb_data sdp3430_usb_data = {
+	.usb_mode	= T2_USB_MODE_ULPI,
+};
+
+static struct twl4030_madc_platform_data sdp3430_madc_data = {
+	.irq_line	= 1,
+};
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 /* regulator consumer mappings */
 
 /* ads7846 on SPI */
@@ -283,6 +313,19 @@ static struct regulator_consumer_supply sdp3430_vaux3_supplies[] = {
 	REGULATOR_SUPPLY("vcc", "spi1.0"),
 };
 
+<<<<<<< HEAD
+=======
+static struct regulator_consumer_supply sdp3430_vdda_dac_supplies[] = {
+	REGULATOR_SUPPLY("vdda_dac", "omapdss_venc"),
+};
+
+/* VPLL2 for digital video outputs */
+static struct regulator_consumer_supply sdp3430_vpll2_supplies[] = {
+	REGULATOR_SUPPLY("vdds_dsi", "omapdss"),
+	REGULATOR_SUPPLY("vdds_dsi", "omapdss_dsi1"),
+};
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 static struct regulator_consumer_supply sdp3430_vmmc1_supplies[] = {
 	REGULATOR_SUPPLY("vmmc", "omap_hsmmc.0"),
 };
@@ -399,10 +442,61 @@ static struct regulator_init_data sdp3430_vsim = {
 	.consumer_supplies	= sdp3430_vsim_supplies,
 };
 
+<<<<<<< HEAD
 static struct twl4030_platform_data sdp3430_twldata = {
 	/* platform_data for children goes here */
 	.gpio		= &sdp3430_gpio_data,
 	.keypad		= &sdp3430_kp_data,
+=======
+/* VDAC for DSS driving S-Video */
+static struct regulator_init_data sdp3430_vdac = {
+	.constraints = {
+		.min_uV			= 1800000,
+		.max_uV			= 1800000,
+		.apply_uV		= true,
+		.valid_modes_mask	= REGULATOR_MODE_NORMAL
+					| REGULATOR_MODE_STANDBY,
+		.valid_ops_mask		= REGULATOR_CHANGE_MODE
+					| REGULATOR_CHANGE_STATUS,
+	},
+	.num_consumer_supplies	= ARRAY_SIZE(sdp3430_vdda_dac_supplies),
+	.consumer_supplies	= sdp3430_vdda_dac_supplies,
+};
+
+static struct regulator_init_data sdp3430_vpll2 = {
+	.constraints = {
+		.name			= "VDVI",
+		.min_uV			= 1800000,
+		.max_uV			= 1800000,
+		.apply_uV		= true,
+		.valid_modes_mask	= REGULATOR_MODE_NORMAL
+					| REGULATOR_MODE_STANDBY,
+		.valid_ops_mask		= REGULATOR_CHANGE_MODE
+					| REGULATOR_CHANGE_STATUS,
+	},
+	.num_consumer_supplies	= ARRAY_SIZE(sdp3430_vpll2_supplies),
+	.consumer_supplies	= sdp3430_vpll2_supplies,
+};
+
+static struct twl4030_codec_audio_data sdp3430_audio;
+
+static struct twl4030_codec_data sdp3430_codec = {
+	.audio_mclk = 26000000,
+	.audio = &sdp3430_audio,
+};
+
+static struct twl4030_platform_data sdp3430_twldata = {
+	.irq_base	= TWL4030_IRQ_BASE,
+	.irq_end	= TWL4030_IRQ_END,
+
+	/* platform_data for children goes here */
+	.bci		= &sdp3430_bci_data,
+	.gpio		= &sdp3430_gpio_data,
+	.madc		= &sdp3430_madc_data,
+	.keypad		= &sdp3430_kp_data,
+	.usb		= &sdp3430_usb_data,
+	.codec		= &sdp3430_codec,
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	.vaux1		= &sdp3430_vaux1,
 	.vaux2		= &sdp3430_vaux2,
@@ -411,11 +505,17 @@ static struct twl4030_platform_data sdp3430_twldata = {
 	.vmmc1		= &sdp3430_vmmc1,
 	.vmmc2		= &sdp3430_vmmc2,
 	.vsim		= &sdp3430_vsim,
+<<<<<<< HEAD
+=======
+	.vdac		= &sdp3430_vdac,
+	.vpll2		= &sdp3430_vpll2,
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 };
 
 static int __init omap3430_i2c_init(void)
 {
 	/* i2c1 for PMIC only */
+<<<<<<< HEAD
 	omap3_pmic_get_config(&sdp3430_twldata,
 			TWL_COMMON_PDATA_USB | TWL_COMMON_PDATA_BCI |
 			TWL_COMMON_PDATA_MADC | TWL_COMMON_PDATA_AUDIO,
@@ -426,6 +526,9 @@ static int __init omap3430_i2c_init(void)
 
 	omap3_pmic_init("twl4030", &sdp3430_twldata);
 
+=======
+	omap3_pmic_init("twl4030", &sdp3430_twldata);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	/* i2c2 on camera connector (for sensor control) and optional isp1301 */
 	omap_register_i2c_bus(2, 400, NULL, 0);
 	/* i2c3 on display connector (for DVI, tfp410) */

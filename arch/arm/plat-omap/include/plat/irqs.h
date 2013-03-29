@@ -407,6 +407,7 @@
 #endif
 #define TWL6030_IRQ_END		(TWL6030_IRQ_BASE + TWL6030_BASE_NR_IRQS)
 
+<<<<<<< HEAD
 #define TWL6040_CODEC_IRQ_BASE	TWL6030_IRQ_END
 #ifdef CONFIG_TWL6040_CODEC
 #define TWL6040_CODEC_NR_IRQS	6
@@ -420,6 +421,13 @@
 #define TWL_IRQ_END 		TWL4030_GPIO_IRQ_END
 #else
 #define TWL_IRQ_END		TWL6040_CODEC_IRQ_END
+=======
+/* Total number of interrupts depends on the enabled blocks above */
+#if (TWL4030_GPIO_IRQ_END > TWL6030_IRQ_END)
+#define TWL_IRQ_END 		TWL4030_GPIO_IRQ_END
+#else
+#define TWL_IRQ_END		TWL6030_IRQ_END
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #endif
 
 /* GPMC related */

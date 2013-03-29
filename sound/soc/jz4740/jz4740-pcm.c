@@ -3,7 +3,12 @@
  *
  *  This program is free software; you can redistribute	 it and/or modify it
  *  under  the terms of	 the GNU General  Public License as published by the
+<<<<<<< HEAD
  *  Free Software Foundation;  only version 2 of the License.
+=======
+ *  Free Software Foundation;  either version 2 of the	License, or (at your
+ *  option) any later version.
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
  *
  *  You should have received a copy of the  GNU General Public License along
  *  with this program; if not, write  to the Free Software Foundation, Inc.,
@@ -298,11 +303,17 @@ static void jz4740_pcm_free(struct snd_pcm *pcm)
 
 static u64 jz4740_pcm_dmamask = DMA_BIT_MASK(32);
 
+<<<<<<< HEAD
 int jz4740_pcm_new(struct snd_soc_pcm_runtime *rtd)
 {
 	struct snd_card *card = rtd->card->snd_card;
 	struct snd_soc_dai *dai = rtd->cpu_dai;
 	struct snd_pcm *pcm = rtd->pcm;
+=======
+int jz4740_pcm_new(struct snd_card *card, struct snd_soc_dai *dai,
+	struct snd_pcm *pcm)
+{
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	int ret = 0;
 
 	if (!card->dev->dma_mask)
@@ -369,4 +380,8 @@ module_exit(jz4740_soc_platform_exit);
 
 MODULE_AUTHOR("Lars-Peter Clausen <lars@metafoo.de>");
 MODULE_DESCRIPTION("Ingenic SoC JZ4740 PCM driver");
+<<<<<<< HEAD
 MODULE_LICENSE("GPL v2");
+=======
+MODULE_LICENSE("GPL");
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y

@@ -504,6 +504,7 @@ static int fintek_probe(struct pnp_dev *pdev, const struct pnp_device_id *dev_id
 
 	spin_lock_init(&fintek->fintek_lock);
 
+<<<<<<< HEAD
 	ret = -EBUSY;
 	/* now claim resources */
 	if (!request_region(fintek->cir_addr,
@@ -514,6 +515,8 @@ static int fintek_probe(struct pnp_dev *pdev, const struct pnp_device_id *dev_id
 			FINTEK_DRIVER_NAME, (void *)fintek))
 		goto failure;
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	pnp_set_drvdata(pdev, fintek);
 	fintek->pdev = pdev;
 
@@ -548,6 +551,19 @@ static int fintek_probe(struct pnp_dev *pdev, const struct pnp_device_id *dev_id
 	/* rx resolution is hardwired to 50us atm, 1, 25, 100 also possible */
 	rdev->rx_resolution = US_TO_NS(CIR_SAMPLE_PERIOD);
 
+<<<<<<< HEAD
+=======
+	ret = -EBUSY;
+	/* now claim resources */
+	if (!request_region(fintek->cir_addr,
+			    fintek->cir_port_len, FINTEK_DRIVER_NAME))
+		goto failure;
+
+	if (request_irq(fintek->cir_irq, fintek_cir_isr, IRQF_SHARED,
+			FINTEK_DRIVER_NAME, (void *)fintek))
+		goto failure;
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	ret = rc_register_device(rdev);
 	if (ret)
 		goto failure;

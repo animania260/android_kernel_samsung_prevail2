@@ -211,6 +211,10 @@ int snd_card_create(int idx, const char *xid,
 	spin_lock_init(&card->files_lock);
 	INIT_LIST_HEAD(&card->files_list);
 	init_waitqueue_head(&card->shutdown_sleep);
+<<<<<<< HEAD
+=======
+	atomic_set(&card->refcount, 0);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #ifdef CONFIG_PM
 	mutex_init(&card->power_lock);
 	init_waitqueue_head(&card->power_sleep);
@@ -444,6 +448,7 @@ static int snd_card_do_free(struct snd_card *card)
 	return 0;
 }
 
+<<<<<<< HEAD
 int snd_card_free_when_closed(struct snd_card *card)
 {
 	int free_now = 0;
@@ -459,6 +464,38 @@ int snd_card_free_when_closed(struct snd_card *card)
 	spin_unlock(&card->files_lock);
 
 	if (free_now)
+=======
+/**
+ * snd_card_unref - release the reference counter
+ * @card: the card instance
+ *
+ * Decrements the reference counter.  When it reaches to zero, wake up
+ * the sleeper and call the destructor if needed.
+ */
+void snd_card_unref(struct snd_card *card)
+{
+	if (atomic_dec_and_test(&card->refcount)) {
+		wake_up(&card->shutdown_sleep);
+		if (card->free_on_last_close)
+			snd_card_do_free(card);
+	}
+}
+EXPORT_SYMBOL(snd_card_unref);
+
+int snd_card_free_when_closed(struct snd_card *card)
+{
+	int ret;
+
+	atomic_inc(&card->refcount);
+	ret = snd_card_disconnect(card);
+	if (ret) {
+		atomic_dec(&card->refcount);
+		return ret;
+	}
+
+	card->free_on_last_close = 1;
+	if (atomic_dec_and_test(&card->refcount))
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		snd_card_do_free(card);
 	return 0;
 }
@@ -472,7 +509,11 @@ int snd_card_free(struct snd_card *card)
 		return ret;
 
 	/* wait, until all devices are ready for the free operation */
+<<<<<<< HEAD
 	wait_event(card->shutdown_sleep, list_empty(&card->files_list));
+=======
+	wait_event(card->shutdown_sleep, !atomic_read(&card->refcount));
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	snd_card_do_free(card);
 	return 0;
 }
@@ -853,6 +894,10 @@ int snd_card_file_add(struct snd_card *card, struct file *file)
 		return -ENODEV;
 	}
 	list_add(&mfile->list, &card->files_list);
+<<<<<<< HEAD
+=======
+	atomic_inc(&card->refcount);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	spin_unlock(&card->files_lock);
 	return 0;
 }
@@ -875,7 +920,10 @@ EXPORT_SYMBOL(snd_card_file_add);
 int snd_card_file_remove(struct snd_card *card, struct file *file)
 {
 	struct snd_monitor_file *mfile, *found = NULL;
+<<<<<<< HEAD
 	int last_close = 0;
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	spin_lock(&card->files_lock);
 	list_for_each_entry(mfile, &card->files_list, list) {
@@ -890,6 +938,7 @@ int snd_card_file_remove(struct snd_card *card, struct file *file)
 			break;
 		}
 	}
+<<<<<<< HEAD
 	if (list_empty(&card->files_list))
 		last_close = 1;
 	spin_unlock(&card->files_lock);
@@ -898,11 +947,18 @@ int snd_card_file_remove(struct snd_card *card, struct file *file)
 		if (card->free_on_last_close)
 			snd_card_do_free(card);
 	}
+=======
+	spin_unlock(&card->files_lock);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	if (!found) {
 		snd_printk(KERN_ERR "ALSA card file remove problem (%p)\n", file);
 		return -ENOENT;
 	}
 	kfree(found);
+<<<<<<< HEAD
+=======
+	snd_card_unref(card);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	return 0;
 }
 

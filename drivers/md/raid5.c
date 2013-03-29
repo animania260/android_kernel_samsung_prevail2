@@ -199,12 +199,21 @@ static void __release_stripe(raid5_conf_t *conf, struct stripe_head *sh)
 		BUG_ON(!list_empty(&sh->lru));
 		BUG_ON(atomic_read(&conf->active_stripes)==0);
 		if (test_bit(STRIPE_HANDLE, &sh->state)) {
+<<<<<<< HEAD
 			if (test_bit(STRIPE_DELAYED, &sh->state))
+=======
+			if (test_bit(STRIPE_DELAYED, &sh->state) &&
+			    !test_bit(STRIPE_PREREAD_ACTIVE, &sh->state))
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 				list_add_tail(&sh->lru, &conf->delayed_list);
 			else if (test_bit(STRIPE_BIT_DELAY, &sh->state) &&
 				   sh->bm_seq - conf->seq_write > 0)
 				list_add_tail(&sh->lru, &conf->bitmap_list);
 			else {
+<<<<<<< HEAD
+=======
+				clear_bit(STRIPE_DELAYED, &sh->state);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 				clear_bit(STRIPE_BIT_DELAY, &sh->state);
 				list_add_tail(&sh->lru, &conf->handle_list);
 			}
@@ -3078,7 +3087,11 @@ static void handle_stripe5(struct stripe_head *sh)
 			/* Not in-sync */;
 		else if (test_bit(In_sync, &rdev->flags))
 			set_bit(R5_Insync, &dev->flags);
+<<<<<<< HEAD
 		else {
+=======
+		else if (!test_bit(Faulty, &rdev->flags)) {
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			/* could be in-sync depending on recovery/reshape status */
 			if (sh->sector + STRIPE_SECTORS <= rdev->recovery_offset)
 				set_bit(R5_Insync, &dev->flags);
@@ -3120,12 +3133,25 @@ static void handle_stripe5(struct stripe_head *sh)
 	/* check if the array has lost two devices and, if so, some requests might
 	 * need to be failed
 	 */
+<<<<<<< HEAD
 	if (s.failed > 1 && s.to_read+s.to_write+s.written)
 		handle_failed_stripe(conf, sh, &s, disks, &return_bi);
 	if (s.failed > 1 && s.syncing) {
 		md_done_sync(conf->mddev, STRIPE_SECTORS,0);
 		clear_bit(STRIPE_SYNCING, &sh->state);
 		s.syncing = 0;
+=======
+	if (s.failed > 1) {
+		sh->check_state = 0;
+		sh->reconstruct_state = 0;
+		if (s.to_read+s.to_write+s.written)
+			handle_failed_stripe(conf, sh, &s, disks, &return_bi);
+		if (s.syncing) {
+			md_done_sync(conf->mddev, STRIPE_SECTORS,0);
+			clear_bit(STRIPE_SYNCING, &sh->state);
+			s.syncing = 0;
+		}
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	}
 
 	/* might be able to return some write requests if the parity block
@@ -3369,7 +3395,11 @@ static void handle_stripe6(struct stripe_head *sh)
 			/* Not in-sync */;
 		else if (test_bit(In_sync, &rdev->flags))
 			set_bit(R5_Insync, &dev->flags);
+<<<<<<< HEAD
 		else {
+=======
+		else if (!test_bit(Faulty, &rdev->flags)) {
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			/* in sync if before recovery_offset */
 			if (sh->sector + STRIPE_SECTORS <= rdev->recovery_offset)
 				set_bit(R5_Insync, &dev->flags);
@@ -3412,12 +3442,25 @@ static void handle_stripe6(struct stripe_head *sh)
 	/* check if the array has lost >2 devices and, if so, some requests
 	 * might need to be failed
 	 */
+<<<<<<< HEAD
 	if (s.failed > 2 && s.to_read+s.to_write+s.written)
 		handle_failed_stripe(conf, sh, &s, disks, &return_bi);
 	if (s.failed > 2 && s.syncing) {
 		md_done_sync(conf->mddev, STRIPE_SECTORS,0);
 		clear_bit(STRIPE_SYNCING, &sh->state);
 		s.syncing = 0;
+=======
+	if (s.failed > 2) {
+		sh->check_state = 0;
+		sh->reconstruct_state = 0;
+		if (s.to_read+s.to_write+s.written)
+			handle_failed_stripe(conf, sh, &s, disks, &return_bi);
+		if (s.syncing) {
+			md_done_sync(conf->mddev, STRIPE_SECTORS,0);
+			clear_bit(STRIPE_SYNCING, &sh->state);
+			s.syncing = 0;
+		}
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	}
 
 	/*
@@ -3838,7 +3881,10 @@ static int chunk_aligned_read(mddev_t *mddev, struct bio * raid_bio)
 		raid_bio->bi_next = (void*)rdev;
 		align_bi->bi_bdev =  rdev->bdev;
 		align_bi->bi_flags &= ~(1 << BIO_SEG_VALID);
+<<<<<<< HEAD
 		align_bi->bi_sector += rdev->data_offset;
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 		if (!bio_fits_rdev(align_bi)) {
 			/* too big in some way */
@@ -3847,6 +3893,12 @@ static int chunk_aligned_read(mddev_t *mddev, struct bio * raid_bio)
 			return 0;
 		}
 
+<<<<<<< HEAD
+=======
+		/* No reshape active, so we can trust rdev->data_offset */
+		align_bi->bi_sector += rdev->data_offset;
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		spin_lock_irq(&conf->device_lock);
 		wait_event_lock_irq(conf->wait_for_stripe,
 				    conf->quiesce == 0,

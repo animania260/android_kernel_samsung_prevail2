@@ -24,6 +24,7 @@
 #include <linux/mfd/pm8xxx/gpio.h>
 #include <linux/input/pmic8xxx-keypad.h>
 
+<<<<<<< HEAD
 #include <linux/mfd/pmic8058.h>
 #include <linux/gpio.h>
 
@@ -37,6 +38,8 @@
 #include <mach/sec_debug.h>
 #endif
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #define PM8XXX_MAX_ROWS		18
 #define PM8XXX_MAX_COLS		8
 #define PM8XXX_ROW_SHIFT	3
@@ -54,9 +57,12 @@
 
 #define MAX_DEBOUNCE_TIME	20
 #define MIN_DEBOUNCE_TIME	5
+<<<<<<< HEAD
 #define PM8058_GPIO_PM_TO_SYS(pm_gpio)     (pm_gpio + NR_GPIO_IRQS)
 #define PM8058_ROW_SHIFT	3
 #define PM8058_GPIO(n)	((n) - 1)
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 #define KEYP_CTRL			0x148
 
@@ -99,17 +105,27 @@
 
 #define KEYP_CLOCK_FREQ			32768
 
+<<<<<<< HEAD
 #if defined CONFIG_MACH_VITAL2REFRESH
 #define MSM_HALL_IC			40
 #endif
 
 /*
+=======
+/**
+ * struct pmic8xxx_kp - internal keypad data structure
+ * @pdata - keypad platform data pointer
+ * @input - input device pointer for keypad
+ * @key_sense_irq - key press/release irq number
+ * @key_stuck_irq - key stuck notification irq number
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
  * @keycodes - array to hold the key codes
  * @dev - parent device pointer
  * @keystate - present key press/release state
  * @stuckstate - present state when key stuck irq
  * @ctrl_reg - control register value
  */
+<<<<<<< HEAD
 
 #define PMIC_GPIO_VOLUME_UPKEY	PM8058_GPIO(26)
 #define PMIC_GPIO_VOLUME_DOWNKEY	PM8058_GPIO(37)
@@ -118,6 +134,8 @@
 	PM8058_GPIO_IRQ(PMIC8058_IRQ_BASE, (PMIC_GPIO_VOLUME_UPKEY))
 #define	MSM_GPIO_KEY_VOLDOWN_IRQ	\
 	PM8058_GPIO_IRQ(PMIC8058_IRQ_BASE, (PMIC_GPIO_VOLUME_DOWNKEY))
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 struct pmic8xxx_kp {
 	const struct pm8xxx_keypad_platform_data *pdata;
 	struct input_dev *input;
@@ -131,6 +149,7 @@ struct pmic8xxx_kp {
 	u16 stuckstate[PM8XXX_MAX_ROWS];
 
 	u8 ctrl_reg;
+<<<<<<< HEAD
 
 #ifdef VOLUME_KEY_DEBOUNCE
 	struct hrtimer volup_hrtimer, voldown_hrtimer;
@@ -162,15 +181,22 @@ static ssize_t sysfs_key_pressed_show(struct device *dev,
 
 static DEVICE_ATTR(sec_key_pressed, 0664 , sysfs_key_pressed_show, NULL);
 
+=======
+};
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 static int pmic8xxx_kp_write_u8(struct pmic8xxx_kp *kp,
 				 u8 data, u16 reg)
 {
 	int rc;
 
 	rc = pm8xxx_writeb(kp->dev->parent, reg, data);
+<<<<<<< HEAD
 	if (rc < 0)
 		dev_warn(kp->dev, "Error writing pmic8xxx: %X - ret %X\n",
 				reg, rc);
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	return rc;
 }
 
@@ -180,10 +206,13 @@ static int pmic8xxx_kp_read(struct pmic8xxx_kp *kp,
 	int rc;
 
 	rc = pm8xxx_read_buf(kp->dev->parent, reg, data, num_bytes);
+<<<<<<< HEAD
 	if (rc < 0)
 		dev_warn(kp->dev, "Error reading pmic8xxx: %X - ret %X\n",
 				reg, rc);
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	return rc;
 }
 
@@ -193,9 +222,12 @@ static int pmic8xxx_kp_read_u8(struct pmic8xxx_kp *kp,
 	int rc;
 
 	rc = pmic8xxx_kp_read(kp, data, reg, 1);
+<<<<<<< HEAD
 	if (rc < 0)
 		dev_warn(kp->dev, "Error reading pmic8xxx: %X - ret %X\n",
 				reg, rc);
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	return rc;
 }
 
@@ -327,11 +359,18 @@ static void __pmic8xxx_kp_scan_matrix(struct pmic8xxx_kp *kp, u16 *new_state,
 			if (!(bits_changed & (1 << col)))
 				continue;
 
+<<<<<<< HEAD
 #ifndef CONFIG_PRODUCT_SHIP
 			dev_warn(kp->dev, "key [%d:%d] %s\n", row, col,
 					!(new_state[row] & (1 << col)) ?
 					"pressed" : "released");
 #endif
+=======
+			dev_dbg(kp->dev, "key [%d:%d] %s\n", row, col,
+					!(new_state[row] & (1 << col)) ?
+					"pressed" : "released");
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			code = MATRIX_SCAN_CODE(row, col, PM8XXX_ROW_SHIFT);
 
 			input_event(kp->input, EV_MSC, MSC_SCAN, code);
@@ -340,10 +379,13 @@ static void __pmic8xxx_kp_scan_matrix(struct pmic8xxx_kp *kp, u16 *new_state,
 					!(new_state[row] & (1 << col)));
 
 			input_sync(kp->input);
+<<<<<<< HEAD
 #if CONFIG_SEC_DEBUG
 			sec_debug_check_crash_key(kp->keycodes[code],
 					!(new_state[row] & (1 << col)));
 #endif
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		}
 	}
 }
@@ -530,7 +572,11 @@ static int  __devinit pmic8xxx_kp_config_gpio(int gpio_start, int num_gpios,
 					__func__, gpio_start + i, rc);
 			return rc;
 		}
+<<<<<<< HEAD
 	}
+=======
+	 }
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	return 0;
 }
@@ -585,6 +631,7 @@ static void pmic8xxx_kp_close(struct input_dev *dev)
  * - set irq edge type.
  * - enable the keypad controller.
  */
+<<<<<<< HEAD
 
 static unsigned short volup_matrix;
 static unsigned short voldown_matrix;
@@ -827,6 +874,8 @@ static void get_volumekey_matrix(const struct matrix_keymap_data *keymap_data,
 	}
 }
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 static int __devinit pmic8xxx_kp_probe(struct platform_device *pdev)
 {
 	const struct pm8xxx_keypad_platform_data *pdata =
@@ -835,14 +884,21 @@ static int __devinit pmic8xxx_kp_probe(struct platform_device *pdev)
 	struct pmic8xxx_kp *kp;
 	int rc;
 	u8 ctrl_val;
+<<<<<<< HEAD
 	struct device *sec_key;
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	struct pm_gpio kypd_drv = {
 		.direction	= PM_GPIO_DIR_OUT,
 		.output_buffer	= PM_GPIO_OUT_BUF_OPEN_DRAIN,
 		.output_value	= 0,
 		.pull		= PM_GPIO_PULL_NO,
+<<<<<<< HEAD
 		.vin_sel	= PM_GPIO_VIN_S4,
+=======
+		.vin_sel	= PM_GPIO_VIN_S3,
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		.out_strength	= PM_GPIO_STRENGTH_LOW,
 		.function	= PM_GPIO_FUNC_1,
 		.inv_int_pol	= 1,
@@ -851,16 +907,23 @@ static int __devinit pmic8xxx_kp_probe(struct platform_device *pdev)
 	struct pm_gpio kypd_sns = {
 		.direction	= PM_GPIO_DIR_IN,
 		.pull		= PM_GPIO_PULL_UP_31P5,
+<<<<<<< HEAD
 		.vin_sel	= PM_GPIO_VIN_S4,
+=======
+		.vin_sel	= PM_GPIO_VIN_S3,
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		.out_strength	= PM_GPIO_STRENGTH_NO,
 		.function	= PM_GPIO_FUNC_NORMAL,
 		.inv_int_pol	= 1,
 	};
 
+<<<<<<< HEAD
 #ifdef VOLUME_KEY_DEBOUNCE
 	struct timespec volkey_wakelock_timespec;
 #endif
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	if (!pdata || !pdata->num_cols || !pdata->num_rows ||
 		pdata->num_cols > PM8XXX_MAX_COLS ||
@@ -954,9 +1017,12 @@ static int __devinit pmic8xxx_kp_probe(struct platform_device *pdev)
 	matrix_keypad_build_keymap(keymap_data, PM8XXX_ROW_SHIFT,
 					kp->input->keycode, kp->input->keybit);
 
+<<<<<<< HEAD
 	get_volumekey_matrix(keymap_data,
 					&volup_matrix, &voldown_matrix);
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	input_set_capability(kp->input, EV_MSC, MSC_SCAN);
 	input_set_drvdata(kp->input, kp);
 
@@ -1004,6 +1070,7 @@ static int __devinit pmic8xxx_kp_probe(struct platform_device *pdev)
 		goto err_pmic_reg_read;
 	}
 
+<<<<<<< HEAD
 #ifdef VOLUME_KEY_DEBOUNCE
 	hrtimer_init(&kp->volup_hrtimer, CLOCK_MONOTONIC,
 					HRTIMER_MODE_REL);
@@ -1072,12 +1139,17 @@ static int __devinit pmic8xxx_kp_probe(struct platform_device *pdev)
 	}
 
 #endif
+=======
+	kp->ctrl_reg = ctrl_val;
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	rc = input_register_device(kp->input);
 	if (rc < 0) {
 		dev_err(&pdev->dev, "unable to register keypad input device\n");
 		goto err_pmic_reg_read;
 	}
 
+<<<<<<< HEAD
 	sec_key = device_create(sec_class, NULL, 0, NULL, "sec_key");
 	if (IS_ERR(sec_key))
 		pr_err("Failed to create device(sec_key)!\n");
@@ -1090,11 +1162,14 @@ static int __devinit pmic8xxx_kp_probe(struct platform_device *pdev)
 
 	dev_set_drvdata(sec_key, kp);
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	device_init_wakeup(&pdev->dev, pdata->wakeup);
 
 	return 0;
 
 err_pmic_reg_read:
+<<<<<<< HEAD
 	free_irq(kp->key_stuck_irq, kp);
 err_req_stuck_irq:
 	free_irq(kp->key_sense_irq, kp);
@@ -1102,6 +1177,11 @@ err_req_stuck_irq:
 err_hall_ic_irq:
 #endif
 err_req_sense_irq:
+=======
+	free_irq(kp->key_stuck_irq, NULL);
+err_req_stuck_irq:
+	free_irq(kp->key_sense_irq, NULL);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 err_gpio_config:
 err_get_irq:
 	input_free_device(kp->input);
@@ -1115,6 +1195,7 @@ static int __devexit pmic8xxx_kp_remove(struct platform_device *pdev)
 {
 	struct pmic8xxx_kp *kp = platform_get_drvdata(pdev);
 
+<<<<<<< HEAD
 #ifdef VOLUME_KEY_DEBOUNCE
 	hrtimer_cancel(&kp->volup_hrtimer);
 	hrtimer_cancel(&kp->voldown_hrtimer);
@@ -1124,6 +1205,11 @@ static int __devexit pmic8xxx_kp_remove(struct platform_device *pdev)
 	device_init_wakeup(&pdev->dev, 0);
 	free_irq(kp->key_stuck_irq, kp);
 	free_irq(kp->key_sense_irq, kp);
+=======
+	device_init_wakeup(&pdev->dev, 0);
+	free_irq(kp->key_stuck_irq, NULL);
+	free_irq(kp->key_sense_irq, NULL);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	input_unregister_device(kp->input);
 	kfree(kp);
 
@@ -1143,10 +1229,13 @@ static int pmic8xxx_kp_suspend(struct device *dev)
 	} else {
 		mutex_lock(&input_dev->mutex);
 
+<<<<<<< HEAD
 #if defined CONFIG_MACH_VITAL2REFRESH
 	enable_irq_wake(MSM_GPIO_TO_INT(MSM_HALL_IC));
 	/* to wakeup in case of sleep */
 #endif
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		if (input_dev->users)
 			pmic8xxx_kp_disable(kp);
 
@@ -1167,11 +1256,17 @@ static int pmic8xxx_kp_resume(struct device *dev)
 	} else {
 		mutex_lock(&input_dev->mutex);
 
+<<<<<<< HEAD
 #if defined CONFIG_MACH_VITAL2REFRESH
 	disable_irq_wake(MSM_GPIO_TO_INT(MSM_HALL_IC)); /* to match irq pair */
 #endif
 	if (input_dev->users)
 		pmic8xxx_kp_enable(kp);
+=======
+		if (input_dev->users)
+			pmic8xxx_kp_enable(kp);
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		mutex_unlock(&input_dev->mutex);
 	}
 

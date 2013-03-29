@@ -696,8 +696,15 @@ static netdev_tx_t reg_vif_xmit(struct sk_buff *skb,
 	int err;
 
 	err = ip6mr_fib_lookup(net, &fl6, &mrt);
+<<<<<<< HEAD
 	if (err < 0)
 		return err;
+=======
+	if (err < 0) {
+		kfree_skb(skb);
+		return err;
+	}
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	read_lock(&mrt_lock);
 	dev->stats.tx_bytes += skb->len;
@@ -1354,7 +1361,12 @@ int __init ip6_mr_init(void)
 		goto add_proto_fail;
 	}
 #endif
+<<<<<<< HEAD
 	rtnl_register(RTNL_FAMILY_IP6MR, RTM_GETROUTE, NULL, ip6mr_rtm_dumproute);
+=======
+	rtnl_register(RTNL_FAMILY_IP6MR, RTM_GETROUTE, NULL,
+		      ip6mr_rtm_dumproute, NULL);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	return 0;
 #ifdef CONFIG_IPV6_PIMSM_V2
 add_proto_fail:
@@ -2051,8 +2063,15 @@ int ip6_mr_input(struct sk_buff *skb)
 	int err;
 
 	err = ip6mr_fib_lookup(net, &fl6, &mrt);
+<<<<<<< HEAD
 	if (err < 0)
 		return err;
+=======
+	if (err < 0) {
+		kfree_skb(skb);
+		return err;
+	}
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	read_lock(&mrt_lock);
 	cache = ip6mr_cache_find(mrt,

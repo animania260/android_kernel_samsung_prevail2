@@ -59,6 +59,10 @@
 #include <linux/magic.h>
 #include <linux/pid.h>
 #include <linux/nsproxy.h>
+<<<<<<< HEAD
+=======
+#include <linux/ptrace.h>
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 #include <asm/futex.h>
 
@@ -314,6 +318,7 @@ again:
 #endif
 
 	lock_page(page_head);
+<<<<<<< HEAD
 	if (!page_head->mapping) {
 		unlock_page(page_head);
 		put_page(page_head);
@@ -325,6 +330,31 @@ again:
 		if ((page_head == ZERO_PAGE(address)))
 			return -EFAULT;
 		goto again;
+=======
+
+	/*
+	 * If page_head->mapping is NULL, then it cannot be a PageAnon
+	 * page; but it might be the ZERO_PAGE or in the gate area or
+	 * in a special mapping (all cases which we are happy to fail);
+	 * or it may have been a good file page when get_user_pages_fast
+	 * found it, but truncated or holepunched or subjected to
+	 * invalidate_complete_page2 before we got the page lock (also
+	 * cases which we are happy to fail).  And we hold a reference,
+	 * so refcount care in invalidate_complete_page's remove_mapping
+	 * prevents drop_caches from setting mapping to NULL beneath us.
+	 *
+	 * The case we do have to guard against is when memory pressure made
+	 * shmem_writepage move it from filecache to swapcache beneath us:
+	 * an unlikely race, but we do need to retry for page_head->mapping.
+	 */
+	if (!page_head->mapping) {
+		int shmem_swizzled = PageSwapCache(page_head);
+		unlock_page(page_head);
+		put_page(page_head);
+		if (shmem_swizzled)
+			goto again;
+		return -EFAULT;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	}
 
 	/*
@@ -703,7 +733,11 @@ static int futex_lock_pi_atomic(u32 __user *uaddr, struct futex_hash_bucket *hb,
 				struct futex_pi_state **ps,
 				struct task_struct *task, int set_waiters)
 {
+<<<<<<< HEAD
 	int lock_taken, ret, ownerdied = 0;
+=======
+	int lock_taken, ret, force_take = 0;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	u32 uval, newval, curval, vpid = task_pid_vnr(task);
 
 retry:
@@ -742,6 +776,7 @@ retry:
 	newval = curval | FUTEX_WAITERS;
 
 	/*
+<<<<<<< HEAD
 	 * There are two cases, where a futex might have no owner (the
 	 * owner TID is 0): OWNER_DIED. We take over the futex in this
 	 * case. We also do an unconditional take over, when the owner
@@ -753,6 +788,17 @@ retry:
 		/* Keep the OWNER_DIED bit */
 		newval = (curval & ~FUTEX_TID_MASK) | vpid;
 		ownerdied = 0;
+=======
+	 * Should we force take the futex? See below.
+	 */
+	if (unlikely(force_take)) {
+		/*
+		 * Keep the OWNER_DIED and the WAITERS bit and set the
+		 * new TID value.
+		 */
+		newval = (curval & ~FUTEX_TID_MASK) | vpid;
+		force_take = 0;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		lock_taken = 1;
 	}
 
@@ -762,7 +808,11 @@ retry:
 		goto retry;
 
 	/*
+<<<<<<< HEAD
 	 * We took the lock due to owner died take over.
+=======
+	 * We took the lock due to forced take over.
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	 */
 	if (unlikely(lock_taken))
 		return 1;
@@ -777,20 +827,40 @@ retry:
 		switch (ret) {
 		case -ESRCH:
 			/*
+<<<<<<< HEAD
 			 * No owner found for this futex. Check if the
 			 * OWNER_DIED bit is set to figure out whether
 			 * this is a robust futex or not.
+=======
+			 * We failed to find an owner for this
+			 * futex. So we have no pi_state to block
+			 * on. This can happen in two cases:
+			 *
+			 * 1) The owner died
+			 * 2) A stale FUTEX_WAITERS bit
+			 *
+			 * Re-read the futex value.
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			 */
 			if (get_futex_value_locked(&curval, uaddr))
 				return -EFAULT;
 
 			/*
+<<<<<<< HEAD
 			 * We simply start over in case of a robust
 			 * futex. The code above will take the futex
 			 * and return happy.
 			 */
 			if (curval & FUTEX_OWNER_DIED) {
 				ownerdied = 1;
+=======
+			 * If the owner died or we have a stale
+			 * WAITERS bit the owner TID in the user space
+			 * futex is 0.
+			 */
+			if (!(curval & FUTEX_TID_MASK)) {
+				force_take = 1;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 				goto retry;
 			}
 		default:
@@ -827,6 +897,12 @@ static void wake_futex(struct futex_q *q)
 {
 	struct task_struct *p = q->task;
 
+<<<<<<< HEAD
+=======
+	if (WARN(q->pi_state || q->rt_waiter, "refusing to wake PI futex\n"))
+		return;
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	/*
 	 * We set q->lock_ptr = NULL _before_ we wake up the task. If
 	 * a non-futex wake up happens on another CPU then the task
@@ -1062,6 +1138,13 @@ retry_private:
 
 	plist_for_each_entry_safe(this, next, head, list) {
 		if (match_futex (&this->key, &key1)) {
+<<<<<<< HEAD
+=======
+			if (this->pi_state || this->rt_waiter) {
+				ret = -EINVAL;
+				goto out_unlock;
+			}
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			wake_futex(this);
 			if (++ret >= nr_wake)
 				break;
@@ -1074,6 +1157,13 @@ retry_private:
 		op_ret = 0;
 		plist_for_each_entry_safe(this, next, head, list) {
 			if (match_futex (&this->key, &key2)) {
+<<<<<<< HEAD
+=======
+				if (this->pi_state || this->rt_waiter) {
+					ret = -EINVAL;
+					goto out_unlock;
+				}
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 				wake_futex(this);
 				if (++op_ret >= nr_wake2)
 					break;
@@ -1082,6 +1172,10 @@ retry_private:
 		ret += op_ret;
 	}
 
+<<<<<<< HEAD
+=======
+out_unlock:
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	double_unlock_hb(hb1, hb2);
 out_put_keys:
 	put_futex_key(&key2);
@@ -1371,9 +1465,19 @@ retry_private:
 		/*
 		 * FUTEX_WAIT_REQEUE_PI and FUTEX_CMP_REQUEUE_PI should always
 		 * be paired with each other and no other futex ops.
+<<<<<<< HEAD
 		 */
 		if ((requeue_pi && !this->rt_waiter) ||
 		    (!requeue_pi && this->rt_waiter)) {
+=======
+		 *
+		 * We should never be requeueing a futex_q with a pi_state,
+		 * which is awaiting a futex_unlock_pi().
+		 */
+		if ((requeue_pi && !this->rt_waiter) ||
+		    (!requeue_pi && this->rt_waiter) ||
+		    this->pi_state) {
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			ret = -EINVAL;
 			break;
 		}
@@ -2218,11 +2322,19 @@ int handle_early_requeue_pi_wakeup(struct futex_hash_bucket *hb,
  * @uaddr2:	the pi futex we will take prior to returning to user-space
  *
  * The caller will wait on uaddr and will be requeued by futex_requeue() to
+<<<<<<< HEAD
  * uaddr2 which must be PI aware.  Normal wakeup will wake on uaddr2 and
  * complete the acquisition of the rt_mutex prior to returning to userspace.
  * This ensures the rt_mutex maintains an owner when it has waiters; without
  * one, the pi logic wouldn't know which task to boost/deboost, if there was a
  * need to.
+=======
+ * uaddr2 which must be PI aware and unique from uaddr.  Normal wakeup will wake
+ * on uaddr2 and complete the acquisition of the rt_mutex prior to returning to
+ * userspace.  This ensures the rt_mutex maintains an owner when it has waiters;
+ * without one, the pi logic would not know which task to boost/deboost, if
+ * there was a need to.
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
  *
  * We call schedule in futex_wait_queue_me() when we enqueue and return there
  * via the following:
@@ -2259,6 +2371,12 @@ static int futex_wait_requeue_pi(u32 __user *uaddr, unsigned int flags,
 	struct futex_q q = futex_q_init;
 	int res, ret;
 
+<<<<<<< HEAD
+=======
+	if (uaddr == uaddr2)
+		return -EINVAL;
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	if (!bitset)
 		return -EINVAL;
 
@@ -2330,7 +2448,11 @@ static int futex_wait_requeue_pi(u32 __user *uaddr, unsigned int flags,
 		 * signal.  futex_unlock_pi() will not destroy the lock_ptr nor
 		 * the pi_state.
 		 */
+<<<<<<< HEAD
 		WARN_ON(!&q.pi_state);
+=======
+		WARN_ON(!q.pi_state);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		pi_mutex = &q.pi_state->pi_mutex;
 		ret = rt_mutex_finish_proxy_lock(pi_mutex, to, &rt_waiter, 1);
 		debug_rt_mutex_free_waiter(&rt_waiter);
@@ -2357,7 +2479,11 @@ static int futex_wait_requeue_pi(u32 __user *uaddr, unsigned int flags,
 	 * fault, unlock the rt_mutex and return the fault to userspace.
 	 */
 	if (ret == -EFAULT) {
+<<<<<<< HEAD
 		if (rt_mutex_owner(pi_mutex) == current)
+=======
+		if (pi_mutex && rt_mutex_owner(pi_mutex) == current)
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			rt_mutex_unlock(pi_mutex);
 	} else if (ret == -EINTR) {
 		/*
@@ -2431,11 +2557,16 @@ SYSCALL_DEFINE3(get_robust_list, int, pid,
 {
 	struct robust_list_head __user *head;
 	unsigned long ret;
+<<<<<<< HEAD
 	const struct cred *cred = current_cred(), *pcred;
+=======
+	struct task_struct *p;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	if (!futex_cmpxchg_enabled)
 		return -ENOSYS;
 
+<<<<<<< HEAD
 	if (!pid)
 		head = current->robust_list;
 	else {
@@ -2465,6 +2596,26 @@ ok:
 		rcu_read_unlock();
 	}
 
+=======
+	rcu_read_lock();
+
+	ret = -ESRCH;
+	if (!pid)
+		p = current;
+	else {
+		p = find_task_by_vpid(pid);
+		if (!p)
+			goto err_unlock;
+	}
+
+	ret = -EPERM;
+	if (!ptrace_may_access(p, PTRACE_MODE_READ))
+		goto err_unlock;
+
+	head = p->robust_list;
+	rcu_read_unlock();
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	if (put_user(sizeof(*head), len_ptr))
 		return -EFAULT;
 	return put_user(head, head_ptr);
@@ -2629,6 +2780,19 @@ long do_futex(u32 __user *uaddr, int op, u32 val, ktime_t *timeout,
 	}
 
 	switch (cmd) {
+<<<<<<< HEAD
+=======
+	case FUTEX_LOCK_PI:
+	case FUTEX_UNLOCK_PI:
+	case FUTEX_TRYLOCK_PI:
+	case FUTEX_WAIT_REQUEUE_PI:
+	case FUTEX_CMP_REQUEUE_PI:
+		if (!futex_cmpxchg_enabled)
+			return -ENOSYS;
+	}
+
+	switch (cmd) {
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	case FUTEX_WAIT:
 		val3 = FUTEX_BITSET_MATCH_ANY;
 	case FUTEX_WAIT_BITSET:
@@ -2649,6 +2813,7 @@ long do_futex(u32 __user *uaddr, int op, u32 val, ktime_t *timeout,
 		ret = futex_wake_op(uaddr, flags, uaddr2, val, val2, val3);
 		break;
 	case FUTEX_LOCK_PI:
+<<<<<<< HEAD
 		if (futex_cmpxchg_enabled)
 			ret = futex_lock_pi(uaddr, flags, val, timeout, 0);
 		break;
@@ -2659,6 +2824,15 @@ long do_futex(u32 __user *uaddr, int op, u32 val, ktime_t *timeout,
 	case FUTEX_TRYLOCK_PI:
 		if (futex_cmpxchg_enabled)
 			ret = futex_lock_pi(uaddr, flags, 0, timeout, 1);
+=======
+		ret = futex_lock_pi(uaddr, flags, val, timeout, 0);
+		break;
+	case FUTEX_UNLOCK_PI:
+		ret = futex_unlock_pi(uaddr, flags);
+		break;
+	case FUTEX_TRYLOCK_PI:
+		ret = futex_lock_pi(uaddr, flags, 0, timeout, 1);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		break;
 	case FUTEX_WAIT_REQUEUE_PI:
 		val3 = FUTEX_BITSET_MATCH_ANY;
@@ -2727,7 +2901,11 @@ static int __init futex_init(void)
 		futex_cmpxchg_enabled = 1;
 
 	for (i = 0; i < ARRAY_SIZE(futex_queues); i++) {
+<<<<<<< HEAD
 		plist_head_init(&futex_queues[i].chain);
+=======
+		plist_head_init(&futex_queues[i].chain, &futex_queues[i].lock);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		spin_lock_init(&futex_queues[i].lock);
 	}
 

@@ -44,6 +44,10 @@
 #include <linux/mutex.h>
 
 #include <net/neighbour.h>
+<<<<<<< HEAD
+=======
+#include <net/sch_generic.h>
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 #include <asm/atomic.h>
 
@@ -117,8 +121,14 @@ struct ipoib_header {
 	u16	reserved;
 };
 
+<<<<<<< HEAD
 struct ipoib_pseudoheader {
 	u8  hwaddr[INFINIBAND_ALEN];
+=======
+struct ipoib_cb {
+	struct qdisc_skb_cb	qdisc_cb;
+	u8			hwaddr[INFINIBAND_ALEN];
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 };
 
 /* Used for all multicast joins (broadcast, IPv4 mcast and IPv6 mcast) */

@@ -878,6 +878,10 @@ static void rs_bt_update_lq(struct iwl_priv *priv, struct iwl_rxon_context *ctx,
 	if ((priv->bt_traffic_load != priv->last_bt_traffic_load) ||
 	    (priv->bt_full_concurrent != full_concurrent)) {
 		priv->bt_full_concurrent = full_concurrent;
+<<<<<<< HEAD
+=======
+		priv->last_bt_traffic_load = priv->bt_traffic_load;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 		/* Update uCode's rate table. */
 		tbl = &(lq_sta->lq_info[lq_sta->active_tbl]);

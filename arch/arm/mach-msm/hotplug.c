@@ -1,6 +1,9 @@
 /*
  *  Copyright (C) 2002 ARM Ltd.
+<<<<<<< HEAD
  *  Copyright (c) 2012, Code Aurora Forum. All rights reserved.
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
  *  All Rights Reserved
  *
  * This program is free software; you can redistribute it and/or modify
@@ -10,6 +13,7 @@
 #include <linux/kernel.h>
 #include <linux/errno.h>
 #include <linux/smp.h>
+<<<<<<< HEAD
 #include <linux/cpu.h>
 
 #include <asm/cacheflush.h>
@@ -31,6 +35,13 @@ struct msm_hotplug_device {
 static DEFINE_PER_CPU_SHARED_ALIGNED(struct msm_hotplug_device,
 			msm_hotplug_devices);
 
+=======
+
+#include <asm/cacheflush.h>
+
+extern volatile int pen_release;
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 static inline void cpu_enter_lowpower(void)
 {
 	/* Just flush the cache. Changing the coherency is not yet
@@ -46,15 +57,29 @@ static inline void platform_do_lowpower(unsigned int cpu)
 {
 	/* Just enter wfi for now. TODO: Properly shut off the cpu. */
 	for (;;) {
+<<<<<<< HEAD
 
 		msm_pm_cpu_enter_lowpower(cpu);
+=======
+		/*
+		 * here's the WFI
+		 */
+		asm("wfi"
+		    :
+		    :
+		    : "memory", "cc");
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		if (pen_release == cpu) {
 			/*
 			 * OK, proper wakeup, we're done
 			 */
+<<<<<<< HEAD
 			pen_release = -1;
 			dmac_flush_range((void *)&pen_release,
 				(void *)(&pen_release + sizeof(pen_release)));
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			break;
 		}
 
@@ -66,14 +91,18 @@ static inline void platform_do_lowpower(unsigned int cpu)
 		 * possible, since we are currently running incoherently, and
 		 * therefore cannot safely call printk() or anything else
 		 */
+<<<<<<< HEAD
 		dmac_inv_range((void *)&pen_release,
 			       (void *)(&pen_release + sizeof(pen_release)));
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		pr_debug("CPU%u: spurious wakeup call\n", cpu);
 	}
 }
 
 int platform_cpu_kill(unsigned int cpu)
 {
+<<<<<<< HEAD
 	struct completion *killed =
 		&per_cpu(msm_hotplug_devices, cpu).cpu_killed;
 	int ret;
@@ -83,6 +112,9 @@ int platform_cpu_kill(unsigned int cpu)
 		return ret;
 
 	return msm_pm_wait_cpu_shutdown(cpu);
+=======
+	return 1;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 /*
@@ -92,19 +124,29 @@ int platform_cpu_kill(unsigned int cpu)
  */
 void platform_cpu_die(unsigned int cpu)
 {
+<<<<<<< HEAD
 	if (unlikely(cpu != smp_processor_id())) {
 		pr_crit("%s: running on %u, should be %u\n",
 			__func__, smp_processor_id(), cpu);
 		BUG();
 	}
 	complete(&__get_cpu_var(msm_hotplug_devices).cpu_killed);
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	/*
 	 * we're ready for shutdown now, so do it
 	 */
 	cpu_enter_lowpower();
 	platform_do_lowpower(cpu);
 
+<<<<<<< HEAD
 	pr_notice("CPU%u: %s: normal wakeup\n", cpu, __func__);
+=======
+	/*
+	 * bring this CPU back into the world of cache
+	 * coherency, and then restore interrupts
+	 */
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	cpu_leave_lowpower();
 }
 
@@ -116,6 +158,7 @@ int platform_cpu_disable(unsigned int cpu)
 	 */
 	return cpu == 0 ? -EPERM : 0;
 }
+<<<<<<< HEAD
 
 #define CPU_SHIFT	0
 #define CPU_MASK	0xF
@@ -180,3 +223,5 @@ static int __init init_hotplug_notifier(void)
 	return register_hotcpu_notifier(&hotplug_rtb_notifier);
 }
 early_initcall(init_hotplug_notifier);
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y

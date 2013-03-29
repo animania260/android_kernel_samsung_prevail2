@@ -322,6 +322,7 @@ device_initcall(thermal_throttle_init_device);
 
 #endif /* CONFIG_SYSFS */
 
+<<<<<<< HEAD
 /*
  * Set up the most two significant bit to notify mce log that this thermal
  * event type.
@@ -333,6 +334,8 @@ device_initcall(thermal_throttle_init_device);
 #define PACKAGE_THROTTLED	((__u64)2 << 62)
 #define PACKAGE_POWER_LIMIT	((__u64)3 << 62)
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 static void notify_thresholds(__u64 msr_val)
 {
 	/* check whether the interrupt handler is defined;
@@ -362,6 +365,7 @@ static void intel_thermal_interrupt(void)
 	if (therm_throt_process(msr_val & THERM_STATUS_PROCHOT,
 				THERMAL_THROTTLING_EVENT,
 				CORE_LEVEL) != 0)
+<<<<<<< HEAD
 		mce_log_therm_throt_event(CORE_THROTTLED | msr_val);
 
 	if (this_cpu_has(X86_FEATURE_PLN))
@@ -383,6 +387,25 @@ static void intel_thermal_interrupt(void)
 					PACKAGE_LEVEL) != 0)
 				mce_log_therm_throt_event(PACKAGE_POWER_LIMIT
 							  | msr_val);
+=======
+		mce_log_therm_throt_event(msr_val);
+
+	if (this_cpu_has(X86_FEATURE_PLN))
+		therm_throt_process(msr_val & THERM_STATUS_POWER_LIMIT,
+					POWER_LIMIT_EVENT,
+					CORE_LEVEL);
+
+	if (this_cpu_has(X86_FEATURE_PTS)) {
+		rdmsrl(MSR_IA32_PACKAGE_THERM_STATUS, msr_val);
+		therm_throt_process(msr_val & PACKAGE_THERM_STATUS_PROCHOT,
+					THERMAL_THROTTLING_EVENT,
+					PACKAGE_LEVEL);
+		if (this_cpu_has(X86_FEATURE_PLN))
+			therm_throt_process(msr_val &
+					PACKAGE_THERM_STATUS_POWER_LIMIT,
+					POWER_LIMIT_EVENT,
+					PACKAGE_LEVEL);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	}
 }
 

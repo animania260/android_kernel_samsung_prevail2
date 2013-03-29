@@ -21,7 +21,10 @@ show up in /proc/sys/kernel:
 - acct
 - bootloader_type	     [ X86 only ]
 - bootloader_version	     [ X86 only ]
+<<<<<<< HEAD
 - boot_reason		     [ ARM only ]
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 - callhome		     [ S390 only ]
 - auto_msgmni
 - core_pattern
@@ -127,6 +130,7 @@ Documentation/x86/boot.txt for additional information.
 
 ==============================================================
 
+<<<<<<< HEAD
 boot_reason:
 
 ARM -- reason for device boot
@@ -140,6 +144,8 @@ Documentation/arm/msm/boot.txt for Qualcomm's family of devices.
 
 ==============================================================
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 callhome:
 
 Controls the kernel's callhome behavior in case of a kernel panic.

@@ -2798,7 +2798,11 @@ static int e1000_tx_map(struct e1000_adapter *adapter,
 	struct e1000_buffer *buffer_info;
 	unsigned int len = skb_headlen(skb);
 	unsigned int offset = 0, size, count = 0, i;
+<<<<<<< HEAD
 	unsigned int f;
+=======
+	unsigned int f, bytecount, segs;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	i = tx_ring->next_to_use;
 
@@ -2899,7 +2903,17 @@ static int e1000_tx_map(struct e1000_adapter *adapter,
 		}
 	}
 
+<<<<<<< HEAD
 	tx_ring->buffer_info[i].skb = skb;
+=======
+	segs = skb_shinfo(skb)->gso_segs ?: 1;
+	/* multiply data chunks by size of headers */
+	bytecount = ((segs - 1) * skb_headlen(skb)) + skb->len;
+
+	tx_ring->buffer_info[i].skb = skb;
+	tx_ring->buffer_info[i].segs = segs;
+	tx_ring->buffer_info[i].bytecount = bytecount;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	tx_ring->buffer_info[first].next_to_watch = i;
 
 	return count;
@@ -3573,6 +3587,7 @@ static bool e1000_clean_tx_irq(struct e1000_adapter *adapter,
 			cleaned = (i == eop);
 
 			if (cleaned) {
+<<<<<<< HEAD
 				struct sk_buff *skb = buffer_info->skb;
 				unsigned int segs, bytecount;
 				segs = skb_shinfo(skb)->gso_segs ?: 1;
@@ -3581,6 +3596,10 @@ static bool e1000_clean_tx_irq(struct e1000_adapter *adapter,
 				            skb->len;
 				total_tx_packets += segs;
 				total_tx_bytes += bytecount;
+=======
+				total_tx_packets += buffer_info->segs;
+				total_tx_bytes += buffer_info->bytecount;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			}
 			e1000_unmap_and_free_tx_resource(adapter, buffer_info);
 			tx_desc->upper.data = 0;

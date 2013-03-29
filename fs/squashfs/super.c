@@ -290,7 +290,11 @@ handle_fragments:
 
 check_directory_table:
 	/* Sanity check directory_table */
+<<<<<<< HEAD
 	if (msblk->directory_table >= next_table) {
+=======
+	if (msblk->directory_table > next_table) {
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		err = -EINVAL;
 		goto failed_mount;
 	}

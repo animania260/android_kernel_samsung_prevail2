@@ -115,6 +115,10 @@ struct snd_usb_midi {
 	struct list_head list;
 	struct timer_list error_timer;
 	spinlock_t disc_lock;
+<<<<<<< HEAD
+=======
+	struct rw_semaphore disc_rwsem;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	struct mutex mutex;
 	u32 usb_id;
 	int next_midi_device;
@@ -124,8 +128,15 @@ struct snd_usb_midi {
 		struct snd_usb_midi_in_endpoint *in;
 	} endpoints[MIDI_MAX_ENDPOINTS];
 	unsigned long input_triggered;
+<<<<<<< HEAD
 	unsigned int opened;
 	unsigned char disconnected;
+=======
+	bool autopm_reference;
+	unsigned int opened[2];
+	unsigned char disconnected;
+	unsigned char input_running;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	struct snd_kcontrol *roland_load_ctl;
 };
@@ -1015,6 +1026,7 @@ static void update_roland_altsetting(struct snd_usb_midi* umidi)
 	snd_usbmidi_input_start(&umidi->list);
 }
 
+<<<<<<< HEAD
 static void substream_open(struct snd_rawmidi_substream *substream, int open)
 {
 	struct snd_usb_midi* umidi = substream->rmidi->private_data;
@@ -1038,6 +1050,60 @@ static void substream_open(struct snd_rawmidi_substream *substream, int open)
 		}
 	}
 	mutex_unlock(&umidi->mutex);
+=======
+static int substream_open(struct snd_rawmidi_substream *substream, int dir,
+			  int open)
+{
+	struct snd_usb_midi* umidi = substream->rmidi->private_data;
+	struct snd_kcontrol *ctl;
+	int err;
+
+	down_read(&umidi->disc_rwsem);
+	if (umidi->disconnected) {
+		up_read(&umidi->disc_rwsem);
+		return open ? -ENODEV : 0;
+	}
+
+	mutex_lock(&umidi->mutex);
+	if (open) {
+		if (!umidi->opened[0] && !umidi->opened[1]) {
+			err = usb_autopm_get_interface(umidi->iface);
+			umidi->autopm_reference = err >= 0;
+			if (err < 0 && err != -EACCES) {
+				mutex_unlock(&umidi->mutex);
+				up_read(&umidi->disc_rwsem);
+				return -EIO;
+			}
+			if (umidi->roland_load_ctl) {
+				ctl = umidi->roland_load_ctl;
+				ctl->vd[0].access |= SNDRV_CTL_ELEM_ACCESS_INACTIVE;
+				snd_ctl_notify(umidi->card,
+				       SNDRV_CTL_EVENT_MASK_INFO, &ctl->id);
+				update_roland_altsetting(umidi);
+			}
+		}
+		umidi->opened[dir]++;
+		if (umidi->opened[1])
+			snd_usbmidi_input_start(&umidi->list);
+	} else {
+		umidi->opened[dir]--;
+		if (!umidi->opened[1])
+			snd_usbmidi_input_stop(&umidi->list);
+		if (!umidi->opened[0] && !umidi->opened[1]) {
+			if (umidi->roland_load_ctl) {
+				ctl = umidi->roland_load_ctl;
+				ctl->vd[0].access &= ~SNDRV_CTL_ELEM_ACCESS_INACTIVE;
+				snd_ctl_notify(umidi->card,
+				       SNDRV_CTL_EVENT_MASK_INFO, &ctl->id);
+			}
+			if (umidi->autopm_reference)
+				usb_autopm_put_interface(umidi->iface);
+		}
+	}
+	mutex_unlock(&umidi->mutex);
+	up_read(&umidi->disc_rwsem);
+	return 0;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 static int snd_usbmidi_output_open(struct snd_rawmidi_substream *substream)
@@ -1045,7 +1111,10 @@ static int snd_usbmidi_output_open(struct snd_rawmidi_substream *substream)
 	struct snd_usb_midi* umidi = substream->rmidi->private_data;
 	struct usbmidi_out_port* port = NULL;
 	int i, j;
+<<<<<<< HEAD
 	int err;
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	for (i = 0; i < MIDI_MAX_ENDPOINTS; ++i)
 		if (umidi->endpoints[i].out)
@@ -1058,6 +1127,7 @@ static int snd_usbmidi_output_open(struct snd_rawmidi_substream *substream)
 		snd_BUG();
 		return -ENXIO;
 	}
+<<<<<<< HEAD
 	err = usb_autopm_get_interface(umidi->iface);
 	if (err < 0)
 		return -EIO;
@@ -1065,15 +1135,25 @@ static int snd_usbmidi_output_open(struct snd_rawmidi_substream *substream)
 	port->state = STATE_UNKNOWN;
 	substream_open(substream, 1);
 	return 0;
+=======
+
+	substream->runtime->private_data = port;
+	port->state = STATE_UNKNOWN;
+	return substream_open(substream, 0, 1);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 static int snd_usbmidi_output_close(struct snd_rawmidi_substream *substream)
 {
+<<<<<<< HEAD
 	struct snd_usb_midi* umidi = substream->rmidi->private_data;
 
 	substream_open(substream, 0);
 	usb_autopm_put_interface(umidi->iface);
 	return 0;
+=======
+	return substream_open(substream, 0, 0);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 static void snd_usbmidi_output_trigger(struct snd_rawmidi_substream *substream, int up)
@@ -1126,14 +1206,22 @@ static void snd_usbmidi_output_drain(struct snd_rawmidi_substream *substream)
 
 static int snd_usbmidi_input_open(struct snd_rawmidi_substream *substream)
 {
+<<<<<<< HEAD
 	substream_open(substream, 1);
 	return 0;
+=======
+	return substream_open(substream, 1, 1);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 static int snd_usbmidi_input_close(struct snd_rawmidi_substream *substream)
 {
+<<<<<<< HEAD
 	substream_open(substream, 0);
 	return 0;
+=======
+	return substream_open(substream, 1, 0);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 static void snd_usbmidi_input_trigger(struct snd_rawmidi_substream *substream, int up)
@@ -1382,9 +1470,18 @@ void snd_usbmidi_disconnect(struct list_head* p)
 	 * a timer may submit an URB. To reliably break the cycle
 	 * a flag under lock must be used
 	 */
+<<<<<<< HEAD
 	spin_lock_irq(&umidi->disc_lock);
 	umidi->disconnected = 1;
 	spin_unlock_irq(&umidi->disc_lock);
+=======
+	down_write(&umidi->disc_rwsem);
+	spin_lock_irq(&umidi->disc_lock);
+	umidi->disconnected = 1;
+	spin_unlock_irq(&umidi->disc_lock);
+	up_write(&umidi->disc_rwsem);
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	for (i = 0; i < MIDI_MAX_ENDPOINTS; ++i) {
 		struct snd_usb_midi_endpoint* ep = &umidi->endpoints[i];
 		if (ep->out)
@@ -2039,12 +2136,21 @@ void snd_usbmidi_input_stop(struct list_head* p)
 	unsigned int i, j;
 
 	umidi = list_entry(p, struct snd_usb_midi, list);
+<<<<<<< HEAD
+=======
+	if (!umidi->input_running)
+		return;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	for (i = 0; i < MIDI_MAX_ENDPOINTS; ++i) {
 		struct snd_usb_midi_endpoint* ep = &umidi->endpoints[i];
 		if (ep->in)
 			for (j = 0; j < INPUT_URBS; ++j)
 				usb_kill_urb(ep->in->urbs[j]);
 	}
+<<<<<<< HEAD
+=======
+	umidi->input_running = 0;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 static void snd_usbmidi_input_start_ep(struct snd_usb_midi_in_endpoint* ep)
@@ -2069,8 +2175,16 @@ void snd_usbmidi_input_start(struct list_head* p)
 	int i;
 
 	umidi = list_entry(p, struct snd_usb_midi, list);
+<<<<<<< HEAD
 	for (i = 0; i < MIDI_MAX_ENDPOINTS; ++i)
 		snd_usbmidi_input_start_ep(umidi->endpoints[i].in);
+=======
+	if (umidi->input_running || !umidi->opened[1])
+		return;
+	for (i = 0; i < MIDI_MAX_ENDPOINTS; ++i)
+		snd_usbmidi_input_start_ep(umidi->endpoints[i].in);
+	umidi->input_running = 1;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 /*
@@ -2096,6 +2210,10 @@ int snd_usbmidi_create(struct snd_card *card,
 	umidi->usb_protocol_ops = &snd_usbmidi_standard_ops;
 	init_timer(&umidi->error_timer);
 	spin_lock_init(&umidi->disc_lock);
+<<<<<<< HEAD
+=======
+	init_rwsem(&umidi->disc_rwsem);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	mutex_init(&umidi->mutex);
 	umidi->usb_id = USB_ID(le16_to_cpu(umidi->dev->descriptor.idVendor),
 			       le16_to_cpu(umidi->dev->descriptor.idProduct));
@@ -2197,9 +2315,12 @@ int snd_usbmidi_create(struct snd_card *card,
 	}
 
 	list_add_tail(&umidi->list, midi_list);
+<<<<<<< HEAD
 
 	for (i = 0; i < MIDI_MAX_ENDPOINTS; ++i)
 		snd_usbmidi_input_start_ep(umidi->endpoints[i].in);
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	return 0;
 }
 

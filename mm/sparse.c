@@ -121,10 +121,15 @@ static inline int sparse_index_init(unsigned long section_nr, int nid)
 int __section_nr(struct mem_section* ms)
 {
 	unsigned long root_nr;
+<<<<<<< HEAD
 	struct mem_section *root;
 
 	if (NR_SECTION_ROOTS == 0)
 		return ms - __nr_to_section(0);
+=======
+	struct mem_section* root;
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	for (root_nr = 0; root_nr < NR_SECTION_ROOTS; root_nr++) {
 		root = __nr_to_section(root_nr * SECTIONS_PER_ROOT);
 		if (!root)
@@ -355,6 +360,7 @@ static void __init sparse_early_usemaps_alloc_node(unsigned long**usemap_map,
 
 	usemap = sparse_early_usemaps_alloc_pgdat_section(NODE_DATA(nodeid),
 								 usemap_count);
+<<<<<<< HEAD
 	if (usemap) {
 		for (pnum = pnum_begin; pnum < pnum_end; pnum++) {
 			if (!present_section_nr(pnum))
@@ -378,6 +384,23 @@ static void __init sparse_early_usemaps_alloc_node(unsigned long**usemap_map,
 	}
 
 	printk(KERN_WARNING "%s: allocation failed\n", __func__);
+=======
+	if (!usemap) {
+		usemap = alloc_bootmem_node(NODE_DATA(nodeid), size * usemap_count);
+		if (!usemap) {
+			printk(KERN_WARNING "%s: allocation failed\n", __func__);
+			return;
+		}
+	}
+
+	for (pnum = pnum_begin; pnum < pnum_end; pnum++) {
+		if (!present_section_nr(pnum))
+			continue;
+		usemap_map[pnum] = usemap;
+		usemap += size;
+		check_usemap_section_nr(nodeid, usemap_map[pnum]);
+	}
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 #ifndef CONFIG_SPARSEMEM_VMEMMAP
@@ -629,7 +652,11 @@ static void __kfree_section_memmap(struct page *memmap, unsigned long nr_pages)
 {
 	return; /* XXX: Not implemented yet */
 }
+<<<<<<< HEAD
 static void free_map_bootmem(struct page *page, unsigned long nr_pages)
+=======
+static void free_map_bootmem(struct page *memmap, unsigned long nr_pages)
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 {
 }
 #else
@@ -670,10 +697,18 @@ static void __kfree_section_memmap(struct page *memmap, unsigned long nr_pages)
 			   get_order(sizeof(struct page) * nr_pages));
 }
 
+<<<<<<< HEAD
 static void free_map_bootmem(struct page *page, unsigned long nr_pages)
 {
 	unsigned long maps_section_nr, removing_section_nr, i;
 	unsigned long magic;
+=======
+static void free_map_bootmem(struct page *memmap, unsigned long nr_pages)
+{
+	unsigned long maps_section_nr, removing_section_nr, i;
+	unsigned long magic;
+	struct page *page = virt_to_page(memmap);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	for (i = 0; i < nr_pages; i++, page++) {
 		magic = (unsigned long) page->lru.next;
@@ -722,6 +757,7 @@ static void free_section_usemap(struct page *memmap, unsigned long *usemap)
 	 */
 
 	if (memmap) {
+<<<<<<< HEAD
 		struct page *memmap_page;
 		memmap_page = virt_to_page(memmap);
 
@@ -729,6 +765,12 @@ static void free_section_usemap(struct page *memmap, unsigned long *usemap)
 			>> PAGE_SHIFT;
 
 		free_map_bootmem(memmap_page, nr_pages);
+=======
+		nr_pages = PAGE_ALIGN(PAGES_PER_SECTION * sizeof(struct page))
+			>> PAGE_SHIFT;
+
+		free_map_bootmem(memmap, nr_pages);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	}
 }
 

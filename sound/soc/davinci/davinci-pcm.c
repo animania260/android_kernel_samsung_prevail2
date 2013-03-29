@@ -811,11 +811,17 @@ static void davinci_pcm_free(struct snd_pcm *pcm)
 
 static u64 davinci_pcm_dmamask = 0xffffffff;
 
+<<<<<<< HEAD
 static int davinci_pcm_new(struct snd_soc_pcm_runtime *rtd)
 {
 	struct snd_card *card = rtd->card->snd_card;
 	struct snd_soc_dai *dai = rtd->cpu_dai;
 	struct snd_pcm *pcm = rtd->pcm;
+=======
+static int davinci_pcm_new(struct snd_card *card,
+			   struct snd_soc_dai *dai, struct snd_pcm *pcm)
+{
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	int ret;
 
 	if (!card->dev->dma_mask)

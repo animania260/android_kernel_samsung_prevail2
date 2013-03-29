@@ -1548,6 +1548,21 @@ static void write_cinfo(__be32 **p, struct nfsd4_change_info *c)
 								\
 	save = resp->p;
 
+<<<<<<< HEAD
+=======
+static bool seqid_mutating_err(__be32 err)
+{
+	/* rfc 3530 section 8.1.5: */
+	return	err != nfserr_stale_clientid &&
+		err != nfserr_stale_stateid &&
+		err != nfserr_bad_stateid &&
+		err != nfserr_bad_seqid &&
+		err != nfserr_bad_xdr &&
+		err != nfserr_resource &&
+		err != nfserr_nofilehandle;
+}
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 /*
  * Routine for encoding the result of a "seqid-mutating" NFSv4 operation.  This
  * is where sequence id's are incremented, and the replay cache is filled.
@@ -1998,7 +2013,11 @@ out_acl:
 	if (bmval0 & FATTR4_WORD0_CASE_INSENSITIVE) {
 		if ((buflen -= 4) < 0)
 			goto out_resource;
+<<<<<<< HEAD
 		WRITE32(1);
+=======
+		WRITE32(0);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	}
 	if (bmval0 & FATTR4_WORD0_CASE_PRESERVING) {
 		if ((buflen -= 4) < 0)
@@ -2670,11 +2689,23 @@ nfsd4_encode_read(struct nfsd4_compoundres *resp, __be32 nfserr,
 	len = maxcount;
 	v = 0;
 	while (len > 0) {
+<<<<<<< HEAD
 		pn = resp->rqstp->rq_resused++;
+=======
+		pn = resp->rqstp->rq_resused;
+		if (!resp->rqstp->rq_respages[pn]) { /* ran out of pages */
+			maxcount -= len;
+			break;
+		}
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		resp->rqstp->rq_vec[v].iov_base =
 			page_address(resp->rqstp->rq_respages[pn]);
 		resp->rqstp->rq_vec[v].iov_len =
 			len < PAGE_SIZE ? len : PAGE_SIZE;
+<<<<<<< HEAD
+=======
+		resp->rqstp->rq_resused++;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		v++;
 		len -= PAGE_SIZE;
 	}
@@ -2722,6 +2753,11 @@ nfsd4_encode_readlink(struct nfsd4_compoundres *resp, __be32 nfserr, struct nfsd
 		return nfserr;
 	if (resp->xbuf->page_len)
 		return nfserr_resource;
+<<<<<<< HEAD
+=======
+	if (!resp->rqstp->rq_respages[resp->rqstp->rq_resused])
+		return nfserr_resource;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	page = page_address(resp->rqstp->rq_respages[resp->rqstp->rq_resused++]);
 
@@ -2771,6 +2807,11 @@ nfsd4_encode_readdir(struct nfsd4_compoundres *resp, __be32 nfserr, struct nfsd4
 		return nfserr;
 	if (resp->xbuf->page_len)
 		return nfserr_resource;
+<<<<<<< HEAD
+=======
+	if (!resp->rqstp->rq_respages[resp->rqstp->rq_resused])
+		return nfserr_resource;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	RESERVE_SPACE(8);  /* verifier */
 	savep = p;

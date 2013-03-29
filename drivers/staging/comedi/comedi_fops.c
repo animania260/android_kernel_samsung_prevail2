@@ -136,8 +136,21 @@ static long comedi_unlocked_ioctl(struct file *file, unsigned int cmd,
 	/* Device config is special, because it must work on
 	 * an unconfigured device. */
 	if (cmd == COMEDI_DEVCONFIG) {
+<<<<<<< HEAD
 		rc = do_devconfig_ioctl(dev,
 					(struct comedi_devconfig __user *)arg);
+=======
+		if (minor >= COMEDI_NUM_BOARD_MINORS) {
+			/* Device config not appropriate on non-board minors. */
+			rc = -ENOTTY;
+			goto done;
+		}
+		rc = do_devconfig_ioctl(dev,
+					(struct comedi_devconfig __user *)arg);
+		if (rc == 0)
+			/* Evade comedi_auto_unconfig(). */
+			dev_file_info->hardware_device = NULL;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		goto done;
 	}
 
@@ -280,7 +293,11 @@ static int do_devconfig_ioctl(struct comedi_device *dev,
 	if (ret == 0) {
 		if (!try_module_get(dev->driver->module)) {
 			comedi_device_detach(dev);
+<<<<<<< HEAD
 			return -ENOSYS;
+=======
+			ret = -ENOSYS;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		}
 	}
 
@@ -843,7 +860,11 @@ static int parse_insn(struct comedi_device *dev, struct comedi_insn *insn,
 				ret = -EAGAIN;
 				break;
 			}
+<<<<<<< HEAD
 			ret = s->async->inttrig(dev, s, insn->data[0]);
+=======
+			ret = s->async->inttrig(dev, s, data[0]);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			if (ret >= 0)
 				ret = 1;
 			break;
@@ -1088,7 +1109,10 @@ static int do_cmd_ioctl(struct comedi_device *dev,
 		goto cleanup;
 	}
 
+<<<<<<< HEAD
 	kfree(async->cmd.chanlist);
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	async->cmd = user_cmd;
 	async->cmd.data = NULL;
 	/* load channel/gain list */
@@ -1432,7 +1456,25 @@ static int do_cancel(struct comedi_device *dev, struct comedi_subdevice *s)
 	return ret;
 }
 
+<<<<<<< HEAD
 static void comedi_unmap(struct vm_area_struct *area)
+=======
+
+static void comedi_vm_open(struct vm_area_struct *area)
+{
+	struct comedi_async *async;
+	struct comedi_device *dev;
+
+	async = area->vm_private_data;
+	dev = async->subdevice->device;
+
+	mutex_lock(&dev->mutex);
+	async->mmap_count++;
+	mutex_unlock(&dev->mutex);
+}
+
+static void comedi_vm_close(struct vm_area_struct *area)
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 {
 	struct comedi_async *async;
 	struct comedi_device *dev;
@@ -1446,15 +1488,23 @@ static void comedi_unmap(struct vm_area_struct *area)
 }
 
 static struct vm_operations_struct comedi_vm_ops = {
+<<<<<<< HEAD
 	.close = comedi_unmap,
+=======
+	.open = comedi_vm_open,
+	.close = comedi_vm_close,
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 };
 
 static int comedi_mmap(struct file *file, struct vm_area_struct *vma)
 {
 	const unsigned minor = iminor(file->f_dentry->d_inode);
+<<<<<<< HEAD
 	struct comedi_device_file_info *dev_file_info =
 	    comedi_get_device_file_info(minor);
 	struct comedi_device *dev = dev_file_info->device;
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	struct comedi_async *async = NULL;
 	unsigned long start = vma->vm_start;
 	unsigned long size;
@@ -1462,6 +1512,18 @@ static int comedi_mmap(struct file *file, struct vm_area_struct *vma)
 	int i;
 	int retval;
 	struct comedi_subdevice *s;
+<<<<<<< HEAD
+=======
+	struct comedi_device_file_info *dev_file_info;
+	struct comedi_device *dev;
+
+	dev_file_info = comedi_get_device_file_info(minor);
+	if (dev_file_info == NULL)
+	        return -ENODEV;
+	dev = dev_file_info->device;
+	if (dev == NULL)
+	        return -ENODEV;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	mutex_lock(&dev->mutex);
 	if (!dev->attached) {
@@ -1528,11 +1590,25 @@ static unsigned int comedi_poll(struct file *file, poll_table * wait)
 {
 	unsigned int mask = 0;
 	const unsigned minor = iminor(file->f_dentry->d_inode);
+<<<<<<< HEAD
 	struct comedi_device_file_info *dev_file_info =
 	    comedi_get_device_file_info(minor);
 	struct comedi_device *dev = dev_file_info->device;
 	struct comedi_subdevice *read_subdev;
 	struct comedi_subdevice *write_subdev;
+=======
+	struct comedi_subdevice *read_subdev;
+	struct comedi_subdevice *write_subdev;
+	struct comedi_device_file_info *dev_file_info;
+	struct comedi_device *dev;
+	dev_file_info = comedi_get_device_file_info(minor);
+
+	if (dev_file_info == NULL)
+	        return -ENODEV;
+	dev = dev_file_info->device;
+	if (dev == NULL)
+	        return -ENODEV;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	mutex_lock(&dev->mutex);
 	if (!dev->attached) {
@@ -1543,7 +1619,11 @@ static unsigned int comedi_poll(struct file *file, poll_table * wait)
 
 	mask = 0;
 	read_subdev = comedi_get_read_subdevice(dev_file_info);
+<<<<<<< HEAD
 	if (read_subdev) {
+=======
+	if (read_subdev && read_subdev->async) {
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		poll_wait(file, &read_subdev->async->wait_head, wait);
 		if (!read_subdev->busy
 		    || comedi_buf_read_n_available(read_subdev->async) > 0
@@ -1553,7 +1633,11 @@ static unsigned int comedi_poll(struct file *file, poll_table * wait)
 		}
 	}
 	write_subdev = comedi_get_write_subdevice(dev_file_info);
+<<<<<<< HEAD
 	if (write_subdev) {
+=======
+	if (write_subdev && write_subdev->async) {
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		poll_wait(file, &write_subdev->async->wait_head, wait);
 		comedi_buf_write_alloc(write_subdev->async,
 				       write_subdev->async->prealloc_bufsz);
@@ -1578,9 +1662,21 @@ static ssize_t comedi_write(struct file *file, const char __user *buf,
 	int n, m, count = 0, retval = 0;
 	DECLARE_WAITQUEUE(wait, current);
 	const unsigned minor = iminor(file->f_dentry->d_inode);
+<<<<<<< HEAD
 	struct comedi_device_file_info *dev_file_info =
 	    comedi_get_device_file_info(minor);
 	struct comedi_device *dev = dev_file_info->device;
+=======
+	struct comedi_device_file_info *dev_file_info;
+	struct comedi_device *dev;
+	dev_file_info = comedi_get_device_file_info(minor);
+
+	if (dev_file_info == NULL)
+	        return -ENODEV;
+	dev = dev_file_info->device;
+	if (dev == NULL)
+	        return -ENODEV;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	if (!dev->attached) {
 		DPRINTK("no driver configured on comedi%i\n", dev->minor);
@@ -1589,7 +1685,11 @@ static ssize_t comedi_write(struct file *file, const char __user *buf,
 	}
 
 	s = comedi_get_write_subdevice(dev_file_info);
+<<<<<<< HEAD
 	if (s == NULL) {
+=======
+	if (s == NULL || s->async == NULL) {
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		retval = -EIO;
 		goto done;
 	}
@@ -1640,11 +1740,18 @@ static ssize_t comedi_write(struct file *file, const char __user *buf,
 				retval = -EAGAIN;
 				break;
 			}
+<<<<<<< HEAD
+=======
+			schedule();
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			if (signal_pending(current)) {
 				retval = -ERESTARTSYS;
 				break;
 			}
+<<<<<<< HEAD
 			schedule();
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			if (!s->busy)
 				break;
 			if (s->busy != file) {
@@ -1683,9 +1790,21 @@ static ssize_t comedi_read(struct file *file, char __user *buf, size_t nbytes,
 	int n, m, count = 0, retval = 0;
 	DECLARE_WAITQUEUE(wait, current);
 	const unsigned minor = iminor(file->f_dentry->d_inode);
+<<<<<<< HEAD
 	struct comedi_device_file_info *dev_file_info =
 	    comedi_get_device_file_info(minor);
 	struct comedi_device *dev = dev_file_info->device;
+=======
+	struct comedi_device_file_info *dev_file_info;
+	struct comedi_device *dev;
+	dev_file_info = comedi_get_device_file_info(minor);
+
+	if (dev_file_info == NULL)
+	        return -ENODEV;
+	dev = dev_file_info->device;
+	if (dev == NULL)
+	        return -ENODEV;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	if (!dev->attached) {
 		DPRINTK("no driver configured on comedi%i\n", dev->minor);
@@ -1694,7 +1813,11 @@ static ssize_t comedi_read(struct file *file, char __user *buf, size_t nbytes,
 	}
 
 	s = comedi_get_read_subdevice(dev_file_info);
+<<<<<<< HEAD
 	if (s == NULL) {
+=======
+	if (s == NULL || s->async == NULL) {
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		retval = -EIO;
 		goto done;
 	}
@@ -1741,11 +1864,18 @@ static ssize_t comedi_read(struct file *file, char __user *buf, size_t nbytes,
 				retval = -EAGAIN;
 				break;
 			}
+<<<<<<< HEAD
+=======
+			schedule();
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			if (signal_pending(current)) {
 				retval = -ERESTARTSYS;
 				break;
 			}
+<<<<<<< HEAD
 			schedule();
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			if (!s->busy) {
 				retval = 0;
 				break;
@@ -1794,6 +1924,11 @@ void do_become_nonbusy(struct comedi_device *dev, struct comedi_subdevice *s)
 	if (async) {
 		comedi_reset_async_buf(async);
 		async->inttrig = NULL;
+<<<<<<< HEAD
+=======
+		kfree(async->cmd.chanlist);
+		async->cmd.chanlist = NULL;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	} else {
 		printk(KERN_ERR
 		       "BUG: (?) do_become_nonbusy called with async=0\n");
@@ -1885,11 +2020,25 @@ ok:
 static int comedi_close(struct inode *inode, struct file *file)
 {
 	const unsigned minor = iminor(inode);
+<<<<<<< HEAD
 	struct comedi_device_file_info *dev_file_info =
 	    comedi_get_device_file_info(minor);
 	struct comedi_device *dev = dev_file_info->device;
 	struct comedi_subdevice *s = NULL;
 	int i;
+=======
+	struct comedi_subdevice *s = NULL;
+	int i;
+	struct comedi_device_file_info *dev_file_info;
+	struct comedi_device *dev;
+	dev_file_info = comedi_get_device_file_info(minor);
+
+	if (dev_file_info == NULL)
+	        return -ENODEV;
+	dev = dev_file_info->device;
+	if (dev == NULL)
+	        return -ENODEV;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	mutex_lock(&dev->mutex);
 
@@ -1923,10 +2072,22 @@ static int comedi_close(struct inode *inode, struct file *file)
 static int comedi_fasync(int fd, struct file *file, int on)
 {
 	const unsigned minor = iminor(file->f_dentry->d_inode);
+<<<<<<< HEAD
 	struct comedi_device_file_info *dev_file_info =
 	    comedi_get_device_file_info(minor);
 
 	struct comedi_device *dev = dev_file_info->device;
+=======
+	struct comedi_device_file_info *dev_file_info;
+	struct comedi_device *dev;
+	dev_file_info = comedi_get_device_file_info(minor);
+
+	if (dev_file_info == NULL)
+	        return -ENODEV;
+	dev = dev_file_info->device;
+	if (dev == NULL)
+	        return -ENODEV;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	return fasync_helper(fd, file, on, &dev->async_queue);
 }
@@ -2156,6 +2317,10 @@ int comedi_alloc_board_minor(struct device *hardware_device)
 		kfree(info);
 		return -ENOMEM;
 	}
+<<<<<<< HEAD
+=======
+	info->hardware_device = hardware_device;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	comedi_device_init(info->device);
 	spin_lock_irqsave(&comedi_file_info_table_lock, flags);
 	for (i = 0; i < COMEDI_NUM_BOARD_MINORS; ++i) {
@@ -2245,6 +2410,26 @@ void comedi_free_board_minor(unsigned minor)
 	}
 }
 
+<<<<<<< HEAD
+=======
+int comedi_find_board_minor(struct device *hardware_device)
+{
+	int minor;
+	struct comedi_device_file_info *info;
+
+	for (minor = 0; minor < COMEDI_NUM_BOARD_MINORS; minor++) {
+		spin_lock(&comedi_file_info_table_lock);
+		info = comedi_file_info_table[minor];
+		if (info && info->hardware_device == hardware_device) {
+			spin_unlock(&comedi_file_info_table_lock);
+			return minor;
+		}
+		spin_unlock(&comedi_file_info_table_lock);
+	}
+	return -ENODEV;
+}
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 int comedi_alloc_subdevice_minor(struct comedi_device *dev,
 				 struct comedi_subdevice *s)
 {

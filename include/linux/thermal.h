@@ -37,19 +37,25 @@ enum thermal_device_mode {
 	THERMAL_DEVICE_ENABLED,
 };
 
+<<<<<<< HEAD
 enum thermal_trip_activation_mode {
 	THERMAL_TRIP_ACTIVATION_DISABLED = 0,
 	THERMAL_TRIP_ACTIVATION_ENABLED,
 };
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 enum thermal_trip_type {
 	THERMAL_TRIP_ACTIVE = 0,
 	THERMAL_TRIP_PASSIVE,
 	THERMAL_TRIP_HOT,
 	THERMAL_TRIP_CRITICAL,
+<<<<<<< HEAD
 	THERMAL_TRIP_CONFIGURABLE_HI,
 	THERMAL_TRIP_CONFIGURABLE_LOW,
 	THERMAL_TRIP_CRITICAL_LOW,
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 };
 
 struct thermal_zone_device_ops {
@@ -64,12 +70,17 @@ struct thermal_zone_device_ops {
 		enum thermal_device_mode);
 	int (*get_trip_type) (struct thermal_zone_device *, int,
 		enum thermal_trip_type *);
+<<<<<<< HEAD
 	int (*activate_trip_type) (struct thermal_zone_device *, int,
 		enum thermal_trip_activation_mode);
 	int (*get_trip_temp) (struct thermal_zone_device *, int,
 			      unsigned long *);
 	int (*set_trip_temp) (struct thermal_zone_device *, int,
 			      long);
+=======
+	int (*get_trip_temp) (struct thermal_zone_device *, int,
+			      unsigned long *);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	int (*get_crit_temp) (struct thermal_zone_device *, unsigned long *);
 	int (*notify) (struct thermal_zone_device *, int,
 		       enum thermal_trip_type);

@@ -414,7 +414,11 @@ static struct irqaction psurge_irqaction = {
 
 static void __init smp_psurge_setup_cpu(int cpu_nr)
 {
+<<<<<<< HEAD
 	if (cpu_nr != 0)
+=======
+	if (cpu_nr != 0 || !psurge_start)
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		return;
 
 	/* reset the entry point so if we get another intr we won't

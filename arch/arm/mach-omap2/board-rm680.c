@@ -79,14 +79,29 @@ static struct twl4030_gpio_platform_data rm680_gpio_data = {
 	.pulldowns		= BIT(1) | BIT(2) | BIT(8) | BIT(15),
 };
 
+<<<<<<< HEAD
 static struct twl4030_platform_data rm680_twl_data = {
 	.gpio			= &rm680_gpio_data,
+=======
+static struct twl4030_usb_data rm680_usb_data = {
+	.usb_mode		= T2_USB_MODE_ULPI,
+};
+
+static struct twl4030_platform_data rm680_twl_data = {
+	.irq_base		= TWL4030_IRQ_BASE,
+	.irq_end		= TWL4030_IRQ_END,
+	.gpio			= &rm680_gpio_data,
+	.usb			= &rm680_usb_data,
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	/* add rest of the children here */
 };
 
 static void __init rm680_i2c_init(void)
 {
+<<<<<<< HEAD
 	omap3_pmic_get_config(&rm680_twl_data, TWL_COMMON_PDATA_USB, 0);
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	omap_pmic_init(1, 2900, "twl5031", INT_34XX_SYS_NIRQ, &rm680_twl_data);
 	omap_register_i2c_bus(2, 400, NULL, 0);
 	omap_register_i2c_bus(3, 400, NULL, 0);

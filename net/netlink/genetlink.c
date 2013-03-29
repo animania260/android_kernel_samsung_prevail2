@@ -525,7 +525,11 @@ static int genl_rcv_msg(struct sk_buff *skb, struct nlmsghdr *nlh)
 
 		genl_unlock();
 		err = netlink_dump_start(net->genl_sock, skb, nlh,
+<<<<<<< HEAD
 					 ops->dumpit, ops->done);
+=======
+					 ops->dumpit, ops->done, 0);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		genl_lock();
 		return err;
 	}

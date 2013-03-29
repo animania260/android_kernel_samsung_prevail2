@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 obj-y := msm_fb.o
 
 obj-$(CONFIG_FB_MSM_LOGO) += logo.o
@@ -167,3 +168,24 @@ obj-$(CONFIG_MSM_VIDC_720P) += vidc/
 
 clean:
 	rm *.o .*cmd
+=======
+
+# core framebuffer
+#
+obj-y := msm_fb.o
+
+# MDP DMA/PPP engine
+#
+obj-y += mdp.o mdp_scale_tables.o mdp_ppp.o
+
+# MDDI interface
+#
+obj-y += mddi.o
+
+# MDDI client/panel drivers
+#
+obj-y += mddi_client_dummy.o
+obj-y += mddi_client_toshiba.o
+obj-y += mddi_client_nt35399.o
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y

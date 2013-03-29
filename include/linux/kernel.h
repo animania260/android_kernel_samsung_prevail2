@@ -77,6 +77,22 @@
 }							\
 )
 
+<<<<<<< HEAD
+=======
+/*
+ * Multiplies an integer by a fraction, while avoiding unnecessary
+ * overflow or loss of precision.
+ */
+#define mult_frac(x, numer, denom)(			\
+{							\
+	typeof(x) quot = (x) / (denom);			\
+	typeof(x) rem  = (x) % (denom);			\
+	(quot * (numer)) + ((rem * (numer)) / (denom));	\
+}							\
+)
+
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #define _RET_IP_		(unsigned long)__builtin_return_address(0)
 #define _THIS_IP_  ({ __label__ __here; __here: (unsigned long)&&__here; })
 
@@ -736,7 +752,10 @@ extern int __build_bug_on_failed;
 # define REBUILD_DUE_TO_FTRACE_MCOUNT_RECORD
 #endif
 
+<<<<<<< HEAD
 /* To identify board information in panic logs, set this */
 extern char *mach_panic_string;
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #endif

@@ -77,7 +77,10 @@ static inline void init_completion(struct completion *x)
 }
 
 extern void wait_for_completion(struct completion *);
+<<<<<<< HEAD
 extern void wait_for_completion_io(struct completion *);
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 extern int wait_for_completion_interruptible(struct completion *x);
 extern int wait_for_completion_killable(struct completion *x);
 extern unsigned long wait_for_completion_timeout(struct completion *x,

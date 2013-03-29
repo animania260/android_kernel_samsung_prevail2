@@ -20,10 +20,13 @@ HEAD	= head.o
 OBJS	+= misc.o decompress.o
 FONTC	= $(srctree)/drivers/video/console/font_acorn_8x8.c
 
+<<<<<<< HEAD
 # string library code (-Os is enforced to keep it much smaller)
 OBJS		+= string.o
 CFLAGS_string.o	:= -Os
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #
 # Architecture dependencies
 #
@@ -87,6 +90,7 @@ suffix_$(CONFIG_KERNEL_GZIP) = gzip
 suffix_$(CONFIG_KERNEL_LZO)  = lzo
 suffix_$(CONFIG_KERNEL_LZMA) = lzma
 
+<<<<<<< HEAD
 # Borrowed libfdt files for the ATAG compatibility mode
 
 libfdt		:= fdt_rw.c fdt_ro.c fdt_wip.c fdt.c
@@ -110,12 +114,21 @@ targets       := vmlinux vmlinux.lds \
 
 # Make sure files are removed during clean
 extra-y       += piggy.gzip piggy.lzo piggy.lzma lib1funcs.S $(libfdt) $(libfdt_hdrs)
+=======
+targets       := vmlinux vmlinux.lds \
+		 piggy.$(suffix_y) piggy.$(suffix_y).o \
+		 font.o font.c head.o misc.o $(OBJS)
+
+# Make sure files are removed during clean
+extra-y       += piggy.gzip piggy.lzo piggy.lzma lib1funcs.S
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 ifeq ($(CONFIG_FUNCTION_TRACER),y)
 ORIG_CFLAGS := $(KBUILD_CFLAGS)
 KBUILD_CFLAGS = $(subst -pg, , $(ORIG_CFLAGS))
 endif
 
+<<<<<<< HEAD
 ccflags-y := -fpic -fno-builtin -I$(obj)
 asflags-y := -Wa,-march=all
 
@@ -123,6 +136,11 @@ asflags-y := -Wa,-march=all
 SIZEBIN := $(if $(shell which $(CROSS_COMPILE)size),$(CROSS_COMPILE)size,size)
 KBSS_SZ = $(shell $(SIZEBIN) $(obj)/../../../../vmlinux | awk 'END{print $$3}')
 LDFLAGS_vmlinux = --defsym _kernel_bss_size=$(KBSS_SZ)
+=======
+ccflags-y := -fpic -fno-builtin
+asflags-y := -Wa,-march=all
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 # Supply ZRELADDR to the decompressor via a linker symbol.
 ifneq ($(CONFIG_AUTO_ZRELADDR),y)
 LDFLAGS_vmlinux += --defsym zreladdr=$(ZRELADDR)
@@ -142,7 +160,11 @@ LDFLAGS_vmlinux += -T
 # For __aeabi_uidivmod
 lib1funcs = $(obj)/lib1funcs.o
 
+<<<<<<< HEAD
 $(obj)/lib1funcs.S: $(srctree)/arch/$(SRCARCH)/lib/lib1funcs.S
+=======
+$(obj)/lib1funcs.S: $(srctree)/arch/$(SRCARCH)/lib/lib1funcs.S FORCE
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	$(call cmd,shipped)
 
 # We need to prevent any GOTOFF relocs being used with references

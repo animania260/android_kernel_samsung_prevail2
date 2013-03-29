@@ -1177,7 +1177,12 @@ static bool DAC960_V1_EnableMemoryMailboxInterface(DAC960_Controller_T
   int TimeoutCounter;
   int i;
 
+<<<<<<< HEAD
   
+=======
+  memset(&CommandMailbox, 0, sizeof(DAC960_V1_CommandMailbox_T));
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
   if (pci_set_dma_mask(Controller->PCIDevice, DMA_BIT_MASK(32)))
 	return DAC960_Failure(Controller, "DMA mask out of range");
   Controller->BounceBufferLimit = DMA_BIT_MASK(32);
@@ -4627,7 +4632,12 @@ static void DAC960_V2_ProcessCompletedCommand(DAC960_Command_T *Command)
   DAC960_Controller_T *Controller = Command->Controller;
   DAC960_CommandType_T CommandType = Command->CommandType;
   DAC960_V2_CommandMailbox_T *CommandMailbox = &Command->V2.CommandMailbox;
+<<<<<<< HEAD
   DAC960_V2_IOCTL_Opcode_T CommandOpcode = CommandMailbox->Common.IOCTL_Opcode;
+=======
+  DAC960_V2_IOCTL_Opcode_T IOCTLOpcode = CommandMailbox->Common.IOCTL_Opcode;
+  DAC960_V2_CommandOpcode_T CommandOpcode = CommandMailbox->SCSI_10.CommandOpcode;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
   DAC960_V2_CommandStatus_T CommandStatus = Command->V2.CommandStatus;
 
   if (CommandType == DAC960_ReadCommand ||
@@ -4699,7 +4709,11 @@ static void DAC960_V2_ProcessCompletedCommand(DAC960_Command_T *Command)
     {
       if (Controller->ShutdownMonitoringTimer)
 	      return;
+<<<<<<< HEAD
       if (CommandOpcode == DAC960_V2_GetControllerInfo)
+=======
+      if (IOCTLOpcode == DAC960_V2_GetControllerInfo)
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	{
 	  DAC960_V2_ControllerInfo_T *NewControllerInfo =
 	    Controller->V2.NewControllerInformation;
@@ -4719,14 +4733,22 @@ static void DAC960_V2_ProcessCompletedCommand(DAC960_Command_T *Command)
 	  memcpy(ControllerInfo, NewControllerInfo,
 		 sizeof(DAC960_V2_ControllerInfo_T));
 	}
+<<<<<<< HEAD
       else if (CommandOpcode == DAC960_V2_GetEvent)
+=======
+      else if (IOCTLOpcode == DAC960_V2_GetEvent)
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	{
 	  if (CommandStatus == DAC960_V2_NormalCompletion) {
 	    DAC960_V2_ReportEvent(Controller, Controller->V2.Event);
 	  }
 	  Controller->V2.NextEventSequenceNumber++;
 	}
+<<<<<<< HEAD
       else if (CommandOpcode == DAC960_V2_GetPhysicalDeviceInfoValid &&
+=======
+      else if (IOCTLOpcode == DAC960_V2_GetPhysicalDeviceInfoValid &&
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	       CommandStatus == DAC960_V2_NormalCompletion)
 	{
 	  DAC960_V2_PhysicalDeviceInfo_T *NewPhysicalDeviceInfo =
@@ -4915,7 +4937,11 @@ static void DAC960_V2_ProcessCompletedCommand(DAC960_Command_T *Command)
 	  NewPhysicalDeviceInfo->LogicalUnit++;
 	  Controller->V2.PhysicalDeviceIndex++;
 	}
+<<<<<<< HEAD
       else if (CommandOpcode == DAC960_V2_GetPhysicalDeviceInfoValid)
+=======
+      else if (IOCTLOpcode == DAC960_V2_GetPhysicalDeviceInfoValid)
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	{
 	  unsigned int DeviceIndex;
 	  for (DeviceIndex = Controller->V2.PhysicalDeviceIndex;
@@ -4938,7 +4964,11 @@ static void DAC960_V2_ProcessCompletedCommand(DAC960_Command_T *Command)
 	    }
 	  Controller->V2.NeedPhysicalDeviceInformation = false;
 	}
+<<<<<<< HEAD
       else if (CommandOpcode == DAC960_V2_GetLogicalDeviceInfoValid &&
+=======
+      else if (IOCTLOpcode == DAC960_V2_GetLogicalDeviceInfoValid &&
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	       CommandStatus == DAC960_V2_NormalCompletion)
 	{
 	  DAC960_V2_LogicalDeviceInfo_T *NewLogicalDeviceInfo =
@@ -5065,7 +5095,11 @@ static void DAC960_V2_ProcessCompletedCommand(DAC960_Command_T *Command)
 			 [LogicalDeviceNumber] = true;
 	  NewLogicalDeviceInfo->LogicalDeviceNumber++;
 	}
+<<<<<<< HEAD
       else if (CommandOpcode == DAC960_V2_GetLogicalDeviceInfoValid)
+=======
+      else if (IOCTLOpcode == DAC960_V2_GetLogicalDeviceInfoValid)
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	{
 	  int LogicalDriveNumber;
 	  for (LogicalDriveNumber = 0;

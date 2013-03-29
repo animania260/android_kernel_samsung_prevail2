@@ -1045,6 +1045,11 @@ rollback:
  */
 int dev_set_alias(struct net_device *dev, const char *alias, size_t len)
 {
+<<<<<<< HEAD
+=======
+	char *new_ifalias;
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	ASSERT_RTNL();
 
 	if (len >= IFALIASZ)
@@ -1058,9 +1063,16 @@ int dev_set_alias(struct net_device *dev, const char *alias, size_t len)
 		return 0;
 	}
 
+<<<<<<< HEAD
 	dev->ifalias = krealloc(dev->ifalias, len + 1, GFP_KERNEL);
 	if (!dev->ifalias)
 		return -ENOMEM;
+=======
+	new_ifalias = krealloc(dev->ifalias, len + 1, GFP_KERNEL);
+	if (!new_ifalias)
+		return -ENOMEM;
+	dev->ifalias = new_ifalias;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	strlcpy(dev->ifalias, alias, len+1);
 	return len;
@@ -1163,6 +1175,10 @@ static int __dev_open(struct net_device *dev)
 		net_dmaengine_get();
 		dev_set_rx_mode(dev);
 		dev_activate(dev);
+<<<<<<< HEAD
+=======
+		add_device_randomness(dev->dev_addr, dev->addr_len);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	}
 
 	return ret;
@@ -1406,14 +1422,43 @@ EXPORT_SYMBOL(register_netdevice_notifier);
  *	register_netdevice_notifier(). The notifier is unlinked into the
  *	kernel structures and may then be reused. A negative errno code
  *	is returned on a failure.
+<<<<<<< HEAD
+=======
+ *
+ * 	After unregistering unregister and down device events are synthesized
+ *	for all devices on the device list to the removed notifier to remove
+ *	the need for special case cleanup code.
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
  */
 
 int unregister_netdevice_notifier(struct notifier_block *nb)
 {
+<<<<<<< HEAD
+=======
+	struct net_device *dev;
+	struct net *net;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	int err;
 
 	rtnl_lock();
 	err = raw_notifier_chain_unregister(&netdev_chain, nb);
+<<<<<<< HEAD
+=======
+	if (err)
+		goto unlock;
+
+	for_each_net(net) {
+		for_each_netdev(net, dev) {
+			if (dev->flags & IFF_UP) {
+				nb->notifier_call(nb, NETDEV_GOING_DOWN, dev);
+				nb->notifier_call(nb, NETDEV_DOWN, dev);
+			}
+			nb->notifier_call(nb, NETDEV_UNREGISTER, dev);
+			nb->notifier_call(nb, NETDEV_UNREGISTER_BATCH, dev);
+		}
+	}
+unlock:
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	rtnl_unlock();
 	return err;
 }
@@ -1513,10 +1558,21 @@ int dev_forward_skb(struct net_device *dev, struct sk_buff *skb)
 		kfree_skb(skb);
 		return NET_RX_DROP;
 	}
+<<<<<<< HEAD
 	skb_set_dev(skb, dev);
 	skb->tstamp.tv64 = 0;
 	skb->pkt_type = PACKET_HOST;
 	skb->protocol = eth_type_trans(skb, dev);
+=======
+	skb->dev = dev;
+	skb_dst_drop(skb);
+	skb->tstamp.tv64 = 0;
+	skb->pkt_type = PACKET_HOST;
+	skb->protocol = eth_type_trans(skb, dev);
+	skb->mark = 0;
+	secpath_reset(skb);
+	nf_reset(skb);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	return netif_rx(skb);
 }
 EXPORT_SYMBOL_GPL(dev_forward_skb);
@@ -1771,6 +1827,7 @@ void netif_device_attach(struct net_device *dev)
 }
 EXPORT_SYMBOL(netif_device_attach);
 
+<<<<<<< HEAD
 /**
  * skb_dev_set -- assign a new device to a buffer
  * @skb: buffer for the new device
@@ -1801,6 +1858,8 @@ void skb_set_dev(struct sk_buff *skb, struct net_device *dev)
 EXPORT_SYMBOL(skb_set_dev);
 #endif /* CONFIG_NET_NS */
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 /*
  * Invalidate hardware checksum when packet is to be mangled, and
  * complete checksum manually on outgoing path.
@@ -2040,7 +2099,12 @@ static bool can_checksum_protocol(unsigned long features, __be16 protocol)
 
 static u32 harmonize_features(struct sk_buff *skb, __be16 protocol, u32 features)
 {
+<<<<<<< HEAD
 	if (!can_checksum_protocol(features, protocol)) {
+=======
+	if (skb->ip_summed != CHECKSUM_NONE &&
+	    !can_checksum_protocol(features, protocol)) {
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		features &= ~NETIF_F_ALL_CSUM;
 		features &= ~NETIF_F_SG;
 	} else if (illegal_highdma(skb->dev, skb)) {
@@ -2055,6 +2119,12 @@ u32 netif_skb_features(struct sk_buff *skb)
 	__be16 protocol = skb->protocol;
 	u32 features = skb->dev->features;
 
+<<<<<<< HEAD
+=======
+	if (skb_shinfo(skb)->gso_segs > skb->dev->gso_max_segs)
+		features &= ~NETIF_F_GSO_MASK;
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	if (protocol == htons(ETH_P_8021Q)) {
 		struct vlan_ethhdr *veh = (struct vlan_ethhdr *)skb->data;
 		protocol = veh->h_vlan_encapsulated_proto;
@@ -2558,6 +2628,7 @@ __u32 __skb_get_rxhash(struct sk_buff *skb)
 	poff = proto_ports_offset(ip_proto);
 	if (poff >= 0) {
 		nhoff += ihl * 4 + poff;
+<<<<<<< HEAD
 		if (pskb_may_pull(skb, nhoff + 4)) {
 			ports.v32 = * (__force u32 *) (skb->data + nhoff);
 			if (ports.v16[1] < ports.v16[0])
@@ -2568,6 +2639,19 @@ __u32 __skb_get_rxhash(struct sk_buff *skb)
 	/* get a consistent hash (same value on both flow directions) */
 	if (addr2 < addr1)
 		swap(addr1, addr2);
+=======
+		if (pskb_may_pull(skb, nhoff + 4))
+			ports.v32 = * (__force u32 *) (skb->data + nhoff);
+	}
+
+	/* get a consistent hash (same value on both flow directions) */
+	if (addr2 < addr1 ||
+	    (addr2 == addr1 &&
+	     ports.v16[1] < ports.v16[0])) {
+		swap(addr1, addr2);
+		swap(ports.v16[0], ports.v16[1]);
+	}
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	hash = jhash_3words(addr1, addr2, ports.v32, hashrnd);
 	if (!hash)
@@ -2703,8 +2787,15 @@ static int get_rps_cpu(struct net_device *dev, struct sk_buff *skb,
 		if (unlikely(tcpu != next_cpu) &&
 		    (tcpu == RPS_NO_CPU || !cpu_online(tcpu) ||
 		     ((int)(per_cpu(softnet_data, tcpu).input_queue_head -
+<<<<<<< HEAD
 		      rflow->last_qtail)) >= 0))
 			rflow = set_rps_cpu(dev, skb, rflow, next_cpu);
+=======
+		      rflow->last_qtail)) >= 0)) {
+			tcpu = next_cpu;
+			rflow = set_rps_cpu(dev, skb, rflow, next_cpu);
+		}
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 		if (tcpu != RPS_NO_CPU && cpu_online(tcpu)) {
 			*rflowp = rflow;
@@ -3160,6 +3251,10 @@ ncls:
 		}
 		switch (rx_handler(&skb)) {
 		case RX_HANDLER_CONSUMED:
+<<<<<<< HEAD
+=======
+			ret = NET_RX_SUCCESS;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			goto out;
 		case RX_HANDLER_ANOTHER:
 			goto another_round;
@@ -3434,14 +3529,28 @@ static inline gro_result_t
 __napi_gro_receive(struct napi_struct *napi, struct sk_buff *skb)
 {
 	struct sk_buff *p;
+<<<<<<< HEAD
+=======
+	unsigned int maclen = skb->dev->hard_header_len;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	for (p = napi->gro_list; p; p = p->next) {
 		unsigned long diffs;
 
 		diffs = (unsigned long)p->dev ^ (unsigned long)skb->dev;
 		diffs |= p->vlan_tci ^ skb->vlan_tci;
+<<<<<<< HEAD
 		diffs |= compare_ether_header(skb_mac_header(p),
 					      skb_gro_mac_header(skb));
+=======
+		if (maclen == ETH_HLEN)
+			diffs |= compare_ether_header(skb_mac_header(p),
+						      skb_gro_mac_header(skb));
+		else if (!diffs)
+			diffs = memcmp(skb_mac_header(p),
+				       skb_gro_mac_header(skb),
+				       maclen);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		NAPI_GRO_CB(p)->same_flow = !diffs;
 		NAPI_GRO_CB(p)->flush = 0;
 	}
@@ -3498,7 +3607,12 @@ EXPORT_SYMBOL(napi_gro_receive);
 static void napi_reuse_skb(struct napi_struct *napi, struct sk_buff *skb)
 {
 	__skb_pull(skb, skb_headlen(skb));
+<<<<<<< HEAD
 	skb_reserve(skb, NET_IP_ALIGN - skb_headroom(skb));
+=======
+	/* restore the reserve we had after netdev_alloc_skb_ip_align() */
+	skb_reserve(skb, NET_SKB_PAD + NET_IP_ALIGN - skb_headroom(skb));
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	skb->vlan_tci = 0;
 	skb->dev = napi->dev;
 	skb->skb_iif = 0;
@@ -4729,6 +4843,10 @@ int dev_set_mac_address(struct net_device *dev, struct sockaddr *sa)
 	err = ops->ndo_set_mac_address(dev, sa);
 	if (!err)
 		call_netdevice_notifiers(NETDEV_CHANGEADDR, dev);
+<<<<<<< HEAD
+=======
+	add_device_randomness(dev->dev_addr, dev->addr_len);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	return err;
 }
 EXPORT_SYMBOL(dev_set_mac_address);
@@ -5506,6 +5624,10 @@ int register_netdevice(struct net_device *dev)
 	dev_init_scheduler(dev);
 	dev_hold(dev);
 	list_netdevice(dev);
+<<<<<<< HEAD
+=======
+	add_device_randomness(dev->dev_addr, dev->addr_len);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	/* Notify protocols, that a new device appeared. */
 	ret = call_netdevice_notifiers(NETDEV_REGISTER, dev);
@@ -5866,6 +5988,10 @@ struct net_device *alloc_netdev_mqs(int sizeof_priv, const char *name,
 	dev_net_set(dev, &init_net);
 
 	dev->gso_max_size = GSO_MAX_SIZE;
+<<<<<<< HEAD
+=======
+	dev->gso_max_segs = GSO_MAX_SEGS;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	INIT_LIST_HEAD(&dev->ethtool_ntuple_list.list);
 	dev->ethtool_ntuple_list.count = 0;
@@ -6105,6 +6231,10 @@ int dev_change_net_namespace(struct net_device *dev, struct net *net, const char
 	*/
 	call_netdevice_notifiers(NETDEV_UNREGISTER, dev);
 	call_netdevice_notifiers(NETDEV_UNREGISTER_BATCH, dev);
+<<<<<<< HEAD
+=======
+	rtmsg_ifinfo(RTM_DELLINK, dev, ~0U);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	/*
 	 *	Flush the unicast and multicast chains
@@ -6248,7 +6378,12 @@ static struct hlist_head *netdev_create_hash(void)
 /* Initialize per network namespace state */
 static int __net_init netdev_init(struct net *net)
 {
+<<<<<<< HEAD
 	INIT_LIST_HEAD(&net->dev_base_head);
+=======
+	if (net != &init_net)
+		INIT_LIST_HEAD(&net->dev_base_head);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	net->dev_name_head = netdev_create_hash();
 	if (net->dev_name_head == NULL)

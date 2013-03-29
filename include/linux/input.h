@@ -658,7 +658,11 @@ struct input_keymap_entry {
 #define KEY_NUMERIC_9		0x209
 #define KEY_NUMERIC_STAR	0x20a
 #define KEY_NUMERIC_POUND	0x20b
+<<<<<<< HEAD
 #define KEY_CAMERA_SNAPSHOT	0x2fe
+=======
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #define KEY_CAMERA_FOCUS	0x210
 #define KEY_WPS_BUTTON		0x211	/* WiFi Protected Setup key */
 
@@ -812,8 +816,11 @@ struct input_keymap_entry {
 #define SW_KEYPAD_SLIDE		0x0a  /* set = keypad slide out */
 #define SW_FRONT_PROXIMITY	0x0b  /* set = front proximity sensor active */
 #define SW_ROTATE_LOCK		0x0c  /* set = rotate locked/disabled */
+<<<<<<< HEAD
 #define SW_HPHL_OVERCURRENT	0x0d  /* set = over current on left hph */
 #define SW_HPHR_OVERCURRENT	0x0e  /* set = over current on right hph */
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #define SW_MAX			0x0f
 #define SW_CNT			(SW_MAX+1)
 
@@ -1252,7 +1259,11 @@ struct input_dev {
 
 	unsigned int repeat_key;
 	struct timer_list timer;
+<<<<<<< HEAD
 	int abs[ABS_CNT];
+=======
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	int rep[REP_CNT];
 
 	struct input_mt_slot *mt;

@@ -1045,11 +1045,27 @@ static int snd_pcm_dev_disconnect(struct snd_device *device)
 	if (list_empty(&pcm->list))
 		goto unlock;
 
+<<<<<<< HEAD
 	list_del_init(&pcm->list);
 	for (cidx = 0; cidx < 2; cidx++)
 		for (substream = pcm->streams[cidx].substream; substream; substream = substream->next)
 			if (substream->runtime)
 				substream->runtime->status->state = SNDRV_PCM_STATE_DISCONNECTED;
+=======
+	mutex_lock(&pcm->open_mutex);
+	wake_up(&pcm->open_wait);
+	list_del_init(&pcm->list);
+	for (cidx = 0; cidx < 2; cidx++)
+		for (substream = pcm->streams[cidx].substream; substream; substream = substream->next) {
+			snd_pcm_stream_lock_irq(substream);
+			if (substream->runtime) {
+				substream->runtime->status->state = SNDRV_PCM_STATE_DISCONNECTED;
+				wake_up(&substream->runtime->sleep);
+				wake_up(&substream->runtime->tsleep);
+			}
+			snd_pcm_stream_unlock_irq(substream);
+		}
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	list_for_each_entry(notify, &snd_pcm_notify_list, list) {
 		notify->n_disconnect(pcm);
 	}
@@ -1065,6 +1081,10 @@ static int snd_pcm_dev_disconnect(struct snd_device *device)
 		}
 		snd_unregister_device(devtype, pcm->card, pcm->device);
 	}
+<<<<<<< HEAD
+=======
+	mutex_unlock(&pcm->open_mutex);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
  unlock:
 	mutex_unlock(&register_mutex);
 	return 0;

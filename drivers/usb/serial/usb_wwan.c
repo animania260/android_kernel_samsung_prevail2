@@ -406,10 +406,13 @@ int usb_wwan_open(struct tty_struct *tty, struct usb_serial_port *port)
 	portdata = usb_get_serial_port_data(port);
 	intfdata = serial->private;
 
+<<<<<<< HEAD
 	/* explicitly set the driver mode to raw */
 	tty->raw = 1;
 	tty->real_raw = 1;
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	dbg("%s", __func__);
 
 	/* Start reading from the IN endpoint */

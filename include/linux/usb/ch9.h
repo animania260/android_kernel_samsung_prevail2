@@ -146,10 +146,13 @@
 
 #define USB_ENDPOINT_HALT		0	/* IN/OUT will STALL */
 
+<<<<<<< HEAD
 #define OTG_STATUS_SELECTOR	0xF000
 #define THOST_REQ_POLL		2000    /* msec */
 #define HOST_REQUEST_FLAG	0
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 /* Bit array elements as returned by the USB_REQ_GET_STATUS request. */
 #define USB_DEV_STAT_U1_ENABLED		2	/* transition into U1 state */
 #define USB_DEV_STAT_U2_ENABLED		3	/* transition into U2 state */
@@ -587,8 +590,31 @@ struct usb_ss_ep_comp_descriptor {
 } __attribute__ ((packed));
 
 #define USB_DT_SS_EP_COMP_SIZE		6
+<<<<<<< HEAD
 /* Bits 4:0 of bmAttributes if this is a bulk endpoint */
 #define USB_SS_MAX_STREAMS(p)		(1 << ((p) & 0x1f))
+=======
+
+/* Bits 4:0 of bmAttributes if this is a bulk endpoint */
+static inline int
+usb_ss_max_streams(const struct usb_ss_ep_comp_descriptor *comp)
+{
+	int		max_streams;
+
+	if (!comp)
+		return 0;
+
+	max_streams = comp->bmAttributes & 0x1f;
+
+	if (!max_streams)
+		return 0;
+
+	max_streams = 1 << max_streams;
+
+	return max_streams;
+}
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 /* Bits 1:0 of bmAttributes if this is an isoc endpoint */
 #define USB_SS_MULT(p)			(1 + ((p) & 0x3))
 

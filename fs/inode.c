@@ -369,11 +369,17 @@ EXPORT_SYMBOL_GPL(inode_sb_list_add);
 
 static inline void inode_sb_list_del(struct inode *inode)
 {
+<<<<<<< HEAD
 	if (!list_empty(&inode->i_sb_list)) {
 		spin_lock(&inode_sb_list_lock);
 		list_del_init(&inode->i_sb_list);
 		spin_unlock(&inode_sb_list_lock);
 	}
+=======
+	spin_lock(&inode_sb_list_lock);
+	list_del_init(&inode->i_sb_list);
+	spin_unlock(&inode_sb_list_lock);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 static unsigned long hash(struct super_block *sb, unsigned long hashval)
@@ -845,6 +851,7 @@ unsigned int get_next_ino(void)
 EXPORT_SYMBOL(get_next_ino);
 
 /**
+<<<<<<< HEAD
  *	new_inode_pseudo 	- obtain an inode
  *	@sb: superblock
  *
@@ -868,6 +875,8 @@ struct inode *new_inode_pseudo(struct super_block *sb)
 }
 
 /**
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
  *	new_inode 	- obtain an inode
  *	@sb: superblock
  *
@@ -885,9 +894,19 @@ struct inode *new_inode(struct super_block *sb)
 
 	spin_lock_prefetch(&inode_sb_list_lock);
 
+<<<<<<< HEAD
 	inode = new_inode_pseudo(sb);
 	if (inode)
 		inode_sb_list_add(inode);
+=======
+	inode = alloc_inode(sb);
+	if (inode) {
+		spin_lock(&inode->i_lock);
+		inode->i_state = 0;
+		spin_unlock(&inode->i_lock);
+		inode_sb_list_add(inode);
+	}
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	return inode;
 }
 EXPORT_SYMBOL(new_inode);

@@ -49,7 +49,14 @@ ecryptfs_miscdev_poll(struct file *file, poll_table *pt)
 	mutex_lock(&ecryptfs_daemon_hash_mux);
 	/* TODO: Just use file->private_data? */
 	rc = ecryptfs_find_daemon_by_euid(&daemon, euid, current_user_ns());
+<<<<<<< HEAD
 	BUG_ON(rc || !daemon);
+=======
+	if (rc || !daemon) {
+		mutex_unlock(&ecryptfs_daemon_hash_mux);
+		return -EINVAL;
+	}
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	mutex_lock(&daemon->mux);
 	mutex_unlock(&ecryptfs_daemon_hash_mux);
 	if (daemon->flags & ECRYPTFS_DAEMON_ZOMBIE) {
@@ -122,6 +129,10 @@ ecryptfs_miscdev_open(struct inode *inode, struct file *file)
 		goto out_unlock_daemon;
 	}
 	daemon->flags |= ECRYPTFS_DAEMON_MISCDEV_OPEN;
+<<<<<<< HEAD
+=======
+	file->private_data = daemon;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	atomic_inc(&ecryptfs_num_miscdev_opens);
 out_unlock_daemon:
 	mutex_unlock(&daemon->mux);
@@ -152,9 +163,15 @@ ecryptfs_miscdev_release(struct inode *inode, struct file *file)
 
 	mutex_lock(&ecryptfs_daemon_hash_mux);
 	rc = ecryptfs_find_daemon_by_euid(&daemon, euid, current_user_ns());
+<<<<<<< HEAD
 	BUG_ON(rc || !daemon);
 	mutex_lock(&daemon->mux);
 	BUG_ON(daemon->pid != task_pid(current));
+=======
+	if (rc || !daemon)
+		daemon = file->private_data;
+	mutex_lock(&daemon->mux);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	BUG_ON(!(daemon->flags & ECRYPTFS_DAEMON_MISCDEV_OPEN));
 	daemon->flags &= ~ECRYPTFS_DAEMON_MISCDEV_OPEN;
 	atomic_dec(&ecryptfs_num_miscdev_opens);
@@ -191,6 +208,7 @@ int ecryptfs_send_miscdev(char *data, size_t data_size,
 			  struct ecryptfs_msg_ctx *msg_ctx, u8 msg_type,
 			  u16 msg_flags, struct ecryptfs_daemon *daemon)
 {
+<<<<<<< HEAD
 	int rc = 0;
 
 	mutex_lock(&msg_ctx->mux);
@@ -203,11 +221,26 @@ int ecryptfs_send_miscdev(char *data, size_t data_size,
 		       (sizeof(*msg_ctx->msg) + data_size));
 		goto out_unlock;
 	}
+=======
+	struct ecryptfs_message *msg;
+
+	msg = kmalloc((sizeof(*msg) + data_size), GFP_KERNEL);
+	if (!msg) {
+		printk(KERN_ERR "%s: Out of memory whilst attempting "
+		       "to kmalloc(%zd, GFP_KERNEL)\n", __func__,
+		       (sizeof(*msg) + data_size));
+		return -ENOMEM;
+	}
+
+	mutex_lock(&msg_ctx->mux);
+	msg_ctx->msg = msg;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	msg_ctx->msg->index = msg_ctx->index;
 	msg_ctx->msg->data_len = data_size;
 	msg_ctx->type = msg_type;
 	memcpy(msg_ctx->msg->data, data, data_size);
 	msg_ctx->msg_size = (sizeof(*msg_ctx->msg) + data_size);
+<<<<<<< HEAD
 	mutex_lock(&daemon->mux);
 	list_add_tail(&msg_ctx->daemon_out_list, &daemon->msg_ctx_out_queue);
 	daemon->num_queued_msg_ctx++;
@@ -216,6 +249,17 @@ int ecryptfs_send_miscdev(char *data, size_t data_size,
 out_unlock:
 	mutex_unlock(&msg_ctx->mux);
 	return rc;
+=======
+	list_add_tail(&msg_ctx->daemon_out_list, &daemon->msg_ctx_out_queue);
+	mutex_unlock(&msg_ctx->mux);
+
+	mutex_lock(&daemon->mux);
+	daemon->num_queued_msg_ctx++;
+	wake_up_interruptible(&daemon->wait);
+	mutex_unlock(&daemon->mux);
+
+	return 0;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 /**
@@ -246,8 +290,21 @@ ecryptfs_miscdev_read(struct file *file, char __user *buf, size_t count,
 	mutex_lock(&ecryptfs_daemon_hash_mux);
 	/* TODO: Just use file->private_data? */
 	rc = ecryptfs_find_daemon_by_euid(&daemon, euid, current_user_ns());
+<<<<<<< HEAD
 	BUG_ON(rc || !daemon);
 	mutex_lock(&daemon->mux);
+=======
+	if (rc || !daemon) {
+		mutex_unlock(&ecryptfs_daemon_hash_mux);
+		return -EINVAL;
+	}
+	mutex_lock(&daemon->mux);
+	if (task_pid(current) != daemon->pid) {
+		mutex_unlock(&daemon->mux);
+		mutex_unlock(&ecryptfs_daemon_hash_mux);
+		return -EPERM;
+	}
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	if (daemon->flags & ECRYPTFS_DAEMON_ZOMBIE) {
 		rc = 0;
 		mutex_unlock(&ecryptfs_daemon_hash_mux);
@@ -284,9 +341,12 @@ check_list:
 		 * message from the queue; try again */
 		goto check_list;
 	}
+<<<<<<< HEAD
 	BUG_ON(euid != daemon->euid);
 	BUG_ON(current_user_ns() != daemon->user_ns);
 	BUG_ON(task_pid(current) != daemon->pid);
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	msg_ctx = list_first_entry(&daemon->msg_ctx_out_queue,
 				   struct ecryptfs_msg_ctx, daemon_out_list);
 	BUG_ON(!msg_ctx);
@@ -409,11 +469,55 @@ ecryptfs_miscdev_write(struct file *file, const char __user *buf,
 	ssize_t sz = 0;
 	char *data;
 	uid_t euid = current_euid();
+<<<<<<< HEAD
 	int rc;
 
 	if (count == 0)
 		goto out;
 
+=======
+	unsigned char packet_size_peek[3];
+	int rc;
+
+	if (count == 0) {
+		goto out;
+	} else if (count == (1 + 4)) {
+		/* Likely a harmless MSG_HELO or MSG_QUIT - no packet length */
+		goto memdup;
+	} else if (count < (1 + 4 + 1)
+		   || count > (1 + 4 + 2 + sizeof(struct ecryptfs_message) + 4
+			       + ECRYPTFS_MAX_ENCRYPTED_KEY_BYTES)) {
+		printk(KERN_WARNING "%s: Acceptable packet size range is "
+		       "[%d-%lu], but amount of data written is [%zu].",
+		       __func__, (1 + 4 + 1),
+		       (1 + 4 + 2 + sizeof(struct ecryptfs_message) + 4
+			+ ECRYPTFS_MAX_ENCRYPTED_KEY_BYTES), count);
+		return -EINVAL;
+	}
+
+	if (copy_from_user(packet_size_peek, (buf + 1 + 4),
+			   sizeof(packet_size_peek))) {
+		printk(KERN_WARNING "%s: Error while inspecting packet size\n",
+		       __func__);
+		return -EFAULT;
+	}
+
+	rc = ecryptfs_parse_packet_length(packet_size_peek, &packet_size,
+					  &packet_size_length);
+	if (rc) {
+		printk(KERN_WARNING "%s: Error parsing packet length; "
+		       "rc = [%d]\n", __func__, rc);
+		return rc;
+	}
+
+	if ((1 + 4 + packet_size_length + packet_size) != count) {
+		printk(KERN_WARNING "%s: Invalid packet size [%zu]\n", __func__,
+		       packet_size);
+		return -EINVAL;
+	}
+
+memdup:
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	data = memdup_user(buf, count);
 	if (IS_ERR(data)) {
 		printk(KERN_ERR "%s: memdup_user returned error [%ld]\n",
@@ -435,6 +539,7 @@ ecryptfs_miscdev_write(struct file *file, const char __user *buf,
 		}
 		memcpy(&counter_nbo, &data[i], 4);
 		seq = be32_to_cpu(counter_nbo);
+<<<<<<< HEAD
 		i += 4;
 		rc = ecryptfs_parse_packet_length(&data[i], &packet_size,
 						  &packet_size_length);
@@ -452,6 +557,9 @@ ecryptfs_miscdev_write(struct file *file, const char __user *buf,
 			       (1 + packet_size_length + packet_size), count);
 			goto out_free;
 		}
+=======
+		i += 4 + packet_size_length;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		rc = ecryptfs_miscdev_response(&data[i], packet_size,
 					       euid, current_user_ns(),
 					       task_pid(current), seq);

@@ -431,7 +431,11 @@ s3c2410_dma_canload(struct s3c2410_dma_chan *chan)
  * when necessary.
 */
 
+<<<<<<< HEAD
 int s3c2410_dma_enqueue(unsigned int channel, void *id,
+=======
+int s3c2410_dma_enqueue(enum dma_ch channel, void *id,
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			dma_addr_t data, int size)
 {
 	struct s3c2410_dma_chan *chan = s3c_dma_lookup_channel(channel);
@@ -1249,7 +1253,11 @@ static void s3c2410_dma_resume(void)
 	struct s3c2410_dma_chan *cp = s3c2410_chans + dma_channels - 1;
 	int channel;
 
+<<<<<<< HEAD
 	for (channel = dma_channels - 1; channel >= 0; cp++, channel--)
+=======
+	for (channel = dma_channels - 1; channel >= 0; cp--, channel--)
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		s3c2410_dma_resume_chan(cp);
 }
 

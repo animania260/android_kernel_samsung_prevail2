@@ -299,11 +299,18 @@ static struct snd_pcm_ops psc_dma_ops = {
 };
 
 static u64 psc_dma_dmamask = 0xffffffff;
+<<<<<<< HEAD
 static int psc_dma_new(struct snd_soc_pcm_runtime *rtd)
 {
 	struct snd_card *card = rtd->card->snd_card;
 	struct snd_soc_dai *dai = rtd->cpu_dai;
 	struct snd_pcm *pcm = rtd->pcm;
+=======
+static int psc_dma_new(struct snd_card *card, struct snd_soc_dai *dai,
+			   struct snd_pcm *pcm)
+{
+	struct snd_soc_pcm_runtime *rtd = pcm->private_data;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	struct psc_dma *psc_dma = snd_soc_dai_get_drvdata(rtd->cpu_dai);
 	size_t size = psc_dma_hardware.buffer_bytes_max;
 	int rc = 0;

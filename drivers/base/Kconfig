@@ -168,6 +168,7 @@ config SYS_HYPERVISOR
 	bool
 	default n
 
+<<<<<<< HEAD
 config GENLOCK
 	bool "Enable a generic cross-process locking mechanism"
 	depends on ANON_INODES
@@ -182,4 +183,6 @@ config GENLOCK_MISCDEVICE
 	  Create a miscdevice for the purposes of allowing userspace to create
 	  and interact with locks created using genlock.
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 endmenu

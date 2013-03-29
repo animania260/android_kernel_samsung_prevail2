@@ -93,10 +93,13 @@ do {									\
 			"memory");					\
 } while (0)
 
+<<<<<<< HEAD
 /*
  * disable hlt during certain critical i/o operations
  */
 #define HAVE_DISABLE_HLT
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #else
 
 /* frame pointer must be last for get_wchan */
@@ -392,9 +395,12 @@ static inline void clflush(volatile void *__p)
 
 #define nop() asm volatile ("nop")
 
+<<<<<<< HEAD
 void disable_hlt(void);
 void enable_hlt(void);
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 void cpu_idle_wait(void);
 
 extern unsigned long arch_align_stack(unsigned long sp);

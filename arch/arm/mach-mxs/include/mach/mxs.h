@@ -30,6 +30,10 @@
  */
 #define cpu_is_mx23()		(					\
 		machine_is_mx23evk() ||					\
+<<<<<<< HEAD
+=======
+		machine_is_stmp378x() ||				\
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		0)
 #define cpu_is_mx28()		(					\
 		machine_is_mx28evk() ||					\

@@ -458,7 +458,11 @@ config SERIAL_SAMSUNG_UARTS
 	int
 	depends on ARM && PLAT_SAMSUNG
 	default 2 if ARCH_S3C2400
+<<<<<<< HEAD
 	default 6 if ARCH_S5P6450
+=======
+	default 6 if CPU_S5P6450
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	default 4 if SERIAL_SAMSUNG_UARTS_4
 	default 3
 	help
@@ -1308,6 +1312,7 @@ config SERIAL_MSM_HS
 	  Choose M here to compile it as a module. The module will be
 	  called msm_serial_hs.
 
+<<<<<<< HEAD
 config SERIAL_MSM_CLOCK_CONTROL
 	bool "Allow tty clients to make clock requests to msm uarts."
 	depends on SERIAL_MSM=y
@@ -1346,6 +1351,8 @@ config SERIAL_BCM_BT_LPM
 	help
 	  Select this module for Broadcom Bluetooth low power management.
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 config SERIAL_VT8500
 	bool "VIA VT8500 on-chip serial port support"
 	depends on ARM && ARCH_VT8500
@@ -1623,7 +1630,11 @@ config SERIAL_IFX6X60
 	  Support for the IFX6x60 modem devices on Intel MID platforms.
 
 config SERIAL_PCH_UART
+<<<<<<< HEAD
 	tristate "Intel EG20T PCH / OKI SEMICONDUCTOR IOH(ML7213/ML7223) UART"
+=======
+	tristate "Intel EG20T PCH/LAPIS Semicon IOH(ML7213/ML7223/ML7831) UART"
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	depends on PCI
 	select SERIAL_CORE
 	help
@@ -1631,12 +1642,21 @@ config SERIAL_PCH_UART
 	  which is an IOH(Input/Output Hub) for x86 embedded processor.
 	  Enabling PCH_DMA, this PCH UART works as DMA mode.
 
+<<<<<<< HEAD
 	  This driver also can be used for OKI SEMICONDUCTOR IOH(Input/
 	  Output Hub), ML7213 and ML7223.
 	  ML7213 IOH is for IVI(In-Vehicle Infotainment) use and ML7223 IOH is
 	  for MP(Media Phone) use.
 	  ML7213/ML7223 is companion chip for Intel Atom E6xx series.
 	  ML7213/ML7223 is completely compatible for Intel EG20T PCH.
+=======
+	  This driver also can be used for LAPIS Semiconductor IOH(Input/
+	  Output Hub), ML7213, ML7223 and ML7831.
+	  ML7213 IOH is for IVI(In-Vehicle Infotainment) use, ML7223 IOH is
+	  for MP(Media Phone) use and ML7831 IOH is for general purpose use.
+	  ML7213/ML7223/ML7831 is companion chip for Intel Atom E6xx series.
+	  ML7213/ML7223/ML7831 is completely compatible for Intel EG20T PCH.
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 config SERIAL_MSM_SMD
 	bool "Enable tty device interface for some SMD ports"

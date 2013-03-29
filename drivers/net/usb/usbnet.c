@@ -231,9 +231,12 @@ void usbnet_skb_return (struct usbnet *dev, struct sk_buff *skb)
 		return;
 	}
 
+<<<<<<< HEAD
 	if (!skb->protocol)
 		skb->protocol = eth_type_trans(skb, dev->net);
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	skb->protocol = eth_type_trans (skb, dev->net);
 	dev->net->stats.rx_packets++;
 	dev->net->stats.rx_bytes += skb->len;
@@ -280,17 +283,43 @@ int usbnet_change_mtu (struct net_device *net, int new_mtu)
 }
 EXPORT_SYMBOL_GPL(usbnet_change_mtu);
 
+<<<<<<< HEAD
+=======
+/* The caller must hold list->lock */
+static void __usbnet_queue_skb(struct sk_buff_head *list,
+			struct sk_buff *newsk, enum skb_state state)
+{
+	struct skb_data *entry = (struct skb_data *) newsk->cb;
+
+	__skb_queue_tail(list, newsk);
+	entry->state = state;
+}
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 /*-------------------------------------------------------------------------*/
 
 /* some LK 2.4 HCDs oopsed if we freed or resubmitted urbs from
  * completion callbacks.  2.5 should have fixed those bugs...
  */
 
+<<<<<<< HEAD
 static void defer_bh(struct usbnet *dev, struct sk_buff *skb, struct sk_buff_head *list)
 {
 	unsigned long		flags;
 
 	spin_lock_irqsave(&list->lock, flags);
+=======
+static enum skb_state defer_bh(struct usbnet *dev, struct sk_buff *skb,
+		struct sk_buff_head *list, enum skb_state state)
+{
+	unsigned long		flags;
+	enum skb_state 		old_state;
+	struct skb_data *entry = (struct skb_data *) skb->cb;
+
+	spin_lock_irqsave(&list->lock, flags);
+	old_state = entry->state;
+	entry->state = state;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	__skb_unlink(skb, list);
 	spin_unlock(&list->lock);
 	spin_lock(&dev->done.lock);
@@ -298,6 +327,10 @@ static void defer_bh(struct usbnet *dev, struct sk_buff *skb, struct sk_buff_hea
 	if (dev->done.qlen == 1)
 		tasklet_schedule(&dev->bh);
 	spin_unlock_irqrestore(&dev->done.lock, flags);
+<<<<<<< HEAD
+=======
+	return old_state;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 /* some work can't be done in tasklets, so we use keventd
@@ -338,7 +371,10 @@ static int rx_submit (struct usbnet *dev, struct urb *urb, gfp_t flags)
 	entry = (struct skb_data *) skb->cb;
 	entry->urb = urb;
 	entry->dev = dev;
+<<<<<<< HEAD
 	entry->state = rx_start;
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	entry->length = 0;
 
 	usb_fill_bulk_urb (urb, dev->udev, dev->in,
@@ -370,7 +406,11 @@ static int rx_submit (struct usbnet *dev, struct urb *urb, gfp_t flags)
 			tasklet_schedule (&dev->bh);
 			break;
 		case 0:
+<<<<<<< HEAD
 			__skb_queue_tail (&dev->rxq, skb);
+=======
+			__usbnet_queue_skb(&dev->rxq, skb, rx_start);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		}
 	} else {
 		netif_dbg(dev, ifdown, dev->net, "rx: stopped\n");
@@ -421,16 +461,27 @@ static void rx_complete (struct urb *urb)
 	struct skb_data		*entry = (struct skb_data *) skb->cb;
 	struct usbnet		*dev = entry->dev;
 	int			urb_status = urb->status;
+<<<<<<< HEAD
 
 	skb_put (skb, urb->actual_length);
 	entry->state = rx_done;
+=======
+	enum skb_state		state;
+
+	skb_put (skb, urb->actual_length);
+	state = rx_done;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	entry->urb = NULL;
 
 	switch (urb_status) {
 	/* success */
 	case 0:
 		if (skb->len < dev->net->hard_header_len) {
+<<<<<<< HEAD
 			entry->state = rx_cleanup;
+=======
+			state = rx_cleanup;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			dev->net->stats.rx_errors++;
 			dev->net->stats.rx_length_errors++;
 			netif_dbg(dev, rx_err, dev->net,
@@ -469,7 +520,11 @@ static void rx_complete (struct urb *urb)
 				  "rx throttle %d\n", urb_status);
 		}
 block:
+<<<<<<< HEAD
 		entry->state = rx_cleanup;
+=======
+		state = rx_cleanup;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		entry->urb = urb;
 		urb = NULL;
 		break;
@@ -480,17 +535,30 @@ block:
 		// FALLTHROUGH
 
 	default:
+<<<<<<< HEAD
 		entry->state = rx_cleanup;
+=======
+		state = rx_cleanup;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		dev->net->stats.rx_errors++;
 		netif_dbg(dev, rx_err, dev->net, "rx status %d\n", urb_status);
 		break;
 	}
 
+<<<<<<< HEAD
 	defer_bh(dev, skb, &dev->rxq);
 
 	if (urb) {
 		if (netif_running (dev->net) &&
 		    !test_bit (EVENT_RX_HALT, &dev->flags)) {
+=======
+	state = defer_bh(dev, skb, &dev->rxq, state);
+
+	if (urb) {
+		if (netif_running (dev->net) &&
+		    !test_bit (EVENT_RX_HALT, &dev->flags) &&
+		    state != unlink_start) {
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			rx_submit (dev, urb, GFP_ATOMIC);
 			return;
 		}
@@ -576,18 +644,48 @@ EXPORT_SYMBOL_GPL(usbnet_purge_paused_rxq);
 static int unlink_urbs (struct usbnet *dev, struct sk_buff_head *q)
 {
 	unsigned long		flags;
+<<<<<<< HEAD
 	struct sk_buff		*skb, *skbnext;
 	int			count = 0;
 
 	spin_lock_irqsave (&q->lock, flags);
 	skb_queue_walk_safe(q, skb, skbnext) {
+=======
+	struct sk_buff		*skb;
+	int			count = 0;
+
+	spin_lock_irqsave (&q->lock, flags);
+	while (!skb_queue_empty(q)) {
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		struct skb_data		*entry;
 		struct urb		*urb;
 		int			retval;
 
+<<<<<<< HEAD
 		entry = (struct skb_data *) skb->cb;
 		urb = entry->urb;
 
+=======
+		skb_queue_walk(q, skb) {
+			entry = (struct skb_data *) skb->cb;
+			if (entry->state != unlink_start)
+				goto found;
+		}
+		break;
+found:
+		entry->state = unlink_start;
+		urb = entry->urb;
+
+		/*
+		 * Get reference count of the URB to avoid it to be
+		 * freed during usb_unlink_urb, which may trigger
+		 * use-after-free problem inside usb_unlink_urb since
+		 * usb_unlink_urb is always racing with .complete
+		 * handler(include defer_bh).
+		 */
+		usb_get_urb(urb);
+		spin_unlock_irqrestore(&q->lock, flags);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		// during some PM-driven resume scenarios,
 		// these (async) unlinks complete immediately
 		retval = usb_unlink_urb (urb);
@@ -595,6 +693,11 @@ static int unlink_urbs (struct usbnet *dev, struct sk_buff_head *q)
 			netdev_dbg(dev->net, "unlink urb err, %d\n", retval);
 		else
 			count++;
+<<<<<<< HEAD
+=======
+		usb_put_urb(urb);
+		spin_lock_irqsave(&q->lock, flags);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	}
 	spin_unlock_irqrestore (&q->lock, flags);
 	return count;
@@ -1025,9 +1128,13 @@ static void tx_complete (struct urb *urb)
 	}
 
 	usb_autopm_put_interface_async(dev->intf);
+<<<<<<< HEAD
 	urb->dev = NULL;
 	entry->state = tx_done;
 	defer_bh(dev, skb, &dev->txq);
+=======
+	(void) defer_bh(dev, skb, &dev->txq, tx_done);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 /*-------------------------------------------------------------------------*/
@@ -1080,7 +1187,10 @@ netdev_tx_t usbnet_start_xmit (struct sk_buff *skb,
 	entry = (struct skb_data *) skb->cb;
 	entry->urb = urb;
 	entry->dev = dev;
+<<<<<<< HEAD
 	entry->state = tx_start;
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	entry->length = length;
 
 	usb_fill_bulk_urb (urb, dev->udev, dev->out,
@@ -1120,6 +1230,10 @@ netdev_tx_t usbnet_start_xmit (struct sk_buff *skb,
 		usb_anchor_urb(urb, &dev->deferred);
 		/* no use to process more packets */
 		netif_stop_queue(net);
+<<<<<<< HEAD
+=======
+		usb_put_urb(urb);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		spin_unlock_irqrestore(&dev->txq.lock, flags);
 		netdev_dbg(dev->net, "Delaying transmission for resumption\n");
 		goto deferred;
@@ -1139,7 +1253,11 @@ netdev_tx_t usbnet_start_xmit (struct sk_buff *skb,
 		break;
 	case 0:
 		net->trans_start = jiffies;
+<<<<<<< HEAD
 		__skb_queue_tail (&dev->txq, skb);
+=======
+		__usbnet_queue_skb(&dev->txq, skb, tx_start);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		if (dev->txq.qlen >= TX_QLEN (dev))
 			netif_stop_queue (net);
 	}
@@ -1261,6 +1379,11 @@ void usbnet_disconnect (struct usb_interface *intf)
 
 	cancel_work_sync(&dev->kevent);
 
+<<<<<<< HEAD
+=======
+	usb_scuttle_anchored_urbs(&dev->deferred);
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	if (dev->driver_info->unbind)
 		dev->driver_info->unbind (dev, intf);
 

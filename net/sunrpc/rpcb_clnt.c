@@ -193,7 +193,11 @@ static int rpcb_create_local_unix(void)
 	if (IS_ERR(clnt)) {
 		dprintk("RPC:       failed to create AF_LOCAL rpcbind "
 				"client (errno %ld).\n", PTR_ERR(clnt));
+<<<<<<< HEAD
 		result = -PTR_ERR(clnt);
+=======
+		result = PTR_ERR(clnt);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		goto out;
 	}
 
@@ -242,7 +246,11 @@ static int rpcb_create_local_net(void)
 	if (IS_ERR(clnt)) {
 		dprintk("RPC:       failed to create local rpcbind "
 				"client (errno %ld).\n", PTR_ERR(clnt));
+<<<<<<< HEAD
 		result = -PTR_ERR(clnt);
+=======
+		result = PTR_ERR(clnt);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		goto out;
 	}
 

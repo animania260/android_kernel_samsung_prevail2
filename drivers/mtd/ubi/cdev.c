@@ -628,6 +628,12 @@ static int verify_mkvol_req(const struct ubi_device *ubi,
 	if (req->alignment != 1 && n)
 		goto bad;
 
+<<<<<<< HEAD
+=======
+	if (!req->name[0] || !req->name_len)
+		goto bad;
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	if (req->name_len > UBI_VOL_NAME_MAX) {
 		err = -ENAMETOOLONG;
 		goto bad;

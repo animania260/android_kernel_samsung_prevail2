@@ -2429,8 +2429,12 @@ static ssize_t mtf_test_write(struct file *file, const char __user *buf,
 	}
 
 #ifdef CONFIG_HIGHMEM
+<<<<<<< HEAD
 	if (test->highmem)
 		__free_pages(test->highmem, BUFFER_ORDER);
+=======
+	__free_pages(test->highmem, BUFFER_ORDER);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #endif
 	kfree(test->buffer);
 	kfree(test);

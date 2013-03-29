@@ -417,7 +417,11 @@ static const struct tv_mode tv_modes[] = {
 	{
 		.name		= "NTSC-M",
 		.clock		= 108000,
+<<<<<<< HEAD
 		.refresh	= 29970,
+=======
+		.refresh	= 59940,
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		.oversample	= TV_OVERSAMPLE_8X,
 		.component_only = 0,
 		/* 525 Lines, 60 Fields, 15.734KHz line, Sub-Carrier 3.580MHz */
@@ -460,7 +464,11 @@ static const struct tv_mode tv_modes[] = {
 	{
 		.name		= "NTSC-443",
 		.clock		= 108000,
+<<<<<<< HEAD
 		.refresh	= 29970,
+=======
+		.refresh	= 59940,
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		.oversample	= TV_OVERSAMPLE_8X,
 		.component_only = 0,
 		/* 525 Lines, 60 Fields, 15.734KHz line, Sub-Carrier 4.43MHz */
@@ -502,7 +510,11 @@ static const struct tv_mode tv_modes[] = {
 	{
 		.name		= "NTSC-J",
 		.clock		= 108000,
+<<<<<<< HEAD
 		.refresh	= 29970,
+=======
+		.refresh	= 59940,
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		.oversample	= TV_OVERSAMPLE_8X,
 		.component_only = 0,
 
@@ -545,7 +557,11 @@ static const struct tv_mode tv_modes[] = {
 	{
 		.name		= "PAL-M",
 		.clock		= 108000,
+<<<<<<< HEAD
 		.refresh	= 29970,
+=======
+		.refresh	= 59940,
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		.oversample	= TV_OVERSAMPLE_8X,
 		.component_only = 0,
 
@@ -589,7 +605,11 @@ static const struct tv_mode tv_modes[] = {
 		/* 625 Lines, 50 Fields, 15.625KHz line, Sub-Carrier 4.434MHz */
 		.name	    = "PAL-N",
 		.clock		= 108000,
+<<<<<<< HEAD
 		.refresh	= 25000,
+=======
+		.refresh	= 50000,
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		.oversample	= TV_OVERSAMPLE_8X,
 		.component_only = 0,
 
@@ -634,7 +654,11 @@ static const struct tv_mode tv_modes[] = {
 		/* 625 Lines, 50 Fields, 15.625KHz line, Sub-Carrier 4.434MHz */
 		.name	    = "PAL",
 		.clock		= 108000,
+<<<<<<< HEAD
 		.refresh	= 25000,
+=======
+		.refresh	= 50000,
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		.oversample	= TV_OVERSAMPLE_8X,
 		.component_only = 0,
 
@@ -821,7 +845,11 @@ static const struct tv_mode tv_modes[] = {
 	{
 		.name       = "1080i@50Hz",
 		.clock		= 148800,
+<<<<<<< HEAD
 		.refresh	= 25000,
+=======
+		.refresh	= 50000,
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		.oversample     = TV_OVERSAMPLE_2X,
 		.component_only = 1,
 
@@ -847,7 +875,11 @@ static const struct tv_mode tv_modes[] = {
 	{
 		.name       = "1080i@60Hz",
 		.clock		= 148800,
+<<<<<<< HEAD
 		.refresh	= 30000,
+=======
+		.refresh	= 60000,
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		.oversample     = TV_OVERSAMPLE_2X,
 		.component_only = 1,
 
@@ -1301,6 +1333,14 @@ intel_tv_detect_type (struct intel_tv *intel_tv,
 
 	I915_WRITE(TV_DAC, save_tv_dac & ~TVDAC_STATE_CHG_EN);
 	I915_WRITE(TV_CTL, save_tv_ctl);
+<<<<<<< HEAD
+=======
+	POSTING_READ(TV_CTL);
+
+	/* For unknown reasons the hw barfs if we don't do this vblank wait. */
+	intel_wait_for_vblank(intel_tv->base.base.dev,
+			      to_intel_crtc(intel_tv->base.base.crtc)->pipe);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	/* Restore interrupt config */
 	if (connector->polled & DRM_CONNECTOR_POLL_HPD) {

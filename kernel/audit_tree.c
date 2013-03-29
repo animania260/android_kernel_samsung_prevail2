@@ -256,7 +256,10 @@ static void untag_chunk(struct node *p)
 		spin_unlock(&hash_lock);
 		spin_unlock(&entry->lock);
 		fsnotify_destroy_mark(entry);
+<<<<<<< HEAD
 		fsnotify_put_mark(entry);
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		goto out;
 	}
 
@@ -265,7 +268,11 @@ static void untag_chunk(struct node *p)
 
 	fsnotify_duplicate_mark(&new->mark, entry);
 	if (fsnotify_add_mark(&new->mark, new->mark.group, new->mark.i.inode, NULL, 1)) {
+<<<<<<< HEAD
 		free_chunk(new);
+=======
+		fsnotify_put_mark(&new->mark);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		goto Fallback;
 	}
 
@@ -299,7 +306,10 @@ static void untag_chunk(struct node *p)
 	spin_unlock(&hash_lock);
 	spin_unlock(&entry->lock);
 	fsnotify_destroy_mark(entry);
+<<<<<<< HEAD
 	fsnotify_put_mark(entry);
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	goto out;
 
 Fallback:
@@ -328,7 +338,11 @@ static int create_chunk(struct inode *inode, struct audit_tree *tree)
 
 	entry = &chunk->mark;
 	if (fsnotify_add_mark(entry, audit_tree_group, inode, NULL, 0)) {
+<<<<<<< HEAD
 		free_chunk(chunk);
+=======
+		fsnotify_put_mark(entry);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		return -ENOSPC;
 	}
 
@@ -338,6 +352,10 @@ static int create_chunk(struct inode *inode, struct audit_tree *tree)
 		spin_unlock(&hash_lock);
 		chunk->dead = 1;
 		spin_unlock(&entry->lock);
+<<<<<<< HEAD
+=======
+		fsnotify_get_mark(entry);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		fsnotify_destroy_mark(entry);
 		fsnotify_put_mark(entry);
 		return 0;
@@ -402,7 +420,11 @@ static int tag_chunk(struct inode *inode, struct audit_tree *tree)
 	fsnotify_duplicate_mark(chunk_entry, old_entry);
 	if (fsnotify_add_mark(chunk_entry, chunk_entry->group, chunk_entry->i.inode, NULL, 1)) {
 		spin_unlock(&old_entry->lock);
+<<<<<<< HEAD
 		free_chunk(chunk);
+=======
+		fsnotify_put_mark(chunk_entry);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		fsnotify_put_mark(old_entry);
 		return -ENOSPC;
 	}
@@ -418,6 +440,10 @@ static int tag_chunk(struct inode *inode, struct audit_tree *tree)
 		spin_unlock(&chunk_entry->lock);
 		spin_unlock(&old_entry->lock);
 
+<<<<<<< HEAD
+=======
+		fsnotify_get_mark(chunk_entry);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		fsnotify_destroy_mark(chunk_entry);
 
 		fsnotify_put_mark(chunk_entry);
@@ -451,7 +477,10 @@ static int tag_chunk(struct inode *inode, struct audit_tree *tree)
 	spin_unlock(&old_entry->lock);
 	fsnotify_destroy_mark(old_entry);
 	fsnotify_put_mark(old_entry); /* pair to fsnotify_find mark_entry */
+<<<<<<< HEAD
 	fsnotify_put_mark(old_entry); /* and kill it */
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	return 0;
 }
 

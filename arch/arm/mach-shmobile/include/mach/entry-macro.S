@@ -18,5 +18,20 @@
 	.macro  disable_fiq
 	.endm
 
+<<<<<<< HEAD
+=======
+	.macro  get_irqnr_preamble, base, tmp
+	.endm
+
+	.macro  get_irqnr_and_base, irqnr, irqstat, base, tmp
+	.endm
+
+	.macro  test_for_ipi, irqnr, irqstat, base, tmp
+	.endm
+
+	.macro  test_for_ltirq, irqnr, irqstat, base, tmp
+	.endm
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	.macro  arch_ret_to_user, tmp1, tmp2
 	.endm

@@ -173,6 +173,10 @@ config CRYPTO_DEV_MV_CESA
 	select CRYPTO_ALGAPI
 	select CRYPTO_AES
 	select CRYPTO_BLKCIPHER2
+<<<<<<< HEAD
+=======
+	select CRYPTO_HASH
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	help
 	  This driver allows you to utilize the Cryptographic Engines and
 	  Security Accelerator (CESA) which can be found on the Marvell Orion
@@ -292,6 +296,7 @@ config CRYPTO_DEV_S5P
 	  Select this to offload Samsung S5PV210 or S5PC110 from AES
 	  algorithms execution.
 
+<<<<<<< HEAD
 config CRYPTO_DEV_QCE40
 	bool
 
@@ -335,4 +340,6 @@ config CRYPTO_DEV_OTA_CRYPTO
 	  To compile this driver as a module, choose M here: the
 	  module will be called ota_crypto.
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 endif # CRYPTO_HW

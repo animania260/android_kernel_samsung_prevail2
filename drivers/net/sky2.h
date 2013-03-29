@@ -2236,7 +2236,10 @@ struct sky2_port {
 	u16		     rx_pending;
 	u16		     rx_data_size;
 	u16		     rx_nfrags;
+<<<<<<< HEAD
 	u16		     rx_tag;
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	struct {
 		unsigned long last;

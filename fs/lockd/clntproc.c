@@ -550,6 +550,12 @@ again:
 		status = nlmclnt_block(block, req, NLMCLNT_POLL_TIMEOUT);
 		if (status < 0)
 			break;
+<<<<<<< HEAD
+=======
+		/* Resend the blocking lock request after a server reboot */
+		if (resp->status ==  nlm_lck_denied_grace_period)
+			continue;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		if (resp->status != nlm_lck_blocked)
 			break;
 	}

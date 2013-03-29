@@ -123,6 +123,22 @@ static inline struct cpuset *task_cs(struct task_struct *task)
 			    struct cpuset, css);
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_NUMA
+static inline bool task_has_mempolicy(struct task_struct *task)
+{
+	return task->mempolicy;
+}
+#else
+static inline bool task_has_mempolicy(struct task_struct *task)
+{
+	return false;
+}
+#endif
+
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 /* bits in struct cpuset flags field */
 typedef enum {
 	CS_CPU_EXCLUSIVE,
@@ -949,7 +965,12 @@ static void cpuset_migrate_mm(struct mm_struct *mm, const nodemask_t *from,
 static void cpuset_change_task_nodemask(struct task_struct *tsk,
 					nodemask_t *newmems)
 {
+<<<<<<< HEAD
 repeat:
+=======
+	bool need_loop;
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	/*
 	 * Allow tasks that have access to memory reserves because they have
 	 * been OOM killed to get memory anywhere.
@@ -960,6 +981,7 @@ repeat:
 		return;
 
 	task_lock(tsk);
+<<<<<<< HEAD
 	nodes_or(tsk->mems_allowed, tsk->mems_allowed, *newmems);
 	mpol_rebind_task(tsk, newmems, MPOL_REBIND_STEP1);
 
@@ -1000,6 +1022,29 @@ repeat:
 
 	mpol_rebind_task(tsk, newmems, MPOL_REBIND_STEP2);
 	tsk->mems_allowed = *newmems;
+=======
+	/*
+	 * Determine if a loop is necessary if another thread is doing
+	 * get_mems_allowed().  If at least one node remains unchanged and
+	 * tsk does not have a mempolicy, then an empty nodemask will not be
+	 * possible when mems_allowed is larger than a word.
+	 */
+	need_loop = task_has_mempolicy(tsk) ||
+			!nodes_intersects(*newmems, tsk->mems_allowed);
+
+	if (need_loop)
+		write_seqcount_begin(&tsk->mems_allowed_seq);
+
+	nodes_or(tsk->mems_allowed, tsk->mems_allowed, *newmems);
+	mpol_rebind_task(tsk, newmems, MPOL_REBIND_STEP1);
+
+	mpol_rebind_task(tsk, newmems, MPOL_REBIND_STEP2);
+	tsk->mems_allowed = *newmems;
+
+	if (need_loop)
+		write_seqcount_end(&tsk->mems_allowed_seq);
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	task_unlock(tsk);
 }
 
@@ -1373,6 +1418,7 @@ static int cpuset_can_attach(struct cgroup_subsys *ss, struct cgroup *cont,
 {
 	struct cpuset *cs = cgroup_cs(cont);
 
+<<<<<<< HEAD
 	if ((current != tsk) && (!capable(CAP_SYS_ADMIN))) {
 		const struct cred *cred = current_cred(), *tcred;
 
@@ -1380,6 +1426,8 @@ static int cpuset_can_attach(struct cgroup_subsys *ss, struct cgroup *cont,
 			return -EPERM;
 	}
  
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	if (cpumask_empty(cs->cpus_allowed) || nodes_empty(cs->mems_allowed))
 		return -ENOSPC;
 
@@ -2092,6 +2140,12 @@ static void scan_for_empty_cpusets(struct cpuset *root)
  * (of no affect) on systems that are actively using CPU hotplug
  * but making no active use of cpusets.
  *
+<<<<<<< HEAD
+=======
+ * The only exception to this is suspend/resume, where we don't
+ * modify cpusets at all.
+ *
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
  * This routine ensures that top_cpuset.cpus_allowed tracks
  * cpu_active_mask on each CPU hotplug (cpuhp) event.
  *
@@ -2508,8 +2562,21 @@ void cpuset_print_task_mems_allowed(struct task_struct *tsk)
 
 	dentry = task_cs(tsk)->css.cgroup->dentry;
 	spin_lock(&cpuset_buffer_lock);
+<<<<<<< HEAD
 	snprintf(cpuset_name, CPUSET_NAME_LEN,
 		 dentry ? (const char *)dentry->d_name.name : "/");
+=======
+
+	if (!dentry) {
+		strcpy(cpuset_name, "/");
+	} else {
+		spin_lock(&dentry->d_lock);
+		strlcpy(cpuset_name, (const char *)dentry->d_name.name,
+			CPUSET_NAME_LEN);
+		spin_unlock(&dentry->d_lock);
+	}
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	nodelist_scnprintf(cpuset_nodelist, CPUSET_NODELIST_LEN,
 			   tsk->mems_allowed);
 	printk(KERN_INFO "%s cpuset=%s mems_allowed=%s\n",

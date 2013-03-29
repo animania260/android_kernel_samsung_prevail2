@@ -648,6 +648,18 @@ void ath_hw_pll_work(struct work_struct *work)
 					    hw_pll_work.work);
 	u32 pll_sqsum;
 
+<<<<<<< HEAD
+=======
+	/*
+	 * ensure that the PLL WAR is executed only
+	 * after the STA is associated (or) if the
+	 * beaconing had started in interfaces that
+	 * uses beacons.
+	 */
+	if (!(sc->sc_flags & SC_OP_BEACONS))
+		return;
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	if (AR_SREV_9485(sc->sc_ah)) {
 
 		ath9k_ps_wakeup(sc);
@@ -1828,6 +1840,12 @@ static void ath9k_sta_notify(struct ieee80211_hw *hw,
 	struct ath_softc *sc = hw->priv;
 	struct ath_node *an = (struct ath_node *) sta->drv_priv;
 
+<<<<<<< HEAD
+=======
+	if (!(sc->sc_flags & SC_OP_TXAGGR))
+		return;
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	switch (cmd) {
 	case STA_NOTIFY_SLEEP:
 		an->sleeping = true;

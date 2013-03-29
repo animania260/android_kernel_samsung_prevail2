@@ -21,10 +21,13 @@
    SOFTWARE IS DISCLAIMED.
 */
 
+<<<<<<< HEAD
 #ifdef CONFIG_BT_MGMT
 #include "mgmt_mgmt.h"
 #else
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #define MGMT_INDEX_NONE			0xFFFF
 
 struct mgmt_hdr {
@@ -105,8 +108,11 @@ struct mgmt_key_info {
 	u8 type;
 	u8 val[16];
 	u8 pin_len;
+<<<<<<< HEAD
 	u8 dlen;
 	u8 data[0];
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 } __packed;
 
 #define MGMT_OP_LOAD_KEYS		0x000D
@@ -205,6 +211,7 @@ struct mgmt_cp_remove_remote_oob_data {
 
 #define MGMT_OP_STOP_DISCOVERY		0x001C
 
+<<<<<<< HEAD
 #define MGMT_OP_BLOCK_DEVICE		0x001D
 struct mgmt_cp_block_device {
 	bdaddr_t bdaddr;
@@ -215,6 +222,8 @@ struct mgmt_cp_unblock_device {
 	bdaddr_t bdaddr;
 } __packed;
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #define MGMT_EV_CMD_COMPLETE		0x0001
 struct mgmt_ev_cmd_complete {
 	__le16 opcode;
@@ -305,5 +314,8 @@ struct mgmt_ev_remote_name {
 } __packed;
 
 #define MGMT_EV_DISCOVERING		0x0014
+<<<<<<< HEAD
 
 #endif /*BT_MGMT*/
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y

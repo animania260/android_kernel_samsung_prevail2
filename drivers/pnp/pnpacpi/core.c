@@ -57,7 +57,11 @@ static inline int __init is_exclusive_device(struct acpi_device *dev)
 	if (!(('0' <= (c) && (c) <= '9') || ('A' <= (c) && (c) <= 'F'))) \
 		return 0
 #define TEST_ALPHA(c) \
+<<<<<<< HEAD
 	if (!('@' <= (c) || (c) <= 'Z')) \
+=======
+	if (!('A' <= (c) && (c) <= 'Z')) \
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		return 0
 static int __init ispnpidacpi(const char *id)
 {
@@ -94,6 +98,12 @@ static int pnpacpi_set_resources(struct pnp_dev *dev)
 		return -ENODEV;
 	}
 
+<<<<<<< HEAD
+=======
+	if (WARN_ON_ONCE(acpi_dev != dev->data))
+		dev->data = acpi_dev;
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	ret = pnpacpi_build_resource_template(dev, &buffer);
 	if (ret)
 		return ret;
@@ -320,9 +330,20 @@ static int __init acpi_pnp_match(struct device *dev, void *_pnp)
 {
 	struct acpi_device *acpi = to_acpi_device(dev);
 	struct pnp_dev *pnp = _pnp;
+<<<<<<< HEAD
 
 	/* true means it matched */
 	return !acpi_get_physical_device(acpi->handle)
+=======
+	struct device *physical_device;
+
+	physical_device = acpi_get_physical_device(acpi->handle);
+	if (physical_device)
+		put_device(physical_device);
+
+	/* true means it matched */
+	return !physical_device
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	    && compare_pnp_id(pnp->id, acpi_device_hid(acpi));
 }
 

@@ -22,6 +22,7 @@ config THERMAL_HWMON
 	  requires a 2.10.7/3.0.2 or later lm-sensors userspace.
 
 	  Say Y if your user-space is new enough.
+<<<<<<< HEAD
 
 config THERMAL_MSM_POPMEM
 	tristate "Qualcomm MSM POP memory temperature sensor"
@@ -76,3 +77,5 @@ config THERMAL_MONITOR
 	  absence of a system wide thermal monitoring entity or until such an
 	  entity starts running in the userspace. Monitors TSENS temperature
 	  and limits the max frequency of the cores.
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y

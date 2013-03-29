@@ -313,7 +313,11 @@ int vmw_framebuffer_create_handle(struct drm_framebuffer *fb,
 				  unsigned int *handle)
 {
 	if (handle)
+<<<<<<< HEAD
 		handle = 0;
+=======
+		*handle = 0;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	return 0;
 }

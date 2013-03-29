@@ -94,6 +94,10 @@ static int pvc_getname(struct socket *sock, struct sockaddr *sockaddr,
 		return -ENOTCONN;
 	*sockaddr_len = sizeof(struct sockaddr_atmpvc);
 	addr = (struct sockaddr_atmpvc *)sockaddr;
+<<<<<<< HEAD
+=======
+	memset(addr, 0, sizeof(*addr));
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	addr->sap_family = AF_ATMPVC;
 	addr->sap_addr.itf = vcc->dev->number;
 	addr->sap_addr.vpi = vcc->vpi;

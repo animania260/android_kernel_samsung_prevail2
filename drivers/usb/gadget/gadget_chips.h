@@ -120,12 +120,15 @@
 #define gadget_is_ci13xxx_pci(g)	0
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_USB_GADGET_MSM_72K
 #define	gadget_is_msm72k(g)	!strcmp("msm72k_udc", (g)->name)
 #else
 #define	gadget_is_msm72k(g)	0
 #endif
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 // CONFIG_USB_GADGET_SX2
 // CONFIG_USB_GADGET_AU1X00
 // ...
@@ -229,8 +232,11 @@ static inline int usb_gadget_controller_number(struct usb_gadget *gadget)
 		return 0x29;
 	else if (gadget_is_s3c_hsudc(gadget))
 		return 0x30;
+<<<<<<< HEAD
 	else if (gadget_is_msm72k(gadget))
 		return 0x31;
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	return -ENOENT;
 }

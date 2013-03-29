@@ -137,6 +137,10 @@ enum {
 	IFLA_AF_SPEC,
 	IFLA_GROUP,		/* Group the device belongs to */
 	IFLA_NET_NS_FD,
+<<<<<<< HEAD
+=======
+	IFLA_EXT_MASK,		/* Extended info mask, VFs, etc */
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	__IFLA_MAX
 };
 

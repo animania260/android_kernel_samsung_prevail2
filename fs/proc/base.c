@@ -133,12 +133,15 @@ struct pid_entry {
 		NULL, &proc_single_file_operations,	\
 		{ .proc_show = show } )
 
+<<<<<<< HEAD
 /* ANDROID is for special files in /proc. */
 #define ANDROID(NAME, MODE, OTYPE)			\
 	NOD(NAME, (S_IFREG|(MODE)),			\
 		&proc_##OTYPE##_inode_operations,	\
 		&proc_##OTYPE##_operations, {})
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 /*
  * Count the number of hardlinks for the pid_entry table, excluding the .
  * and .. links.
@@ -200,6 +203,7 @@ static int proc_root_link(struct inode *inode, struct path *path)
 	return result;
 }
 
+<<<<<<< HEAD
 static struct mm_struct *__check_mem_permission(struct task_struct *task)
 {
 	struct mm_struct *mm;
@@ -259,6 +263,9 @@ static struct mm_struct *check_mem_permission(struct task_struct *task)
 }
 
 struct mm_struct *mm_for_maps(struct task_struct *task)
+=======
+static struct mm_struct *mm_access(struct task_struct *task, unsigned int mode)
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 {
 	struct mm_struct *mm;
 	int err;
@@ -269,8 +276,12 @@ struct mm_struct *mm_for_maps(struct task_struct *task)
 
 	mm = get_task_mm(task);
 	if (mm && mm != current->mm &&
+<<<<<<< HEAD
 			!ptrace_may_access(task, PTRACE_MODE_READ) &&
 			!capable(CAP_SYS_RESOURCE)) {
+=======
+			!ptrace_may_access(task, mode)) {
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		mmput(mm);
 		mm = ERR_PTR(-EACCES);
 	}
@@ -279,6 +290,14 @@ struct mm_struct *mm_for_maps(struct task_struct *task)
 	return mm;
 }
 
+<<<<<<< HEAD
+=======
+struct mm_struct *mm_for_maps(struct task_struct *task)
+{
+	return mm_access(task, PTRACE_MODE_READ);
+}
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 static int proc_pid_cmdline(struct task_struct *task, char * buffer)
 {
 	int res = 0;
@@ -823,6 +842,7 @@ static const struct file_operations proc_single_file_operations = {
 
 static int mem_open(struct inode* inode, struct file* file)
 {
+<<<<<<< HEAD
 	file->private_data = (void*)((long)current->self_exec_id);
 	/* OK to pass negative loff_t, we can catch out-of-range */
 	file->f_mode |= FMODE_UNSIGNED_OFFSET;
@@ -929,10 +949,68 @@ static ssize_t mem_write(struct file * file, const char __user *buf,
 		}
 		retval = access_remote_vm(mm, dst, page, this_len, 1);
 		if (!retval) {
+=======
+	struct task_struct *task = get_proc_task(file->f_path.dentry->d_inode);
+	struct mm_struct *mm;
+
+	if (!task)
+		return -ESRCH;
+
+	mm = mm_access(task, PTRACE_MODE_ATTACH);
+	put_task_struct(task);
+
+	if (IS_ERR(mm))
+		return PTR_ERR(mm);
+
+	if (mm) {
+		/* ensure this mm_struct can't be freed */
+		atomic_inc(&mm->mm_count);
+		/* but do not pin its memory */
+		mmput(mm);
+	}
+
+	/* OK to pass negative loff_t, we can catch out-of-range */
+	file->f_mode |= FMODE_UNSIGNED_OFFSET;
+	file->private_data = mm;
+
+	return 0;
+}
+
+static ssize_t mem_rw(struct file *file, char __user *buf,
+			size_t count, loff_t *ppos, int write)
+{
+	struct mm_struct *mm = file->private_data;
+	unsigned long addr = *ppos;
+	ssize_t copied;
+	char *page;
+
+	if (!mm)
+		return 0;
+
+	page = (char *)__get_free_page(GFP_TEMPORARY);
+	if (!page)
+		return -ENOMEM;
+
+	copied = 0;
+	if (!atomic_inc_not_zero(&mm->mm_users))
+		goto free;
+
+	while (count > 0) {
+		int this_len = min_t(int, count, PAGE_SIZE);
+
+		if (write && copy_from_user(page, buf, this_len)) {
+			copied = -EFAULT;
+			break;
+		}
+
+		this_len = access_remote_vm(mm, addr, page, this_len, write);
+		if (!this_len) {
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			if (!copied)
 				copied = -EIO;
 			break;
 		}
+<<<<<<< HEAD
 		copied += retval;
 		buf += retval;
 		dst += retval;
@@ -950,6 +1028,39 @@ out_no_task:
 	return copied;
 }
 
+=======
+
+		if (!write && copy_to_user(buf, page, this_len)) {
+			copied = -EFAULT;
+			break;
+		}
+
+		buf += this_len;
+		addr += this_len;
+		copied += this_len;
+		count -= this_len;
+	}
+	*ppos = addr;
+
+	mmput(mm);
+free:
+	free_page((unsigned long) page);
+	return copied;
+}
+
+static ssize_t mem_read(struct file *file, char __user *buf,
+			size_t count, loff_t *ppos)
+{
+	return mem_rw(file, buf, count, ppos, 0);
+}
+
+static ssize_t mem_write(struct file *file, const char __user *buf,
+			 size_t count, loff_t *ppos)
+{
+	return mem_rw(file, (char __user*)buf, count, ppos, 1);
+}
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 loff_t mem_lseek(struct file *file, loff_t offset, int orig)
 {
 	switch (orig) {
@@ -966,11 +1077,26 @@ loff_t mem_lseek(struct file *file, loff_t offset, int orig)
 	return file->f_pos;
 }
 
+<<<<<<< HEAD
+=======
+static int mem_release(struct inode *inode, struct file *file)
+{
+	struct mm_struct *mm = file->private_data;
+	if (mm)
+		mmdrop(mm);
+	return 0;
+}
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 static const struct file_operations proc_mem_operations = {
 	.llseek		= mem_lseek,
 	.read		= mem_read,
 	.write		= mem_write,
 	.open		= mem_open,
+<<<<<<< HEAD
+=======
+	.release	= mem_release,
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 };
 
 static ssize_t environ_read(struct file *file, char __user *buf,
@@ -1148,6 +1274,7 @@ out:
 	return err < 0 ? err : count;
 }
 
+<<<<<<< HEAD
 static int oom_adjust_permission(struct inode *inode, int mask,
 				 unsigned int flags)
 {
@@ -1181,6 +1308,8 @@ static const struct inode_operations proc_oom_adjust_inode_operations = {
 	.permission	= oom_adjust_permission,
 };
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 static const struct file_operations proc_oom_adjust_operations = {
 	.read		= oom_adjust_read,
 	.write		= oom_adjust_write,
@@ -1960,6 +2089,17 @@ static int proc_fd_info(struct inode *inode, struct path *path, char *info)
 		spin_lock(&files->file_lock);
 		file = fcheck_files(files, fd);
 		if (file) {
+<<<<<<< HEAD
+=======
+			unsigned int f_flags;
+			struct fdtable *fdt;
+
+			fdt = files_fdtable(files);
+			f_flags = file->f_flags & ~O_CLOEXEC;
+			if (FD_ISSET(fd, fdt->close_on_exec))
+				f_flags |= O_CLOEXEC;
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			if (path) {
 				*path = file->f_path;
 				path_get(&file->f_path);
@@ -1969,7 +2109,11 @@ static int proc_fd_info(struct inode *inode, struct path *path, char *info)
 					 "pos:\t%lli\n"
 					 "flags:\t0%o\n",
 					 (long long) file->f_pos,
+<<<<<<< HEAD
 					 file->f_flags);
+=======
+					 f_flags);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			spin_unlock(&files->file_lock);
 			put_files_struct(files);
 			return 0;
@@ -2879,7 +3023,11 @@ static const struct pid_entry tgid_base_stuff[] = {
 	REG("cgroup",  S_IRUGO, proc_cgroup_operations),
 #endif
 	INF("oom_score",  S_IRUGO, proc_oom_score),
+<<<<<<< HEAD
 	ANDROID("oom_adj",S_IRUGO|S_IWUSR, oom_adjust),
+=======
+	REG("oom_adj",    S_IRUGO|S_IWUSR, proc_oom_adjust_operations),
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	REG("oom_score_adj", S_IRUGO|S_IWUSR, proc_oom_score_adj_operations),
 #ifdef CONFIG_AUDITSYSCALL
 	REG("loginuid",   S_IWUSR|S_IRUGO, proc_loginuid_operations),

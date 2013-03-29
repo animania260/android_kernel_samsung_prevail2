@@ -133,7 +133,11 @@ static struct platform_device rx51_charger_device = {
 static void __init rx51_charger_init(void)
 {
 	WARN_ON(gpio_request_one(RX51_USB_TRANSCEIVER_RST_GPIO,
+<<<<<<< HEAD
 		GPIOF_OUT_INIT_LOW, "isp1704_reset"));
+=======
+		GPIOF_OUT_INIT_HIGH, "isp1704_reset"));
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	platform_device_register(&rx51_charger_device);
 }
@@ -288,6 +292,13 @@ static struct twl4030_keypad_data rx51_kp_data = {
 	.rep		= 1,
 };
 
+<<<<<<< HEAD
+=======
+static struct twl4030_madc_platform_data rx51_madc_data = {
+	.irq_line		= 1,
+};
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 /* Enable input logic and pull all lines up when eMMC is on. */
 static struct omap_board_mux rx51_mmc2_on_mux[] = {
 	OMAP3_MUX(SDMMC2_CMD, OMAP_PIN_INPUT_PULLUP | OMAP_MUX_MODE0),
@@ -391,6 +402,13 @@ static struct regulator_consumer_supply rx51_vaux1_consumers[] = {
 	REGULATOR_SUPPLY("vdd", "2-0063"),
 };
 
+<<<<<<< HEAD
+=======
+static struct regulator_consumer_supply rx51_vdac_supply[] = {
+	REGULATOR_SUPPLY("vdda_dac", "omapdss_venc"),
+};
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 static struct regulator_init_data rx51_vaux1 = {
 	.constraints = {
 		.name			= "V28",
@@ -507,6 +525,24 @@ static struct regulator_init_data rx51_vsim = {
 	.consumer_supplies	= &rx51_vsim_supply,
 };
 
+<<<<<<< HEAD
+=======
+static struct regulator_init_data rx51_vdac = {
+	.constraints = {
+		.name			= "VDAC",
+		.min_uV			= 1800000,
+		.max_uV			= 1800000,
+		.apply_uV		= true,
+		.valid_modes_mask	= REGULATOR_MODE_NORMAL
+					| REGULATOR_MODE_STANDBY,
+		.valid_ops_mask		= REGULATOR_CHANGE_MODE
+					| REGULATOR_CHANGE_STATUS,
+	},
+	.num_consumer_supplies	= 1,
+	.consumer_supplies	= rx51_vdac_supply,
+};
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 static struct regulator_init_data rx51_vio = {
 	.constraints = {
 		.min_uV			= 1800000,
@@ -577,6 +613,13 @@ static struct twl4030_gpio_platform_data rx51_gpio_data = {
 	.setup			= rx51_twlgpio_setup,
 };
 
+<<<<<<< HEAD
+=======
+static struct twl4030_usb_data rx51_usb_data = {
+	.usb_mode		= T2_USB_MODE_ULPI,
+};
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 static struct twl4030_ins sleep_on_seq[] __initdata = {
 /*
  * Turn off everything
@@ -738,27 +781,52 @@ static struct twl4030_power_data rx51_t2scripts_data __initdata = {
 	.resource_config = twl4030_rconfig,
 };
 
+<<<<<<< HEAD
 struct twl4030_vibra_data rx51_vibra_data __initdata = {
 	.coexist	= 0,
 };
 
 struct twl4030_audio_data rx51_audio_data __initdata = {
+=======
+struct twl4030_codec_vibra_data rx51_vibra_data __initdata = {
+	.coexist	= 0,
+};
+
+struct twl4030_codec_data rx51_codec_data __initdata = {
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	.audio_mclk	= 26000000,
 	.vibra		= &rx51_vibra_data,
 };
 
 static struct twl4030_platform_data rx51_twldata __initdata = {
+<<<<<<< HEAD
 	/* platform_data for children goes here */
 	.gpio			= &rx51_gpio_data,
 	.keypad			= &rx51_kp_data,
 	.power			= &rx51_t2scripts_data,
 	.audio			= &rx51_audio_data,
+=======
+	.irq_base		= TWL4030_IRQ_BASE,
+	.irq_end		= TWL4030_IRQ_END,
+
+	/* platform_data for children goes here */
+	.gpio			= &rx51_gpio_data,
+	.keypad			= &rx51_kp_data,
+	.madc			= &rx51_madc_data,
+	.usb			= &rx51_usb_data,
+	.power			= &rx51_t2scripts_data,
+	.codec			= &rx51_codec_data,
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	.vaux1			= &rx51_vaux1,
 	.vaux2			= &rx51_vaux2,
 	.vaux4			= &rx51_vaux4,
 	.vmmc1			= &rx51_vmmc1,
 	.vsim			= &rx51_vsim,
+<<<<<<< HEAD
+=======
+	.vdac			= &rx51_vdac,
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	.vio			= &rx51_vio,
 };
 
@@ -814,11 +882,14 @@ static int __init rx51_i2c_init(void)
 		rx51_twldata.vaux3 = &rx51_vaux3_cam;
 	}
 	rx51_twldata.vmmc2 = &rx51_vmmc2;
+<<<<<<< HEAD
 	omap3_pmic_get_config(&rx51_twldata,
 			TWL_COMMON_PDATA_USB | TWL_COMMON_PDATA_MADC,
 			TWL_COMMON_REGULATOR_VDAC);
 	rx51_twldata.vdac->constraints.apply_uV = true;
 	rx51_twldata.vdac->constraints.name = "VDAC";
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	omap_pmic_init(1, 2200, "twl5030", INT_34XX_SYS_NIRQ, &rx51_twldata);
 	omap_register_i2c_bus(2, 100, rx51_peripherals_i2c_board_info_2,
 			      ARRAY_SIZE(rx51_peripherals_i2c_board_info_2));

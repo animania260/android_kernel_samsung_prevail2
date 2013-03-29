@@ -685,7 +685,11 @@ static const struct sd_desc sd_desc = {
 };
 
 /* -- module initialisation -- */
+<<<<<<< HEAD
 static const struct usb_device_id device_table[] __devinitconst = {
+=======
+static const struct usb_device_id device_table[] = {
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	{USB_DEVICE(0x06e1, 0xa190)},
 /*fixme: may be IntelPCCameraPro BRIDGE_SPCA505
 	{USB_DEVICE(0x0733, 0x0430)}, */

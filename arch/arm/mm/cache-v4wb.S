@@ -184,7 +184,11 @@ ENTRY(v4wb_coherent_user_range)
  *	- start  - virtual start address
  *	- end	 - virtual end address
  */
+<<<<<<< HEAD
 ENTRY(v4wb_dma_inv_range)
+=======
+v4wb_dma_inv_range:
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	tst	r0, #CACHE_DLINESIZE - 1
 	bic	r0, r0, #CACHE_DLINESIZE - 1
 	mcrne	p15, 0, r0, c7, c10, 1		@ clean D entry
@@ -205,7 +209,11 @@ ENTRY(v4wb_dma_inv_range)
  *	- start  - virtual start address
  *	- end	 - virtual end address
  */
+<<<<<<< HEAD
 ENTRY(v4wb_dma_clean_range)
+=======
+v4wb_dma_clean_range:
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	bic	r0, r0, #CACHE_DLINESIZE - 1
 1:	mcr	p15, 0, r0, c7, c10, 1		@ clean D entry
 	add	r0, r0, #CACHE_DLINESIZE
@@ -264,7 +272,10 @@ ENTRY(v4wb_cache_fns)
 	.long	v4wb_flush_kern_dcache_area
 	.long	v4wb_dma_map_area
 	.long	v4wb_dma_unmap_area
+<<<<<<< HEAD
 	.long	v4wb_dma_inv_range
 	.long	v4wb_dma_clean_range
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	.long	v4wb_dma_flush_range
 	.size	v4wb_cache_fns, . - v4wb_cache_fns

@@ -14,6 +14,10 @@
 #include <linux/list.h>
 #include <linux/slab.h>
 #include <linux/types.h>
+<<<<<<< HEAD
+=======
+#include <linux/compat.h>
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 #include <asm/compat.h>
 #include <asm/ccwdev.h>

@@ -948,7 +948,11 @@ static void __vmx_load_host_state(struct vcpu_vmx *vmx)
 #ifdef CONFIG_X86_64
 	wrmsrl(MSR_KERNEL_GS_BASE, vmx->msr_host_kernel_gs_base);
 #endif
+<<<<<<< HEAD
 	if (current_thread_info()->status & TS_USEDFPU)
+=======
+	if (__thread_has_fpu(current))
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		clts();
 	load_gdt(&__get_cpu_var(host_gdt));
 }

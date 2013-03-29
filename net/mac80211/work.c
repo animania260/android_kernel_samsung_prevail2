@@ -553,7 +553,11 @@ ieee80211_offchannel_tx(struct ieee80211_work *wk)
 		/*
 		 * After this, offchan_tx.frame remains but now is no
 		 * longer a valid pointer -- we still need it as the
+<<<<<<< HEAD
 		 * cookie for canceling this work.
+=======
+		 * cookie for canceling this work/status matching.
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		 */
 		ieee80211_tx_skb(wk->sdata, wk->offchan_tx.frame);
 
@@ -973,16 +977,24 @@ static void ieee80211_work_work(struct work_struct *work)
 			if (on_oper_chan != on_oper_chan2) {
 				if (on_oper_chan2) {
 					/* going off oper channel, PS too */
+<<<<<<< HEAD
 					ieee80211_offchannel_stop_vifs(local,
 								       true);
+=======
+					ieee80211_offchannel_stop_vifs(local);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 					ieee80211_hw_config(local, 0);
 				} else {
 					/* going on channel, but leave PS
 					 * off-channel. */
 					ieee80211_hw_config(local, 0);
 					ieee80211_offchannel_return(local,
+<<<<<<< HEAD
 								    true,
 								    false);
+=======
+								    true);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 				}
 			} else if (tmp_chan_changed)
 				/* Still off-channel, but on some other
@@ -1060,14 +1072,22 @@ static void ieee80211_work_work(struct work_struct *work)
 			continue;
 		if (wk->chan != local->tmp_channel)
 			continue;
+<<<<<<< HEAD
 		if (ieee80211_work_ct_coexists(wk->chan_type,
 					       local->tmp_channel_type))
+=======
+		if (!ieee80211_work_ct_coexists(wk->chan_type,
+						local->tmp_channel_type))
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			continue;
 		remain_off_channel = true;
 	}
 
 	if (!remain_off_channel && local->tmp_channel) {
+<<<<<<< HEAD
 		bool on_oper_chan = ieee80211_cfg_on_oper_channel(local);
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		local->tmp_channel = NULL;
 		/* If tmp_channel wasn't operating channel, then
 		 * we need to go back on-channel.
@@ -1077,7 +1097,11 @@ static void ieee80211_work_work(struct work_struct *work)
 		 * we still need to do a hardware config.  Currently,
 		 * we cannot be here while scanning, however.
 		 */
+<<<<<<< HEAD
 		if (ieee80211_cfg_on_oper_channel(local) && !on_oper_chan)
+=======
+		if (!ieee80211_cfg_on_oper_channel(local))
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			ieee80211_hw_config(local, 0);
 
 		/* At the least, we need to disable offchannel_ps,
@@ -1086,7 +1110,11 @@ static void ieee80211_work_work(struct work_struct *work)
 		 * beaconing if we were already on-oper-channel
 		 * as a future optimization.
 		 */
+<<<<<<< HEAD
 		ieee80211_offchannel_return(local, true, true);
+=======
+		ieee80211_offchannel_return(local, true);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 		/* give connection some time to breathe */
 		run_again(local, jiffies + HZ/2);

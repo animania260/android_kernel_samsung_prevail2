@@ -2,7 +2,10 @@
  * arch/arm/mm/cache-l2x0.c - L210/L220 cache controller support
  *
  * Copyright (C) 2007 ARM Limited
+<<<<<<< HEAD
  * Copyright (c) 2009, 2011, Code Aurora Forum. All rights reserved.
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -27,6 +30,7 @@
 #define CACHE_LINE_SIZE		32
 
 static void __iomem *l2x0_base;
+<<<<<<< HEAD
 static uint32_t aux_ctrl_save;
 static uint32_t data_latency_ctrl;
 static DEFINE_RAW_SPINLOCK(l2x0_lock);
@@ -43,6 +47,11 @@ static inline bool is_pl310_rev(int rev)
 		(L2X0_CACHE_ID_PART_MASK | L2X0_CACHE_ID_REV_MASK)) ==
 			(L2X0_CACHE_ID_PART_L310 | rev);
 }
+=======
+static DEFINE_SPINLOCK(l2x0_lock);
+static uint32_t l2x0_way_mask;	/* Bitmask of active ways */
+static uint32_t l2x0_size;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 static inline void cache_wait_way(void __iomem *reg, unsigned long mask)
 {
@@ -125,6 +134,7 @@ static inline void l2x0_flush_line(unsigned long addr)
 }
 #endif
 
+<<<<<<< HEAD
 void l2x0_cache_sync(void)
 {
 	unsigned long flags;
@@ -150,6 +160,16 @@ static void l2x0_for_each_set_way(void __iomem *reg)
 	}
 }
 #endif
+=======
+static void l2x0_cache_sync(void)
+{
+	unsigned long flags;
+
+	spin_lock_irqsave(&l2x0_lock, flags);
+	cache_sync();
+	spin_unlock_irqrestore(&l2x0_lock, flags);
+}
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 static void __l2x0_flush_all(void)
 {
@@ -164,6 +184,7 @@ static void l2x0_flush_all(void)
 {
 	unsigned long flags;
 
+<<<<<<< HEAD
 #ifdef CONFIG_PL310_ERRATA_727915
 	if (is_pl310_rev(REV_PL310_R2P0)) {
 		l2x0_for_each_set_way(l2x0_base + L2X0_CLEAN_INV_LINE_IDX);
@@ -175,12 +196,19 @@ static void l2x0_flush_all(void)
 	raw_spin_lock_irqsave(&l2x0_lock, flags);
 	__l2x0_flush_all();
 	raw_spin_unlock_irqrestore(&l2x0_lock, flags);
+=======
+	/* clean all ways */
+	spin_lock_irqsave(&l2x0_lock, flags);
+	__l2x0_flush_all();
+	spin_unlock_irqrestore(&l2x0_lock, flags);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 static void l2x0_clean_all(void)
 {
 	unsigned long flags;
 
+<<<<<<< HEAD
 #ifdef CONFIG_PL310_ERRATA_727915
 	if (is_pl310_rev(REV_PL310_R2P0)) {
 		l2x0_for_each_set_way(l2x0_base + L2X0_CLEAN_LINE_IDX);
@@ -196,6 +224,14 @@ static void l2x0_clean_all(void)
 	cache_sync();
 	debug_writel(0x00);
 	raw_spin_unlock_irqrestore(&l2x0_lock, flags);
+=======
+	/* clean all ways */
+	spin_lock_irqsave(&l2x0_lock, flags);
+	writel_relaxed(l2x0_way_mask, l2x0_base + L2X0_CLEAN_WAY);
+	cache_wait_way(l2x0_base + L2X0_CLEAN_WAY, l2x0_way_mask);
+	cache_sync();
+	spin_unlock_irqrestore(&l2x0_lock, flags);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 static void l2x0_inv_all(void)
@@ -203,13 +239,21 @@ static void l2x0_inv_all(void)
 	unsigned long flags;
 
 	/* invalidate all ways */
+<<<<<<< HEAD
 	raw_spin_lock_irqsave(&l2x0_lock, flags);
+=======
+	spin_lock_irqsave(&l2x0_lock, flags);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	/* Invalidating when L2 is enabled is a nono */
 	BUG_ON(readl(l2x0_base + L2X0_CTRL) & 1);
 	writel_relaxed(l2x0_way_mask, l2x0_base + L2X0_INV_WAY);
 	cache_wait_way(l2x0_base + L2X0_INV_WAY, l2x0_way_mask);
 	cache_sync();
+<<<<<<< HEAD
 	raw_spin_unlock_irqrestore(&l2x0_lock, flags);
+=======
+	spin_unlock_irqrestore(&l2x0_lock, flags);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 static void l2x0_inv_range(unsigned long start, unsigned long end)
@@ -217,7 +261,11 @@ static void l2x0_inv_range(unsigned long start, unsigned long end)
 	void __iomem *base = l2x0_base;
 	unsigned long flags;
 
+<<<<<<< HEAD
 	raw_spin_lock_irqsave(&l2x0_lock, flags);
+=======
+	spin_lock_irqsave(&l2x0_lock, flags);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	if (start & (CACHE_LINE_SIZE - 1)) {
 		start &= ~(CACHE_LINE_SIZE - 1);
 		debug_writel(0x03);
@@ -242,12 +290,18 @@ static void l2x0_inv_range(unsigned long start, unsigned long end)
 		}
 
 		if (blk_end < end) {
+<<<<<<< HEAD
 			raw_spin_unlock_irqrestore(&l2x0_lock, flags);
 			raw_spin_lock_irqsave(&l2x0_lock, flags);
+=======
+			spin_unlock_irqrestore(&l2x0_lock, flags);
+			spin_lock_irqsave(&l2x0_lock, flags);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		}
 	}
 	cache_wait(base + L2X0_INV_LINE_PA, 1);
 	cache_sync();
+<<<<<<< HEAD
 	raw_spin_unlock_irqrestore(&l2x0_lock, flags);
 }
 
@@ -270,6 +324,9 @@ static void l2x0_inv_range_atomic(unsigned long start, unsigned long end)
 		writel_relaxed(addr, l2x0_base + L2X0_INV_LINE_PA);
 
 	mb();
+=======
+	spin_unlock_irqrestore(&l2x0_lock, flags);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 static void l2x0_clean_range(unsigned long start, unsigned long end)
@@ -282,7 +339,11 @@ static void l2x0_clean_range(unsigned long start, unsigned long end)
 		return;
 	}
 
+<<<<<<< HEAD
 	raw_spin_lock_irqsave(&l2x0_lock, flags);
+=======
+	spin_lock_irqsave(&l2x0_lock, flags);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	start &= ~(CACHE_LINE_SIZE - 1);
 	while (start < end) {
 		unsigned long blk_end = start + min(end - start, 4096UL);
@@ -293,12 +354,18 @@ static void l2x0_clean_range(unsigned long start, unsigned long end)
 		}
 
 		if (blk_end < end) {
+<<<<<<< HEAD
 			raw_spin_unlock_irqrestore(&l2x0_lock, flags);
 			raw_spin_lock_irqsave(&l2x0_lock, flags);
+=======
+			spin_unlock_irqrestore(&l2x0_lock, flags);
+			spin_lock_irqsave(&l2x0_lock, flags);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		}
 	}
 	cache_wait(base + L2X0_CLEAN_LINE_PA, 1);
 	cache_sync();
+<<<<<<< HEAD
 	raw_spin_unlock_irqrestore(&l2x0_lock, flags);
 }
 
@@ -311,6 +378,9 @@ static void l2x0_clean_range_atomic(unsigned long start, unsigned long end)
 		writel_relaxed(addr, l2x0_base + L2X0_CLEAN_LINE_PA);
 
 	mb();
+=======
+	spin_unlock_irqrestore(&l2x0_lock, flags);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 static void l2x0_flush_range(unsigned long start, unsigned long end)
@@ -323,7 +393,11 @@ static void l2x0_flush_range(unsigned long start, unsigned long end)
 		return;
 	}
 
+<<<<<<< HEAD
 	raw_spin_lock_irqsave(&l2x0_lock, flags);
+=======
+	spin_lock_irqsave(&l2x0_lock, flags);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	start &= ~(CACHE_LINE_SIZE - 1);
 	while (start < end) {
 		unsigned long blk_end = start + min(end - start, 4096UL);
@@ -336,12 +410,18 @@ static void l2x0_flush_range(unsigned long start, unsigned long end)
 		debug_writel(0x00);
 
 		if (blk_end < end) {
+<<<<<<< HEAD
 			raw_spin_unlock_irqrestore(&l2x0_lock, flags);
 			raw_spin_lock_irqsave(&l2x0_lock, flags);
+=======
+			spin_unlock_irqrestore(&l2x0_lock, flags);
+			spin_lock_irqsave(&l2x0_lock, flags);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		}
 	}
 	cache_wait(base + L2X0_CLEAN_INV_LINE_PA, 1);
 	cache_sync();
+<<<<<<< HEAD
 	raw_spin_unlock_irqrestore(&l2x0_lock, flags);
 }
 
@@ -354,21 +434,33 @@ void l2x0_flush_range_atomic(unsigned long start, unsigned long end)
 		writel_relaxed(addr, l2x0_base + L2X0_CLEAN_INV_LINE_PA);
 
 	mb();
+=======
+	spin_unlock_irqrestore(&l2x0_lock, flags);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 static void l2x0_disable(void)
 {
 	unsigned long flags;
 
+<<<<<<< HEAD
 	raw_spin_lock_irqsave(&l2x0_lock, flags);
 	__l2x0_flush_all();
 	writel_relaxed(0, l2x0_base + L2X0_CTRL);
 	dsb();
 	raw_spin_unlock_irqrestore(&l2x0_lock, flags);
+=======
+	spin_lock_irqsave(&l2x0_lock, flags);
+	__l2x0_flush_all();
+	writel_relaxed(0, l2x0_base + L2X0_CTRL);
+	dsb();
+	spin_unlock_irqrestore(&l2x0_lock, flags);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 void __init l2x0_init(void __iomem *base, __u32 aux_val, __u32 aux_mask)
 {
+<<<<<<< HEAD
 	__u32 aux, bits;
 	__u32 way_size = 0;
 	const char *type;
@@ -380,12 +472,24 @@ void __init l2x0_init(void __iomem *base, __u32 aux_val, __u32 aux_mask)
 	bits &= ~0x01; /* clear bit 0 */
 	writel_relaxed(bits, l2x0_base + L2X0_CTRL);
 
+=======
+	__u32 aux;
+	__u32 cache_id;
+	__u32 way_size = 0;
+	int ways;
+	const char *type;
+
+	l2x0_base = base;
+
+	cache_id = readl_relaxed(l2x0_base + L2X0_CACHE_ID);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	aux = readl_relaxed(l2x0_base + L2X0_AUX_CTRL);
 
 	aux &= aux_mask;
 	aux |= aux_val;
 
 	/* Determine the number of ways */
+<<<<<<< HEAD
 	switch (l2x0_cache_id & L2X0_CACHE_ID_PART_MASK) {
 	case L2X0_CACHE_ID_PART_L310:
 		if (aux & (1 << 16))
@@ -396,21 +500,43 @@ void __init l2x0_init(void __iomem *base, __u32 aux_val, __u32 aux_mask)
 		break;
 	case L2X0_CACHE_ID_PART_L210:
 		l2x0_ways = (aux >> 13) & 0xf;
+=======
+	switch (cache_id & L2X0_CACHE_ID_PART_MASK) {
+	case L2X0_CACHE_ID_PART_L310:
+		if (aux & (1 << 16))
+			ways = 16;
+		else
+			ways = 8;
+		type = "L310";
+		break;
+	case L2X0_CACHE_ID_PART_L210:
+		ways = (aux >> 13) & 0xf;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		type = "L210";
 		break;
 	default:
 		/* Assume unknown chips have 8 ways */
+<<<<<<< HEAD
 		l2x0_ways = 8;
 		type = "L2x0 series";
 		break;
 	}
 	writel_relaxed(aux, l2x0_base + L2X0_AUX_CTRL);
 	l2x0_way_mask = (1 << l2x0_ways) - 1;
+=======
+		ways = 8;
+		type = "L2x0 series";
+		break;
+	}
+
+	l2x0_way_mask = (1 << ways) - 1;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	/*
 	 * L2 cache Size =  Way size * Number of ways
 	 */
 	way_size = (aux & L2X0_AUX_CTRL_WAY_SIZE_MASK) >> 17;
+<<<<<<< HEAD
 	way_size = SZ_1K << (way_size + 3);
 	l2x0_size = l2x0_ways * way_size;
 	l2x0_sets = way_size / CACHE_LINE_SIZE;
@@ -446,11 +572,37 @@ void __init l2x0_init(void __iomem *base, __u32 aux_val, __u32 aux_mask)
 
 	outer_cache.sync = l2x0_cache_sync;
 
+=======
+	way_size = 1 << (way_size + 3);
+	l2x0_size = ways * way_size * SZ_1K;
+
+	/*
+	 * Check if l2x0 controller is already enabled.
+	 * If you are booting from non-secure mode
+	 * accessing the below registers will fault.
+	 */
+	if (!(readl_relaxed(l2x0_base + L2X0_CTRL) & 1)) {
+
+		/* l2x0 controller is disabled */
+		writel_relaxed(aux, l2x0_base + L2X0_AUX_CTRL);
+
+		l2x0_inv_all();
+
+		/* enable L2X0 */
+		writel_relaxed(1, l2x0_base + L2X0_CTRL);
+	}
+
+	outer_cache.inv_range = l2x0_inv_range;
+	outer_cache.clean_range = l2x0_clean_range;
+	outer_cache.flush_range = l2x0_flush_range;
+	outer_cache.sync = l2x0_cache_sync;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	outer_cache.flush_all = l2x0_flush_all;
 	outer_cache.inv_all = l2x0_inv_all;
 	outer_cache.disable = l2x0_disable;
 	outer_cache.set_debug = l2x0_set_debug;
 
+<<<<<<< HEAD
 	mb();
 	printk(KERN_INFO "%s cache controller enabled\n", type);
 	printk(KERN_INFO "l2x0: %d ways, CACHE_ID 0x%08x, AUX_CTRL 0x%08x, Cache size: %d B\n",
@@ -490,4 +642,9 @@ void l2x0_resume(int collapsed)
 	writel_relaxed(1, l2x0_base + L2X0_CTRL);
 
 	mb();
+=======
+	printk(KERN_INFO "%s cache controller enabled\n", type);
+	printk(KERN_INFO "l2x0: %d ways, CACHE_ID 0x%08x, AUX_CTRL 0x%08x, Cache size: %d B\n",
+			ways, cache_id, aux, l2x0_size);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }

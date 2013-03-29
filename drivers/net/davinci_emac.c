@@ -1008,7 +1008,11 @@ static void emac_rx_handler(void *token, int len, int status)
 	int			ret;
 
 	/* free and bail if we are shutting down */
+<<<<<<< HEAD
 	if (unlikely(!netif_running(ndev) || !netif_carrier_ok(ndev))) {
+=======
+	if (unlikely(!netif_running(ndev))) {
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		dev_kfree_skb_any(skb);
 		return;
 	}
@@ -1037,7 +1041,13 @@ static void emac_rx_handler(void *token, int len, int status)
 recycle:
 	ret = cpdma_chan_submit(priv->rxchan, skb, skb->data,
 			skb_tailroom(skb), GFP_KERNEL);
+<<<<<<< HEAD
 	if (WARN_ON(ret < 0))
+=======
+
+	WARN_ON(ret == -ENOMEM);
+	if (unlikely(ret < 0))
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		dev_kfree_skb_any(skb);
 }
 

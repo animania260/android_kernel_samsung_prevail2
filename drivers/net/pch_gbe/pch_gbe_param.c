@@ -320,10 +320,17 @@ static void pch_gbe_check_copper_options(struct pch_gbe_adapter *adapter)
 			pr_debug("AutoNeg specified along with Speed or Duplex, AutoNeg parameter ignored\n");
 			hw->phy.autoneg_advertised = opt.def;
 		} else {
+<<<<<<< HEAD
 			hw->phy.autoneg_advertised = AutoNeg;
 			pch_gbe_validate_option(
 				(int *)(&hw->phy.autoneg_advertised),
 				&opt, adapter);
+=======
+			int tmp = AutoNeg;
+
+			pch_gbe_validate_option(&tmp, &opt, adapter);
+			hw->phy.autoneg_advertised = tmp;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		}
 	}
 
@@ -494,9 +501,16 @@ void pch_gbe_check_options(struct pch_gbe_adapter *adapter)
 			.arg  = { .l = { .nr = (int)ARRAY_SIZE(fc_list),
 					 .p = fc_list } }
 		};
+<<<<<<< HEAD
 		hw->mac.fc = FlowControl;
 		pch_gbe_validate_option((int *)(&hw->mac.fc),
 						&opt, adapter);
+=======
+		int tmp = FlowControl;
+
+		pch_gbe_validate_option(&tmp, &opt, adapter);
+		hw->mac.fc = tmp;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	}
 
 	pch_gbe_check_copper_options(adapter);

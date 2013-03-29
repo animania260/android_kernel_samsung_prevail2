@@ -1168,6 +1168,7 @@ static struct mempolicy *shmem_get_sbmpol(struct shmem_sb_info *sbinfo)
 static struct page *shmem_swapin(swp_entry_t entry, gfp_t gfp,
 			struct shmem_inode_info *info, unsigned long idx)
 {
+<<<<<<< HEAD
 	struct mempolicy mpol, *spol;
 	struct vm_area_struct pvma;
 	struct page *page;
@@ -1175,12 +1176,27 @@ static struct page *shmem_swapin(swp_entry_t entry, gfp_t gfp,
 	spol = mpol_cond_copy(&mpol,
 				mpol_shared_policy_lookup(&info->policy, idx));
 
+=======
+	struct vm_area_struct pvma;
+	struct page *page;
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	/* Create a pseudo vma that just contains the policy */
 	pvma.vm_start = 0;
 	pvma.vm_pgoff = idx;
 	pvma.vm_ops = NULL;
+<<<<<<< HEAD
 	pvma.vm_policy = spol;
 	page = swapin_readahead(entry, gfp, &pvma, 0);
+=======
+	pvma.vm_policy = mpol_shared_policy_lookup(&info->policy, idx);
+
+	page = swapin_readahead(entry, gfp, &pvma, 0);
+
+	/* Drop reference taken by mpol_shared_policy_lookup() */
+	mpol_cond_put(pvma.vm_policy);
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	return page;
 }
 
@@ -1188,6 +1204,10 @@ static struct page *shmem_alloc_page(gfp_t gfp,
 			struct shmem_inode_info *info, unsigned long idx)
 {
 	struct vm_area_struct pvma;
+<<<<<<< HEAD
+=======
+	struct page *page;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	/* Create a pseudo vma that just contains the policy */
 	pvma.vm_start = 0;
@@ -1195,10 +1215,19 @@ static struct page *shmem_alloc_page(gfp_t gfp,
 	pvma.vm_ops = NULL;
 	pvma.vm_policy = mpol_shared_policy_lookup(&info->policy, idx);
 
+<<<<<<< HEAD
 	/*
 	 * alloc_page_vma() will drop the shared policy reference
 	 */
 	return alloc_page_vma(gfp, &pvma, 0);
+=======
+	page = alloc_page_vma(gfp, &pvma, 0);
+
+	/* Drop reference taken by mpol_shared_policy_lookup() */
+	mpol_cond_put(pvma.vm_policy);
+
+	return page;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 #else /* !CONFIG_NUMA */
 #ifdef CONFIG_TMPFS
@@ -2348,12 +2377,22 @@ static struct dentry *shmem_fh_to_dentry(struct super_block *sb,
 {
 	struct inode *inode;
 	struct dentry *dentry = NULL;
+<<<<<<< HEAD
 	u64 inum = fid->raw[2];
 	inum = (inum << 32) | fid->raw[1];
+=======
+	u64 inum;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	if (fh_len < 3)
 		return NULL;
 
+<<<<<<< HEAD
+=======
+	inum = fid->raw[2];
+	inum = (inum << 32) | fid->raw[1];
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	inode = ilookup5(sb, (unsigned long)(inum + fid->raw[0]),
 			shmem_match, fid->raw);
 	if (inode) {
@@ -2499,6 +2538,10 @@ static int shmem_remount_fs(struct super_block *sb, int *flags, char *data)
 	unsigned long inodes;
 	int error = -EINVAL;
 
+<<<<<<< HEAD
+=======
+	config.mpol = NULL;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	if (shmem_parse_options(data, &config, true))
 		return error;
 
@@ -2524,8 +2567,18 @@ static int shmem_remount_fs(struct super_block *sb, int *flags, char *data)
 	sbinfo->max_inodes  = config.max_inodes;
 	sbinfo->free_inodes = config.max_inodes - inodes;
 
+<<<<<<< HEAD
 	mpol_put(sbinfo->mpol);
 	sbinfo->mpol        = config.mpol;	/* transfers initial ref */
+=======
+	/*
+	 * Preserve previous mempolicy unless mpol remount option was specified.
+	 */
+	if (config.mpol) {
+		mpol_put(sbinfo->mpol);
+		sbinfo->mpol = config.mpol;	/* transfers initial ref */
+	}
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 out:
 	spin_unlock(&sbinfo->stat_lock);
 	return error;
@@ -3015,6 +3068,7 @@ put_memory:
 }
 EXPORT_SYMBOL_GPL(shmem_file_setup);
 
+<<<<<<< HEAD
 void shmem_set_file(struct vm_area_struct *vma, struct file *file)
 {
 	if (vma->vm_file)
@@ -3024,6 +3078,8 @@ void shmem_set_file(struct vm_area_struct *vma, struct file *file)
 	vma->vm_flags |= VM_CAN_NONLINEAR;
 }
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 /**
  * shmem_zero_setup - setup a shared anonymous mapping
  * @vma: the vma to be mmapped is prepared by do_mmap_pgoff
@@ -3037,7 +3093,15 @@ int shmem_zero_setup(struct vm_area_struct *vma)
 	if (IS_ERR(file))
 		return PTR_ERR(file);
 
+<<<<<<< HEAD
 	shmem_set_file(vma, file);
+=======
+	if (vma->vm_file)
+		fput(vma->vm_file);
+	vma->vm_file = file;
+	vma->vm_ops = &shmem_vm_ops;
+	vma->vm_flags |= VM_CAN_NONLINEAR;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	return 0;
 }
 

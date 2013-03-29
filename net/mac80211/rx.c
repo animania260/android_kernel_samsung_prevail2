@@ -140,8 +140,14 @@ ieee80211_add_rx_radiotap_header(struct ieee80211_local *local,
 	pos++;
 
 	/* IEEE80211_RADIOTAP_RATE */
+<<<<<<< HEAD
 	if (status->flag & RX_FLAG_HT) {
 		/*
+=======
+	if (!rate || status->flag & RX_FLAG_HT) {
+		/*
+		 * Without rate information don't add it. If we have,
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		 * MCS information is a separate field in radiotap,
 		 * added below. The byte here is needed as padding
 		 * for the channel though, so initialise it to 0.
@@ -162,12 +168,23 @@ ieee80211_add_rx_radiotap_header(struct ieee80211_local *local,
 	else if (status->flag & RX_FLAG_HT)
 		put_unaligned_le16(IEEE80211_CHAN_DYN | IEEE80211_CHAN_2GHZ,
 				   pos);
+<<<<<<< HEAD
 	else if (rate->flags & IEEE80211_RATE_ERP_G)
 		put_unaligned_le16(IEEE80211_CHAN_OFDM | IEEE80211_CHAN_2GHZ,
 				   pos);
 	else
 		put_unaligned_le16(IEEE80211_CHAN_CCK | IEEE80211_CHAN_2GHZ,
 				   pos);
+=======
+	else if (rate && rate->flags & IEEE80211_RATE_ERP_G)
+		put_unaligned_le16(IEEE80211_CHAN_OFDM | IEEE80211_CHAN_2GHZ,
+				   pos);
+	else if (rate)
+		put_unaligned_le16(IEEE80211_CHAN_CCK | IEEE80211_CHAN_2GHZ,
+				   pos);
+	else
+		put_unaligned_le16(IEEE80211_CHAN_2GHZ, pos);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	pos += 2;
 
 	/* IEEE80211_RADIOTAP_DBM_ANTSIGNAL */
@@ -607,7 +624,11 @@ static void ieee80211_sta_reorder_release(struct ieee80211_hw *hw,
 	index = seq_sub(tid_agg_rx->head_seq_num, tid_agg_rx->ssn) %
 						tid_agg_rx->buf_size;
 	if (!tid_agg_rx->reorder_buf[index] &&
+<<<<<<< HEAD
 	    tid_agg_rx->stored_mpdu_num > 1) {
+=======
+	    tid_agg_rx->stored_mpdu_num) {
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		/*
 		 * No buffers ready to be released, but check whether any
 		 * frames in the reorder buffer have timed out.
@@ -1349,11 +1370,21 @@ ieee80211_rx_h_defragment(struct ieee80211_rx_data *rx)
 
 	hdr = (struct ieee80211_hdr *)rx->skb->data;
 	fc = hdr->frame_control;
+<<<<<<< HEAD
+=======
+
+	if (ieee80211_is_ctl(fc))
+		return RX_CONTINUE;
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	sc = le16_to_cpu(hdr->seq_ctrl);
 	frag = sc & IEEE80211_SCTL_FRAG;
 
 	if (likely((!ieee80211_has_morefrags(fc) && frag == 0) ||
+<<<<<<< HEAD
 		   (rx->skb)->len < 24 ||
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		   is_multicast_ether_addr(hdr->addr1))) {
 		/* not fragmented */
 		goto out;
@@ -2288,7 +2319,11 @@ ieee80211_rx_h_action_return(struct ieee80211_rx_data *rx)
 	 * frames that we didn't handle, including returning unknown
 	 * ones. For all other modes we will return them to the sender,
 	 * setting the 0x80 bit in the action category, as required by
+<<<<<<< HEAD
 	 * 802.11-2007 7.3.1.11.
+=======
+	 * 802.11-2012 9.24.4.
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	 * Newer versions of hostapd shall also use the management frame
 	 * registration mechanisms, but older ones still use cooked
 	 * monitor interfaces so push all frames there.
@@ -2298,6 +2333,12 @@ ieee80211_rx_h_action_return(struct ieee80211_rx_data *rx)
 	     sdata->vif.type == NL80211_IFTYPE_AP_VLAN))
 		return RX_DROP_MONITOR;
 
+<<<<<<< HEAD
+=======
+	if (is_multicast_ether_addr(mgmt->da))
+		return RX_DROP_MONITOR;
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	/* do not return rejected action frames */
 	if (mgmt->u.action.category & 0x80)
 		return RX_DROP_UNUSABLE;
@@ -2762,10 +2803,22 @@ static void __ieee80211_rx_handle_packet(struct ieee80211_hw *hw,
 		     test_bit(SCAN_SW_SCANNING, &local->scanning)))
 		status->rx_flags |= IEEE80211_RX_IN_SCAN;
 
+<<<<<<< HEAD
 	if (ieee80211_is_mgmt(fc))
 		err = skb_linearize(skb);
 	else
 		err = !pskb_may_pull(skb, ieee80211_hdrlen(fc));
+=======
+	if (ieee80211_is_mgmt(fc)) {
+		/* drop frame if too short for header */
+		if (skb->len < ieee80211_hdrlen(fc))
+			err = -ENOBUFS;
+		else
+			err = skb_linearize(skb);
+	} else {
+		err = !pskb_may_pull(skb, ieee80211_hdrlen(fc));
+	}
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	if (err) {
 		dev_kfree_skb(skb);

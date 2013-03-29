@@ -22,9 +22,12 @@
    SOFTWARE IS DISCLAIMED.
 */
 
+<<<<<<< HEAD
 #ifdef CONFIG_BT_MGMT
 #include "sco_mgmt.h"
 #else
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #ifndef __SCO_H
 #define __SCO_H
 
@@ -40,7 +43,10 @@
 struct sockaddr_sco {
 	sa_family_t	sco_family;
 	bdaddr_t	sco_bdaddr;
+<<<<<<< HEAD
 	__u16		sco_pkt_type;
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 };
 
 /* SCO socket options */
@@ -76,10 +82,17 @@ struct sco_conn {
 
 struct sco_pinfo {
 	struct bt_sock	bt;
+<<<<<<< HEAD
 	__u16		pkt_type;
 
+=======
+	__u32		flags;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	struct sco_conn	*conn;
 };
 
 #endif /* __SCO_H */
+<<<<<<< HEAD
 #endif /* CONFIG_BT_MGMT */
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y

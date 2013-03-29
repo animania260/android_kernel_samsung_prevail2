@@ -745,6 +745,10 @@ void __trace_hcall_entry(unsigned long opcode, unsigned long *args)
 		goto out;
 
 	(*depth)++;
+<<<<<<< HEAD
+=======
+	preempt_disable();
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	trace_hcall_entry(opcode, args);
 	(*depth)--;
 
@@ -767,6 +771,10 @@ void __trace_hcall_exit(long opcode, unsigned long retval,
 
 	(*depth)++;
 	trace_hcall_exit(opcode, retval, retbuf);
+<<<<<<< HEAD
+=======
+	preempt_enable();
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	(*depth)--;
 
 out:

@@ -17,7 +17,10 @@ struct mtd_info;
  * map_name:	the map probe function name
  * name:	flash device name (eg, as used with mtdparts=)
  * width:	width of mapped device
+<<<<<<< HEAD
  * interleave:  interleave mode feature support
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
  * init:	method called at driver/device initialisation
  * exit:	method called at driver/device removal
  * set_vpp:	method called to enable or disable VPP
@@ -29,7 +32,10 @@ struct flash_platform_data {
 	const char	*map_name;
 	const char	*name;
 	unsigned int	width;
+<<<<<<< HEAD
 	unsigned int    interleave;
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	int		(*init)(void);
 	void		(*exit)(void);
 	void		(*set_vpp)(int on);

@@ -25,7 +25,10 @@
 #include <asm/tlb.h>
 #include <asm/highmem.h>
 #include <asm/traps.h>
+<<<<<<< HEAD
 #include <asm/mmu_writeable.h>
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 #include <asm/mach/arch.h>
 #include <asm/mach/map.h>
@@ -50,9 +53,12 @@ pmd_t *top_pmd;
 #define CPOLICY_WRITEBACK	3
 #define CPOLICY_WRITEALLOC	4
 
+<<<<<<< HEAD
 #define RX_AREA_START           _text
 #define RX_AREA_END             __start_rodata
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 static unsigned int cachepolicy __initdata = CPOLICY_WRITEBACK;
 static unsigned int ecc_mask __initdata = 0;
 pgprot_t pgprot_user;
@@ -216,12 +222,15 @@ static struct mem_type mem_types[] = {
 		.prot_sect	= PROT_SECT_DEVICE | PMD_SECT_WB,
 		.domain		= DOMAIN_IO,
 	},	
+<<<<<<< HEAD
 	[MT_DEVICE_STRONGLY_ORDERED] = {  /* Guaranteed strongly ordered */
 		.prot_pte       = PROT_PTE_DEVICE,
 		.prot_l1        = PMD_TYPE_TABLE,
 		.prot_sect      = PROT_SECT_DEVICE | PMD_SECT_UNCACHED,
 		.domain         = DOMAIN_IO,
 	},
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	[MT_DEVICE_WC] = {	/* ioremap_wc */
 		.prot_pte	= PROT_PTE_DEVICE | L_PTE_MT_DEV_WC,
 		.prot_l1	= PMD_TYPE_TABLE,
@@ -260,6 +269,7 @@ static struct mem_type mem_types[] = {
 		.prot_sect = PMD_TYPE_SECT | PMD_SECT_AP_WRITE,
 		.domain    = DOMAIN_KERNEL,
 	},
+<<<<<<< HEAD
 	[MT_MEMORY_R] = {
 		.prot_sect = PMD_TYPE_SECT | PMD_SECT_XN,
 		.domain    = DOMAIN_KERNEL,
@@ -272,6 +282,8 @@ static struct mem_type mem_types[] = {
 		.prot_sect = PMD_TYPE_SECT,
 		.domain    = DOMAIN_KERNEL,
 	},
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	[MT_ROM] = {
 		.prot_sect = PMD_TYPE_SECT,
 		.domain    = DOMAIN_KERNEL,
@@ -375,8 +387,11 @@ static void __init build_mem_type_table(void)
 			mem_types[MT_DEVICE_NONSHARED].prot_sect |= PMD_SECT_XN;
 			mem_types[MT_DEVICE_CACHED].prot_sect |= PMD_SECT_XN;
 			mem_types[MT_DEVICE_WC].prot_sect |= PMD_SECT_XN;
+<<<<<<< HEAD
 			mem_types[MT_DEVICE_STRONGLY_ORDERED].prot_sect |=
 								PMD_SECT_XN;
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		}
 		if (cpu_arch >= CPU_ARCH_ARMv7 && (cr & CR_TRE)) {
 			/*
@@ -450,8 +465,11 @@ static void __init build_mem_type_table(void)
 		 * from SVC mode and no access from userspace.
 		 */
 		mem_types[MT_ROM].prot_sect |= PMD_SECT_APX|PMD_SECT_AP_WRITE;
+<<<<<<< HEAD
 		mem_types[MT_MEMORY_RX].prot_sect |= PMD_SECT_APX|PMD_SECT_AP_WRITE;
 		mem_types[MT_MEMORY_R].prot_sect |= PMD_SECT_APX|PMD_SECT_AP_WRITE;
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		mem_types[MT_MINICLEAN].prot_sect |= PMD_SECT_APX|PMD_SECT_AP_WRITE;
 		mem_types[MT_CACHECLEAN].prot_sect |= PMD_SECT_APX|PMD_SECT_AP_WRITE;
 
@@ -470,9 +488,12 @@ static void __init build_mem_type_table(void)
 			mem_types[MT_MEMORY].prot_sect |= PMD_SECT_S;
 			mem_types[MT_MEMORY].prot_pte |= L_PTE_SHARED;
 			mem_types[MT_MEMORY_NONCACHED].prot_sect |= PMD_SECT_S;
+<<<<<<< HEAD
 			mem_types[MT_MEMORY_R].prot_sect |= PMD_SECT_S;
 			mem_types[MT_MEMORY_RW].prot_sect |= PMD_SECT_S;
 			mem_types[MT_MEMORY_RX].prot_sect |= PMD_SECT_S;
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			mem_types[MT_MEMORY_NONCACHED].prot_pte |= L_PTE_SHARED;
 		}
 	}
@@ -496,7 +517,11 @@ static void __init build_mem_type_table(void)
 	}
 
 	for (i = 0; i < 16; i++) {
+<<<<<<< HEAD
 		unsigned long v = pgprot_val(protection_map[i]);
+=======
+		pteval_t v = pgprot_val(protection_map[i]);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		protection_map[i] = __pgprot(v | user_pgprot);
 	}
 
@@ -512,9 +537,12 @@ static void __init build_mem_type_table(void)
 	mem_types[MT_MEMORY].prot_sect |= ecc_mask | cp->pmd;
 	mem_types[MT_MEMORY].prot_pte |= kern_pgprot;
 	mem_types[MT_MEMORY_NONCACHED].prot_sect |= ecc_mask;
+<<<<<<< HEAD
 	mem_types[MT_MEMORY_R].prot_sect |= ecc_mask | cp->pmd;
 	mem_types[MT_MEMORY_RW].prot_sect |= ecc_mask | cp->pmd;
 	mem_types[MT_MEMORY_RX].prot_sect |= ecc_mask | cp->pmd;
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	mem_types[MT_ROM].prot_sect |= cp->pmd;
 
 	switch (cp->pmd) {
@@ -694,7 +722,11 @@ static void __init create_36bit_mapping(struct map_desc *md,
  * offsets, and we take full advantage of sections and
  * supersections.
  */
+<<<<<<< HEAD
 void __init create_mapping(struct map_desc *md)
+=======
+static void __init create_mapping(struct map_desc *md)
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 {
 	unsigned long addr, length, end;
 	phys_addr_t phys;
@@ -759,7 +791,11 @@ void __init iotable_init(struct map_desc *io_desc, int nr)
 		create_mapping(io_desc + i);
 }
 
+<<<<<<< HEAD
 static void * __initdata vmalloc_min = (void *)(VMALLOC_END - CONFIG_VMALLOC_RESERVE);
+=======
+static void * __initdata vmalloc_min = (void *)(VMALLOC_END - SZ_128M);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 /*
  * vmalloc=size forces the vmalloc area to be exactly 'size'
@@ -795,6 +831,7 @@ void __init sanity_check_meminfo(void)
 {
 	int i, j, highmem = 0;
 
+<<<<<<< HEAD
 #ifdef CONFIG_DONT_MAP_HOLE_AFTER_MEMBANK0
 	find_membank0_hole();
 #endif
@@ -803,6 +840,8 @@ void __init sanity_check_meminfo(void)
 	if (movable_reserved_size && __pa(vmalloc_min) > movable_reserved_start)
 		vmalloc_min = __va(movable_reserved_start);
 #endif
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	for (i = 0, j = 0; i < meminfo.nr_banks; i++) {
 		struct membank *bank = &meminfo.bank[j];
 		*bank = meminfo.bank[i];
@@ -1040,6 +1079,7 @@ static void __init kmap_init(void)
 #endif
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_STRICT_MEMORY_RWX
 static struct {
 	pmd_t *pmd_to_flush;
@@ -1138,6 +1178,8 @@ void mem_text_write_kernel_word(unsigned long *addr, unsigned long word)
 }
 EXPORT_SYMBOL(mem_text_write_kernel_word);
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 static void __init map_lowmem(void)
 {
 	struct memblock_region *reg;
@@ -1155,6 +1197,7 @@ static void __init map_lowmem(void)
 
 		map.pfn = __phys_to_pfn(start);
 		map.virtual = __phys_to_virt(start);
+<<<<<<< HEAD
 #ifdef CONFIG_STRICT_MEMORY_RWX
 		if (start <= __pa(_text) && __pa(_text) < end) {
 			map.length = (unsigned long)_text - map.virtual;
@@ -1188,6 +1231,10 @@ static void __init map_lowmem(void)
 		map.length = end - start;
 		map.type = MT_MEMORY;
 #endif
+=======
+		map.length = end - start;
+		map.type = MT_MEMORY;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 		create_mapping(&map);
 	}
@@ -1218,6 +1265,7 @@ void __init paging_init(struct machine_desc *mdesc)
 
 	empty_zero_page = virt_to_page(zero_page);
 	__flush_dcache_page(NULL, empty_zero_page);
+<<<<<<< HEAD
 
 #if defined(CONFIG_ARCH_MSM7X27)
 	/*
@@ -1230,4 +1278,6 @@ void __init paging_init(struct machine_desc *mdesc)
 	 */
 	map_page_strongly_ordered();
 #endif
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }

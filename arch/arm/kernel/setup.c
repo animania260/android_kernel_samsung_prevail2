@@ -97,8 +97,11 @@ EXPORT_SYMBOL(system_serial_high);
 unsigned int elf_hwcap __read_mostly;
 EXPORT_SYMBOL(elf_hwcap);
 
+<<<<<<< HEAD
 unsigned int boot_reason;
 EXPORT_SYMBOL(boot_reason);
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 #ifdef MULTI_CPU
 struct processor processor __read_mostly;
@@ -903,9 +906,12 @@ void __init setup_arch(char **cmdline_p)
 
 	parse_early_param();
 
+<<<<<<< HEAD
 	if (mdesc->init_very_early)
 		mdesc->init_very_early();
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	sanity_check_meminfo();
 	arm_memblock_init(&meminfo, mdesc);
 
@@ -984,10 +990,13 @@ static const char *hwcap_str[] = {
 	"neon",
 	"vfpv3",
 	"vfpv3d16",
+<<<<<<< HEAD
 	"tls",
 	"vfpv4",
 	"idiva",
 	"idivt",
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	NULL
 };
 
@@ -999,7 +1008,11 @@ static int c_show(struct seq_file *m, void *v)
 		   cpu_name, read_cpuid_id() & 15, elf_platform);
 
 #if defined(CONFIG_SMP)
+<<<<<<< HEAD
 	for_each_present_cpu(i) {
+=======
+	for_each_online_cpu(i) {
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		/*
 		 * glibc reads /proc/cpuinfo to determine the number of
 		 * online processors, looking for lines beginning with

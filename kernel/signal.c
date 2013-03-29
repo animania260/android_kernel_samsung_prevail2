@@ -437,6 +437,12 @@ flush_signal_handlers(struct task_struct *t, int force_default)
 		if (force_default || ka->sa.sa_handler != SIG_IGN)
 			ka->sa.sa_handler = SIG_DFL;
 		ka->sa.sa_flags = 0;
+<<<<<<< HEAD
+=======
+#ifdef SA_RESTORER
+		ka->sa.sa_restorer = NULL;
+#endif
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		sigemptyset(&ka->sa.sa_mask);
 		ka++;
 	}
@@ -631,6 +637,7 @@ int dequeue_signal(struct task_struct *tsk, sigset_t *mask, siginfo_t *info)
  * No need to set need_resched since signal event passing
  * goes through ->blocked
  */
+<<<<<<< HEAD
 void signal_wake_up(struct task_struct *t, int resume)
 {
 	unsigned int mask;
@@ -639,15 +646,26 @@ void signal_wake_up(struct task_struct *t, int resume)
 
 	/*
 	 * For SIGKILL, we want to wake it up in the stopped/traced/killable
+=======
+void signal_wake_up_state(struct task_struct *t, unsigned int state)
+{
+	set_tsk_thread_flag(t, TIF_SIGPENDING);
+	/*
+	 * TASK_WAKEKILL also means wake it up in the stopped/traced/killable
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	 * case. We don't check t->state here because there is a race with it
 	 * executing another processor and just now entering stopped state.
 	 * By using wake_up_state, we ensure the process will wake up and
 	 * handle its death signal.
 	 */
+<<<<<<< HEAD
 	mask = TASK_INTERRUPTIBLE;
 	if (resume)
 		mask |= TASK_WAKEKILL;
 	if (!wake_up_state(t, mask))
+=======
+	if (!wake_up_state(t, state | TASK_INTERRUPTIBLE))
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		kick_process(t);
 }
 
@@ -1675,6 +1693,13 @@ static inline int may_ptrace_stop(void)
 	 * If SIGKILL was already sent before the caller unlocked
 	 * ->siglock we must see ->core_state != NULL. Otherwise it
 	 * is safe to enter schedule().
+<<<<<<< HEAD
+=======
+	 *
+	 * This is almost outdated, a task with the pending SIGKILL can't
+	 * block in TASK_TRACED. But PTRACE_EVENT_EXIT can be reported
+	 * after SIGKILL was already dequeued.
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	 */
 	if (unlikely(current->mm->core_state) &&
 	    unlikely(current->mm == current->parent->mm))
@@ -1806,6 +1831,10 @@ static void ptrace_stop(int exit_code, int why, int clear_code, siginfo_t *info)
 		if (gstop_done)
 			do_notify_parent_cldstop(current, false, why);
 
+<<<<<<< HEAD
+=======
+		/* tasklist protects us from ptrace_freeze_traced() */
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		__set_current_state(TASK_RUNNING);
 		if (clear_code)
 			current->exit_code = 0;
@@ -1894,21 +1923,31 @@ static int do_signal_stop(int signr)
 		 */
 		if (!(sig->flags & SIGNAL_STOP_STOPPED))
 			sig->group_exit_code = signr;
+<<<<<<< HEAD
 		else
 			WARN_ON_ONCE(!task_ptrace(current));
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 		current->group_stop &= ~GROUP_STOP_SIGMASK;
 		current->group_stop |= signr | gstop;
 		sig->group_stop_count = 1;
 		for (t = next_thread(current); t != current;
 		     t = next_thread(t)) {
+<<<<<<< HEAD
 			t->group_stop &= ~GROUP_STOP_SIGMASK;
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			/*
 			 * Setting state to TASK_STOPPED for a group
 			 * stop is always done with the siglock held,
 			 * so this check has no races.
 			 */
 			if (!(t->flags & PF_EXITING) && !task_is_stopped(t)) {
+<<<<<<< HEAD
+=======
+				t->group_stop &= ~GROUP_STOP_SIGMASK;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 				t->group_stop |= signr | gstop;
 				sig->group_stop_count++;
 				signal_wake_up(t, 0);

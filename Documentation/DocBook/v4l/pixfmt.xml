@@ -741,6 +741,7 @@ information.</para>
 	  <row id="V4L2-PIX-FMT-MPEG">
 	    <entry><constant>V4L2_PIX_FMT_MPEG</constant></entry>
 	    <entry>'MPEG'</entry>
+<<<<<<< HEAD
 	    <entry>MPEG multiplexed stream. The actual format is determined by
 extended control <constant>V4L2_CID_MPEG_STREAM_TYPE</constant>, see
 <xref linkend="mpeg-control-id" />.</entry>
@@ -790,6 +791,12 @@ extended control <constant>V4L2_CID_MPEG_STREAM_TYPE</constant>, see
 		<entry>'VC1L'</entry>
 		<entry>VC1, SMPTE 421M Annex L compliant stream.</entry>
 	  </row>
+=======
+	    <entry>MPEG stream. The actual format is determined by
+extended control <constant>V4L2_CID_MPEG_STREAM_TYPE</constant>, see
+<xref linkend="mpeg-control-id" />.</entry>
+	  </row>
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	</tbody>
       </tgroup>
     </table>

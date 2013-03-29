@@ -186,6 +186,12 @@ static struct omap_dss_board_info devkit8000_dss_data = {
 	.default_device = &devkit8000_lcd_device,
 };
 
+<<<<<<< HEAD
+=======
+static struct regulator_consumer_supply devkit8000_vdda_dac_supply =
+	REGULATOR_SUPPLY("vdda_dac", "omapdss_venc");
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 static uint32_t board_keymap[] = {
 	KEY(0, 0, KEY_1),
 	KEY(1, 0, KEY_2),
@@ -285,6 +291,23 @@ static struct regulator_init_data devkit8000_vmmc1 = {
 	.consumer_supplies	= &devkit8000_vmmc1_supply,
 };
 
+<<<<<<< HEAD
+=======
+/* VDAC for DSS driving S-Video (8 mA unloaded, max 65 mA) */
+static struct regulator_init_data devkit8000_vdac = {
+	.constraints = {
+		.min_uV			= 1800000,
+		.max_uV			= 1800000,
+		.valid_modes_mask	= REGULATOR_MODE_NORMAL
+					| REGULATOR_MODE_STANDBY,
+		.valid_ops_mask		= REGULATOR_CHANGE_MODE
+					| REGULATOR_CHANGE_STATUS,
+	},
+	.num_consumer_supplies	= 1,
+	.consumer_supplies	= &devkit8000_vdda_dac_supply,
+};
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 /* VPLL1 for digital video outputs */
 static struct regulator_init_data devkit8000_vpll1 = {
 	.constraints = {
@@ -314,10 +337,34 @@ static struct regulator_init_data devkit8000_vio = {
 	.consumer_supplies      = &devkit8000_vio_supply,
 };
 
+<<<<<<< HEAD
 static struct twl4030_platform_data devkit8000_twldata = {
 	/* platform_data for children goes here */
 	.gpio		= &devkit8000_gpio_data,
 	.vmmc1		= &devkit8000_vmmc1,
+=======
+static struct twl4030_usb_data devkit8000_usb_data = {
+	.usb_mode	= T2_USB_MODE_ULPI,
+};
+
+static struct twl4030_codec_audio_data devkit8000_audio_data;
+
+static struct twl4030_codec_data devkit8000_codec_data = {
+	.audio_mclk = 26000000,
+	.audio = &devkit8000_audio_data,
+};
+
+static struct twl4030_platform_data devkit8000_twldata = {
+	.irq_base	= TWL4030_IRQ_BASE,
+	.irq_end	= TWL4030_IRQ_END,
+
+	/* platform_data for children goes here */
+	.usb		= &devkit8000_usb_data,
+	.gpio		= &devkit8000_gpio_data,
+	.codec		= &devkit8000_codec_data,
+	.vmmc1		= &devkit8000_vmmc1,
+	.vdac		= &devkit8000_vdac,
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	.vpll1		= &devkit8000_vpll1,
 	.vio		= &devkit8000_vio,
 	.keypad		= &devkit8000_kp_data,
@@ -325,9 +372,12 @@ static struct twl4030_platform_data devkit8000_twldata = {
 
 static int __init devkit8000_i2c_init(void)
 {
+<<<<<<< HEAD
 	omap3_pmic_get_config(&devkit8000_twldata,
 			  TWL_COMMON_PDATA_USB | TWL_COMMON_PDATA_AUDIO,
 			  TWL_COMMON_REGULATOR_VDAC);
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	omap3_pmic_init("tps65930", &devkit8000_twldata);
 	/* Bus 3 is attached to the DVI port where devices like the pico DLP
 	 * projector don't work reliably with 400kHz */

@@ -308,7 +308,12 @@ static void sg_complete(struct urb *urb)
 				retval = usb_unlink_urb(io->urbs [i]);
 				if (retval != -EINPROGRESS &&
 				    retval != -ENODEV &&
+<<<<<<< HEAD
 				    retval != -EBUSY)
+=======
+				    retval != -EBUSY &&
+				    retval != -EIDRM)
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 					dev_err(&io->dev->dev,
 						"%s, unlink --> %d\n",
 						__func__, retval);
@@ -317,7 +322,10 @@ static void sg_complete(struct urb *urb)
 		}
 		spin_lock(&io->lock);
 	}
+<<<<<<< HEAD
 	urb->dev = NULL;
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	/* on the last completion, signal usb_sg_wait() */
 	io->bytes += urb->actual_length;
@@ -524,7 +532,10 @@ void usb_sg_wait(struct usb_sg_request *io)
 		case -ENXIO:	/* hc didn't queue this one */
 		case -EAGAIN:
 		case -ENOMEM:
+<<<<<<< HEAD
 			io->urbs[i]->dev = NULL;
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			retval = 0;
 			yield();
 			break;
@@ -542,7 +553,10 @@ void usb_sg_wait(struct usb_sg_request *io)
 
 			/* fail any uncompleted urbs */
 		default:
+<<<<<<< HEAD
 			io->urbs[i]->dev = NULL;
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			io->urbs[i]->status = retval;
 			dev_dbg(&io->dev->dev, "%s, submit --> %d\n",
 				__func__, retval);
@@ -593,7 +607,14 @@ void usb_sg_cancel(struct usb_sg_request *io)
 			if (!io->urbs [i]->dev)
 				continue;
 			retval = usb_unlink_urb(io->urbs [i]);
+<<<<<<< HEAD
 			if (retval != -EINPROGRESS && retval != -EBUSY)
+=======
+			if (retval != -EINPROGRESS
+					&& retval != -ENODEV
+					&& retval != -EBUSY
+					&& retval != -EIDRM)
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 				dev_warn(&io->dev->dev, "%s, unlink --> %d\n",
 					__func__, retval);
 		}
@@ -1135,8 +1156,11 @@ void usb_disable_interface(struct usb_device *dev, struct usb_interface *intf,
  * Deallocates hcd/hardware state for the endpoints (nuking all or most
  * pending urbs) and usbcore state for the interfaces, so that usbcore
  * must usb_set_configuration() before any interfaces could be used.
+<<<<<<< HEAD
  *
  * Must be called with hcd->bandwidth_mutex held.
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
  */
 void usb_disable_device(struct usb_device *dev, int skip_ep0)
 {
@@ -1189,7 +1213,13 @@ void usb_disable_device(struct usb_device *dev, int skip_ep0)
 			usb_disable_endpoint(dev, i + USB_DIR_IN, false);
 		}
 		/* Remove endpoints from the host controller internal state */
+<<<<<<< HEAD
 		usb_hcd_alloc_bandwidth(dev, NULL, NULL, NULL);
+=======
+		mutex_lock(hcd->bandwidth_mutex);
+		usb_hcd_alloc_bandwidth(dev, NULL, NULL, NULL);
+		mutex_unlock(hcd->bandwidth_mutex);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		/* Second pass: remove endpoint pointers */
 	}
 	for (i = skip_ep0; i < 16; ++i) {
@@ -1749,7 +1779,10 @@ free_interfaces:
 	/* if it's already configured, clear out old state first.
 	 * getting rid of old interfaces means unbinding their drivers.
 	 */
+<<<<<<< HEAD
 	mutex_lock(hcd->bandwidth_mutex);
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	if (dev->state != USB_STATE_ADDRESS)
 		usb_disable_device(dev, 1);	/* Skip ep0 */
 
@@ -1762,6 +1795,10 @@ free_interfaces:
 	 * host controller will not allow submissions to dropped endpoints.  If
 	 * this call fails, the device state is unchanged.
 	 */
+<<<<<<< HEAD
+=======
+	mutex_lock(hcd->bandwidth_mutex);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	ret = usb_hcd_alloc_bandwidth(dev, cp, NULL, NULL);
 	if (ret < 0) {
 		mutex_unlock(hcd->bandwidth_mutex);
@@ -1769,6 +1806,7 @@ free_interfaces:
 		goto free_interfaces;
 	}
 
+<<<<<<< HEAD
 	dev->actconfig = cp;
 	if (cp)
 		usb_notify_config_device(dev);
@@ -1794,6 +1832,10 @@ free_interfaces:
 	usb_set_device_state(dev, USB_STATE_CONFIGURED);
 
 	/* Initialize the new interface structures and the
+=======
+	/*
+	 * Initialize the new interface structures and the
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	 * hc/hcd/usbcore interface/endpoint state.
 	 */
 	for (i = 0; i < nintf; ++i) {
@@ -1805,7 +1847,10 @@ free_interfaces:
 		intfc = cp->intf_cache[i];
 		intf->altsetting = intfc->altsetting;
 		intf->num_altsetting = intfc->num_altsetting;
+<<<<<<< HEAD
 		intf->intf_assoc = find_iad(dev, cp, i);
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		kref_get(&intfc->ref);
 
 		alt = usb_altnum_to_altsetting(intf, 0);
@@ -1818,6 +1863,11 @@ free_interfaces:
 		if (!alt)
 			alt = &intf->altsetting[0];
 
+<<<<<<< HEAD
+=======
+		intf->intf_assoc =
+			find_iad(dev, cp, alt->desc.bInterfaceNumber);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		intf->cur_altsetting = alt;
 		usb_enable_interface(dev, intf, true);
 		intf->dev.parent = &dev->dev;
@@ -1836,6 +1886,38 @@ free_interfaces:
 	}
 	kfree(new_interfaces);
 
+<<<<<<< HEAD
+=======
+	ret = usb_control_msg(dev, usb_sndctrlpipe(dev, 0),
+			      USB_REQ_SET_CONFIGURATION, 0, configuration, 0,
+			      NULL, 0, USB_CTRL_SET_TIMEOUT);
+	if (ret < 0 && cp) {
+		/*
+		 * All the old state is gone, so what else can we do?
+		 * The device is probably useless now anyway.
+		 */
+		usb_hcd_alloc_bandwidth(dev, NULL, NULL, NULL);
+		for (i = 0; i < nintf; ++i) {
+			usb_disable_interface(dev, cp->interface[i], true);
+			put_device(&cp->interface[i]->dev);
+			cp->interface[i] = NULL;
+		}
+		cp = NULL;
+	}
+
+	dev->actconfig = cp;
+	mutex_unlock(hcd->bandwidth_mutex);
+
+	if (!cp) {
+		usb_set_device_state(dev, USB_STATE_ADDRESS);
+
+		/* Leave LPM disabled while the device is unconfigured. */
+		usb_autosuspend_device(dev);
+		return ret;
+	}
+	usb_set_device_state(dev, USB_STATE_CONFIGURED);
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	if (cp->string == NULL &&
 			!(dev->quirks & USB_QUIRK_CONFIG_INTF_STRINGS))
 		cp->string = usb_cache_string(dev, cp->desc.iConfiguration);

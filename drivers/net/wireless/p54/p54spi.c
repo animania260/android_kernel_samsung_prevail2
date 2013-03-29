@@ -589,8 +589,11 @@ static void p54spi_op_stop(struct ieee80211_hw *dev)
 
 	WARN_ON(priv->fw_state != FW_STATE_READY);
 
+<<<<<<< HEAD
 	cancel_work_sync(&priv->work);
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	p54spi_power_off(priv);
 	spin_lock_irqsave(&priv->tx_lock, flags);
 	INIT_LIST_HEAD(&priv->tx_pending);
@@ -598,6 +601,11 @@ static void p54spi_op_stop(struct ieee80211_hw *dev)
 
 	priv->fw_state = FW_STATE_OFF;
 	mutex_unlock(&priv->mutex);
+<<<<<<< HEAD
+=======
+
+	cancel_work_sync(&priv->work);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 static int __devinit p54spi_probe(struct spi_device *spi)
@@ -623,19 +631,31 @@ static int __devinit p54spi_probe(struct spi_device *spi)
 	ret = spi_setup(spi);
 	if (ret < 0) {
 		dev_err(&priv->spi->dev, "spi_setup failed");
+<<<<<<< HEAD
 		goto err_free_common;
+=======
+		goto err_free;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	}
 
 	ret = gpio_request(p54spi_gpio_power, "p54spi power");
 	if (ret < 0) {
 		dev_err(&priv->spi->dev, "power GPIO request failed: %d", ret);
+<<<<<<< HEAD
 		goto err_free_common;
+=======
+		goto err_free;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	}
 
 	ret = gpio_request(p54spi_gpio_irq, "p54spi irq");
 	if (ret < 0) {
 		dev_err(&priv->spi->dev, "irq GPIO request failed: %d", ret);
+<<<<<<< HEAD
 		goto err_free_common;
+=======
+		goto err_free_gpio_power;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	}
 
 	gpio_direction_output(p54spi_gpio_power, 0);
@@ -646,7 +666,11 @@ static int __devinit p54spi_probe(struct spi_device *spi)
 			  priv->spi);
 	if (ret < 0) {
 		dev_err(&priv->spi->dev, "request_irq() failed");
+<<<<<<< HEAD
 		goto err_free_common;
+=======
+		goto err_free_gpio_irq;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	}
 
 	irq_set_irq_type(gpio_to_irq(p54spi_gpio_irq), IRQ_TYPE_EDGE_RISING);
@@ -657,6 +681,10 @@ static int __devinit p54spi_probe(struct spi_device *spi)
 	init_completion(&priv->fw_comp);
 	INIT_LIST_HEAD(&priv->tx_pending);
 	mutex_init(&priv->mutex);
+<<<<<<< HEAD
+=======
+	spin_lock_init(&priv->tx_lock);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	SET_IEEE80211_DEV(hw, &spi->dev);
 	priv->common.open = p54spi_op_start;
 	priv->common.stop = p54spi_op_stop;
@@ -677,6 +705,15 @@ static int __devinit p54spi_probe(struct spi_device *spi)
 	return 0;
 
 err_free_common:
+<<<<<<< HEAD
+=======
+	free_irq(gpio_to_irq(p54spi_gpio_irq), spi);
+err_free_gpio_irq:
+	gpio_free(p54spi_gpio_irq);
+err_free_gpio_power:
+	gpio_free(p54spi_gpio_power);
+err_free:
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	p54_free_common(priv->hw);
 	return ret;
 }

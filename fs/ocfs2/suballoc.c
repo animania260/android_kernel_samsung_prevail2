@@ -600,7 +600,11 @@ static void ocfs2_bg_alloc_cleanup(handle_t *handle,
 		ret = ocfs2_free_clusters(handle, cluster_ac->ac_inode,
 					  cluster_ac->ac_bh,
 					  le64_to_cpu(rec->e_blkno),
+<<<<<<< HEAD
 					  le32_to_cpu(rec->e_leaf_clusters));
+=======
+					  le16_to_cpu(rec->e_leaf_clusters));
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		if (ret)
 			mlog_errno(ret);
 		/* Try all the clusters to free */
@@ -642,7 +646,11 @@ ocfs2_block_group_alloc_discontig(handle_t *handle,
 	 * cluster groups will be staying in cache for the duration of
 	 * this operation.
 	 */
+<<<<<<< HEAD
 	ac->ac_allow_chain_relink = 0;
+=======
+	ac->ac_disable_chain_relink = 1;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	/* Claim the first region */
 	status = ocfs2_block_group_claim_bits(osb, handle, ac, min_bits,
@@ -1628,7 +1636,11 @@ static int ocfs2_bg_discontig_fix_by_rec(struct ocfs2_suballoc_result *res,
 {
 	unsigned int bpc = le16_to_cpu(cl->cl_bpc);
 	unsigned int bitoff = le32_to_cpu(rec->e_cpos) * bpc;
+<<<<<<< HEAD
 	unsigned int bitcount = le32_to_cpu(rec->e_leaf_clusters) * bpc;
+=======
+	unsigned int bitcount = le16_to_cpu(rec->e_leaf_clusters) * bpc;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	if (res->sr_bit_offset < bitoff)
 		return 0;
@@ -1823,7 +1835,11 @@ static int ocfs2_search_chain(struct ocfs2_alloc_context *ac,
 	 * Do this *after* figuring out how many bits we're taking out
 	 * of our target group.
 	 */
+<<<<<<< HEAD
 	if (ac->ac_allow_chain_relink &&
+=======
+	if (!ac->ac_disable_chain_relink &&
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	    (prev_group_bh) &&
 	    (ocfs2_block_group_reasonably_empty(bg, res->sr_bits))) {
 		status = ocfs2_relink_block_group(handle, alloc_inode,
@@ -1928,7 +1944,10 @@ static int ocfs2_claim_suballoc_bits(struct ocfs2_alloc_context *ac,
 
 	victim = ocfs2_find_victim_chain(cl);
 	ac->ac_chain = victim;
+<<<<<<< HEAD
 	ac->ac_allow_chain_relink = 1;
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	status = ocfs2_search_chain(ac, handle, bits_wanted, min_bits,
 				    res, &bits_left);
@@ -1947,7 +1966,11 @@ static int ocfs2_claim_suballoc_bits(struct ocfs2_alloc_context *ac,
 	 * searching each chain in order. Don't allow chain relinking
 	 * because we only calculate enough journal credits for one
 	 * relink per alloc. */
+<<<<<<< HEAD
 	ac->ac_allow_chain_relink = 0;
+=======
+	ac->ac_disable_chain_relink = 1;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	for (i = 0; i < le16_to_cpu(cl->cl_next_free_rec); i ++) {
 		if (i == victim)
 			continue;

@@ -8,6 +8,14 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+<<<<<<< HEAD
+=======
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
  */
 
 #include <linux/kernel.h>
@@ -15,7 +23,10 @@
 #include <linux/bootmem.h>
 #include <mach/irqs.h>
 #include <mach/iommu.h>
+<<<<<<< HEAD
 #include <mach/socinfo.h>
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 static struct resource msm_iommu_jpegd_resources[] = {
 	{
@@ -26,14 +37,24 @@ static struct resource msm_iommu_jpegd_resources[] = {
 	},
 	{
 		.name = "nonsecure_irq",
+<<<<<<< HEAD
 		.start = 98,
 		.end   = 98,
+=======
+		.start = SMMU_JPEGD_CB_SC_NON_SECURE_IRQ,
+		.end   = SMMU_JPEGD_CB_SC_NON_SECURE_IRQ,
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		.flags = IORESOURCE_IRQ,
 	},
 	{
 		.name = "secure_irq",
+<<<<<<< HEAD
 		.start = 97,
 		.end   = 97,
+=======
+		.start = SMMU_JPEGD_CB_SC_SECURE_IRQ,
+		.end   = SMMU_JPEGD_CB_SC_SECURE_IRQ,
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		.flags = IORESOURCE_IRQ,
 	},
 };
@@ -47,14 +68,24 @@ static struct resource msm_iommu_vpe_resources[] = {
 	},
 	{
 		.name = "nonsecure_irq",
+<<<<<<< HEAD
 		.start = 84,
 		.end   = 84,
+=======
+		.start = SMMU_VPE_CB_SC_NON_SECURE_IRQ,
+		.end   = SMMU_VPE_CB_SC_NON_SECURE_IRQ,
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		.flags = IORESOURCE_IRQ,
 	},
 	{
 		.name = "secure_irq",
+<<<<<<< HEAD
 		.start = 83,
 		.end   = 83,
+=======
+		.start = SMMU_VPE_CB_SC_SECURE_IRQ,
+		.end   = SMMU_VPE_CB_SC_SECURE_IRQ,
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		.flags = IORESOURCE_IRQ,
 	},
 };
@@ -68,14 +99,24 @@ static struct resource msm_iommu_mdp0_resources[] = {
 	},
 	{
 		.name = "nonsecure_irq",
+<<<<<<< HEAD
 		.start = 96,
 		.end   = 96,
+=======
+		.start = SMMU_MDP0_CB_SC_NON_SECURE_IRQ,
+		.end   = SMMU_MDP0_CB_SC_NON_SECURE_IRQ,
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		.flags = IORESOURCE_IRQ,
 	},
 	{
 		.name = "secure_irq",
+<<<<<<< HEAD
 		.start = 95,
 		.end   = 95,
+=======
+		.start = SMMU_MDP0_CB_SC_SECURE_IRQ,
+		.end   = SMMU_MDP0_CB_SC_SECURE_IRQ,
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		.flags = IORESOURCE_IRQ,
 	},
 };
@@ -89,14 +130,24 @@ static struct resource msm_iommu_mdp1_resources[] = {
 	},
 	{
 		.name = "nonsecure_irq",
+<<<<<<< HEAD
 		.start = 94,
 		.end   = 94,
+=======
+		.start = SMMU_MDP1_CB_SC_NON_SECURE_IRQ,
+		.end   = SMMU_MDP1_CB_SC_NON_SECURE_IRQ,
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		.flags = IORESOURCE_IRQ,
 	},
 	{
 		.name = "secure_irq",
+<<<<<<< HEAD
 		.start = 93,
 		.end   = 93,
+=======
+		.start = SMMU_MDP1_CB_SC_SECURE_IRQ,
+		.end   = SMMU_MDP1_CB_SC_SECURE_IRQ,
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		.flags = IORESOURCE_IRQ,
 	},
 };
@@ -110,14 +161,24 @@ static struct resource msm_iommu_rot_resources[] = {
 	},
 	{
 		.name = "nonsecure_irq",
+<<<<<<< HEAD
 		.start = 92,
 		.end   = 92,
+=======
+		.start = SMMU_ROT_CB_SC_NON_SECURE_IRQ,
+		.end   = SMMU_ROT_CB_SC_NON_SECURE_IRQ,
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		.flags = IORESOURCE_IRQ,
 	},
 	{
 		.name = "secure_irq",
+<<<<<<< HEAD
 		.start = 91,
 		.end   = 91,
+=======
+		.start = SMMU_ROT_CB_SC_SECURE_IRQ,
+		.end   = SMMU_ROT_CB_SC_SECURE_IRQ,
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		.flags = IORESOURCE_IRQ,
 	},
 };
@@ -131,14 +192,24 @@ static struct resource msm_iommu_ijpeg_resources[] = {
 	},
 	{
 		.name = "nonsecure_irq",
+<<<<<<< HEAD
 		.start = 100,
 		.end   = 100,
+=======
+		.start = SMMU_IJPEG_CB_SC_NON_SECURE_IRQ,
+		.end   = SMMU_IJPEG_CB_SC_NON_SECURE_IRQ,
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		.flags = IORESOURCE_IRQ,
 	},
 	{
 		.name = "secure_irq",
+<<<<<<< HEAD
 		.start = 99,
 		.end   = 99,
+=======
+		.start = SMMU_IJPEG_CB_SC_SECURE_IRQ,
+		.end   = SMMU_IJPEG_CB_SC_SECURE_IRQ,
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		.flags = IORESOURCE_IRQ,
 	},
 };
@@ -152,14 +223,24 @@ static struct resource msm_iommu_vfe_resources[] = {
 	},
 	{
 		.name = "nonsecure_irq",
+<<<<<<< HEAD
 		.start = 86,
 		.end   = 86,
+=======
+		.start = SMMU_VFE_CB_SC_NON_SECURE_IRQ,
+		.end   = SMMU_VFE_CB_SC_NON_SECURE_IRQ,
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		.flags = IORESOURCE_IRQ,
 	},
 	{
 		.name = "secure_irq",
+<<<<<<< HEAD
 		.start = 85,
 		.end   = 85,
+=======
+		.start = SMMU_VFE_CB_SC_SECURE_IRQ,
+		.end   = SMMU_VFE_CB_SC_SECURE_IRQ,
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		.flags = IORESOURCE_IRQ,
 	},
 };
@@ -173,14 +254,24 @@ static struct resource msm_iommu_vcodec_a_resources[] = {
 	},
 	{
 		.name = "nonsecure_irq",
+<<<<<<< HEAD
 		.start = 90,
 		.end   = 90,
+=======
+		.start = SMMU_VCODEC_A_CB_SC_NON_SECURE_IRQ,
+		.end   = SMMU_VCODEC_A_CB_SC_NON_SECURE_IRQ,
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		.flags = IORESOURCE_IRQ,
 	},
 	{
 		.name = "secure_irq",
+<<<<<<< HEAD
 		.start = 89,
 		.end   = 89,
+=======
+		.start = SMMU_VCODEC_A_CB_SC_SECURE_IRQ,
+		.end   = SMMU_VCODEC_A_CB_SC_SECURE_IRQ,
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		.flags = IORESOURCE_IRQ,
 	},
 };
@@ -194,14 +285,24 @@ static struct resource msm_iommu_vcodec_b_resources[] = {
 	},
 	{
 		.name = "nonsecure_irq",
+<<<<<<< HEAD
 		.start = 88,
 		.end   = 88,
+=======
+		.start = SMMU_VCODEC_B_CB_SC_NON_SECURE_IRQ,
+		.end   = SMMU_VCODEC_B_CB_SC_NON_SECURE_IRQ,
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		.flags = IORESOURCE_IRQ,
 	},
 	{
 		.name = "secure_irq",
+<<<<<<< HEAD
 		.start = 87,
 		.end   = 87,
+=======
+		.start = SMMU_VCODEC_B_CB_SC_SECURE_IRQ,
+		.end   = SMMU_VCODEC_B_CB_SC_SECURE_IRQ,
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		.flags = IORESOURCE_IRQ,
 	},
 };
@@ -215,12 +316,18 @@ static struct resource msm_iommu_gfx3d_resources[] = {
 	},
 	{
 		.name = "nonsecure_irq",
+<<<<<<< HEAD
 		.start = 102,
 		.end   = 102,
+=======
+		.start = SMMU_GFX3D_CB_SC_NON_SECURE_IRQ,
+		.end   = SMMU_GFX3D_CB_SC_NON_SECURE_IRQ,
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		.flags = IORESOURCE_IRQ,
 	},
 	{
 		.name = "secure_irq",
+<<<<<<< HEAD
 		.start = 101,
 		.end   = 101,
 		.flags = IORESOURCE_IRQ,
@@ -244,6 +351,10 @@ static struct resource msm_iommu_gfx3d1_resources[] = {
 		.name = "secure_irq",
 		.start = 242,
 		.end   = 242,
+=======
+		.start = SMMU_GFX3D_CB_SC_SECURE_IRQ,
+		.end   = SMMU_GFX3D_CB_SC_SECURE_IRQ,
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		.flags = IORESOURCE_IRQ,
 	},
 };
@@ -257,14 +368,24 @@ static struct resource msm_iommu_gfx2d0_resources[] = {
 	},
 	{
 		.name = "nonsecure_irq",
+<<<<<<< HEAD
 		.start = 104,
 		.end   = 104,
+=======
+		.start = SMMU_GFX2D0_CB_SC_NON_SECURE_IRQ,
+		.end   = SMMU_GFX2D0_CB_SC_NON_SECURE_IRQ,
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		.flags = IORESOURCE_IRQ,
 	},
 	{
 		.name = "secure_irq",
+<<<<<<< HEAD
 		.start = 103,
 		.end   = 103,
+=======
+		.start = SMMU_GFX2D0_CB_SC_SECURE_IRQ,
+		.end   = SMMU_GFX2D0_CB_SC_SECURE_IRQ,
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		.flags = IORESOURCE_IRQ,
 	},
 };
@@ -278,12 +399,18 @@ static struct resource msm_iommu_gfx2d1_resources[] = {
 	},
 	{
 		.name = "nonsecure_irq",
+<<<<<<< HEAD
 		.start = 243,
 		.end   = 243,
+=======
+		.start = SMMU_GFX2D1_CB_SC_NON_SECURE_IRQ,
+		.end   = SMMU_GFX2D1_CB_SC_NON_SECURE_IRQ,
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		.flags = IORESOURCE_IRQ,
 	},
 	{
 		.name = "secure_irq",
+<<<<<<< HEAD
 		.start = 242,
 		.end   = 242,
 		.flags = IORESOURCE_IRQ,
@@ -307,6 +434,10 @@ static struct resource msm_iommu_vcap_resources[] = {
 		.name = "secure_irq",
 		.start = 268,
 		.end   = 268,
+=======
+		.start = SMMU_GFX2D1_CB_SC_SECURE_IRQ,
+		.end   = SMMU_GFX2D1_CB_SC_SECURE_IRQ,
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		.flags = IORESOURCE_IRQ,
 	},
 };
@@ -366,11 +497,14 @@ static struct msm_iommu_dev gfx3d_iommu = {
 	.ncb = 3,
 };
 
+<<<<<<< HEAD
 static struct msm_iommu_dev gfx3d1_iommu = {
 	.name = "gfx3d1",
 	.ncb = 3,
 };
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 static struct msm_iommu_dev gfx2d0_iommu = {
 	.name = "gfx2d0",
 	.ncb = 2,
@@ -381,11 +515,14 @@ static struct msm_iommu_dev gfx2d1_iommu = {
 	.ncb = 2,
 };
 
+<<<<<<< HEAD
 static struct msm_iommu_dev vcap_iommu = {
 	.name = "vcap",
 	.ncb = 2,
 };
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 static struct platform_device msm_device_iommu_jpegd = {
 	.name = "msm_iommu",
 	.id = 0,
@@ -486,6 +623,7 @@ static struct platform_device msm_device_iommu_gfx3d = {
 	.resource = msm_iommu_gfx3d_resources,
 };
 
+<<<<<<< HEAD
 static struct platform_device msm_device_iommu_gfx3d1 = {
 	.name = "msm_iommu",
 	.id = 10,
@@ -496,6 +634,8 @@ static struct platform_device msm_device_iommu_gfx3d1 = {
 	.resource = msm_iommu_gfx3d1_resources,
 };
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 static struct platform_device msm_device_iommu_gfx2d0 = {
 	.name = "msm_iommu",
 	.id = 10,
@@ -506,7 +646,11 @@ static struct platform_device msm_device_iommu_gfx2d0 = {
 	.resource = msm_iommu_gfx2d0_resources,
 };
 
+<<<<<<< HEAD
 static struct platform_device msm_device_iommu_gfx2d1 = {
+=======
+struct platform_device msm_device_iommu_gfx2d1 = {
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	.name = "msm_iommu",
 	.id = 11,
 	.dev = {
@@ -516,6 +660,7 @@ static struct platform_device msm_device_iommu_gfx2d1 = {
 	.resource = msm_iommu_gfx2d1_resources,
 };
 
+<<<<<<< HEAD
 static struct platform_device msm_device_iommu_vcap = {
 	.name = "msm_iommu",
 	.id = 11,
@@ -526,6 +671,8 @@ static struct platform_device msm_device_iommu_vcap = {
 	.resource = msm_iommu_vcap_resources,
 };
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 static struct msm_iommu_ctx_dev jpegd_src_ctx = {
 	.name = "jpegd_src",
 	.num = 0,
@@ -641,6 +788,7 @@ static struct msm_iommu_ctx_dev gfx3d_priv_ctx = {
 		 31, -1}
 };
 
+<<<<<<< HEAD
 static struct msm_iommu_ctx_dev gfx3d1_user_ctx = {
 	.name = "gfx3d1_user",
 	.num = 0,
@@ -654,6 +802,8 @@ static struct msm_iommu_ctx_dev gfx3d1_priv_ctx = {
 		 31, -1}
 };
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 static struct msm_iommu_ctx_dev gfx2d0_2d0_ctx = {
 	.name = "gfx2d0_2d0",
 	.num = 0,
@@ -666,6 +816,7 @@ static struct msm_iommu_ctx_dev gfx2d1_2d1_ctx = {
 	.mids = {0, 1, 2, 3, 4, 5, 6, 7, -1}
 };
 
+<<<<<<< HEAD
 static struct msm_iommu_ctx_dev vcap_vc_ctx = {
 	.name = "vcap_vc",
 	.num = 0,
@@ -678,6 +829,8 @@ static struct msm_iommu_ctx_dev vcap_vp_ctx = {
 	.mids = {1, -1}
 };
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 static struct platform_device msm_device_jpegd_src_ctx = {
 	.name = "msm_iommu_ctx",
 	.id = 0,
@@ -830,6 +983,7 @@ static struct platform_device msm_device_gfx3d_priv_ctx = {
 	},
 };
 
+<<<<<<< HEAD
 static struct platform_device msm_device_gfx3d1_user_ctx = {
 	.name = "msm_iommu_ctx",
 	.id = 19,
@@ -846,6 +1000,8 @@ static struct platform_device msm_device_gfx3d1_priv_ctx = {
 	},
 };
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 static struct platform_device msm_device_gfx2d0_2d0_ctx = {
 	.name = "msm_iommu_ctx",
 	.id = 19,
@@ -862,6 +1018,7 @@ static struct platform_device msm_device_gfx2d1_2d1_ctx = {
 	},
 };
 
+<<<<<<< HEAD
 static struct platform_device msm_device_vcap_vc_ctx = {
 	.name = "msm_iommu_ctx",
 	.id = 21,
@@ -879,6 +1036,9 @@ static struct platform_device msm_device_vcap_vp_ctx = {
 };
 
 static struct platform_device *msm_iommu_common_devs[] = {
+=======
+static struct platform_device *msm_iommu_devs[] = {
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	&msm_device_iommu_jpegd,
 	&msm_device_iommu_vpe,
 	&msm_device_iommu_mdp0,
@@ -889,19 +1049,26 @@ static struct platform_device *msm_iommu_common_devs[] = {
 	&msm_device_iommu_vcodec_a,
 	&msm_device_iommu_vcodec_b,
 	&msm_device_iommu_gfx3d,
+<<<<<<< HEAD
 };
 
 static struct platform_device *msm_iommu_gfx2d_devs[] = {
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	&msm_device_iommu_gfx2d0,
 	&msm_device_iommu_gfx2d1,
 };
 
+<<<<<<< HEAD
 static struct platform_device *msm_iommu_8064_devs[] = {
 	&msm_device_iommu_gfx3d1,
 	&msm_device_iommu_vcap,
 };
 
 static struct msm_iommu_dev *msm_iommu_common_data[] = {
+=======
+static struct msm_iommu_dev *msm_iommu_data[] = {
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	&jpegd_iommu,
 	&vpe_iommu,
 	&mdp0_iommu,
@@ -912,19 +1079,26 @@ static struct msm_iommu_dev *msm_iommu_common_data[] = {
 	&vcodec_a_iommu,
 	&vcodec_b_iommu,
 	&gfx3d_iommu,
+<<<<<<< HEAD
 };
 
 static struct msm_iommu_dev *msm_iommu_gfx2d_data[] = {
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	&gfx2d0_iommu,
 	&gfx2d1_iommu,
 };
 
+<<<<<<< HEAD
 static struct msm_iommu_dev *msm_iommu_8064_data[] = {
 	&gfx3d1_iommu,
 	&vcap_iommu,
 };
 
 static struct platform_device *msm_iommu_common_ctx_devs[] = {
+=======
+static struct platform_device *msm_iommu_ctx_devs[] = {
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	&msm_device_jpegd_src_ctx,
 	&msm_device_jpegd_dst_ctx,
 	&msm_device_vpe_src_ctx,
@@ -944,13 +1118,17 @@ static struct platform_device *msm_iommu_common_ctx_devs[] = {
 	&msm_device_vcodec_b_mm2_ctx,
 	&msm_device_gfx3d_user_ctx,
 	&msm_device_gfx3d_priv_ctx,
+<<<<<<< HEAD
 };
 
 static struct platform_device *msm_iommu_gfx2d_ctx_devs[] = {
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	&msm_device_gfx2d0_2d0_ctx,
 	&msm_device_gfx2d1_2d1_ctx,
 };
 
+<<<<<<< HEAD
 static struct platform_device *msm_iommu_8064_ctx_devs[] = {
 	&msm_device_gfx3d1_user_ctx,
 	&msm_device_gfx3d1_priv_ctx,
@@ -959,6 +1137,9 @@ static struct platform_device *msm_iommu_8064_ctx_devs[] = {
 };
 
 static struct msm_iommu_ctx_dev *msm_iommu_common_ctx_data[] = {
+=======
+static struct msm_iommu_ctx_dev *msm_iommu_ctx_data[] = {
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	&jpegd_src_ctx,
 	&jpegd_dst_ctx,
 	&vpe_src_ctx,
@@ -978,13 +1159,17 @@ static struct msm_iommu_ctx_dev *msm_iommu_common_ctx_data[] = {
 	&vcodec_b_mm2_ctx,
 	&gfx3d_user_ctx,
 	&gfx3d_priv_ctx,
+<<<<<<< HEAD
 };
 
 static struct msm_iommu_ctx_dev *msm_iommu_gfx2d_ctx_data[] = {
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	&gfx2d0_2d0_ctx,
 	&gfx2d1_2d1_ctx,
 };
 
+<<<<<<< HEAD
 static struct msm_iommu_ctx_dev *msm_iommu_8064_ctx_data[] = {
 	&gfx3d1_user_ctx,
 	&gfx3d1_priv_ctx,
@@ -1000,13 +1185,33 @@ static int iommu_init_devs(struct platform_device *devs[],
 	for (i = 0; i < size; i++) {
 		ret = platform_device_add_data(devs[i],
 			  data[i], sizeof(struct msm_iommu_dev));
+=======
+static int __init msm8x60_iommu_init(void)
+{
+	int ret, i;
+
+	ret = platform_device_register(&msm_root_iommu_dev);
+	if (ret != 0) {
+		pr_err("Failed to register root IOMMU device!\n");
+		goto failure;
+	}
+
+	for (i = 0; i < ARRAY_SIZE(msm_iommu_devs); i++) {
+		ret = platform_device_add_data(msm_iommu_devs[i],
+					       msm_iommu_data[i],
+					       sizeof(struct msm_iommu_dev));
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		if (ret != 0) {
 			pr_err("platform_device_add_data failed, "
 			       "i = %d\n", i);
 			goto failure_unwind;
 		}
 
+<<<<<<< HEAD
 		ret = platform_device_register(devs[i]);
+=======
+		ret = platform_device_register(msm_iommu_devs[i]);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 		if (ret != 0) {
 			pr_err("platform_device_register iommu failed, "
@@ -1014,6 +1219,7 @@ static int iommu_init_devs(struct platform_device *devs[],
 			goto failure_unwind;
 		}
 	}
+<<<<<<< HEAD
 	return 0;
 
 failure_unwind:
@@ -1043,10 +1249,29 @@ static int iommu_init_ctx_devs(struct platform_device *ctx_devs[],
 			pr_err("platform_device_register ctx failed, "
 			       "i = %d\n", i);
 			goto failure_unwind;
+=======
+
+	for (i = 0; i < ARRAY_SIZE(msm_iommu_ctx_devs); i++) {
+		ret = platform_device_add_data(msm_iommu_ctx_devs[i],
+					       msm_iommu_ctx_data[i],
+					       sizeof(*msm_iommu_ctx_devs[i]));
+		if (ret != 0) {
+			pr_err("platform_device_add_data iommu failed, "
+			       "i = %d\n", i);
+			goto failure_unwind2;
+		}
+
+		ret = platform_device_register(msm_iommu_ctx_devs[i]);
+		if (ret != 0) {
+			pr_err("platform_device_register ctx failed, "
+			       "i = %d\n", i);
+			goto failure_unwind2;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		}
 	}
 	return 0;
 
+<<<<<<< HEAD
 failure_unwind:
 	while (--i >= 0)
 		platform_device_unregister(ctx_devs[i]);
@@ -1111,11 +1336,21 @@ static int __init iommu_init(void)
 	return 0;
 
 failure2:
+=======
+failure_unwind2:
+	while (--i >= 0)
+		platform_device_unregister(msm_iommu_ctx_devs[i]);
+failure_unwind:
+	while (--i >= 0)
+		platform_device_unregister(msm_iommu_devs[i]);
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	platform_device_unregister(&msm_root_iommu_dev);
 failure:
 	return ret;
 }
 
+<<<<<<< HEAD
 static void __exit iommu_exit(void)
 {
 	int i;
@@ -1145,12 +1380,28 @@ static void __exit iommu_exit(void)
 		for (i = 0; i < ARRAY_SIZE(msm_iommu_gfx2d_devs); i++)
 			platform_device_unregister(msm_iommu_gfx2d_devs[i]);
 	}
+=======
+static void __exit msm8x60_iommu_exit(void)
+{
+	int i;
+
+	for (i = 0; i < ARRAY_SIZE(msm_iommu_ctx_devs); i++)
+		platform_device_unregister(msm_iommu_ctx_devs[i]);
+
+	for (i = 0; i < ARRAY_SIZE(msm_iommu_devs); ++i)
+		platform_device_unregister(msm_iommu_devs[i]);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	platform_device_unregister(&msm_root_iommu_dev);
 }
 
+<<<<<<< HEAD
 subsys_initcall(iommu_init);
 module_exit(iommu_exit);
+=======
+subsys_initcall(msm8x60_iommu_init);
+module_exit(msm8x60_iommu_exit);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 MODULE_LICENSE("GPL v2");
 MODULE_AUTHOR("Stepan Moskovchenko <stepanm@codeaurora.org>");

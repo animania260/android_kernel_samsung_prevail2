@@ -44,7 +44,11 @@ config I2C_CHARDEV
 	  programs use the I2C bus.  Information on how to do this is
 	  contained in the file <file:Documentation/i2c/dev-interface>.
 
+<<<<<<< HEAD
 	  This support is also available as a module.  If so, the module
+=======
+	  This support is also available as a module.  If so, the module 
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	  will be called i2c-dev.
 
 config I2C_MUX
@@ -86,7 +90,10 @@ config I2C_SMBUS
 
 source drivers/i2c/algos/Kconfig
 source drivers/i2c/busses/Kconfig
+<<<<<<< HEAD
 source drivers/i2c/chips/Kconfig
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 config I2C_DEBUG_CORE
 	bool "I2C Core debugging messages"

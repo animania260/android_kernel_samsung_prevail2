@@ -872,9 +872,12 @@ static void usb_bus_init (struct usb_bus *bus)
 	bus->bandwidth_isoc_reqs = 0;
 
 	INIT_LIST_HEAD (&bus->bus_list);
+<<<<<<< HEAD
 #ifdef CONFIG_USB_OTG
 	INIT_DELAYED_WORK(&bus->hnp_polling, usb_hnp_polling_work);
 #endif
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 /*-------------------------------------------------------------------------*/
@@ -904,11 +907,14 @@ static int usb_register_bus(struct usb_bus *bus)
 	/* Add it to the local list of buses */
 	list_add (&bus->bus_list, &usb_bus_list);
 	mutex_unlock(&usb_bus_list_lock);
+<<<<<<< HEAD
 #ifdef CONFIG_USB_OTG
 	/* Obvioulsy HNP is supported on B-host */
 	if (bus->is_b_host)
 		bus->hnp_support = 1;
 #endif
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	usb_notify_add_bus(bus);
 
@@ -985,10 +991,14 @@ static int register_root_hub(struct usb_hcd *hcd)
 	if (retval) {
 		dev_err (parent_dev, "can't register root hub for %s, %d\n",
 				dev_name(&usb_dev->dev), retval);
+<<<<<<< HEAD
 	}
 	mutex_unlock(&usb_bus_list_lock);
 
 	if (retval == 0) {
+=======
+	} else {
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		spin_lock_irq (&hcd_root_hub_lock);
 		hcd->rh_registered = 1;
 		spin_unlock_irq (&hcd_root_hub_lock);
@@ -997,6 +1007,10 @@ static int register_root_hub(struct usb_hcd *hcd)
 		if (HCD_DEAD(hcd))
 			usb_hc_died (hcd);	/* This time clean up */
 	}
+<<<<<<< HEAD
+=======
+	mutex_unlock(&usb_bus_list_lock);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	return retval;
 }
@@ -1395,11 +1409,18 @@ int usb_hcd_map_urb_for_dma(struct usb_hcd *hcd, struct urb *urb,
 					ret = -EAGAIN;
 				else
 					urb->transfer_flags |= URB_DMA_MAP_SG;
+<<<<<<< HEAD
 				if (n != urb->num_sgs) {
 					urb->num_sgs = n;
 					urb->transfer_flags |=
 							URB_DMA_SG_COMBINED;
 				}
+=======
+				urb->num_mapped_sgs = n;
+				if (n != urb->num_sgs)
+					urb->transfer_flags |=
+							URB_DMA_SG_COMBINED;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			} else if (urb->sg) {
 				struct scatterlist *sg = urb->sg;
 				urb->transfer_dma = dma_map_page(
@@ -2444,8 +2465,15 @@ int usb_add_hcd(struct usb_hcd *hcd,
 			&& device_can_wakeup(&hcd->self.root_hub->dev))
 		dev_dbg(hcd->self.controller, "supports USB remote wakeup\n");
 
+<<<<<<< HEAD
 	/* enable irqs just before we start the controller */
 	if (usb_hcd_is_primary_hcd(hcd)) {
+=======
+	/* enable irqs just before we start the controller,
+	 * if the BIOS provides legacy PCI irqs.
+	 */
+	if (usb_hcd_is_primary_hcd(hcd) && irqnum) {
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		retval = usb_hcd_request_irqs(hcd, irqnum, irqflags);
 		if (retval)
 			goto err_request_irq;

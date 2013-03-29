@@ -96,9 +96,12 @@ EXPORT_SYMBOL(node_states);
 
 unsigned long totalram_pages __read_mostly;
 unsigned long totalreserve_pages __read_mostly;
+<<<<<<< HEAD
 #ifdef CONFIG_FIX_MOVABLE_ZONE
 unsigned long total_unmovable_pages __read_mostly;
 #endif
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 int percpu_pagelist_fraction;
 gfp_t gfp_allowed_mask __read_mostly = GFP_BOOT_MASK;
 
@@ -130,6 +133,7 @@ void pm_restrict_gfp_mask(void)
 	saved_gfp_mask = gfp_allowed_mask;
 	gfp_allowed_mask &= ~GFP_IOFS;
 }
+<<<<<<< HEAD
 
 static bool pm_suspending(void)
 {
@@ -144,6 +148,8 @@ static bool pm_suspending(void)
 {
 	return false;
 }
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #endif /* CONFIG_PM_SLEEP */
 
 #ifdef CONFIG_HUGETLB_PAGE_SIZE_VARIABLE
@@ -177,9 +183,12 @@ int sysctl_lowmem_reserve_ratio[MAX_NR_ZONES-1] = {
 };
 
 EXPORT_SYMBOL(totalram_pages);
+<<<<<<< HEAD
 #ifdef CONFIG_FIX_MOVABLE_ZONE
 EXPORT_SYMBOL(total_unmovable_pages);
 #endif
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 static char * const zone_names[MAX_NR_ZONES] = {
 #ifdef CONFIG_ZONE_DMA
@@ -196,7 +205,10 @@ static char * const zone_names[MAX_NR_ZONES] = {
 };
 
 int min_free_kbytes = 1024;
+<<<<<<< HEAD
 int min_free_order_shift = 1;
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 static unsigned long __meminitdata nr_kernel_pages;
 static unsigned long __meminitdata nr_all_pages;
@@ -376,8 +388,13 @@ void prep_compound_page(struct page *page, unsigned long order)
 	__SetPageHead(page);
 	for (i = 1; i < nr_pages; i++) {
 		struct page *p = page + i;
+<<<<<<< HEAD
 
 		__SetPageTail(p);
+=======
+		__SetPageTail(p);
+		set_page_count(p, 0);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		p->first_page = page;
 	}
 }
@@ -561,7 +578,11 @@ static inline void __free_one_page(struct page *page,
 		combined_idx = buddy_idx & page_idx;
 		higher_page = page + (combined_idx - page_idx);
 		buddy_idx = __find_buddy_index(combined_idx, order + 1);
+<<<<<<< HEAD
 		higher_buddy = page + (buddy_idx - combined_idx);
+=======
+		higher_buddy = higher_page + (buddy_idx - combined_idx);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		if (page_is_buddy(higher_page, higher_buddy, order + 1)) {
 			list_add_tail(&page->lru,
 				&zone->free_area[order].free_list[migratetype]);
@@ -1491,9 +1512,14 @@ static inline int should_fail_alloc_page(gfp_t gfp_mask, unsigned int order)
 static bool __zone_watermark_ok(struct zone *z, int order, unsigned long mark,
 		      int classzone_idx, int alloc_flags, long free_pages)
 {
+<<<<<<< HEAD
 	/* free_pages may go negative - that's OK */
 	long min = mark;
 	long lowmem_reserve = z->lowmem_reserve[classzone_idx];
+=======
+	/* free_pages my go negative - that's OK */
+	long min = mark;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	int o;
 
 	free_pages -= (1 << order) + 1;
@@ -1502,14 +1528,22 @@ static bool __zone_watermark_ok(struct zone *z, int order, unsigned long mark,
 	if (alloc_flags & ALLOC_HARDER)
 		min -= min / 4;
 
+<<<<<<< HEAD
 	if (free_pages <= min + lowmem_reserve)
+=======
+	if (free_pages <= min + z->lowmem_reserve[classzone_idx])
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		return false;
 	for (o = 0; o < order; o++) {
 		/* At the next order, this order's pages become unavailable */
 		free_pages -= z->free_area[o].nr_free << o;
 
 		/* Require fewer higher order pages to be free */
+<<<<<<< HEAD
 		min >>= min_free_order_shift;
+=======
+		min >>= 1;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 		if (free_pages <= min)
 			return false;
@@ -1919,6 +1953,7 @@ static struct page *
 __alloc_pages_direct_compact(gfp_t gfp_mask, unsigned int order,
 	struct zonelist *zonelist, enum zone_type high_zoneidx,
 	nodemask_t *nodemask, int alloc_flags, struct zone *preferred_zone,
+<<<<<<< HEAD
 	int migratetype, unsigned long *did_some_progress,
 	bool sync_migration)
 {
@@ -1926,6 +1961,21 @@ __alloc_pages_direct_compact(gfp_t gfp_mask, unsigned int order,
 
 	if (!order || compaction_deferred(preferred_zone))
 		return NULL;
+=======
+	int migratetype, bool sync_migration,
+	bool *deferred_compaction,
+	unsigned long *did_some_progress)
+{
+	struct page *page;
+
+	if (!order)
+		return NULL;
+
+	if (compaction_deferred(preferred_zone)) {
+		*deferred_compaction = true;
+		return NULL;
+	}
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	current->flags |= PF_MEMALLOC;
 	*did_some_progress = try_to_compact_pages(zonelist, order, gfp_mask,
@@ -1954,7 +2004,17 @@ __alloc_pages_direct_compact(gfp_t gfp_mask, unsigned int order,
 		 * but not enough to satisfy watermarks.
 		 */
 		count_vm_event(COMPACTFAIL);
+<<<<<<< HEAD
 		defer_compaction(preferred_zone);
+=======
+
+		/*
+		 * As async compaction considers a subset of pageblocks, only
+		 * defer if the failure was a sync compaction failure.
+		 */
+		if (sync_migration)
+			defer_compaction(preferred_zone);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 		cond_resched();
 	}
@@ -1966,8 +2026,14 @@ static inline struct page *
 __alloc_pages_direct_compact(gfp_t gfp_mask, unsigned int order,
 	struct zonelist *zonelist, enum zone_type high_zoneidx,
 	nodemask_t *nodemask, int alloc_flags, struct zone *preferred_zone,
+<<<<<<< HEAD
 	int migratetype, unsigned long *did_some_progress,
 	bool sync_migration)
+=======
+	int migratetype, bool sync_migration,
+	bool *deferred_compaction,
+	unsigned long *did_some_progress)
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 {
 	return NULL;
 }
@@ -2117,6 +2183,10 @@ __alloc_pages_slowpath(gfp_t gfp_mask, unsigned int order,
 	unsigned long pages_reclaimed = 0;
 	unsigned long did_some_progress;
 	bool sync_migration = false;
+<<<<<<< HEAD
+=======
+	bool deferred_compaction = false;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	/*
 	 * In the slowpath, we sanity check order to avoid ever trying to
@@ -2197,12 +2267,30 @@ rebalance:
 					zonelist, high_zoneidx,
 					nodemask,
 					alloc_flags, preferred_zone,
+<<<<<<< HEAD
 					migratetype, &did_some_progress,
 					sync_migration);
+=======
+					migratetype, sync_migration,
+					&deferred_compaction,
+					&did_some_progress);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	if (page)
 		goto got_pg;
 	sync_migration = true;
 
+<<<<<<< HEAD
+=======
+	/*
+	 * If compaction is deferred for high-order allocations, it is because
+	 * sync compaction recently failed. In this is the case and the caller
+	 * has requested the system not be heavily disrupted, fail the
+	 * allocation now instead of entering direct reclaim
+	 */
+	if (deferred_compaction && (gfp_mask & __GFP_NO_KSWAPD))
+		goto nopage;
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	/* Try direct reclaim and then allocating */
 	page = __alloc_pages_direct_reclaim(gfp_mask, order,
 					zonelist, high_zoneidx,
@@ -2247,6 +2335,7 @@ rebalance:
 
 			goto restart;
 		}
+<<<<<<< HEAD
 
 		/*
 		 * Suspend converts GFP_KERNEL to __GFP_WAIT which can
@@ -2255,6 +2344,8 @@ rebalance:
 		 */
 		if (pm_suspending())
 			goto nopage;
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	}
 
 	/* Check if we should retry the allocation */
@@ -2273,8 +2364,14 @@ rebalance:
 					zonelist, high_zoneidx,
 					nodemask,
 					alloc_flags, preferred_zone,
+<<<<<<< HEAD
 					migratetype, &did_some_progress,
 					sync_migration);
+=======
+					migratetype, sync_migration,
+					&deferred_compaction,
+					&did_some_progress);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		if (page)
 			goto got_pg;
 	}
@@ -2298,8 +2395,14 @@ __alloc_pages_nodemask(gfp_t gfp_mask, unsigned int order,
 {
 	enum zone_type high_zoneidx = gfp_zone(gfp_mask);
 	struct zone *preferred_zone;
+<<<<<<< HEAD
 	struct page *page;
 	int migratetype = allocflags_to_migratetype(gfp_mask);
+=======
+	struct page *page = NULL;
+	int migratetype = allocflags_to_migratetype(gfp_mask);
+	unsigned int cpuset_mems_cookie;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	gfp_mask &= gfp_allowed_mask;
 
@@ -2318,15 +2421,26 @@ __alloc_pages_nodemask(gfp_t gfp_mask, unsigned int order,
 	if (unlikely(!zonelist->_zonerefs->zone))
 		return NULL;
 
+<<<<<<< HEAD
 	get_mems_allowed();
+=======
+retry_cpuset:
+	cpuset_mems_cookie = get_mems_allowed();
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	/* The preferred zone is used for statistics later */
 	first_zones_zonelist(zonelist, high_zoneidx,
 				nodemask ? : &cpuset_current_mems_allowed,
 				&preferred_zone);
+<<<<<<< HEAD
 	if (!preferred_zone) {
 		put_mems_allowed();
 		return NULL;
 	}
+=======
+	if (!preferred_zone)
+		goto out;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	/* First allocation attempt */
 	page = get_page_from_freelist(gfp_mask|__GFP_HARDWALL, nodemask, order,
@@ -2336,9 +2450,25 @@ __alloc_pages_nodemask(gfp_t gfp_mask, unsigned int order,
 		page = __alloc_pages_slowpath(gfp_mask, order,
 				zonelist, high_zoneidx, nodemask,
 				preferred_zone, migratetype);
+<<<<<<< HEAD
 	put_mems_allowed();
 
 	trace_mm_page_alloc(page, order, gfp_mask, migratetype);
+=======
+
+	trace_mm_page_alloc(page, order, gfp_mask, migratetype);
+
+out:
+	/*
+	 * When updating a task's mems_allowed, it is possible to race with
+	 * parallel threads in such a way that an allocation can fail while
+	 * the mask is being updated. If a page allocation is about to fail,
+	 * check if the cpuset changed during allocation and if so, retry.
+	 */
+	if (unlikely(!put_mems_allowed(cpuset_mems_cookie) && !page))
+		goto retry_cpuset;
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	return page;
 }
 EXPORT_SYMBOL(__alloc_pages_nodemask);
@@ -2562,13 +2692,24 @@ void si_meminfo_node(struct sysinfo *val, int nid)
 bool skip_free_areas_node(unsigned int flags, int nid)
 {
 	bool ret = false;
+<<<<<<< HEAD
+=======
+	unsigned int cpuset_mems_cookie;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	if (!(flags & SHOW_MEM_FILTER_NODES))
 		goto out;
 
+<<<<<<< HEAD
 	get_mems_allowed();
 	ret = !node_isset(nid, cpuset_current_mems_allowed);
 	put_mems_allowed();
+=======
+	do {
+		cpuset_mems_cookie = get_mems_allowed();
+		ret = !node_isset(nid, cpuset_current_mems_allowed);
+	} while (!put_mems_allowed(cpuset_mems_cookie));
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 out:
 	return ret;
 }
@@ -3418,9 +3559,21 @@ static void setup_zone_migrate_reserve(struct zone *zone)
 	unsigned long block_migratetype;
 	int reserve;
 
+<<<<<<< HEAD
 	/* Get the start pfn, end pfn and the number of blocks to reserve */
 	start_pfn = zone->zone_start_pfn;
 	end_pfn = start_pfn + zone->spanned_pages;
+=======
+	/*
+	 * Get the start pfn, end pfn and the number of blocks to reserve
+	 * We have to be careful to be aligned to pageblock_nr_pages to
+	 * make sure that we always check pfn_valid for the first page in
+	 * the block.
+	 */
+	start_pfn = zone->zone_start_pfn;
+	end_pfn = start_pfn + zone->spanned_pages;
+	start_pfn = roundup(start_pfn, pageblock_nr_pages);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	reserve = roundup(min_wmark_pages(zone), pageblock_nr_pages) >>
 							pageblock_order;
 
@@ -3442,6 +3595,7 @@ static void setup_zone_migrate_reserve(struct zone *zone)
 		if (page_to_nid(page) != zone_to_nid(zone))
 			continue;
 
+<<<<<<< HEAD
 		/* Blocks with reserved pages will never free, skip them. */
 		block_end_pfn = min(pfn + pageblock_nr_pages, end_pfn);
 		if (pageblock_is_reserved(pfn, block_end_pfn))
@@ -3461,6 +3615,35 @@ static void setup_zone_migrate_reserve(struct zone *zone)
 			move_freepages_block(zone, page, MIGRATE_RESERVE);
 			reserve--;
 			continue;
+=======
+		block_migratetype = get_pageblock_migratetype(page);
+
+		/* Only test what is necessary when the reserves are not met */
+		if (reserve > 0) {
+			/*
+			 * Blocks with reserved pages will never free, skip
+			 * them.
+			 */
+			block_end_pfn = min(pfn + pageblock_nr_pages, end_pfn);
+			if (pageblock_is_reserved(pfn, block_end_pfn))
+				continue;
+
+			/* If this block is reserved, account for it */
+			if (block_migratetype == MIGRATE_RESERVE) {
+				reserve--;
+				continue;
+			}
+
+			/* Suitable for reserving if this block is movable */
+			if (block_migratetype == MIGRATE_MOVABLE) {
+				set_pageblock_migratetype(page,
+							MIGRATE_RESERVE);
+				move_freepages_block(zone, page,
+							MIGRATE_RESERVE);
+				reserve--;
+				continue;
+			}
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		}
 
 		/*
@@ -4242,10 +4425,18 @@ static void __meminit calculate_node_totalpages(struct pglist_data *pgdat,
  * round what is now in bits to nearest long in bits, then return it in
  * bytes.
  */
+<<<<<<< HEAD
 static unsigned long __init usemap_size(unsigned long zonesize)
 {
 	unsigned long usemapsize;
 
+=======
+static unsigned long __init usemap_size(unsigned long zone_start_pfn, unsigned long zonesize)
+{
+	unsigned long usemapsize;
+
+	zonesize += zone_start_pfn & (pageblock_nr_pages-1);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	usemapsize = roundup(zonesize, pageblock_nr_pages);
 	usemapsize = usemapsize >> pageblock_order;
 	usemapsize *= NR_PAGEBLOCK_BITS;
@@ -4255,17 +4446,30 @@ static unsigned long __init usemap_size(unsigned long zonesize)
 }
 
 static void __init setup_usemap(struct pglist_data *pgdat,
+<<<<<<< HEAD
 				struct zone *zone, unsigned long zonesize)
 {
 	unsigned long usemapsize = usemap_size(zonesize);
+=======
+				struct zone *zone,
+				unsigned long zone_start_pfn,
+				unsigned long zonesize)
+{
+	unsigned long usemapsize = usemap_size(zone_start_pfn, zonesize);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	zone->pageblock_flags = NULL;
 	if (usemapsize)
 		zone->pageblock_flags = alloc_bootmem_node_nopanic(pgdat,
 								   usemapsize);
 }
 #else
+<<<<<<< HEAD
 static inline void setup_usemap(struct pglist_data *pgdat,
 				struct zone *zone, unsigned long zonesize) {}
+=======
+static inline void setup_usemap(struct pglist_data *pgdat, struct zone *zone,
+				unsigned long zone_start_pfn, unsigned long zonesize) {}
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #endif /* CONFIG_SPARSEMEM */
 
 #ifdef CONFIG_HUGETLB_PAGE_SIZE_VARIABLE
@@ -4393,7 +4597,11 @@ static void __paginginit free_area_init_core(struct pglist_data *pgdat,
 			continue;
 
 		set_pageblock_order(pageblock_default_order());
+<<<<<<< HEAD
 		setup_usemap(pgdat, zone, size);
+=======
+		setup_usemap(pgdat, zone, zone_start_pfn, size);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		ret = init_currently_empty_zone(zone, zone_start_pfn,
 						size, MEMMAP_EARLY);
 		BUG_ON(ret);
@@ -4713,9 +4921,12 @@ static void __init find_zone_movable_pfns_for_nodes(unsigned long *movable_pfn)
 	unsigned long totalpages = early_calculate_totalpages();
 	int usable_nodes = nodes_weight(node_states[N_HIGH_MEMORY]);
 
+<<<<<<< HEAD
 #ifdef CONFIG_FIX_MOVABLE_ZONE
 	required_movablecore = movable_reserved_size >> PAGE_SHIFT;
 #endif
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	/*
 	 * If movablecore was specified, calculate what size of
 	 * kernelcore that corresponds so that memory usable for
@@ -5473,7 +5684,11 @@ static inline int pfn_to_bitidx(struct zone *zone, unsigned long pfn)
 	pfn &= (PAGES_PER_SECTION-1);
 	return (pfn >> pageblock_order) * NR_PAGEBLOCK_BITS;
 #else
+<<<<<<< HEAD
 	pfn = pfn - zone->zone_start_pfn;
+=======
+	pfn = pfn - round_down(zone->zone_start_pfn, pageblock_nr_pages);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	return (pfn >> pageblock_order) * NR_PAGEBLOCK_BITS;
 #endif /* CONFIG_SPARSEMEM */
 }
@@ -5592,6 +5807,20 @@ __count_immobile_pages(struct zone *zone, struct page *page, int count)
 bool is_pageblock_removable_nolock(struct page *page)
 {
 	struct zone *zone = page_zone(page);
+<<<<<<< HEAD
+=======
+	unsigned long pfn = page_to_pfn(page);
+
+	/*
+	 * We have to be careful here because we are iterating over memory
+	 * sections which are not zone aware so we might end up outside of
+	 * the zone but still within the section.
+	 */
+	if (!zone || zone->zone_start_pfn > pfn ||
+			zone->zone_start_pfn + zone->spanned_pages <= pfn)
+		return false;
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	return __count_immobile_pages(zone, page, 0);
 }
 

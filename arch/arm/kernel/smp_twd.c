@@ -19,7 +19,10 @@
 #include <linux/io.h>
 
 #include <asm/smp_twd.h>
+<<<<<<< HEAD
 #include <asm/localtimer.h>
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #include <asm/hardware/gic.h>
 
 /* set up by the platform code */
@@ -27,8 +30,11 @@ void __iomem *twd_base;
 
 static unsigned long twd_timer_rate;
 
+<<<<<<< HEAD
 static struct clock_event_device __percpu **twd_evt;
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 static void twd_set_mode(enum clock_event_mode mode,
 			struct clock_event_device *clk)
 {
@@ -83,12 +89,15 @@ int twd_timer_ack(void)
 	return 0;
 }
 
+<<<<<<< HEAD
 void twd_timer_stop(struct clock_event_device *clk)
 {
 	twd_set_mode(CLOCK_EVT_MODE_UNUSED, clk);
 	disable_percpu_irq(clk->irq);
 }
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 static void __cpuinit twd_calibrate_rate(void)
 {
 	unsigned long count;
@@ -128,6 +137,7 @@ static void __cpuinit twd_calibrate_rate(void)
 	}
 }
 
+<<<<<<< HEAD
 static irqreturn_t twd_handler(int irq, void *dev_id)
 {
 	struct clock_event_device *evt = *(struct clock_event_device **)dev_id;
@@ -140,11 +150,14 @@ static irqreturn_t twd_handler(int irq, void *dev_id)
 	return IRQ_NONE;
 }
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 /*
  * Setup the local clock events for a CPU.
  */
 void __cpuinit twd_timer_setup(struct clock_event_device *clk)
 {
+<<<<<<< HEAD
 	struct clock_event_device **this_cpu_clk;
 
 	if (!twd_evt) {
@@ -169,6 +182,13 @@ void __cpuinit twd_timer_setup(struct clock_event_device *clk)
 
 	clk->name = "local_timer";
 	clk->features = CLOCK_EVT_FEAT_PERIODIC | CLOCK_EVT_FEAT_ONESHOT;
+=======
+	twd_calibrate_rate();
+
+	clk->name = "local_timer";
+	clk->features = CLOCK_EVT_FEAT_PERIODIC | CLOCK_EVT_FEAT_ONESHOT |
+			CLOCK_EVT_FEAT_C3STOP;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	clk->rating = 350;
 	clk->set_mode = twd_set_mode;
 	clk->set_next_event = twd_set_next_event;
@@ -177,10 +197,17 @@ void __cpuinit twd_timer_setup(struct clock_event_device *clk)
 	clk->max_delta_ns = clockevent_delta2ns(0xffffffff, clk);
 	clk->min_delta_ns = clockevent_delta2ns(0xf, clk);
 
+<<<<<<< HEAD
 	this_cpu_clk = __this_cpu_ptr(twd_evt);
 	*this_cpu_clk = clk;
 
 	clockevents_register_device(clk);
 
 	enable_percpu_irq(clk->irq, 0);
+=======
+	/* Make sure our local interrupt controller has this enabled */
+	gic_enable_ppi(clk->irq);
+
+	clockevents_register_device(clk);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }

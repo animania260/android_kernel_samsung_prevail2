@@ -1524,6 +1524,10 @@ static ssize_t bonding_store_slaves_active(struct device *d,
 		goto out;
 	}
 
+<<<<<<< HEAD
+=======
+	read_lock(&bond->lock);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	bond_for_each_slave(bond, slave, i) {
 		if (!bond_is_active_slave(slave)) {
 			if (new_value)
@@ -1532,6 +1536,10 @@ static ssize_t bonding_store_slaves_active(struct device *d,
 				slave->inactive = 1;
 		}
 	}
+<<<<<<< HEAD
+=======
+	read_unlock(&bond->lock);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 out:
 	return ret;
 }

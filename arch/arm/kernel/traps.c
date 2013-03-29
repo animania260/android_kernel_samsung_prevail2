@@ -21,14 +21,20 @@
 #include <linux/kdebug.h>
 #include <linux/module.h>
 #include <linux/kexec.h>
+<<<<<<< HEAD
 #include <linux/bug.h>
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #include <linux/delay.h>
 #include <linux/init.h>
 #include <linux/sched.h>
 
 #include <asm/atomic.h>
 #include <asm/cacheflush.h>
+<<<<<<< HEAD
 #include <asm/exception.h>
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #include <asm/system.h>
 #include <asm/unistd.h>
 #include <asm/traps.h>
@@ -36,9 +42,12 @@
 #include <asm/tls.h>
 
 #include "signal.h"
+<<<<<<< HEAD
 #ifdef CONFIG_SEC_DEBUG
 #include <mach/sec_debug.h>
 #endif
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 static const char *handler[]= { "prefetch abort", "data abort", "address exception", "interrupt" };
 
@@ -260,7 +269,11 @@ static int __die(const char *str, int err, struct thread_info *thread, struct pt
 	return ret;
 }
 
+<<<<<<< HEAD
 static DEFINE_RAW_SPINLOCK(die_lock);
+=======
+static DEFINE_SPINLOCK(die_lock);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 /*
  * This function is protected against re-entrancy.
@@ -269,6 +282,7 @@ void die(const char *str, struct pt_regs *regs, int err)
 {
 	struct thread_info *thread = current_thread_info();
 	int ret;
+<<<<<<< HEAD
 	enum bug_trap_type bug_type = BUG_TRAP_TYPE_NONE;
 
 	oops_enter();
@@ -287,13 +301,26 @@ void die(const char *str, struct pt_regs *regs, int err)
 #ifdef CONFIG_SEC_DEBUG_SUBSYS
 	sec_debug_save_die_info(str, regs);
 #endif
+=======
+
+	oops_enter();
+
+	spin_lock_irq(&die_lock);
+	console_verbose();
+	bust_spinlocks(1);
+	ret = __die(str, err, thread, regs);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	if (regs && kexec_should_crash(thread->task))
 		crash_kexec(regs);
 
 	bust_spinlocks(0);
 	add_taint(TAINT_DIE);
+<<<<<<< HEAD
 	raw_spin_unlock_irq(&die_lock);
+=======
+	spin_unlock_irq(&die_lock);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	oops_exit();
 
 	if (in_interrupt())
@@ -317,6 +344,7 @@ void arm_notify_die(const char *str, struct pt_regs *regs,
 	}
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_GENERIC_BUG
 
 int is_valid_bugaddr(unsigned long pc)
@@ -337,23 +365,39 @@ int is_valid_bugaddr(unsigned long pc)
 
 static LIST_HEAD(undef_hook);
 static DEFINE_RAW_SPINLOCK(undef_lock);
+=======
+static LIST_HEAD(undef_hook);
+static DEFINE_SPINLOCK(undef_lock);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 void register_undef_hook(struct undef_hook *hook)
 {
 	unsigned long flags;
 
+<<<<<<< HEAD
 	raw_spin_lock_irqsave(&undef_lock, flags);
 	list_add(&hook->node, &undef_hook);
 	raw_spin_unlock_irqrestore(&undef_lock, flags);
+=======
+	spin_lock_irqsave(&undef_lock, flags);
+	list_add(&hook->node, &undef_hook);
+	spin_unlock_irqrestore(&undef_lock, flags);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 void unregister_undef_hook(struct undef_hook *hook)
 {
 	unsigned long flags;
 
+<<<<<<< HEAD
 	raw_spin_lock_irqsave(&undef_lock, flags);
 	list_del(&hook->node);
 	raw_spin_unlock_irqrestore(&undef_lock, flags);
+=======
+	spin_lock_irqsave(&undef_lock, flags);
+	list_del(&hook->node);
+	spin_unlock_irqrestore(&undef_lock, flags);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 static int call_undef_hook(struct pt_regs *regs, unsigned int instr)
@@ -362,12 +406,20 @@ static int call_undef_hook(struct pt_regs *regs, unsigned int instr)
 	unsigned long flags;
 	int (*fn)(struct pt_regs *regs, unsigned int instr) = NULL;
 
+<<<<<<< HEAD
 	raw_spin_lock_irqsave(&undef_lock, flags);
+=======
+	spin_lock_irqsave(&undef_lock, flags);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	list_for_each_entry(hook, &undef_hook, node)
 		if ((instr & hook->instr_mask) == hook->instr_val &&
 		    (regs->ARM_cpsr & hook->cpsr_mask) == hook->cpsr_val)
 			fn = hook->fn;
+<<<<<<< HEAD
 	raw_spin_unlock_irqrestore(&undef_lock, flags);
+=======
+	spin_unlock_irqrestore(&undef_lock, flags);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	return fn ? fn(regs, instr) : 1;
 }
@@ -487,10 +539,13 @@ do_cache_op(unsigned long start, unsigned long end, int flags)
 
 		up_read(&mm->mmap_sem);
 		flush_cache_user_range(start, end);
+<<<<<<< HEAD
 
 #ifdef CONFIG_ARCH_MSM7X27
 		mb();
 #endif
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		return;
 	}
 	up_read(&mm->mmap_sem);
@@ -731,6 +786,19 @@ baddataabort(int code, unsigned long instr, struct pt_regs *regs)
 	arm_notify_die("unknown data abort code", regs, &info, instr, 0);
 }
 
+<<<<<<< HEAD
+=======
+void __attribute__((noreturn)) __bug(const char *file, int line)
+{
+	printk(KERN_CRIT"kernel BUG at %s:%d!\n", file, line);
+	*(int *)0 = 0;
+
+	/* Avoid "noreturn function does return" */
+	for (;;);
+}
+EXPORT_SYMBOL(__bug);
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 void __readwrite_bug(const char *fn)
 {
 	printk("%s called, but not implemented\n", fn);

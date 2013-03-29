@@ -43,7 +43,11 @@
  * dead ones from iteration.
  */
 #define KNODE_DEAD		1LU
+<<<<<<< HEAD
 #define KNODE_KLIST_MASK	(~KNODE_DEAD)
+=======
+#define KNODE_KLIST_MASK	~KNODE_DEAD
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 static struct klist *knode_klist(struct klist_node *knode)
 {
@@ -193,10 +197,17 @@ static void klist_release(struct kref *kref)
 		if (waiter->node != n)
 			continue;
 
+<<<<<<< HEAD
 		list_del(&waiter->list);
 		waiter->woken = 1;
 		mb();
 		wake_up_process(waiter->process);
+=======
+		waiter->woken = 1;
+		mb();
+		wake_up_process(waiter->process);
+		list_del(&waiter->list);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	}
 	spin_unlock(&klist_remove_lock);
 	knode_set_klist(n, NULL);

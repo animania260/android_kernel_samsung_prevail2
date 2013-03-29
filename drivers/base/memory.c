@@ -62,9 +62,12 @@ static const struct kset_uevent_ops memory_uevent_ops = {
 
 static BLOCKING_NOTIFIER_HEAD(memory_chain);
 
+<<<<<<< HEAD
 unsigned long movable_reserved_start, movable_reserved_size;
 unsigned long low_power_memory_start, low_power_memory_size;
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 int register_memory_notifier(struct notifier_block *nb)
 {
         return blocking_notifier_chain_register(&memory_chain, nb);
@@ -227,13 +230,55 @@ int memory_isolate_notify(unsigned long val, void *v)
 }
 
 /*
+<<<<<<< HEAD
+=======
+ * The probe routines leave the pages reserved, just as the bootmem code does.
+ * Make sure they're still that way.
+ */
+static bool pages_correctly_reserved(unsigned long start_pfn,
+					unsigned long nr_pages)
+{
+	int i, j;
+	struct page *page;
+	unsigned long pfn = start_pfn;
+
+	/*
+	 * memmap between sections is not contiguous except with
+	 * SPARSEMEM_VMEMMAP. We lookup the page once per section
+	 * and assume memmap is contiguous within each section
+	 */
+	for (i = 0; i < sections_per_block; i++, pfn += PAGES_PER_SECTION) {
+		if (WARN_ON_ONCE(!pfn_valid(pfn)))
+			return false;
+		page = pfn_to_page(pfn);
+
+		for (j = 0; j < PAGES_PER_SECTION; j++) {
+			if (PageReserved(page + j))
+				continue;
+
+			printk(KERN_WARNING "section number %ld page number %d "
+				"not reserved, was it already online?\n",
+				pfn_to_section_nr(pfn), j);
+
+			return false;
+		}
+	}
+
+	return true;
+}
+
+/*
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
  * MEMORY_HOTPLUG depends on SPARSEMEM in mm/Kconfig, so it is
  * OK to have direct references to sparsemem variables in here.
  */
 static int
 memory_block_action(unsigned long phys_index, unsigned long action)
 {
+<<<<<<< HEAD
 	int i;
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	unsigned long start_pfn, start_paddr;
 	unsigned long nr_pages = PAGES_PER_SECTION * sections_per_block;
 	struct page *first_page;
@@ -241,6 +286,7 @@ memory_block_action(unsigned long phys_index, unsigned long action)
 
 	first_page = pfn_to_page(phys_index << PFN_SECTION_SHIFT);
 
+<<<<<<< HEAD
 	/*
 	 * The probe routines leave the pages reserved, just
 	 * as the bootmem code does.  Make sure they're still
@@ -261,6 +307,15 @@ memory_block_action(unsigned long phys_index, unsigned long action)
 	switch (action) {
 		case MEM_ONLINE:
 			start_pfn = page_to_pfn(first_page);
+=======
+	switch (action) {
+		case MEM_ONLINE:
+			start_pfn = page_to_pfn(first_page);
+
+			if (!pages_correctly_reserved(start_pfn, nr_pages))
+				return -EBUSY;
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			ret = online_pages(start_pfn, nr_pages);
 			break;
 		case MEM_OFFLINE:
@@ -369,6 +424,7 @@ static int block_size_init(void)
 				&attr_block_size_bytes.attr);
 }
 
+<<<<<<< HEAD
 static ssize_t
 print_movable_size(struct class *class, struct class_attribute *attr, char *buf)
 {
@@ -427,6 +483,8 @@ static int low_power_memory_start_init(void)
 				&class_attr_low_power_memory_start_bytes.attr);
 }
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 /*
  * Some architectures will have custom drivers to do this, and
  * will not need to do it from userspace.  The fake hot-add code
@@ -534,6 +592,7 @@ static inline int memory_fail_init(void)
 }
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_ARCH_MEMORY_REMOVE
 static ssize_t
 memory_remove_store(struct class *class, struct class_attribute *attr,
@@ -624,6 +683,8 @@ static inline int memory_low_power_init(void)
 }
 #endif
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 /*
  * Note that phys_device is optional.  It is here to allow for
  * differentiation between which *physical* devices each
@@ -816,6 +877,7 @@ int __init memory_dev_init(void)
 	err = memory_fail_init();
 	if (!ret)
 		ret = err;
+<<<<<<< HEAD
 	err = memory_remove_init();
 	if (!ret)
 		ret = err;
@@ -840,6 +902,11 @@ int __init memory_dev_init(void)
 	err = low_power_memory_start_init();
 	if (!ret)
 		ret = err;
+=======
+	err = block_size_init();
+	if (!ret)
+		ret = err;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 out:
 	if (ret)
 		printk(KERN_ERR "%s() failed: %d\n", __func__, ret);

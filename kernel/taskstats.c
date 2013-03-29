@@ -657,6 +657,10 @@ static struct genl_ops taskstats_ops = {
 	.cmd		= TASKSTATS_CMD_GET,
 	.doit		= taskstats_user_cmd,
 	.policy		= taskstats_cmd_get_policy,
+<<<<<<< HEAD
+=======
+	.flags		= GENL_ADMIN_PERM,
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 };
 
 static struct genl_ops cgroupstats_ops = {

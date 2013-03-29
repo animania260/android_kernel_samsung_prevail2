@@ -158,6 +158,23 @@ static inline int is_unevictable_lru(enum lru_list l)
 	return (l == LRU_UNEVICTABLE);
 }
 
+<<<<<<< HEAD
+=======
+/* Isolate inactive pages */
+#define ISOLATE_INACTIVE	((__force isolate_mode_t)0x1)
+/* Isolate active pages */
+#define ISOLATE_ACTIVE		((__force isolate_mode_t)0x2)
+/* Isolate clean file */
+#define ISOLATE_CLEAN		((__force isolate_mode_t)0x4)
+/* Isolate unmapped file */
+#define ISOLATE_UNMAPPED	((__force isolate_mode_t)0x8)
+/* Isolate for asynchronous migration */
+#define ISOLATE_ASYNC_MIGRATE	((__force isolate_mode_t)0x10)
+
+/* LRU Isolation modes. */
+typedef unsigned __bitwise__ isolate_mode_t;
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 enum zone_watermarks {
 	WMARK_MIN,
 	WMARK_LOW,
@@ -454,12 +471,15 @@ static inline int zone_is_oom_locked(const struct zone *zone)
 	return test_bit(ZONE_OOM_LOCKED, &zone->flags);
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_SMP
 unsigned long zone_nr_free_pages(struct zone *zone);
 #else
 #define zone_nr_free_pages(zone) zone_page_state(zone, NR_FREE_PAGES)
 #endif /* CONFIG_SMP */
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 /*
  * The "priority" of VM scanning is how much of the queues we will scan in one
  * go. A value of 12 for DEF_PRIORITY implies that we will scan 1/4096th of the
@@ -639,7 +659,11 @@ typedef struct pglist_data {
 					     range, including holes */
 	int node_id;
 	wait_queue_head_t kswapd_wait;
+<<<<<<< HEAD
 	struct task_struct *kswapd;
+=======
+	struct task_struct *kswapd;	/* Protected by lock_memory_hotplug() */
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	int kswapd_max_order;
 	enum zone_type classzone_idx;
 } pg_data_t;
@@ -1095,10 +1119,14 @@ static inline int pfn_present(unsigned long pfn)
 #define pfn_to_nid(pfn)		(0)
 #endif
 
+<<<<<<< HEAD
 #ifndef early_pfn_valid
 #define early_pfn_valid(pfn)	pfn_valid(pfn)
 #endif
 
+=======
+#define early_pfn_valid(pfn)	pfn_valid(pfn)
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 void sparse_init(void);
 #else
 #define sparse_init()	do {} while (0)

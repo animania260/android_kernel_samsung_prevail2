@@ -8,6 +8,14 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+<<<<<<< HEAD
+=======
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
  */
 
 #ifndef __ARCH_ARM_MACH_MSM_IOMMU_HW_8XXX_H
@@ -15,6 +23,7 @@
 
 #define CTX_SHIFT 12
 
+<<<<<<< HEAD
 #define GET_GLOBAL_REG(reg, base) (readl_relaxed((base) + (reg)))
 #define GET_CTX_REG(reg, base, ctx) \
 			(readl_relaxed((base) + (reg) + ((ctx) << CTX_SHIFT)))
@@ -23,6 +32,16 @@
 
 #define SET_CTX_REG(reg, base, ctx, val) \
 		writel_relaxed((val), ((base) + (reg) + ((ctx) << CTX_SHIFT)))
+=======
+#define GET_GLOBAL_REG(reg, base) (readl((base) + (reg)))
+#define GET_CTX_REG(reg, base, ctx) \
+				(readl((base) + (reg) + ((ctx) << CTX_SHIFT)))
+
+#define SET_GLOBAL_REG(reg, base, val)	writel((val), ((base) + (reg)))
+
+#define SET_CTX_REG(reg, base, ctx, val) \
+			writel((val), ((base) + (reg) + ((ctx) << CTX_SHIFT)))
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 /* Wrappers for numbered registers */
 #define SET_GLOBAL_REG_N(b, n, r, v) SET_GLOBAL_REG(b, ((r) + (n << 2)), (v))
@@ -38,6 +57,7 @@
 #define SET_CONTEXT_FIELD(b, c, r, F, v)	\
 	SET_FIELD(((b) + (r) + ((c) << CTX_SHIFT)), F##_MASK, F##_SHIFT, (v))
 
+<<<<<<< HEAD
 #define GET_FIELD(addr, mask, shift) ((readl_relaxed(addr) >> (shift)) & (mask))
 
 #define SET_FIELD(addr, mask, shift, v) \
@@ -45,6 +65,14 @@ do { \
 	int t = readl_relaxed(addr); \
 	writel_relaxed((t & ~((mask) << (shift))) + (((v) & \
 		       (mask)) << (shift)), addr);\
+=======
+#define GET_FIELD(addr, mask, shift)  ((readl(addr) >> (shift)) & (mask))
+
+#define SET_FIELD(addr, mask, shift, v) \
+do { \
+	int t = readl(addr); \
+	writel((t & ~((mask) << (shift))) + (((v) & (mask)) << (shift)), addr);\
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 } while (0)
 
 

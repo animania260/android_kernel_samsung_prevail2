@@ -82,6 +82,10 @@ u32 evergreen_page_flip(struct radeon_device *rdev, int crtc_id, u64 crtc_base)
 {
 	struct radeon_crtc *radeon_crtc = rdev->mode_info.crtcs[crtc_id];
 	u32 tmp = RREG32(EVERGREEN_GRPH_UPDATE + radeon_crtc->crtc_offset);
+<<<<<<< HEAD
+=======
+	int i;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	/* Lock the graphics update lock */
 	tmp |= EVERGREEN_GRPH_UPDATE_LOCK;
@@ -99,7 +103,15 @@ u32 evergreen_page_flip(struct radeon_device *rdev, int crtc_id, u64 crtc_base)
 	       (u32)crtc_base);
 
 	/* Wait for update_pending to go high. */
+<<<<<<< HEAD
 	while (!(RREG32(EVERGREEN_GRPH_UPDATE + radeon_crtc->crtc_offset) & EVERGREEN_GRPH_SURFACE_UPDATE_PENDING));
+=======
+	for (i = 0; i < rdev->usec_timeout; i++) {
+		if (RREG32(EVERGREEN_GRPH_UPDATE + radeon_crtc->crtc_offset) & EVERGREEN_GRPH_SURFACE_UPDATE_PENDING)
+			break;
+		udelay(1);
+	}
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	DRM_DEBUG("Update pending now high. Unlocking vupdate_lock.\n");
 
 	/* Unlock the lock, so double-buffering can take place inside vblank */
@@ -353,6 +365,10 @@ void evergreen_hpd_init(struct radeon_device *rdev)
 		default:
 			break;
 		}
+<<<<<<< HEAD
+=======
+		radeon_hpd_set_polarity(rdev, radeon_connector->hpd.hpd);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	}
 	if (rdev->irq.installed)
 		evergreen_irq_set(rdev);
@@ -920,6 +936,14 @@ int evergreen_pcie_gart_enable(struct radeon_device *rdev)
 		WREG32(MC_VM_MD_L1_TLB0_CNTL, tmp);
 		WREG32(MC_VM_MD_L1_TLB1_CNTL, tmp);
 		WREG32(MC_VM_MD_L1_TLB2_CNTL, tmp);
+<<<<<<< HEAD
+=======
+		if ((rdev->family == CHIP_JUNIPER) ||
+		    (rdev->family == CHIP_CYPRESS) ||
+		    (rdev->family == CHIP_HEMLOCK) ||
+		    (rdev->family == CHIP_BARTS))
+			WREG32(MC_VM_MD_L1_TLB3_CNTL, tmp);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	}
 	WREG32(MC_VM_MB_L1_TLB0_CNTL, tmp);
 	WREG32(MC_VM_MB_L1_TLB1_CNTL, tmp);
@@ -1008,6 +1032,7 @@ void evergreen_agp_enable(struct radeon_device *rdev)
 
 void evergreen_mc_stop(struct radeon_device *rdev, struct evergreen_mc_save *save)
 {
+<<<<<<< HEAD
 	save->vga_control[0] = RREG32(D1VGA_CONTROL);
 	save->vga_control[1] = RREG32(D2VGA_CONTROL);
 	save->vga_render_control = RREG32(VGA_RENDER_CONTROL);
@@ -1026,6 +1051,10 @@ void evergreen_mc_stop(struct radeon_device *rdev, struct evergreen_mc_save *sav
 		save->crtc_control[4] = RREG32(EVERGREEN_CRTC_CONTROL + EVERGREEN_CRTC4_REGISTER_OFFSET);
 		save->crtc_control[5] = RREG32(EVERGREEN_CRTC_CONTROL + EVERGREEN_CRTC5_REGISTER_OFFSET);
 	}
+=======
+	save->vga_render_control = RREG32(VGA_RENDER_CONTROL);
+	save->vga_hdp_control = RREG32(VGA_HDP_CONTROL);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	/* Stop all video */
 	WREG32(VGA_RENDER_CONTROL, 0);
@@ -1070,6 +1099,11 @@ void evergreen_mc_stop(struct radeon_device *rdev, struct evergreen_mc_save *sav
 		WREG32(EVERGREEN_D5VGA_CONTROL, 0);
 		WREG32(EVERGREEN_D6VGA_CONTROL, 0);
 	}
+<<<<<<< HEAD
+=======
+	/* wait for the MC to settle */
+	udelay(100);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 void evergreen_mc_resume(struct radeon_device *rdev, struct evergreen_mc_save *save)
@@ -1136,6 +1170,7 @@ void evergreen_mc_resume(struct radeon_device *rdev, struct evergreen_mc_save *s
 	/* Unlock host access */
 	WREG32(VGA_HDP_CONTROL, save->vga_hdp_control);
 	mdelay(1);
+<<<<<<< HEAD
 	/* Restore video state */
 	WREG32(D1VGA_CONTROL, save->vga_control[0]);
 	WREG32(D2VGA_CONTROL, save->vga_control[1]);
@@ -1177,6 +1212,8 @@ void evergreen_mc_resume(struct radeon_device *rdev, struct evergreen_mc_save *s
 		WREG32(EVERGREEN_CRTC_UPDATE_LOCK + EVERGREEN_CRTC4_REGISTER_OFFSET, 0);
 		WREG32(EVERGREEN_CRTC_UPDATE_LOCK + EVERGREEN_CRTC5_REGISTER_OFFSET, 0);
 	}
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	WREG32(VGA_RENDER_CONTROL, save->vga_render_control);
 }
 
@@ -2058,9 +2095,15 @@ static void evergreen_gpu_init(struct radeon_device *rdev)
 		WREG32(CC_SYS_RB_BACKEND_DISABLE, rb);
 		WREG32(GC_USER_RB_BACKEND_DISABLE, rb);
 		WREG32(CC_GC_SHADER_PIPE_CONFIG, sp);
+<<<<<<< HEAD
         }
 
 	grbm_gfx_index |= SE_BROADCAST_WRITES;
+=======
+	}
+
+	grbm_gfx_index = INSTANCE_BROADCAST_WRITES | SE_BROADCAST_WRITES;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	WREG32(GRBM_GFX_INDEX, grbm_gfx_index);
 	WREG32(RLC_GFX_INDEX, grbm_gfx_index);
 
@@ -3251,6 +3294,21 @@ int evergreen_init(struct radeon_device *rdev)
 			rdev->accel_working = false;
 		}
 	}
+<<<<<<< HEAD
+=======
+
+	/* Don't start up if the MC ucode is missing on BTC parts.
+	 * The default clocks and voltages before the MC ucode
+	 * is loaded are not suffient for advanced operations.
+	 */
+	if (ASIC_IS_DCE5(rdev)) {
+		if (!rdev->mc_fw && !(rdev->flags & RADEON_IS_IGP)) {
+			DRM_ERROR("radeon: MC ucode required for NI+.\n");
+			return -EINVAL;
+		}
+	}
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	return 0;
 }
 

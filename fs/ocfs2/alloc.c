@@ -1134,7 +1134,11 @@ static int ocfs2_adjust_rightmost_branch(handle_t *handle,
 	}
 
 	el = path_leaf_el(path);
+<<<<<<< HEAD
 	rec = &el->l_recs[le32_to_cpu(el->l_next_free_rec) - 1];
+=======
+	rec = &el->l_recs[le16_to_cpu(el->l_next_free_rec) - 1];
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	ocfs2_adjust_rightmost_records(handle, et, path, rec);
 

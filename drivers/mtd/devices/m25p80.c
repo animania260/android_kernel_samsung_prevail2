@@ -930,6 +930,10 @@ static int __devinit m25p_probe(struct spi_device *spi)
 
 	flash->mtd.dev.parent = &spi->dev;
 	flash->page_size = info->page_size;
+<<<<<<< HEAD
+=======
+	flash->mtd.writebufsize = flash->page_size;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	if (info->addr_width)
 		flash->addr_width = info->addr_width;

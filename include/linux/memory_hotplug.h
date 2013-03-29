@@ -10,9 +10,12 @@ struct zone;
 struct pglist_data;
 struct mem_section;
 
+<<<<<<< HEAD
 extern unsigned long movable_reserved_start, movable_reserved_size;
 extern unsigned long low_power_memory_start, low_power_memory_size;
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #ifdef CONFIG_MEMORY_HOTPLUG
 
 /*
@@ -235,6 +238,7 @@ extern void sparse_remove_one_section(struct zone *zone, struct mem_section *ms)
 extern struct page *sparse_decode_mem_map(unsigned long coded_mem_map,
 					  unsigned long pnum);
 
+<<<<<<< HEAD
 extern void reserve_hotplug_pages(unsigned long start_pfn,
 				unsigned long nr_pages);
 extern void unreserve_hotplug_pages(unsigned long start_pfn,
@@ -246,3 +250,6 @@ extern int physical_low_power_memory(u64 start, u64 size);
 extern int arch_physical_low_power_memory(u64 start, u64 size);
 extern int physical_active_memory(u64 start, u64 size);
 extern int arch_physical_active_memory(u64 start, u64 size);
+=======
+#endif /* __LINUX_MEMORY_HOTPLUG_H */
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y

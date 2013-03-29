@@ -613,7 +613,11 @@ static ssize_t dlfb_ops_write(struct fb_info *info, const char __user *buf,
 	result = fb_sys_write(info, buf, count, ppos);
 
 	if (result > 0) {
+<<<<<<< HEAD
 		int start = max((int)(offset / info->fix.line_length) - 1, 0);
+=======
+		int start = max((int)(offset / info->fix.line_length), 0);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		int lines = min((u32)((result / info->fix.line_length) + 1),
 				(u32)info->var.yres);
 
@@ -1666,7 +1670,11 @@ static void dlfb_usb_disconnect(struct usb_interface *interface)
 	for (i = 0; i < ARRAY_SIZE(fb_device_attrs); i++)
 		device_remove_file(info->dev, &fb_device_attrs[i]);
 	device_remove_bin_file(info->dev, &edid_attr);
+<<<<<<< HEAD
 
+=======
+	unlink_framebuffer(info);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	usb_set_intfdata(interface, NULL);
 
 	/* if clients still have us open, will be freed on last close */

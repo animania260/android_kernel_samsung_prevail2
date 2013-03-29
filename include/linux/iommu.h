@@ -19,10 +19,13 @@
 #ifndef __LINUX_IOMMU_H
 #define __LINUX_IOMMU_H
 
+<<<<<<< HEAD
 #include <linux/types.h>
 #include <linux/errno.h>
 #include <linux/scatterlist.h>
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #define IOMMU_READ	(1)
 #define IOMMU_WRITE	(2)
 #define IOMMU_CACHE	(4) /* DMA cache coherency */
@@ -37,7 +40,11 @@ struct iommu_domain {
 #define IOMMU_CAP_INTR_REMAP		0x2	/* isolates device intrs */
 
 struct iommu_ops {
+<<<<<<< HEAD
 	int (*domain_init)(struct iommu_domain *domain, int flags);
+=======
+	int (*domain_init)(struct iommu_domain *domain);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	void (*domain_destroy)(struct iommu_domain *domain);
 	int (*attach_dev)(struct iommu_domain *domain, struct device *dev);
 	void (*detach_dev)(struct iommu_domain *domain, struct device *dev);
@@ -45,22 +52,32 @@ struct iommu_ops {
 		   phys_addr_t paddr, int gfp_order, int prot);
 	int (*unmap)(struct iommu_domain *domain, unsigned long iova,
 		     int gfp_order);
+<<<<<<< HEAD
 	int (*map_range)(struct iommu_domain *domain, unsigned int iova,
 		    struct scatterlist *sg, unsigned int len, int prot);
 	int (*unmap_range)(struct iommu_domain *domain, unsigned int iova,
 		      unsigned int len);
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	phys_addr_t (*iova_to_phys)(struct iommu_domain *domain,
 				    unsigned long iova);
 	int (*domain_has_cap)(struct iommu_domain *domain,
 			      unsigned long cap);
+<<<<<<< HEAD
 	phys_addr_t (*get_pt_base_addr)(struct iommu_domain *domain);
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 };
 
 #ifdef CONFIG_IOMMU_API
 
 extern void register_iommu(struct iommu_ops *ops);
 extern bool iommu_found(void);
+<<<<<<< HEAD
 extern struct iommu_domain *iommu_domain_alloc(int flags);
+=======
+extern struct iommu_domain *iommu_domain_alloc(void);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 extern void iommu_domain_free(struct iommu_domain *domain);
 extern int iommu_attach_device(struct iommu_domain *domain,
 			       struct device *dev);
@@ -70,15 +87,21 @@ extern int iommu_map(struct iommu_domain *domain, unsigned long iova,
 		     phys_addr_t paddr, int gfp_order, int prot);
 extern int iommu_unmap(struct iommu_domain *domain, unsigned long iova,
 		       int gfp_order);
+<<<<<<< HEAD
 extern int iommu_map_range(struct iommu_domain *domain, unsigned int iova,
 		    struct scatterlist *sg, unsigned int len, int prot);
 extern int iommu_unmap_range(struct iommu_domain *domain, unsigned int iova,
 		      unsigned int len);
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 extern phys_addr_t iommu_iova_to_phys(struct iommu_domain *domain,
 				      unsigned long iova);
 extern int iommu_domain_has_cap(struct iommu_domain *domain,
 				unsigned long cap);
+<<<<<<< HEAD
 extern phys_addr_t iommu_get_pt_base_addr(struct iommu_domain *domain);
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 #else /* CONFIG_IOMMU_API */
 
@@ -91,7 +114,11 @@ static inline bool iommu_found(void)
 	return false;
 }
 
+<<<<<<< HEAD
 static inline struct iommu_domain *iommu_domain_alloc(int flags)
+=======
+static inline struct iommu_domain *iommu_domain_alloc(void)
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 {
 	return NULL;
 }
@@ -123,6 +150,7 @@ static inline int iommu_unmap(struct iommu_domain *domain, unsigned long iova,
 	return -ENODEV;
 }
 
+<<<<<<< HEAD
 static inline int iommu_map_range(struct iommu_domain *domain,
 				  unsigned int iova, struct scatterlist *sg,
 				  unsigned int len, int prot)
@@ -136,6 +164,8 @@ static inline int iommu_unmap_range(struct iommu_domain *domain,
 	return -ENODEV;
 }
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 static inline phys_addr_t iommu_iova_to_phys(struct iommu_domain *domain,
 					     unsigned long iova)
 {
@@ -148,10 +178,13 @@ static inline int domain_has_cap(struct iommu_domain *domain,
 	return 0;
 }
 
+<<<<<<< HEAD
 static inline phys_addr_t iommu_get_pt_base_addr(struct iommu_domain *domain)
 {
 	return 0;
 }
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #endif /* CONFIG_IOMMU_API */
 
 #endif /* __LINUX_IOMMU_H */

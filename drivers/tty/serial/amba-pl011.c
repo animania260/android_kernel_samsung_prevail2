@@ -1376,6 +1376,13 @@ static int pl011_startup(struct uart_port *port)
 
 	uap->port.uartclk = clk_get_rate(uap->clk);
 
+<<<<<<< HEAD
+=======
+	/* Clear pending error and receive interrupts */
+	writew(UART011_OEIS | UART011_BEIS | UART011_PEIS | UART011_FEIS |
+	       UART011_RTIS | UART011_RXIS, uap->port.membase + UART011_ICR);
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	/*
 	 * Allocate the IRQ
 	 */
@@ -1410,10 +1417,13 @@ static int pl011_startup(struct uart_port *port)
 	cr = UART01x_CR_UARTEN | UART011_CR_RXE | UART011_CR_TXE;
 	writew(cr, uap->port.membase + UART011_CR);
 
+<<<<<<< HEAD
 	/* Clear pending error interrupts */
 	writew(UART011_OEIS | UART011_BEIS | UART011_PEIS | UART011_FEIS,
 	       uap->port.membase + UART011_ICR);
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	/*
 	 * initialise the old status of the modem signals
 	 */
@@ -1428,6 +1438,12 @@ static int pl011_startup(struct uart_port *port)
 	 * as well.
 	 */
 	spin_lock_irq(&uap->port.lock);
+<<<<<<< HEAD
+=======
+	/* Clear out any spuriously appearing RX interrupts */
+	 writew(UART011_RTIS | UART011_RXIS,
+		uap->port.membase + UART011_ICR);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	uap->im = UART011_RTIM;
 	if (!pl011_dma_rx_running(uap))
 		uap->im |= UART011_RXIM;
@@ -1617,13 +1633,33 @@ pl011_set_termios(struct uart_port *port, struct ktermios *termios,
 			old_cr &= ~ST_UART011_CR_OVSFACT;
 	}
 
+<<<<<<< HEAD
+=======
+	/*
+	 * Workaround for the ST Micro oversampling variants to
+	 * increase the bitrate slightly, by lowering the divisor,
+	 * to avoid delayed sampling of start bit at high speeds,
+	 * else we see data corruption.
+	 */
+	if (uap->vendor->oversampling) {
+		if ((baud >= 3000000) && (baud < 3250000) && (quot > 1))
+			quot -= 1;
+		else if ((baud > 3250000) && (quot > 2))
+			quot -= 2;
+	}
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	/* Set baud rate */
 	writew(quot & 0x3f, port->membase + UART011_FBRD);
 	writew(quot >> 6, port->membase + UART011_IBRD);
 
 	/*
 	 * ----------v----------v----------v----------v-----
+<<<<<<< HEAD
 	 * NOTE: MUST BE WRITTEN AFTER UARTLCR_M & UARTLCR_L
+=======
+	 * NOTE: lcrh_tx and lcrh_rx MUST BE WRITTEN AFTER
+	 * UART011_FBRD & UART011_IBRD.
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	 * ----------^----------^----------^----------^-----
 	 */
 	writew(lcr_h, port->membase + uap->lcrh_rx);
@@ -1733,9 +1769,25 @@ pl011_console_write(struct console *co, const char *s, unsigned int count)
 {
 	struct uart_amba_port *uap = amba_ports[co->index];
 	unsigned int status, old_cr, new_cr;
+<<<<<<< HEAD
 
 	clk_enable(uap->clk);
 
+=======
+	unsigned long flags;
+	int locked = 1;
+
+	clk_enable(uap->clk);
+
+	local_irq_save(flags);
+	if (uap->port.sysrq)
+		locked = 0;
+	else if (oops_in_progress)
+		locked = spin_trylock(&uap->port.lock);
+	else
+		spin_lock(&uap->port.lock);
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	/*
 	 *	First save the CR then disable the interrupts
 	 */
@@ -1755,6 +1807,13 @@ pl011_console_write(struct console *co, const char *s, unsigned int count)
 	} while (status & UART01x_FR_BUSY);
 	writew(old_cr, uap->port.membase + UART011_CR);
 
+<<<<<<< HEAD
+=======
+	if (locked)
+		spin_unlock(&uap->port.lock);
+	local_irq_restore(flags);
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	clk_disable(uap->clk);
 }
 
@@ -1906,6 +1965,13 @@ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
 	uap->port.line = i;
 	pl011_dma_probe(uap);
 
+<<<<<<< HEAD
+=======
+	/* Ensure interrupts from this UART are masked and cleared */
+	writew(0, uap->port.membase + UART011_IMSC);
+	writew(0xffff, uap->port.membase + UART011_ICR);
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	snprintf(uap->type, sizeof(uap->type), "PL011 rev%u", amba_rev(dev));
 
 	amba_ports[i] = uap;

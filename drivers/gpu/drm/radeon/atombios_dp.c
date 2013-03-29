@@ -22,6 +22,10 @@
  *
  * Authors: Dave Airlie
  *          Alex Deucher
+<<<<<<< HEAD
+=======
+ *          Jerome Glisse
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
  */
 #include "drmP.h"
 #include "radeon_drm.h"
@@ -283,7 +287,11 @@ int radeon_dp_i2c_aux_ch(struct i2c_adapter *adapter, int mode,
 		}
 	}
 
+<<<<<<< HEAD
 	DRM_ERROR("aux i2c too many retries, giving up\n");
+=======
+	DRM_DEBUG_KMS("aux i2c too many retries, giving up\n");
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	return -EREMOTEIO;
 }
 
@@ -553,6 +561,10 @@ static void radeon_dp_set_panel_mode(struct drm_encoder *encoder,
 {
 	struct drm_device *dev = encoder->dev;
 	struct radeon_device *rdev = dev->dev_private;
+<<<<<<< HEAD
+=======
+	struct radeon_connector *radeon_connector = to_radeon_connector(connector);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	int panel_mode = DP_PANEL_MODE_EXTERNAL_DP_MODE;
 
 	if (!ASIC_IS_DCE4(rdev))
@@ -560,10 +572,26 @@ static void radeon_dp_set_panel_mode(struct drm_encoder *encoder,
 
 	if (radeon_connector_encoder_is_dp_bridge(connector))
 		panel_mode = DP_PANEL_MODE_INTERNAL_DP1_MODE;
+<<<<<<< HEAD
+=======
+	else if (connector->connector_type == DRM_MODE_CONNECTOR_eDP) {
+		u8 tmp = radeon_read_dpcd_reg(radeon_connector, DP_EDP_CONFIGURATION_CAP);
+		if (tmp & 1)
+			panel_mode = DP_PANEL_MODE_INTERNAL_DP2_MODE;
+	}
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	atombios_dig_encoder_setup(encoder,
 				   ATOM_ENCODER_CMD_SETUP_PANEL_MODE,
 				   panel_mode);
+<<<<<<< HEAD
+=======
+
+	if ((connector->connector_type == DRM_MODE_CONNECTOR_eDP) &&
+	    (panel_mode == DP_PANEL_MODE_INTERNAL_DP2_MODE)) {
+		radeon_write_dpcd_reg(radeon_connector, DP_EDP_CONFIGURATION_SET, 1);
+	}
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 void radeon_dp_set_link_config(struct drm_connector *connector,
@@ -613,7 +641,10 @@ static bool radeon_dp_get_link_status(struct radeon_connector *radeon_connector,
 	ret = radeon_dp_aux_native_read(radeon_connector, DP_LANE0_1_STATUS,
 					link_status, DP_LINK_STATUS_SIZE, 100);
 	if (ret <= 0) {
+<<<<<<< HEAD
 		DRM_ERROR("displayport link status failed\n");
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		return false;
 	}
 
@@ -786,8 +817,15 @@ static int radeon_dp_link_train_cr(struct radeon_dp_link_train_info *dp_info)
 		else
 			mdelay(dp_info->rd_interval * 4);
 
+<<<<<<< HEAD
 		if (!radeon_dp_get_link_status(dp_info->radeon_connector, dp_info->link_status))
 			break;
+=======
+		if (!radeon_dp_get_link_status(dp_info->radeon_connector, dp_info->link_status)) {
+			DRM_ERROR("displayport link status failed\n");
+			break;
+		}
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 		if (dp_clock_recovery_ok(dp_info->link_status, dp_info->dp_lane_count)) {
 			clock_recovery = true;
@@ -849,8 +887,15 @@ static int radeon_dp_link_train_ce(struct radeon_dp_link_train_info *dp_info)
 		else
 			mdelay(dp_info->rd_interval * 4);
 
+<<<<<<< HEAD
 		if (!radeon_dp_get_link_status(dp_info->radeon_connector, dp_info->link_status))
 			break;
+=======
+		if (!radeon_dp_get_link_status(dp_info->radeon_connector, dp_info->link_status)) {
+			DRM_ERROR("displayport link status failed\n");
+			break;
+		}
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 		if (dp_channel_eq_ok(dp_info->link_status, dp_info->dp_lane_count)) {
 			channel_eq = true;

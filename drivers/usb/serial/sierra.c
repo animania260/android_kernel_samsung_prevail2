@@ -171,7 +171,10 @@ static int sierra_probe(struct usb_serial *serial,
 {
 	int result = 0;
 	struct usb_device *udev;
+<<<<<<< HEAD
 	struct sierra_intf_private *data;
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	u8 ifnum;
 
 	udev = serial->dev;
@@ -199,11 +202,14 @@ static int sierra_probe(struct usb_serial *serial,
 		return -ENODEV;
 	}
 
+<<<<<<< HEAD
 	data = serial->private = kzalloc(sizeof(struct sierra_intf_private), GFP_KERNEL);
 	if (!data)
 		return -ENOMEM;
 	spin_lock_init(&data->susp_lock);
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	return result;
 }
 
@@ -221,7 +227,11 @@ static const struct sierra_iface_info typeB_interface_list = {
 };
 
 /* 'blacklist' of interfaces not served by this driver */
+<<<<<<< HEAD
 static const u8 direct_ip_non_serial_ifaces[] = { 7, 8, 9, 10, 11 };
+=======
+static const u8 direct_ip_non_serial_ifaces[] = { 7, 8, 9, 10, 11, 19, 20 };
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 static const struct sierra_iface_info direct_ip_interface_blacklist = {
 	.infolen = ARRAY_SIZE(direct_ip_non_serial_ifaces),
 	.ifaceinfo = direct_ip_non_serial_ifaces,
@@ -298,9 +308,22 @@ static const struct usb_device_id id_table[] = {
 	/* Sierra Wireless HSPA Non-Composite Device */
 	{ USB_DEVICE_AND_INTERFACE_INFO(0x1199, 0x6892, 0xFF, 0xFF, 0xFF)},
 	{ USB_DEVICE(0x1199, 0x6893) },	/* Sierra Wireless Device */
+<<<<<<< HEAD
 	{ USB_DEVICE(0x1199, 0x68A3), 	/* Sierra Wireless Direct IP modems */
 	  .driver_info = (kernel_ulong_t)&direct_ip_interface_blacklist
 	},
+=======
+	{ USB_DEVICE(0x1199, 0x68A2),   /* Sierra Wireless MC77xx in QMI mode */
+	  .driver_info = (kernel_ulong_t)&direct_ip_interface_blacklist
+	},
+	{ USB_DEVICE(0x1199, 0x68A3), 	/* Sierra Wireless Direct IP modems */
+	  .driver_info = (kernel_ulong_t)&direct_ip_interface_blacklist
+	},
+	/* AT&T Direct IP LTE modems */
+	{ USB_DEVICE_AND_INTERFACE_INFO(0x0F3D, 0x68AA, 0xFF, 0xFF, 0xFF),
+	  .driver_info = (kernel_ulong_t)&direct_ip_interface_blacklist
+	},
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	{ USB_DEVICE(0x0f3d, 0x68A3), 	/* Airprime/Sierra Wireless Direct IP modems */
 	  .driver_info = (kernel_ulong_t)&direct_ip_interface_blacklist
 	},
@@ -908,6 +931,10 @@ static void sierra_dtr_rts(struct usb_serial_port *port, int on)
 static int sierra_startup(struct usb_serial *serial)
 {
 	struct usb_serial_port *port;
+<<<<<<< HEAD
+=======
+	struct sierra_intf_private *intfdata;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	struct sierra_port_private *portdata;
 	struct sierra_iface_info *himemoryp = NULL;
 	int i;
@@ -915,6 +942,17 @@ static int sierra_startup(struct usb_serial *serial)
 
 	dev_dbg(&serial->dev->dev, "%s\n", __func__);
 
+<<<<<<< HEAD
+=======
+	intfdata = kzalloc(sizeof(*intfdata), GFP_KERNEL);
+	if (!intfdata)
+		return -ENOMEM;
+
+	spin_lock_init(&intfdata->susp_lock);
+
+	usb_set_serial_data(serial, intfdata);
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	/* Set Device mode to D0 */
 	sierra_set_power_state(serial->dev, 0x0000);
 
@@ -930,7 +968,11 @@ static int sierra_startup(struct usb_serial *serial)
 			dev_dbg(&port->dev, "%s: kmalloc for "
 				"sierra_port_private (%d) failed!\n",
 				__func__, i);
+<<<<<<< HEAD
 			return -ENOMEM;
+=======
+			goto err;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		}
 		spin_lock_init(&portdata->lock);
 		init_usb_anchor(&portdata->active);
@@ -967,6 +1009,17 @@ static int sierra_startup(struct usb_serial *serial)
 	}
 
 	return 0;
+<<<<<<< HEAD
+=======
+err:
+	for (--i; i >= 0; --i) {
+		portdata = usb_get_serial_port_data(serial->port[i]);
+		kfree(portdata);
+	}
+	kfree(intfdata);
+
+	return -ENOMEM;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 static void sierra_release(struct usb_serial *serial)
@@ -986,6 +1039,10 @@ static void sierra_release(struct usb_serial *serial)
 			continue;
 		kfree(portdata);
 	}
+<<<<<<< HEAD
+=======
+	kfree(serial->private);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 #ifdef CONFIG_PM

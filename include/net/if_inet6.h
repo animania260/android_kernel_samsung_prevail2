@@ -41,7 +41,10 @@ struct inet6_ifaddr {
 	struct in6_addr		addr;
 	__u32			prefix_len;
 	
+<<<<<<< HEAD
 	/* In seconds, relative to tstamp. Expiry is at tstamp + HZ * lft. */
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	__u32			valid_lft;
 	__u32			prefered_lft;
 	atomic_t		refcnt;

@@ -71,16 +71,22 @@
 #include <linux/ctype.h>
 #include <linux/ftrace.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <linux/cpuacct.h>
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 #include <asm/tlb.h>
 #include <asm/irq_regs.h>
 #include <asm/mutex.h>
 
+<<<<<<< HEAD
 #if CONFIG_SEC_DEBUG
 #include <mach/sec_debug.h>
 #endif
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #include "sched_cpupri.h"
 #include "workqueue_sched.h"
 #include "sched_autogroup.h"
@@ -610,6 +616,7 @@ static inline int cpu_of(struct rq *rq)
 /*
  * Return the group to which this tasks belongs.
  *
+<<<<<<< HEAD
  * We use task_subsys_state_check() and extend the RCU verification with
  * pi->lock and rq->lock because cpu_cgroup_attach() holds those locks for each
  * task it moves into the cgroup. Therefore by holding either of those locks,
@@ -626,6 +633,21 @@ static inline struct task_group *task_group(struct task_struct *p)
 	tg = container_of(css, struct task_group, css);
 
 	return autogroup_task_group(p, tg);
+=======
+ * We cannot use task_subsys_state() and friends because the cgroup
+ * subsystem changes that value before the cgroup_subsys::attach() method
+ * is called, therefore we cannot pin it and might observe the wrong value.
+ *
+ * The same is true for autogroup's p->signal->autogroup->tg, the autogroup
+ * core changes this before calling sched_move_task().
+ *
+ * Instead we use a 'copy' which is updated from sched_move_task() while
+ * holding both task_struct::pi_lock and rq::lock.
+ */
+static inline struct task_group *task_group(struct task_struct *p)
+{
+	return p->sched_task_group;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 /* Change a task's cfs_rq and parent entity if it moves across CPUs/groups */
@@ -2211,7 +2233,11 @@ void set_task_cpu(struct task_struct *p, unsigned int new_cpu)
 	 * a task's CPU. ->pi_lock for waking tasks, rq->lock for runnable tasks.
 	 *
 	 * sched_move_task() holds both and thus holding either pins the cgroup,
+<<<<<<< HEAD
 	 * see set_task_rq().
+=======
+	 * see task_group().
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	 *
 	 * Furthermore, all task_rq users should acquire both locks, see
 	 * task_rq_lock().
@@ -2328,7 +2354,11 @@ unsigned long wait_task_inactive(struct task_struct *p, long match_state)
 		 * yield - it could be a while.
 		 */
 		if (unlikely(on_rq)) {
+<<<<<<< HEAD
 			ktime_t to = ktime_set(0, NSEC_PER_MSEC);
+=======
+			ktime_t to = ktime_set(0, NSEC_PER_SEC/HZ);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 			set_current_state(TASK_UNINTERRUPTIBLE);
 			schedule_hrtimeout(&to, HRTIMER_MODE_REL);
@@ -2786,7 +2816,12 @@ out:
  */
 int wake_up_process(struct task_struct *p)
 {
+<<<<<<< HEAD
 	return try_to_wake_up(p, TASK_ALL, 0);
+=======
+	WARN_ON(task_is_stopped_or_traced(p));
+	return try_to_wake_up(p, TASK_NORMAL, 0);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 EXPORT_SYMBOL(wake_up_process);
 
@@ -3397,6 +3432,7 @@ calc_load_n(unsigned long load, unsigned long exp,
  * Once we've updated the global active value, we need to apply the exponential
  * weights adjusted to the number of cycles missed.
  */
+<<<<<<< HEAD
 static void calc_global_nohz(unsigned long ticks)
 {
 	long delta, active, n;
@@ -3404,6 +3440,12 @@ static void calc_global_nohz(unsigned long ticks)
 	if (time_before(jiffies, calc_load_update))
 		return;
 
+=======
+static void calc_global_nohz(void)
+{
+	long delta, active, n;
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	/*
 	 * If we crossed a calc_load_update boundary, make sure to fold
 	 * any pending idle changes, the respective CPUs might have
@@ -3415,6 +3457,7 @@ static void calc_global_nohz(unsigned long ticks)
 		atomic_long_add(delta, &calc_load_tasks);
 
 	/*
+<<<<<<< HEAD
 	 * If we were idle for multiple load cycles, apply them.
 	 */
 	if (ticks >= LOAD_FREQ) {
@@ -3440,6 +3483,27 @@ static void calc_global_nohz(unsigned long ticks)
 	 * age us 4 cycles, and the test in calc_global_load() will
 	 * pick up the final one.
 	 */
+=======
+	 * It could be the one fold was all it took, we done!
+	 */
+	if (time_before(jiffies, calc_load_update + 10))
+		return;
+
+	/*
+	 * Catch-up, fold however many we are behind still
+	 */
+	delta = jiffies - calc_load_update - 10;
+	n = 1 + (delta / LOAD_FREQ);
+
+	active = atomic_long_read(&calc_load_tasks);
+	active = active > 0 ? active * FIXED_1 : 0;
+
+	avenrun[0] = calc_load_n(avenrun[0], EXP_1, active, n);
+	avenrun[1] = calc_load_n(avenrun[1], EXP_5, active, n);
+	avenrun[2] = calc_load_n(avenrun[2], EXP_15, active, n);
+
+	calc_load_update += n * LOAD_FREQ;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 #else
 static void calc_load_account_idle(struct rq *this_rq)
@@ -3451,7 +3515,11 @@ static inline long calc_load_fold_idle(void)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void calc_global_nohz(unsigned long ticks)
+=======
+static void calc_global_nohz(void)
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 {
 }
 #endif
@@ -3479,8 +3547,11 @@ void calc_global_load(unsigned long ticks)
 {
 	long active;
 
+<<<<<<< HEAD
 	calc_global_nohz(ticks);
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	if (time_before(jiffies, calc_load_update + 10))
 		return;
 
@@ -3492,6 +3563,19 @@ void calc_global_load(unsigned long ticks)
 	avenrun[2] = calc_load(avenrun[2], EXP_15, active);
 
 	calc_load_update += LOAD_FREQ;
+<<<<<<< HEAD
+=======
+
+	/*
+	 * Account one period with whatever state we found before
+	 * folding in the nohz state and ageing the entire idle period.
+	 *
+	 * This avoids loosing a sample when we go idle between
+	 * calc_load_account_active() (10 ticks ago) and now and thus
+	 * under-accounting.
+	 */
+	calc_global_nohz();
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 /*
@@ -4153,6 +4237,11 @@ EXPORT_SYMBOL(sub_preempt_count);
  */
 static noinline void __schedule_bug(struct task_struct *prev)
 {
+<<<<<<< HEAD
+=======
+	struct pt_regs *regs = get_irq_regs();
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	printk(KERN_ERR "BUG: scheduling while atomic: %s/%d/0x%08x\n",
 		prev->comm, prev->pid, preempt_count());
 
@@ -4160,7 +4249,15 @@ static noinline void __schedule_bug(struct task_struct *prev)
 	print_modules();
 	if (irqs_disabled())
 		print_irqtrace_events(prev);
+<<<<<<< HEAD
 	dump_stack();
+=======
+
+	if (regs)
+		show_regs(regs);
+	else
+		dump_stack();
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 /*
@@ -4288,9 +4385,12 @@ need_resched:
 		 */
 		cpu = smp_processor_id();
 		rq = cpu_rq(cpu);
+<<<<<<< HEAD
 #if CONFIG_SEC_DEBUG
 		sec_debug_task_sched_log(cpu, rq->curr);
 #endif
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	} else
 		raw_spin_unlock_irq(&rq->lock);
 
@@ -4420,9 +4520,12 @@ asmlinkage void __sched preempt_schedule_irq(void)
 
 	do {
 		add_preempt_count(PREEMPT_ACTIVE);
+<<<<<<< HEAD
 #ifdef CONFIG_SEC_DEBUG
 		secdbg_sched_msg(">prmptsched_irq");
 #endif
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		local_irq_enable();
 		__schedule();
 		local_irq_disable();
@@ -4592,7 +4695,11 @@ void complete_all(struct completion *x)
 EXPORT_SYMBOL(complete_all);
 
 static inline long __sched
+<<<<<<< HEAD
 do_wait_for_common(struct completion *x, long timeout, int state, int iowait)
+=======
+do_wait_for_common(struct completion *x, long timeout, int state)
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 {
 	if (!x->done) {
 		DECLARE_WAITQUEUE(wait, current);
@@ -4605,10 +4712,14 @@ do_wait_for_common(struct completion *x, long timeout, int state, int iowait)
 			}
 			__set_current_state(state);
 			spin_unlock_irq(&x->wait.lock);
+<<<<<<< HEAD
 			if (iowait)
 				timeout = io_schedule_timeout(timeout);
 			else
 				timeout = schedule_timeout(timeout);
+=======
+			timeout = schedule_timeout(timeout);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			spin_lock_irq(&x->wait.lock);
 		} while (!x->done && timeout);
 		__remove_wait_queue(&x->wait, &wait);
@@ -4620,12 +4731,20 @@ do_wait_for_common(struct completion *x, long timeout, int state, int iowait)
 }
 
 static long __sched
+<<<<<<< HEAD
 wait_for_common(struct completion *x, long timeout, int state, int iowait)
+=======
+wait_for_common(struct completion *x, long timeout, int state)
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 {
 	might_sleep();
 
 	spin_lock_irq(&x->wait.lock);
+<<<<<<< HEAD
 	timeout = do_wait_for_common(x, timeout, state, iowait);
+=======
+	timeout = do_wait_for_common(x, timeout, state);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	spin_unlock_irq(&x->wait.lock);
 	return timeout;
 }
@@ -4642,11 +4761,16 @@ wait_for_common(struct completion *x, long timeout, int state, int iowait)
  */
 void __sched wait_for_completion(struct completion *x)
 {
+<<<<<<< HEAD
 	wait_for_common(x, MAX_SCHEDULE_TIMEOUT, TASK_UNINTERRUPTIBLE, 0);
+=======
+	wait_for_common(x, MAX_SCHEDULE_TIMEOUT, TASK_UNINTERRUPTIBLE);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 EXPORT_SYMBOL(wait_for_completion);
 
 /**
+<<<<<<< HEAD
  * wait_for_completion_io: - waits for completion of a task
  * @x:  holds the state of this particular completion
  *
@@ -4660,6 +4784,8 @@ void __sched wait_for_completion_io(struct completion *x)
 EXPORT_SYMBOL(wait_for_completion_io);
 
 /**
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
  * wait_for_completion_timeout: - waits for completion of a task (w/timeout)
  * @x:  holds the state of this particular completion
  * @timeout:  timeout value in jiffies
@@ -4671,7 +4797,11 @@ EXPORT_SYMBOL(wait_for_completion_io);
 unsigned long __sched
 wait_for_completion_timeout(struct completion *x, unsigned long timeout)
 {
+<<<<<<< HEAD
 	return wait_for_common(x, timeout, TASK_UNINTERRUPTIBLE, 0);
+=======
+	return wait_for_common(x, timeout, TASK_UNINTERRUPTIBLE);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 EXPORT_SYMBOL(wait_for_completion_timeout);
 
@@ -4684,8 +4814,12 @@ EXPORT_SYMBOL(wait_for_completion_timeout);
  */
 int __sched wait_for_completion_interruptible(struct completion *x)
 {
+<<<<<<< HEAD
 	long t =
 	  wait_for_common(x, MAX_SCHEDULE_TIMEOUT, TASK_INTERRUPTIBLE, 0);
+=======
+	long t = wait_for_common(x, MAX_SCHEDULE_TIMEOUT, TASK_INTERRUPTIBLE);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	if (t == -ERESTARTSYS)
 		return t;
 	return 0;
@@ -4704,7 +4838,11 @@ long __sched
 wait_for_completion_interruptible_timeout(struct completion *x,
 					  unsigned long timeout)
 {
+<<<<<<< HEAD
 	return wait_for_common(x, timeout, TASK_INTERRUPTIBLE, 0);
+=======
+	return wait_for_common(x, timeout, TASK_INTERRUPTIBLE);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 EXPORT_SYMBOL(wait_for_completion_interruptible_timeout);
 
@@ -4717,7 +4855,11 @@ EXPORT_SYMBOL(wait_for_completion_interruptible_timeout);
  */
 int __sched wait_for_completion_killable(struct completion *x)
 {
+<<<<<<< HEAD
 	long t = wait_for_common(x, MAX_SCHEDULE_TIMEOUT, TASK_KILLABLE, 0);
+=======
+	long t = wait_for_common(x, MAX_SCHEDULE_TIMEOUT, TASK_KILLABLE);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	if (t == -ERESTARTSYS)
 		return t;
 	return 0;
@@ -4737,7 +4879,11 @@ long __sched
 wait_for_completion_killable_timeout(struct completion *x,
 				     unsigned long timeout)
 {
+<<<<<<< HEAD
 	return wait_for_common(x, timeout, TASK_KILLABLE, 0);
+=======
+	return wait_for_common(x, timeout, TASK_KILLABLE);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 EXPORT_SYMBOL(wait_for_completion_killable_timeout);
 
@@ -5730,7 +5876,10 @@ long __sched io_schedule_timeout(long timeout)
 	delayacct_blkio_end();
 	return ret;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(io_schedule_timeout);
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 /**
  * sys_sched_get_priority_max - return maximum RT priority.
@@ -7244,11 +7393,16 @@ int sched_domain_level_max;
 
 static int __init setup_relax_domain_level(char *str)
 {
+<<<<<<< HEAD
 	unsigned long val;
 
 	val = simple_strtoul(str, NULL, 0);
 	if (val < sched_domain_level_max)
 		default_relax_domain_level = val;
+=======
+	if (kstrtoint(str, 0, &default_relax_domain_level))
+		pr_warn("Unable to set relax_domain_level\n");
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	return 1;
 }
@@ -7441,7 +7595,10 @@ struct sched_domain *build_sched_domain(struct sched_domain_topology_level *tl,
 	if (!sd)
 		return child;
 
+<<<<<<< HEAD
 	set_domain_attribute(sd, attr);
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	cpumask_and(sched_domain_span(sd), cpu_map, tl->mask(cpu));
 	if (child) {
 		sd->level = child->level + 1;
@@ -7449,6 +7606,10 @@ struct sched_domain *build_sched_domain(struct sched_domain_topology_level *tl,
 		child->parent = sd;
 	}
 	sd->child = child;
+<<<<<<< HEAD
+=======
+	set_domain_attribute(sd, attr);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	return sd;
 }
@@ -7807,14 +7968,26 @@ int __init sched_create_sysfs_power_savings_entries(struct sysdev_class *cls)
 }
 #endif /* CONFIG_SCHED_MC || CONFIG_SCHED_SMT */
 
+<<<<<<< HEAD
+=======
+static int num_cpus_frozen;	/* used to mark begin/end of suspend/resume */
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 /*
  * Update cpusets according to cpu_active mask.  If cpusets are
  * disabled, cpuset_update_active_cpus() becomes a simple wrapper
  * around partition_sched_domains().
+<<<<<<< HEAD
+=======
+ *
+ * If we come here as part of a suspend/resume, don't touch cpusets because we
+ * want to restore it back to its original state upon resume anyway.
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
  */
 static int cpuset_cpu_active(struct notifier_block *nfb, unsigned long action,
 			     void *hcpu)
 {
+<<<<<<< HEAD
 	switch (action & ~CPU_TASKS_FROZEN) {
 	case CPU_ONLINE:
 	case CPU_DOWN_FAILED:
@@ -7823,11 +7996,44 @@ static int cpuset_cpu_active(struct notifier_block *nfb, unsigned long action,
 	default:
 		return NOTIFY_DONE;
 	}
+=======
+	switch (action) {
+	case CPU_ONLINE_FROZEN:
+	case CPU_DOWN_FAILED_FROZEN:
+
+		/*
+		 * num_cpus_frozen tracks how many CPUs are involved in suspend
+		 * resume sequence. As long as this is not the last online
+		 * operation in the resume sequence, just build a single sched
+		 * domain, ignoring cpusets.
+		 */
+		num_cpus_frozen--;
+		if (likely(num_cpus_frozen)) {
+			partition_sched_domains(1, NULL, NULL);
+			break;
+		}
+
+		/*
+		 * This is the last CPU online operation. So fall through and
+		 * restore the original sched domains by considering the
+		 * cpuset configurations.
+		 */
+
+	case CPU_ONLINE:
+	case CPU_DOWN_FAILED:
+		cpuset_update_active_cpus();
+		break;
+	default:
+		return NOTIFY_DONE;
+	}
+	return NOTIFY_OK;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 static int cpuset_cpu_inactive(struct notifier_block *nfb, unsigned long action,
 			       void *hcpu)
 {
+<<<<<<< HEAD
 	switch (action & ~CPU_TASKS_FROZEN) {
 	case CPU_DOWN_PREPARE:
 		cpuset_update_active_cpus();
@@ -7835,6 +8041,20 @@ static int cpuset_cpu_inactive(struct notifier_block *nfb, unsigned long action,
 	default:
 		return NOTIFY_DONE;
 	}
+=======
+	switch (action) {
+	case CPU_DOWN_PREPARE:
+		cpuset_update_active_cpus();
+		break;
+	case CPU_DOWN_PREPARE_FROZEN:
+		num_cpus_frozen++;
+		partition_sched_domains(1, NULL, NULL);
+		break;
+	default:
+		return NOTIFY_DONE;
+	}
+	return NOTIFY_OK;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 static int update_runtime(struct notifier_block *nfb,
@@ -7947,7 +8167,11 @@ static void init_rt_rq(struct rt_rq *rt_rq, struct rq *rq)
 #ifdef CONFIG_SMP
 	rt_rq->rt_nr_migratory = 0;
 	rt_rq->overloaded = 0;
+<<<<<<< HEAD
 	plist_head_init(&rt_rq->pushable_tasks);
+=======
+	plist_head_init_raw(&rt_rq->pushable_tasks, &rq->lock);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #endif
 
 	rt_rq->rt_time = 0;
@@ -8019,6 +8243,7 @@ void __init sched_init(void)
 	int i, j;
 	unsigned long alloc_size = 0, ptr;
 
+<<<<<<< HEAD
 #ifdef CONFIG_SEC_DEBUG
 #ifdef CONFIG_FAIR_GROUP_SCHED
 	sec_gaf_supply_rqinfo(offsetof(struct rq, curr),
@@ -8026,6 +8251,8 @@ void __init sched_init(void)
 #endif
 #endif
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #ifdef CONFIG_FAIR_GROUP_SCHED
 	alloc_size += 2 * nr_cpu_ids * sizeof(void **);
 #endif
@@ -8159,7 +8386,11 @@ void __init sched_init(void)
 #endif
 
 #ifdef CONFIG_RT_MUTEXES
+<<<<<<< HEAD
 	plist_head_init(&init_task.pi_waiters);
+=======
+	plist_head_init_raw(&init_task.pi_waiters, &init_task.pi_lock);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #endif
 
 	/*
@@ -8210,6 +8441,7 @@ static inline int preempt_count_equals(int preempt_offset)
 	return (nested == preempt_offset);
 }
 
+<<<<<<< HEAD
 static int __might_sleep_init_called;
 int __init __might_sleep_init(void)
 {
@@ -8218,16 +8450,22 @@ int __init __might_sleep_init(void)
 }
 early_initcall(__might_sleep_init);
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 void __might_sleep(const char *file, int line, int preempt_offset)
 {
 #ifdef in_atomic
 	static unsigned long prev_jiffy;	/* ratelimiting */
 
 	if ((preempt_count_equals(preempt_offset) && !irqs_disabled()) ||
+<<<<<<< HEAD
 	    oops_in_progress)
 		return;
 	if (system_state != SYSTEM_RUNNING &&
 	    (!__might_sleep_init_called || system_state != SYSTEM_BOOTING))
+=======
+	    system_state != SYSTEM_RUNNING || oops_in_progress)
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		return;
 	if (time_before(jiffies, prev_jiffy + HZ) && prev_jiffy)
 		return;
@@ -8590,6 +8828,10 @@ void sched_destroy_group(struct task_group *tg)
  */
 void sched_move_task(struct task_struct *tsk)
 {
+<<<<<<< HEAD
+=======
+	struct task_group *tg;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	int on_rq, running;
 	unsigned long flags;
 	struct rq *rq;
@@ -8604,6 +8846,15 @@ void sched_move_task(struct task_struct *tsk)
 	if (unlikely(running))
 		tsk->sched_class->put_prev_task(rq, tsk);
 
+<<<<<<< HEAD
+=======
+	tg = container_of(task_subsys_state_check(tsk, cpu_cgroup_subsys_id,
+				lockdep_is_held(&tsk->sighand->siglock)),
+			  struct task_group, css);
+	tg = autogroup_task_group(tsk, tg);
+	tsk->sched_task_group = tg;
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #ifdef CONFIG_FAIR_GROUP_SCHED
 	if (tsk->sched_class->task_move_group)
 		tsk->sched_class->task_move_group(tsk, on_rq);
@@ -8971,6 +9222,7 @@ cpu_cgroup_destroy(struct cgroup_subsys *ss, struct cgroup *cgrp)
 }
 
 static int
+<<<<<<< HEAD
 cpu_cgroup_allow_attach(struct cgroup *cgrp, struct task_struct *tsk)
 {
 	const struct cred *cred = current_cred(), *tcred;
@@ -8996,6 +9248,10 @@ cpu_cgroup_can_attach_task(struct cgroup *cgrp, struct task_struct *tsk)
 			return -EPERM;
 	}
 
+=======
+cpu_cgroup_can_attach_task(struct cgroup *cgrp, struct task_struct *tsk)
+{
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #ifdef CONFIG_RT_GROUP_SCHED
 	if (!sched_rt_can_attach(cgroup_tg(cgrp), tsk))
 		return -EINVAL;
@@ -9098,7 +9354,10 @@ struct cgroup_subsys cpu_cgroup_subsys = {
 	.name		= "cpu",
 	.create		= cpu_cgroup_create,
 	.destroy	= cpu_cgroup_destroy,
+<<<<<<< HEAD
 	.allow_attach	= cpu_cgroup_allow_attach,
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	.can_attach_task = cpu_cgroup_can_attach_task,
 	.attach_task	= cpu_cgroup_attach_task,
 	.exit		= cpu_cgroup_exit,
@@ -9125,6 +9384,7 @@ struct cpuacct {
 	u64 __percpu *cpuusage;
 	struct percpu_counter cpustat[CPUACCT_STAT_NSTATS];
 	struct cpuacct *parent;
+<<<<<<< HEAD
 	struct cpuacct_charge_calls *cpufreq_fn;
 	void *cpuacct_data;
 };
@@ -9149,6 +9409,10 @@ int cpuacct_register_cpufreq(struct cpuacct_charge_calls *fn)
 	return 0;
 }
 
+=======
+};
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 struct cgroup_subsys cpuacct_subsys;
 
 /* return cpu accounting group corresponding to this container */
@@ -9183,6 +9447,7 @@ static struct cgroup_subsys_state *cpuacct_create(
 		if (percpu_counter_init(&ca->cpustat[i], 0))
 			goto out_free_counters;
 
+<<<<<<< HEAD
 	ca->cpufreq_fn = cpuacct_cpufreq;
 
 	/* If available, have platform code initalize cpu frequency table */
@@ -9193,6 +9458,10 @@ static struct cgroup_subsys_state *cpuacct_create(
 		ca->parent = cgroup_ca(cgrp->parent);
 	else
 		cpuacct_root = ca;
+=======
+	if (cgrp->parent)
+		ca->parent = cgroup_ca(cgrp->parent);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	return &ca->css;
 
@@ -9320,6 +9589,7 @@ static int cpuacct_stats_show(struct cgroup *cgrp, struct cftype *cft,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int cpuacct_cpufreq_show(struct cgroup *cgrp, struct cftype *cft,
 		struct cgroup_map_cb *cb)
 {
@@ -9346,6 +9616,8 @@ static u64 cpuacct_powerusage_read(struct cgroup *cgrp, struct cftype *cft)
 	return totalpower;
 }
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 static struct cftype files[] = {
 	{
 		.name = "usage",
@@ -9360,6 +9632,7 @@ static struct cftype files[] = {
 		.name = "stat",
 		.read_map = cpuacct_stats_show,
 	},
+<<<<<<< HEAD
 	{
 		.name =  "cpufreq",
 		.read_map = cpuacct_cpufreq_show,
@@ -9368,6 +9641,8 @@ static struct cftype files[] = {
 		.name = "power",
 		.read_u64 = cpuacct_powerusage_read
 	},
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 };
 
 static int cpuacct_populate(struct cgroup_subsys *ss, struct cgroup *cgrp)
@@ -9397,10 +9672,13 @@ static void cpuacct_charge(struct task_struct *tsk, u64 cputime)
 	for (; ca; ca = ca->parent) {
 		u64 *cpuusage = per_cpu_ptr(ca->cpuusage, cpu);
 		*cpuusage += cputime;
+<<<<<<< HEAD
 
 		/* Call back into platform code to account for CPU speeds */
 		if (ca->cpufreq_fn && ca->cpufreq_fn->charge)
 			ca->cpufreq_fn->charge(ca->cpuacct_data, cputime, cpu);
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	}
 
 	rcu_read_unlock();

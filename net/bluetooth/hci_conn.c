@@ -53,16 +53,25 @@ static void hci_le_connect(struct hci_conn *conn)
 	conn->state = BT_CONNECT;
 	conn->out = 1;
 	conn->link_mode |= HCI_LM_MASTER;
+<<<<<<< HEAD
 	conn->sec_level = BT_SECURITY_LOW;
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	memset(&cp, 0, sizeof(cp));
 	cp.scan_interval = cpu_to_le16(0x0004);
 	cp.scan_window = cpu_to_le16(0x0004);
 	bacpy(&cp.peer_addr, &conn->dst);
+<<<<<<< HEAD
 	cp.peer_addr_type = conn->dst_type;
 	cp.conn_interval_min = cpu_to_le16(0x0008);
 	cp.conn_interval_max = cpu_to_le16(0x0100);
 	cp.supervision_timeout = cpu_to_le16(1000);
+=======
+	cp.conn_interval_min = cpu_to_le16(0x0008);
+	cp.conn_interval_max = cpu_to_le16(0x0100);
+	cp.supervision_timeout = cpu_to_le16(0x0064);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	cp.min_ce_len = cpu_to_le16(0x0001);
 	cp.max_ce_len = cpu_to_le16(0x0001);
 
@@ -205,6 +214,7 @@ void hci_le_conn_update(struct hci_conn *conn, u16 min, u16 max,
 }
 EXPORT_SYMBOL(hci_le_conn_update);
 
+<<<<<<< HEAD
 void hci_le_start_enc(struct hci_conn *conn, __le16 ediv, __u8 rand[8],
 							__u8 ltk[16])
 {
@@ -254,6 +264,8 @@ void hci_le_ltk_neg_reply(struct hci_conn *conn)
 	hci_send_cmd(hdev, HCI_OP_LE_LTK_NEG_REPLY, sizeof(cp), &cp);
 }
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 /* Device _must_ be locked */
 void hci_sco_setup(struct hci_conn *conn, __u8 status)
 {
@@ -333,8 +345,12 @@ static void hci_conn_auto_accept(unsigned long arg)
 	hci_dev_unlock(hdev);
 }
 
+<<<<<<< HEAD
 struct hci_conn *hci_conn_add(struct hci_dev *hdev, int type,
 					__u16 pkt_type, bdaddr_t *dst)
+=======
+struct hci_conn *hci_conn_add(struct hci_dev *hdev, int type, bdaddr_t *dst)
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 {
 	struct hci_conn *conn;
 
@@ -362,6 +378,7 @@ struct hci_conn *hci_conn_add(struct hci_dev *hdev, int type,
 		conn->pkt_type = hdev->pkt_type & ACL_PTYPE_MASK;
 		break;
 	case SCO_LINK:
+<<<<<<< HEAD
 		if (!pkt_type)
 			pkt_type = SCO_ESCO_MASK;
 	case ESCO_LINK:
@@ -378,6 +395,16 @@ struct hci_conn *hci_conn_add(struct hci_dev *hdev, int type,
 			conn->pkt_type = (pkt_type << 5) & hdev->pkt_type &
 					SCO_PTYPE_MASK;
 		}
+=======
+		if (lmp_esco_capable(hdev))
+			conn->pkt_type = (hdev->esco_type & SCO_ESCO_MASK) |
+					(hdev->esco_type & EDR_ESCO_MASK);
+		else
+			conn->pkt_type = hdev->pkt_type & SCO_PTYPE_MASK;
+		break;
+	case ESCO_LINK:
+		conn->pkt_type = hdev->esco_type & ~EDR_ESCO_MASK;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		break;
 	}
 
@@ -501,9 +528,13 @@ EXPORT_SYMBOL(hci_get_route);
 
 /* Create SCO, ACL or LE connection.
  * Device _must_ be locked */
+<<<<<<< HEAD
 struct hci_conn *hci_connect(struct hci_dev *hdev, int type,
 					__u16 pkt_type, bdaddr_t *dst,
 					__u8 sec_level, __u8 auth_type)
+=======
+struct hci_conn *hci_connect(struct hci_dev *hdev, int type, bdaddr_t *dst, __u8 sec_level, __u8 auth_type)
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 {
 	struct hci_conn *acl;
 	struct hci_conn *sco;
@@ -512,6 +543,7 @@ struct hci_conn *hci_connect(struct hci_dev *hdev, int type,
 	BT_DBG("%s dst %s", hdev->name, batostr(dst));
 
 	if (type == LE_LINK) {
+<<<<<<< HEAD
 		struct adv_entry *entry;
 
 		le = hci_conn_hash_lookup_ba(hdev, LE_LINK, dst);
@@ -529,6 +561,16 @@ struct hci_conn *hci_connect(struct hci_dev *hdev, int type,
 		le->dst_type = entry->bdaddr_type;
 
 		hci_le_connect(le);
+=======
+		le = hci_conn_hash_lookup_ba(hdev, LE_LINK, dst);
+		if (le)
+			return ERR_PTR(-EBUSY);
+		le = hci_conn_add(hdev, LE_LINK, dst);
+		if (!le)
+			return ERR_PTR(-ENOMEM);
+		if (le->state == BT_OPEN)
+			hci_le_connect(le);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 		hci_conn_hold(le);
 
@@ -537,7 +579,11 @@ struct hci_conn *hci_connect(struct hci_dev *hdev, int type,
 
 	acl = hci_conn_hash_lookup_ba(hdev, ACL_LINK, dst);
 	if (!acl) {
+<<<<<<< HEAD
 		acl = hci_conn_add(hdev, ACL_LINK, 0, dst);
+=======
+		acl = hci_conn_add(hdev, ACL_LINK, dst);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		if (!acl)
 			return NULL;
 	}
@@ -545,6 +591,7 @@ struct hci_conn *hci_connect(struct hci_dev *hdev, int type,
 	hci_conn_hold(acl);
 
 	if (acl->state == BT_OPEN || acl->state == BT_CLOSED) {
+<<<<<<< HEAD
 		struct inquiry_entry *ie;
 		ie = hci_inquiry_cache_lookup(acl->hdev, &acl->dst);
 		if (ie && (!ie->data.ssp_mode || !acl->hdev->ssp_mode) &&
@@ -552,6 +599,8 @@ struct hci_conn *hci_connect(struct hci_dev *hdev, int type,
 			__u8 auth = AUTH_ENABLED;
 			hci_send_cmd(hdev, HCI_OP_WRITE_AUTH_ENABLE, 1, &auth);
 		}
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		acl->sec_level = BT_SECURITY_LOW;
 		acl->pending_sec_level = sec_level;
 		acl->auth_type = auth_type;
@@ -563,7 +612,11 @@ struct hci_conn *hci_connect(struct hci_dev *hdev, int type,
 
 	sco = hci_conn_hash_lookup_ba(hdev, type, dst);
 	if (!sco) {
+<<<<<<< HEAD
 		sco = hci_conn_add(hdev, type, pkt_type, dst);
+=======
+		sco = hci_conn_add(hdev, type, dst);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		if (!sco) {
 			hci_conn_put(acl);
 			return NULL;
@@ -578,7 +631,11 @@ struct hci_conn *hci_connect(struct hci_dev *hdev, int type,
 	if (acl->state == BT_CONNECTED &&
 			(sco->state == BT_OPEN || sco->state == BT_CLOSED)) {
 		acl->power_save = 1;
+<<<<<<< HEAD
 		hci_conn_enter_active_mode(acl, BT_POWER_FORCE_ACTIVE_ON);
+=======
+		hci_conn_enter_active_mode(acl);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 		if (test_bit(HCI_CONN_MODE_CHANGE_PEND, &acl->pend)) {
 			/* defer SCO setup until mode change completed */
@@ -633,8 +690,11 @@ static int hci_conn_auth(struct hci_conn *conn, __u8 sec_level, __u8 auth_type)
 		cp.handle = cpu_to_le16(conn->handle);
 		hci_send_cmd(conn->hdev, HCI_OP_AUTH_REQUESTED,
 							sizeof(cp), &cp);
+<<<<<<< HEAD
 		if (conn->key_type != 0xff)
 			set_bit(HCI_CONN_REAUTH_PEND, &conn->pend);
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	}
 
 	return 0;
@@ -718,7 +778,13 @@ int hci_conn_check_secure(struct hci_conn *conn, __u8 sec_level)
 	if (sec_level != BT_SECURITY_HIGH)
 		return 1; /* Accept if non-secure is required */
 
+<<<<<<< HEAD
 	if (conn->sec_level == BT_SECURITY_HIGH)
+=======
+	if (conn->key_type == HCI_LK_AUTH_COMBINATION ||
+			(conn->key_type == HCI_LK_COMBINATION &&
+			conn->pin_length == 16))
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		return 1;
 
 	return 0; /* Reject not secure link */
@@ -760,6 +826,7 @@ int hci_conn_switch_role(struct hci_conn *conn, __u8 role)
 }
 EXPORT_SYMBOL(hci_conn_switch_role);
 
+<<<<<<< HEAD
 /* BEGIN SS_BLUEZ_BT +kjh 2011.06.23 : */
 /* workaround for a2dp chopping in multi connection. */
 /* Change Policy */
@@ -790,6 +857,10 @@ EXPORT_SYMBOL(hci_conn_set_encrypt);
 
 /* Enter active mode */
 void hci_conn_enter_active_mode(struct hci_conn *conn, __u8 force_active)
+=======
+/* Enter active mode */
+void hci_conn_enter_active_mode(struct hci_conn *conn)
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 {
 	struct hci_dev *hdev = conn->hdev;
 
@@ -798,10 +869,14 @@ void hci_conn_enter_active_mode(struct hci_conn *conn, __u8 force_active)
 	if (test_bit(HCI_RAW, &hdev->flags))
 		return;
 
+<<<<<<< HEAD
 	if (conn->mode != HCI_CM_SNIFF)
 		goto timer;
 
 	if (!conn->power_save && !force_active)
+=======
+	if (conn->mode != HCI_CM_SNIFF || !conn->power_save)
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		goto timer;
 
 	if (!test_and_set_bit(HCI_CONN_MODE_CHANGE_PEND, &conn->pend)) {
@@ -829,9 +904,13 @@ void hci_conn_enter_sniff_mode(struct hci_conn *conn)
 	if (!lmp_sniff_capable(hdev) || !lmp_sniff_capable(conn))
 		return;
 
+<<<<<<< HEAD
 	if (conn->mode != HCI_CM_ACTIVE ||
 		!(conn->link_policy & HCI_LP_SNIFF) ||
 		(hci_find_link_key(hdev, &conn->dst) == NULL))
+=======
+	if (conn->mode != HCI_CM_ACTIVE || !(conn->link_policy & HCI_LP_SNIFF))
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		return;
 
 	if (lmp_sniffsubr_capable(hdev) && lmp_sniffsubr_capable(conn)) {
@@ -944,6 +1023,7 @@ int hci_get_conn_list(void __user *arg)
 		(ci + n)->out   = c->out;
 		(ci + n)->state = c->state;
 		(ci + n)->link_mode = c->link_mode;
+<<<<<<< HEAD
 		if (c->type == SCO_LINK) {
 			(ci + n)->mtu = hdev->sco_mtu;
 			(ci + n)->cnt = hdev->sco_cnt;
@@ -953,6 +1033,8 @@ int hci_get_conn_list(void __user *arg)
 			(ci + n)->cnt = hdev->acl_cnt;
 			(ci + n)->pkts = hdev->acl_pkts;
 		}
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		if (++n >= req.conn_num)
 			break;
 	}
@@ -989,6 +1071,7 @@ int hci_get_conn_info(struct hci_dev *hdev, void __user *arg)
 		ci.out   = conn->out;
 		ci.state = conn->state;
 		ci.link_mode = conn->link_mode;
+<<<<<<< HEAD
 		if (req.type == SCO_LINK) {
 			ci.mtu = hdev->sco_mtu;
 			ci.cnt = hdev->sco_cnt;
@@ -998,6 +1081,8 @@ int hci_get_conn_info(struct hci_dev *hdev, void __user *arg)
 			ci.cnt = hdev->acl_cnt;
 			ci.pkts = hdev->acl_pkts;
 		}
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	}
 	hci_dev_unlock_bh(hdev);
 

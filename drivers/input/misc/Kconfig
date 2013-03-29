@@ -193,6 +193,7 @@ config INPUT_ATI_REMOTE2
 	  To compile this driver as a module, choose M here: the module will be
 	  called ati_remote2.
 
+<<<<<<< HEAD
 config INPUT_KEYCHORD
 	tristate "Key chord input driver support"
 	help
@@ -204,6 +205,8 @@ config INPUT_KEYCHORD
 	  To compile this driver as a module, choose M here: the
 	  module will be called keychord.
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 config INPUT_KEYSPAN_REMOTE
 	tristate "Keyspan DMR USB remote control (EXPERIMENTAL)"
 	depends on EXPERIMENTAL
@@ -278,7 +281,11 @@ config INPUT_TWL4030_PWRBUTTON
 config INPUT_TWL4030_VIBRA
 	tristate "Support for TWL4030 Vibrator"
 	depends on TWL4030_CORE
+<<<<<<< HEAD
 	select MFD_TWL4030_AUDIO
+=======
+	select TWL4030_CODEC
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	select INPUT_FF_MEMLESS
 	help
 	  This option enables support for TWL4030 Vibrator Driver.
@@ -286,6 +293,7 @@ config INPUT_TWL4030_VIBRA
 	  To compile this driver as a module, choose M here. The module will
 	  be called twl4030_vibra.
 
+<<<<<<< HEAD
 config INPUT_TWL6040_VIBRA
 	tristate "Support for TWL6040 Vibrator"
 	depends on TWL4030_CORE
@@ -297,6 +305,8 @@ config INPUT_TWL6040_VIBRA
 	  To compile this driver as a module, choose M here. The module will
 	  be called twl6040_vibra.
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 config INPUT_UINPUT
 	tristate "User level driver support"
 	help
@@ -316,6 +326,7 @@ config INPUT_SGI_BTNS
 	  To compile this driver as a module, choose M here: the
 	  module will be called sgi_btns.
 
+<<<<<<< HEAD
 config INPUT_GPIO
 	tristate "GPIO driver support"
 	help
@@ -333,6 +344,8 @@ config INPUT_ISA1200_FF_MEMLESS
 	  To compile this driver as a module, choose M here: the
 	  module will be called isa1200-ff-memless.
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 config HP_SDC_RTC
 	tristate "HP SDC Real Time Clock"
 	depends on (GSC || HP300) && SERIO
@@ -517,6 +530,7 @@ config INPUT_XEN_KBDDEV_FRONTEND
 	  To compile this driver as a module, choose M here: the
 	  module will be called xen-kbdfront.
 
+<<<<<<< HEAD
 config PMIC8058_OTHC
         tristate "Qualcomm PMIC8058 OTHC support"
         default n
@@ -546,4 +560,6 @@ config BOSCH_BMA150
           If you say yes here you get support for Bosch Sensortec's
           acceleration sensors SMB380/BMA150.
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 endif

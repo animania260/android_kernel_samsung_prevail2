@@ -310,11 +310,14 @@ config SPI_PXA2XX
 config SPI_PXA2XX_PCI
 	def_bool SPI_PXA2XX && X86_32 && PCI
 
+<<<<<<< HEAD
 config SPI_QSD
 	tristate "Qualcomm MSM SPI support"
 	default n
 	depends on ARCH_MSM_SCORPION && !MSM_SMP
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 config SPI_S3C24XX
 	tristate "Samsung S3C24XX series SPI"
 	depends on ARCH_S3C2410 && EXPERIMENTAL
@@ -425,6 +428,7 @@ config SPI_NUC900
 	help
 	  SPI driver for Nuvoton NUC900 series ARM SoCs
 
+<<<<<<< HEAD
 config SPI_QSD
 	tristate "Qualcomm MSM SPI support"
 	default n
@@ -445,6 +449,8 @@ config SPI_QUP
 
 	  This driver can also be built as a module.  If so, the module
 	  will be called spi_qsd.
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #
 # Add new SPI master controllers in alphabetical order above this line
 #

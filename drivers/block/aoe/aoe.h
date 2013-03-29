@@ -1,5 +1,9 @@
 /* Copyright (c) 2007 Coraid, Inc.  See COPYING for GPL terms. */
+<<<<<<< HEAD
 #define VERSION "47"
+=======
+#define VERSION "47q"
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #define AOE_MAJOR 152
 #define DEVICE_NAME "aoe"
 

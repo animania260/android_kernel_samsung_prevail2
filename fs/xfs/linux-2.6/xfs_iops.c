@@ -69,9 +69,14 @@ xfs_synchronize_times(
 }
 
 /*
+<<<<<<< HEAD
  * If the linux inode is valid, mark it dirty.
  * Used when committing a dirty inode into a transaction so that
  * the inode will get written back by the linux code
+=======
+ * If the linux inode is valid, mark it dirty, else mark the dirty state
+ * in the XFS inode to make sure we pick it up when reclaiming the inode.
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
  */
 void
 xfs_mark_inode_dirty_sync(
@@ -81,6 +86,13 @@ xfs_mark_inode_dirty_sync(
 
 	if (!(inode->i_state & (I_WILL_FREE|I_FREEING)))
 		mark_inode_dirty_sync(inode);
+<<<<<<< HEAD
+=======
+	else {
+		barrier();
+		ip->i_update_core = 1;
+	}
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 void
@@ -91,6 +103,14 @@ xfs_mark_inode_dirty(
 
 	if (!(inode->i_state & (I_WILL_FREE|I_FREEING)))
 		mark_inode_dirty(inode);
+<<<<<<< HEAD
+=======
+	else {
+		barrier();
+		ip->i_update_core = 1;
+	}
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 /*
@@ -456,7 +476,11 @@ xfs_vn_getattr(
 	trace_xfs_getattr(ip);
 
 	if (XFS_FORCED_SHUTDOWN(mp))
+<<<<<<< HEAD
 		return XFS_ERROR(EIO);
+=======
+		return -XFS_ERROR(EIO);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	stat->size = XFS_ISIZE(ip);
 	stat->dev = inode->i_sb->s_dev;

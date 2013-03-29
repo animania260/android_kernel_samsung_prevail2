@@ -221,7 +221,12 @@ struct netlink_callback {
 	int			(*dump)(struct sk_buff * skb,
 					struct netlink_callback *cb);
 	int			(*done)(struct netlink_callback *cb);
+<<<<<<< HEAD
 	int			family;
+=======
+	u16			family;
+	u16			min_dump_alloc;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	long			args[6];
 };
 
@@ -259,7 +264,12 @@ __nlmsg_put(struct sk_buff *skb, u32 pid, u32 seq, int type, int len, int flags)
 extern int netlink_dump_start(struct sock *ssk, struct sk_buff *skb,
 			      const struct nlmsghdr *nlh,
 			      int (*dump)(struct sk_buff *skb, struct netlink_callback*),
+<<<<<<< HEAD
 			      int (*done)(struct netlink_callback*));
+=======
+			      int (*done)(struct netlink_callback*),
+			      u16 min_dump_alloc);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 
 #define NL_NONROOT_RECV 0x1

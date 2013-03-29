@@ -2432,10 +2432,18 @@ tracing_cpumask_write(struct file *filp, const char __user *ubuf,
 		if (cpumask_test_cpu(cpu, tracing_cpumask) &&
 				!cpumask_test_cpu(cpu, tracing_cpumask_new)) {
 			atomic_inc(&global_trace.data[cpu]->disabled);
+<<<<<<< HEAD
+=======
+			ring_buffer_record_disable_cpu(global_trace.buffer, cpu);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		}
 		if (!cpumask_test_cpu(cpu, tracing_cpumask) &&
 				cpumask_test_cpu(cpu, tracing_cpumask_new)) {
 			atomic_dec(&global_trace.data[cpu]->disabled);
+<<<<<<< HEAD
+=======
+			ring_buffer_record_enable_cpu(global_trace.buffer, cpu);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		}
 	}
 	arch_spin_unlock(&ftrace_max_lock);
@@ -3704,8 +3712,11 @@ tracing_buffers_read(struct file *filp, char __user *ubuf,
 	if (info->read < PAGE_SIZE)
 		goto read;
 
+<<<<<<< HEAD
 	info->read = 0;
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	trace_access_lock(info->cpu);
 	ret = ring_buffer_read_page(info->tr->buffer,
 				    &info->spare,
@@ -3715,6 +3726,11 @@ tracing_buffers_read(struct file *filp, char __user *ubuf,
 	if (ret < 0)
 		return 0;
 
+<<<<<<< HEAD
+=======
+	info->read = 0;
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 read:
 	size = PAGE_SIZE - info->read;
 	if (size > count)

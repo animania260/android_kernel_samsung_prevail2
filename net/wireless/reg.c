@@ -57,8 +57,22 @@
 #define REG_DBG_PRINT(args...)
 #endif
 
+<<<<<<< HEAD
 /* Receipt of information from last regulatory request */
 static struct regulatory_request *last_request;
+=======
+static struct regulatory_request core_request_world = {
+	.initiator = NL80211_REGDOM_SET_BY_CORE,
+	.alpha2[0] = '0',
+	.alpha2[1] = '0',
+	.intersect = false,
+	.processed = true,
+	.country_ie_env = ENVIRON_ANY,
+};
+
+/* Receipt of information from last regulatory request */
+static struct regulatory_request *last_request = &core_request_world;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 /* To trigger userspace events */
 static struct platform_device *reg_pdev;
@@ -116,9 +130,14 @@ static const struct ieee80211_regdomain world_regdom = {
 	.reg_rules = {
 		/* IEEE 802.11b/g, channels 1..11 */
 		REG_RULE(2412-10, 2462+10, 40, 6, 20, 0),
+<<<<<<< HEAD
 		/* IEEE 802.11b/g, channels 12..13. No HT40
 		 * channel fits here. */
 		REG_RULE(2467-10, 2472+10, 20, 6, 20,
+=======
+		/* IEEE 802.11b/g, channels 12..13. */
+		REG_RULE(2467-10, 2472+10, 40, 6, 20,
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			NL80211_RRF_PASSIVE_SCAN |
 			NL80211_RRF_NO_IBSS),
 		/* IEEE 802.11 channel 14 - Only JP enables
@@ -150,7 +169,11 @@ static char user_alpha2[2];
 module_param(ieee80211_regdom, charp, 0444);
 MODULE_PARM_DESC(ieee80211_regdom, "IEEE 802.11 regulatory domain code");
 
+<<<<<<< HEAD
 static void reset_regdomains(void)
+=======
+static void reset_regdomains(bool full_reset)
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 {
 	/* avoid freeing static information or freeing something twice */
 	if (cfg80211_regdomain == cfg80211_world_regdom)
@@ -165,6 +188,16 @@ static void reset_regdomains(void)
 
 	cfg80211_world_regdom = &world_regdom;
 	cfg80211_regdomain = NULL;
+<<<<<<< HEAD
+=======
+
+	if (!full_reset)
+		return;
+
+	if (last_request != &core_request_world)
+		kfree(last_request);
+	last_request = &core_request_world;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 /*
@@ -175,7 +208,11 @@ static void update_world_regdomain(const struct ieee80211_regdomain *rd)
 {
 	BUG_ON(!last_request);
 
+<<<<<<< HEAD
 	reset_regdomains();
+=======
+	reset_regdomains(false);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	cfg80211_world_regdom = rd;
 	cfg80211_regdomain = rd;
@@ -315,6 +352,12 @@ static void reg_regdb_search(struct work_struct *work)
 	struct reg_regdb_search_request *request;
 	const struct ieee80211_regdomain *curdom, *regdom;
 	int i, r;
+<<<<<<< HEAD
+=======
+	bool set_reg = false;
+
+	mutex_lock(&cfg80211_mutex);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	mutex_lock(&reg_regdb_search_mutex);
 	while (!list_empty(&reg_regdb_search_list)) {
@@ -330,9 +373,13 @@ static void reg_regdb_search(struct work_struct *work)
 				r = reg_copy_regd(&regdom, curdom);
 				if (r)
 					break;
+<<<<<<< HEAD
 				mutex_lock(&cfg80211_mutex);
 				set_regdom(regdom);
 				mutex_unlock(&cfg80211_mutex);
+=======
+				set_reg = true;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 				break;
 			}
 		}
@@ -340,6 +387,14 @@ static void reg_regdb_search(struct work_struct *work)
 		kfree(request);
 	}
 	mutex_unlock(&reg_regdb_search_mutex);
+<<<<<<< HEAD
+=======
+
+	if (set_reg)
+		set_regdom(regdom);
+
+	mutex_unlock(&cfg80211_mutex);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 static DECLARE_WORK(reg_regdb_work, reg_regdb_search);
@@ -363,7 +418,19 @@ static void reg_regdb_query(const char *alpha2)
 
 	schedule_work(&reg_regdb_work);
 }
+<<<<<<< HEAD
 #else
+=======
+
+/* Feel free to add any other sanity checks here */
+static void reg_regdb_size_check(void)
+{
+	/* We should ideally BUILD_BUG_ON() but then random builds would fail */
+	WARN_ONCE(!reg_regdb_size, "db.txt is empty, you should update it...");
+}
+#else
+static inline void reg_regdb_size_check(void) {}
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 static inline void reg_regdb_query(const char *alpha2) {}
 #endif /* CONFIG_CFG80211_INTERNAL_REGDB */
 
@@ -1334,7 +1401,11 @@ static void reg_set_request_processed(void)
 	spin_unlock(&reg_requests_lock);
 
 	if (last_request->initiator == NL80211_REGDOM_SET_BY_USER)
+<<<<<<< HEAD
 		cancel_delayed_work_sync(&reg_timeout);
+=======
+		cancel_delayed_work(&reg_timeout);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	if (need_more_processing)
 		schedule_work(&reg_work);
@@ -1396,7 +1467,12 @@ static int __regulatory_hint(struct wiphy *wiphy,
 	}
 
 new_request:
+<<<<<<< HEAD
 	kfree(last_request);
+=======
+	if (last_request != &core_request_world)
+		kfree(last_request);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	last_request = pending_request;
 	last_request->intersect = intersect;
@@ -1566,9 +1642,12 @@ static int regulatory_hint_core(const char *alpha2)
 {
 	struct regulatory_request *request;
 
+<<<<<<< HEAD
 	kfree(last_request);
 	last_request = NULL;
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	request = kzalloc(sizeof(struct regulatory_request),
 			  GFP_KERNEL);
 	if (!request)
@@ -1766,7 +1845,11 @@ static void restore_regulatory_settings(bool reset_user)
 	mutex_lock(&cfg80211_mutex);
 	mutex_lock(&reg_mutex);
 
+<<<<<<< HEAD
 	reset_regdomains();
+=======
+	reset_regdomains(true);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	restore_alpha2(alpha2, reset_user);
 
 	/*
@@ -2026,12 +2109,25 @@ static int __set_regdom(const struct ieee80211_regdomain *rd)
 	}
 
 	request_wiphy = wiphy_idx_to_wiphy(last_request->wiphy_idx);
+<<<<<<< HEAD
+=======
+	if (!request_wiphy &&
+	    (last_request->initiator == NL80211_REGDOM_SET_BY_DRIVER ||
+	     last_request->initiator == NL80211_REGDOM_SET_BY_COUNTRY_IE)) {
+		schedule_delayed_work(&reg_timeout, 0);
+		return -ENODEV;
+	}
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	if (!last_request->intersect) {
 		int r;
 
 		if (last_request->initiator != NL80211_REGDOM_SET_BY_DRIVER) {
+<<<<<<< HEAD
 			reset_regdomains();
+=======
+			reset_regdomains(false);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			cfg80211_regdomain = rd;
 			return 0;
 		}
@@ -2052,7 +2148,11 @@ static int __set_regdom(const struct ieee80211_regdomain *rd)
 		if (r)
 			return r;
 
+<<<<<<< HEAD
 		reset_regdomains();
+=======
+		reset_regdomains(false);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		cfg80211_regdomain = rd;
 		return 0;
 	}
@@ -2077,7 +2177,11 @@ static int __set_regdom(const struct ieee80211_regdomain *rd)
 
 		rd = NULL;
 
+<<<<<<< HEAD
 		reset_regdomains();
+=======
+		reset_regdomains(false);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		cfg80211_regdomain = intersected_rd;
 
 		return 0;
@@ -2097,7 +2201,11 @@ static int __set_regdom(const struct ieee80211_regdomain *rd)
 	kfree(rd);
 	rd = NULL;
 
+<<<<<<< HEAD
 	reset_regdomains();
+=======
+	reset_regdomains(false);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	cfg80211_regdomain = intersected_rd;
 
 	return 0;
@@ -2205,6 +2313,11 @@ int __init regulatory_init(void)
 	spin_lock_init(&reg_requests_lock);
 	spin_lock_init(&reg_pending_beacons_lock);
 
+<<<<<<< HEAD
+=======
+	reg_regdb_size_check();
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	cfg80211_regdomain = cfg80211_world_regdom;
 
 	user_alpha2[0] = '9';
@@ -2250,9 +2363,15 @@ void /* __init_or_exit */ regulatory_exit(void)
 	mutex_lock(&cfg80211_mutex);
 	mutex_lock(&reg_mutex);
 
+<<<<<<< HEAD
 	reset_regdomains();
 
 	kfree(last_request);
+=======
+	reset_regdomains(true);
+
+	dev_set_uevent_suppress(&reg_pdev->dev, true);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	platform_device_unregister(reg_pdev);
 

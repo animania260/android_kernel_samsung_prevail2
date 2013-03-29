@@ -283,7 +283,11 @@ abort:
 	kfree(conf->strip_zone);
 	kfree(conf->devlist);
 	kfree(conf);
+<<<<<<< HEAD
 	*private_conf = NULL;
+=======
+	*private_conf = ERR_PTR(err);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	return err;
 }
 

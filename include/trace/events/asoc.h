@@ -9,7 +9,10 @@
 
 struct snd_soc_jack;
 struct snd_soc_codec;
+<<<<<<< HEAD
 struct snd_soc_platform;
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 struct snd_soc_card;
 struct snd_soc_dapm_widget;
 
@@ -60,6 +63,7 @@ DEFINE_EVENT(snd_soc_reg, snd_soc_reg_read,
 
 );
 
+<<<<<<< HEAD
 DECLARE_EVENT_CLASS(snd_soc_preg,
 
 	TP_PROTO(struct snd_soc_platform *platform, unsigned int reg,
@@ -104,6 +108,8 @@ DEFINE_EVENT(snd_soc_preg, snd_soc_preg_read,
 
 );
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 DECLARE_EVENT_CLASS(snd_soc_card,
 
 	TP_PROTO(struct snd_soc_card *card, int val),

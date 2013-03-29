@@ -27,7 +27,10 @@
 #include <asm/byteorder.h>
 #include <asm/memory.h>
 #include <asm/system.h>
+<<<<<<< HEAD
 #include <mach/msm_rtb.h>
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 /*
  * ISA I/O bus memory addresses are 1:1 with the physical address.
@@ -48,6 +51,7 @@ extern void __raw_readsb(const void __iomem *addr, void *data, int bytelen);
 extern void __raw_readsw(const void __iomem *addr, void *data, int wordlen);
 extern void __raw_readsl(const void __iomem *addr, void *data, int longlen);
 
+<<<<<<< HEAD
 /*
  * There may be cases when clients don't want to support or can't support the
  * logging. The appropriate functions can be used but clients should carefully
@@ -94,6 +98,15 @@ extern void __raw_readsl(const void __iomem *addr, void *data, int longlen);
 #define __raw_readb(a)		__raw_read_logged((a), b, char)
 #define __raw_readw(a)		__raw_read_logged((a), w, short)
 #define __raw_readl(a)		__raw_read_logged((a), l, int)
+=======
+#define __raw_writeb(v,a)	(__chk_io_ptr(a), *(volatile unsigned char __force  *)(a) = (v))
+#define __raw_writew(v,a)	(__chk_io_ptr(a), *(volatile unsigned short __force *)(a) = (v))
+#define __raw_writel(v,a)	(__chk_io_ptr(a), *(volatile unsigned int __force   *)(a) = (v))
+
+#define __raw_readb(a)		(__chk_io_ptr(a), *(volatile unsigned char __force  *)(a))
+#define __raw_readw(a)		(__chk_io_ptr(a), *(volatile unsigned short __force *)(a))
+#define __raw_readl(a)		(__chk_io_ptr(a), *(volatile unsigned int __force   *)(a))
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 /*
  * Architecture ioremap implementation.
@@ -288,8 +301,11 @@ extern void _memset_io(volatile void __iomem *, int, size_t);
 
 #define ioremap(cookie,size)		__arch_ioremap((cookie), (size), MT_DEVICE)
 #define ioremap_nocache(cookie,size)	__arch_ioremap((cookie), (size), MT_DEVICE)
+<<<<<<< HEAD
 #define ioremap_strongly_ordered(cookie, size)  __arch_ioremap(cookie, size, \
 						MT_DEVICE_STRONGLY_ORDERED)
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #define ioremap_cached(cookie,size)	__arch_ioremap((cookie), (size), MT_DEVICE_CACHED)
 #define ioremap_wc(cookie,size)		__arch_ioremap((cookie), (size), MT_DEVICE_WC)
 #define iounmap				__arch_iounmap

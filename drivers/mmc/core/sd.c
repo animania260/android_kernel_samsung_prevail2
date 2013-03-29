@@ -306,7 +306,11 @@ static int mmc_read_switch(struct mmc_card *card)
 		goto out;
 	}
 
+<<<<<<< HEAD
 	if (status[13] & 0x02)
+=======
+	if (status[13] & UHS_SDR50_BUS_SPEED)
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		card->sw_caps.hs_max_dtr = 50000000;
 
 	if (card->scr.sda_spec3) {
@@ -459,13 +463,22 @@ static int sd_select_driver_type(struct mmc_card *card, u8 *status)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void sd_update_bus_speed_mode(struct mmc_card *card)
 {
+=======
+static int sd_set_bus_speed_mode(struct mmc_card *card, u8 *status)
+{
+	unsigned int bus_speed = 0, timing = 0;
+	int err;
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	/*
 	 * If the host doesn't support any of the UHS-I modes, fallback on
 	 * default speed.
 	 */
 	if (!(card->host->caps & (MMC_CAP_UHS_SDR12 | MMC_CAP_UHS_SDR25 |
+<<<<<<< HEAD
 	    MMC_CAP_UHS_SDR50 | MMC_CAP_UHS_SDR104 | MMC_CAP_UHS_DDR50))) {
 		card->sd_bus_speed = 0;
 		return;
@@ -485,10 +498,38 @@ static void sd_update_bus_speed_mode(struct mmc_card *card)
 		    MMC_CAP_UHS_SDR50 | MMC_CAP_UHS_SDR25)) &&
 		   (card->sw_caps.sd3_bus_mode & SD_MODE_UHS_SDR25)) {
 			card->sd_bus_speed = UHS_SDR25_BUS_SPEED;
+=======
+	    MMC_CAP_UHS_SDR50 | MMC_CAP_UHS_SDR104 | MMC_CAP_UHS_DDR50)))
+		return 0;
+
+	if ((card->host->caps & MMC_CAP_UHS_SDR104) &&
+	    (card->sw_caps.sd3_bus_mode & SD_MODE_UHS_SDR104)) {
+			bus_speed = UHS_SDR104_BUS_SPEED;
+			timing = MMC_TIMING_UHS_SDR104;
+			card->sw_caps.uhs_max_dtr = UHS_SDR104_MAX_DTR;
+	} else if ((card->host->caps & MMC_CAP_UHS_DDR50) &&
+		   (card->sw_caps.sd3_bus_mode & SD_MODE_UHS_DDR50)) {
+			bus_speed = UHS_DDR50_BUS_SPEED;
+			timing = MMC_TIMING_UHS_DDR50;
+			card->sw_caps.uhs_max_dtr = UHS_DDR50_MAX_DTR;
+	} else if ((card->host->caps & (MMC_CAP_UHS_SDR104 |
+		    MMC_CAP_UHS_SDR50)) && (card->sw_caps.sd3_bus_mode &
+		    SD_MODE_UHS_SDR50)) {
+			bus_speed = UHS_SDR50_BUS_SPEED;
+			timing = MMC_TIMING_UHS_SDR50;
+			card->sw_caps.uhs_max_dtr = UHS_SDR50_MAX_DTR;
+	} else if ((card->host->caps & (MMC_CAP_UHS_SDR104 |
+		    MMC_CAP_UHS_SDR50 | MMC_CAP_UHS_SDR25)) &&
+		   (card->sw_caps.sd3_bus_mode & SD_MODE_UHS_SDR25)) {
+			bus_speed = UHS_SDR25_BUS_SPEED;
+			timing = MMC_TIMING_UHS_SDR25;
+			card->sw_caps.uhs_max_dtr = UHS_SDR25_MAX_DTR;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	} else if ((card->host->caps & (MMC_CAP_UHS_SDR104 |
 		    MMC_CAP_UHS_SDR50 | MMC_CAP_UHS_SDR25 |
 		    MMC_CAP_UHS_SDR12)) && (card->sw_caps.sd3_bus_mode &
 		    SD_MODE_UHS_SDR12)) {
+<<<<<<< HEAD
 			card->sd_bus_speed = UHS_SDR12_BUS_SPEED;
 	}
 }
@@ -528,6 +569,19 @@ static int sd_set_bus_speed_mode(struct mmc_card *card, u8 *status)
 		return err;
 
 	if ((status[16] & 0xF) != card->sd_bus_speed)
+=======
+			bus_speed = UHS_SDR12_BUS_SPEED;
+			timing = MMC_TIMING_UHS_SDR12;
+			card->sw_caps.uhs_max_dtr = UHS_SDR12_MAX_DTR;
+	}
+
+	card->sd_bus_speed = bus_speed;
+	err = mmc_sd_switch(card, 1, 0, bus_speed, status);
+	if (err)
+		return err;
+
+	if ((status[16] & 0xF) != bus_speed)
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		printk(KERN_WARNING "%s: Problem setting bus speed mode!\n",
 			mmc_hostname(card->host));
 	else {
@@ -627,17 +681,21 @@ static int mmc_sd_init_uhs_card(struct mmc_card *card)
 		mmc_set_bus_width(card->host, MMC_BUS_WIDTH_4);
 	}
 
+<<<<<<< HEAD
 	/*
 	 * Select the bus speed mode depending on host
 	 * and card capability.
 	 */
 	sd_update_bus_speed_mode(card);
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	/* Set the driver strength for the card */
 	err = sd_select_driver_type(card, status);
 	if (err)
 		goto out;
 
+<<<<<<< HEAD
 	/* Set current limit for the card */
 	err = sd_set_current_limit(card, status);
 	if (err)
@@ -645,15 +703,29 @@ static int mmc_sd_init_uhs_card(struct mmc_card *card)
 
 	/* Set bus speed mode of the card */
 	err = sd_set_bus_speed_mode(card, status);
+=======
+	/* Set bus speed mode of the card */
+	err = sd_set_bus_speed_mode(card, status);
+	if (err)
+		goto out;
+
+	/* Set current limit for the card */
+	err = sd_set_current_limit(card, status);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	if (err)
 		goto out;
 
 	/* SPI mode doesn't define CMD19 */
+<<<<<<< HEAD
 	if (!mmc_host_is_spi(card->host) && card->host->ops->execute_tuning) {
 		mmc_host_clk_hold(card->host);
 		err = card->host->ops->execute_tuning(card->host);
 		mmc_host_clk_release(card->host);
 	}
+=======
+	if (!mmc_host_is_spi(card->host) && card->host->ops->execute_tuning)
+		err = card->host->ops->execute_tuning(card->host);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 out:
 	kfree(status);
@@ -792,9 +864,12 @@ int mmc_sd_setup_card(struct mmc_host *host, struct mmc_card *card,
 	bool reinit)
 {
 	int err;
+<<<<<<< HEAD
 #ifdef CONFIG_MMC_PARANOID_SD_INIT
 	int retries;
 #endif
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	if (!reinit) {
 		/*
@@ -821,6 +896,7 @@ int mmc_sd_setup_card(struct mmc_host *host, struct mmc_card *card,
 		/*
 		 * Fetch switch information from card.
 		 */
+<<<<<<< HEAD
 #ifdef CONFIG_MMC_PARANOID_SD_INIT
 		for (retries = 1; retries <= 3; retries++) {
 			err = mmc_read_switch(card);
@@ -841,6 +917,9 @@ int mmc_sd_setup_card(struct mmc_host *host, struct mmc_card *card,
 		err = mmc_read_switch(card);
 #endif
 
+=======
+		err = mmc_read_switch(card);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		if (err)
 			return err;
 	}
@@ -863,11 +942,16 @@ int mmc_sd_setup_card(struct mmc_host *host, struct mmc_card *card,
 	if (!reinit) {
 		int ro = -1;
 
+<<<<<<< HEAD
 		if (host->ops->get_ro) {
 			mmc_host_clk_hold(host);
 			ro = host->ops->get_ro(host);
 			mmc_host_clk_release(host);
 		}
+=======
+		if (host->ops->get_ro)
+			ro = host->ops->get_ro(host);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 		if (ro < 0) {
 			printk(KERN_WARNING "%s: host does not "
@@ -985,11 +1069,16 @@ static int mmc_sd_init_card(struct mmc_host *host, u32 ocr,
 		 * Since initialization is now complete, enable preset
 		 * value registers for UHS-I cards.
 		 */
+<<<<<<< HEAD
 		if (host->ops->enable_preset_value) {
 			mmc_host_clk_hold(host);
 			host->ops->enable_preset_value(host, true);
 			mmc_host_clk_release(host);
 		}
+=======
+		if (host->ops->enable_preset_value)
+			host->ops->enable_preset_value(host, true);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	} else {
 		/*
 		 * Attempt to change to high-speed (if supported)
@@ -1037,6 +1126,7 @@ static void mmc_sd_remove(struct mmc_host *host)
 	BUG_ON(!host->card);
 
 	mmc_remove_card(host->card);
+<<<<<<< HEAD
 
 	mmc_claim_host(host);
 	host->card = NULL;
@@ -1049,6 +1139,9 @@ static void mmc_sd_remove(struct mmc_host *host)
 static int mmc_sd_alive(struct mmc_host *host)
 {
 	return mmc_send_status(host->card, NULL);
+=======
+	host->card = NULL;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 /*
@@ -1056,6 +1149,7 @@ static int mmc_sd_alive(struct mmc_host *host)
  */
 static void mmc_sd_detect(struct mmc_host *host)
 {
+<<<<<<< HEAD
 	int err = 0;
 #ifdef CONFIG_MMC_PARANOID_SD_INIT
         int retries = 5;
@@ -1064,11 +1158,19 @@ static void mmc_sd_detect(struct mmc_host *host)
 	BUG_ON(!host);
 	BUG_ON(!host->card);
        
+=======
+	int err;
+
+	BUG_ON(!host);
+	BUG_ON(!host->card);
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	mmc_claim_host(host);
 
 	/*
 	 * Just check if our card has been removed.
 	 */
+<<<<<<< HEAD
 #ifdef CONFIG_MMC_PARANOID_SD_INIT
 	while(retries) {
 		err = _mmc_detect_card_removed(host);
@@ -1086,6 +1188,10 @@ static void mmc_sd_detect(struct mmc_host *host)
 #else
 	err = _mmc_detect_card_removed(host);
 #endif
+=======
+	err = mmc_send_status(host->card, NULL);
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	mmc_release_host(host);
 
 	if (err) {
@@ -1093,6 +1199,10 @@ static void mmc_sd_detect(struct mmc_host *host)
 
 		mmc_claim_host(host);
 		mmc_detach_bus(host);
+<<<<<<< HEAD
+=======
+		mmc_power_off(host);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		mmc_release_host(host);
 	}
 }
@@ -1123,14 +1233,18 @@ static int mmc_sd_suspend(struct mmc_host *host)
 static int mmc_sd_resume(struct mmc_host *host)
 {
 	int err;
+<<<<<<< HEAD
 #ifdef CONFIG_MMC_PARANOID_SD_INIT
 	int retries;
 #endif
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	BUG_ON(!host);
 	BUG_ON(!host->card);
 
 	mmc_claim_host(host);
+<<<<<<< HEAD
 #ifdef CONFIG_MMC_PARANOID_SD_INIT
 	retries = 5;
 	while (retries) {
@@ -1151,6 +1265,9 @@ static int mmc_sd_resume(struct mmc_host *host)
 #else
 	err = mmc_sd_init_card(host, host->ocr, host->card);
 #endif
+=======
+	err = mmc_sd_init_card(host, host->ocr, host->card);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	mmc_release_host(host);
 
 	return err;
@@ -1174,7 +1291,10 @@ static const struct mmc_bus_ops mmc_sd_ops = {
 	.suspend = NULL,
 	.resume = NULL,
 	.power_restore = mmc_sd_power_restore,
+<<<<<<< HEAD
 	.alive = mmc_sd_alive,
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 };
 
 static const struct mmc_bus_ops mmc_sd_ops_unsafe = {
@@ -1183,7 +1303,10 @@ static const struct mmc_bus_ops mmc_sd_ops_unsafe = {
 	.suspend = mmc_sd_suspend,
 	.resume = mmc_sd_resume,
 	.power_restore = mmc_sd_power_restore,
+<<<<<<< HEAD
 	.alive = mmc_sd_alive,
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 };
 
 static void mmc_sd_attach_bus_ops(struct mmc_host *host)
@@ -1204,9 +1327,12 @@ int mmc_attach_sd(struct mmc_host *host)
 {
 	int err;
 	u32 ocr;
+<<<<<<< HEAD
 #ifdef CONFIG_MMC_PARANOID_SD_INIT
 	int retries;
 #endif
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	BUG_ON(!host);
 	WARN_ON(!host->claimed);
@@ -1217,11 +1343,16 @@ int mmc_attach_sd(struct mmc_host *host)
 		return err;
 
 	/* Disable preset value enable if already set since last time */
+<<<<<<< HEAD
 	if (host->ops->enable_preset_value) {
 		mmc_host_clk_hold(host);
 		host->ops->enable_preset_value(host, false);
 		mmc_host_clk_release(host);
 	}
+=======
+	if (host->ops->enable_preset_value)
+		host->ops->enable_preset_value(host, false);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	err = mmc_send_app_op_cond(host, 0, &ocr);
 	if (err)
@@ -1274,6 +1405,7 @@ int mmc_attach_sd(struct mmc_host *host)
 	/*
 	 * Detect and init the card.
 	 */
+<<<<<<< HEAD
 #ifdef CONFIG_MMC_PARANOID_SD_INIT
 	retries = 5;
 	while (retries) {
@@ -1299,6 +1431,11 @@ int mmc_attach_sd(struct mmc_host *host)
 	if (err)
 		goto err;
 #endif
+=======
+	err = mmc_sd_init_card(host, host->ocr, NULL);
+	if (err)
+		goto err;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	mmc_release_host(host);
 	err = mmc_add_card(host->card);

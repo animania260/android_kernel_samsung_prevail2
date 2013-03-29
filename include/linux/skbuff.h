@@ -1633,8 +1633,11 @@ static inline int __skb_cow(struct sk_buff *skb, unsigned int headroom,
 {
 	int delta = 0;
 
+<<<<<<< HEAD
 	if (headroom < NET_SKB_PAD)
 		headroom = NET_SKB_PAD;
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	if (headroom > skb_headroom(skb))
 		delta = headroom - skb_headroom(skb);
 
@@ -2006,8 +2009,18 @@ static inline bool skb_defer_rx_timestamp(struct sk_buff *skb)
 /**
  * skb_complete_tx_timestamp() - deliver cloned skb with tx timestamps
  *
+<<<<<<< HEAD
  * @skb: clone of the the original outgoing packet
  * @hwtstamps: hardware time stamps
+=======
+ * PHY drivers may accept clones of transmitted packets for
+ * timestamping via their phy_driver.txtstamp method. These drivers
+ * must call this function to return the skb back to the stack, with
+ * or without a timestamp.
+ *
+ * @skb: clone of the the original outgoing packet
+ * @hwtstamps: hardware time stamps, may be NULL if not available
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
  *
  */
 void skb_complete_tx_timestamp(struct sk_buff *skb,

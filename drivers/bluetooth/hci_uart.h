@@ -2,9 +2,15 @@
  *
  *  Bluetooth HCI UART driver
  *
+<<<<<<< HEAD
  *  Copyright (C) 2002-2003  Maxim Krasnyansky <maxk@qualcomm.com>
  *  Copyright (C) 2004-2005  Marcel Holtmann <marcel@holtmann.org>
  *  Copyright (c) 2000-2001, 2010, Code Aurora Forum. All rights reserved.
+=======
+ *  Copyright (C) 2000-2001  Qualcomm Incorporated
+ *  Copyright (C) 2002-2003  Maxim Krasnyansky <maxk@qualcomm.com>
+ *  Copyright (C) 2004-2005  Marcel Holtmann <marcel@holtmann.org>
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -35,15 +41,23 @@
 #define HCIUARTGETFLAGS		_IOR('U', 204, int)
 
 /* UART protocols */
+<<<<<<< HEAD
 #define HCI_UART_MAX_PROTO	7
+=======
+#define HCI_UART_MAX_PROTO	6
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 #define HCI_UART_H4	0
 #define HCI_UART_BCSP	1
 #define HCI_UART_3WIRE	2
 #define HCI_UART_H4DS	3
 #define HCI_UART_LL	4
+<<<<<<< HEAD
 #define HCI_UART_IBS	5
 #define HCI_UART_ATH3K	6
+=======
+#define HCI_UART_ATH3K	5
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 #define HCI_UART_RAW_DEVICE	0
 
@@ -74,7 +88,11 @@ struct hci_uart {
 };
 
 /* HCI_UART proto flag bits */
+<<<<<<< HEAD
 #define HCI_UART_PROTO_SET			0
+=======
+#define HCI_UART_PROTO_SET	0
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 /* TX states  */
 #define HCI_UART_SENDING	1
@@ -103,8 +121,11 @@ int ll_deinit(void);
 int ath_init(void);
 int ath_deinit(void);
 #endif
+<<<<<<< HEAD
 
 #ifdef CONFIG_BT_HCIUART_IBS
 int ibs_init(void);
 int ibs_deinit(void);
 #endif
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y

@@ -179,7 +179,11 @@ static struct dentry *isofs_fh_to_parent(struct super_block *sb,
 {
 	struct isofs_fid *ifid = (struct isofs_fid *)fid;
 
+<<<<<<< HEAD
 	if (fh_type != 2)
+=======
+	if (fh_len < 2 || fh_type != 2)
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		return NULL;
 
 	return isofs_export_iget(sb,

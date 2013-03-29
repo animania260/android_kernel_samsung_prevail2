@@ -35,6 +35,7 @@ enum usb_otg_state {
 	OTG_STATE_A_VBUS_ERR,
 };
 
+<<<<<<< HEAD
 enum usb_otg_event {
 	/* Device is not connected within
 	 * TA_WAIT_BCON or not responding.
@@ -63,6 +64,8 @@ enum usb_otg_event {
 	OTG_EVENT_NO_RESP_FOR_SRP,
 };
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 enum usb_xceiv_events {
 	USB_EVENT_NONE,         /* no events or cable disconnected */
 	USB_EVENT_VBUS,         /* vbus valid event */
@@ -139,10 +142,13 @@ struct otg_transceiver {
 	/* start or continue HNP role switch */
 	int	(*start_hnp)(struct otg_transceiver *otg);
 
+<<<<<<< HEAD
 	/* send events to user space */
 	int	(*send_event)(struct otg_transceiver *otg,
 			enum usb_otg_event event);
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 };
 
 
@@ -196,10 +202,13 @@ otg_shutdown(struct otg_transceiver *otg)
 		otg->shutdown(otg);
 }
 
+<<<<<<< HEAD
 /* for USB core, host and peripheral controller drivers */
 /* Context: can sleep */
 extern int otg_send_event(enum usb_otg_event event);
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 /* for usb host and peripheral controller drivers */
 #ifdef CONFIG_USB_OTG_UTILS
 extern struct otg_transceiver *otg_get_transceiver(void);

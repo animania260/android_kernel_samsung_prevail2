@@ -199,8 +199,11 @@ extern int __cpufreq_driver_getavg(struct cpufreq_policy *policy,
 int cpufreq_register_governor(struct cpufreq_governor *governor);
 void cpufreq_unregister_governor(struct cpufreq_governor *governor);
 
+<<<<<<< HEAD
 int lock_policy_rwsem_write(int cpu);
 void unlock_policy_rwsem_write(int cpu);
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 /*********************************************************************
  *                      CPUFREQ DRIVER INTERFACE                     *
@@ -333,6 +336,7 @@ static inline unsigned int cpufreq_quick_get(unsigned int cpu)
 }
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_SEC_DVFS
 enum {
 	BOOT_CPU = 0,
@@ -373,6 +377,8 @@ unsigned int get_max_lock(void);
 void set_min_lock(int freq);
 void set_max_lock(int freq);
 #endif
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 /*********************************************************************
  *                       CPUFREQ DEFAULT GOVERNOR                    *
@@ -400,9 +406,12 @@ extern struct cpufreq_governor cpufreq_gov_ondemand;
 #elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_CONSERVATIVE)
 extern struct cpufreq_governor cpufreq_gov_conservative;
 #define CPUFREQ_DEFAULT_GOVERNOR	(&cpufreq_gov_conservative)
+<<<<<<< HEAD
 #elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_INTERACTIVE)
 extern struct cpufreq_governor cpufreq_gov_interactive;
 #define CPUFREQ_DEFAULT_GOVERNOR	(&cpufreq_gov_interactive)
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #endif
 
 

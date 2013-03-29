@@ -90,7 +90,11 @@ static ssize_t hwsampler_write(struct file *file, char const __user *buf,
 		return -EINVAL;
 
 	retval = oprofilefs_ulong_from_user(&val, buf, count);
+<<<<<<< HEAD
 	if (retval)
+=======
+	if (retval <= 0)
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		return retval;
 
 	if (oprofile_started)

@@ -71,7 +71,11 @@ int tick_check_broadcast_device(struct clock_event_device *dev)
 	     (dev->features & CLOCK_EVT_FEAT_C3STOP))
 		return 0;
 
+<<<<<<< HEAD
 	clockevents_exchange_device(NULL, dev);
+=======
+	clockevents_exchange_device(tick_broadcast_device.evtdev, dev);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	tick_broadcast_device.evtdev = dev;
 	if (!cpumask_empty(tick_get_broadcast_mask()))
 		tick_broadcast_start_periodic(dev);

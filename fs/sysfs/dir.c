@@ -404,20 +404,33 @@ int __sysfs_add_one(struct sysfs_addrm_cxt *acxt, struct sysfs_dirent *sd)
 /**
  *	sysfs_pathname - return full path to sysfs dirent
  *	@sd: sysfs_dirent whose path we want
+<<<<<<< HEAD
  *	@path: caller allocated buffer
  *
  *	Gives the name "/" to the sysfs_root entry; any path returned
  *	is relative to wherever sysfs is mounted.
  *
  *	XXX: does no error checking on @path size
+=======
+ *	@path: caller allocated buffer of size PATH_MAX
+ *
+ *	Gives the name "/" to the sysfs_root entry; any path returned
+ *	is relative to wherever sysfs is mounted.
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
  */
 static char *sysfs_pathname(struct sysfs_dirent *sd, char *path)
 {
 	if (sd->s_parent) {
 		sysfs_pathname(sd->s_parent, path);
+<<<<<<< HEAD
 		strcat(path, "/");
 	}
 	strcat(path, sd->s_name);
+=======
+		strlcat(path, "/", PATH_MAX);
+	}
+	strlcat(path, sd->s_name, PATH_MAX);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	return path;
 }
 
@@ -450,9 +463,17 @@ int sysfs_add_one(struct sysfs_addrm_cxt *acxt, struct sysfs_dirent *sd)
 		char *path = kzalloc(PATH_MAX, GFP_KERNEL);
 		WARN(1, KERN_WARNING
 		     "sysfs: cannot create duplicate filename '%s'\n",
+<<<<<<< HEAD
 		     (path == NULL) ? sd->s_name :
 		     strcat(strcat(sysfs_pathname(acxt->parent_sd, path), "/"),
 		            sd->s_name));
+=======
+		     (path == NULL) ? sd->s_name
+				    : (sysfs_pathname(acxt->parent_sd, path),
+				       strlcat(path, "/", PATH_MAX),
+				       strlcat(path, sd->s_name, PATH_MAX),
+				       path));
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		kfree(path);
 	}
 

@@ -56,7 +56,11 @@ int hfsplus_submit_bio(struct super_block *sb, sector_t sector,
 	DECLARE_COMPLETION_ONSTACK(wait);
 	struct bio *bio;
 	int ret = 0;
+<<<<<<< HEAD
 	unsigned int io_size;
+=======
+	u64 io_size;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	loff_t start;
 	int offset;
 

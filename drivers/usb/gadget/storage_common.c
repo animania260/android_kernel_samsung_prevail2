@@ -248,6 +248,7 @@ struct fsg_lun {
 	u32		unit_attention_data;
 
 	struct device	dev;
+<<<<<<< HEAD
 #ifdef CONFIG_USB_MSC_PROFILING
 	spinlock_t	lock;
 	struct {
@@ -259,6 +260,8 @@ struct fsg_lun {
 	} perf;
 
 #endif
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 };
 
 #define fsg_lun_is_open(curlun)	((curlun)->filp != NULL)
@@ -273,6 +276,7 @@ static struct fsg_lun *fsg_lun_from_dev(struct device *dev)
 #define EP0_BUFSIZE	256
 #define DELAYED_STATUS	(EP0_BUFSIZE + 999)	/* An impossibly large value */
 
+<<<<<<< HEAD
 /* Number of buffers for CBW, DATA and CSW */
 #ifdef CONFIG_USB_CSW_HACK
 #define FSG_NUM_BUFFERS    4
@@ -280,6 +284,10 @@ static struct fsg_lun *fsg_lun_from_dev(struct device *dev)
 #define FSG_NUM_BUFFERS    2
 #endif
 
+=======
+/* Number of buffers we will use.  2 is enough for double-buffering */
+#define FSG_NUM_BUFFERS	2
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 /* Default size of buffer length. */
 #define FSG_BUFLEN	((u32)16384)
@@ -693,6 +701,7 @@ static ssize_t fsg_show_nofua(struct device *dev, struct device_attribute *attr,
 	return sprintf(buf, "%u\n", curlun->nofua);
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_USB_MSC_PROFILING
 static ssize_t fsg_show_perf(struct device *dev, struct device_attribute *attr,
 			      char *buf)
@@ -730,6 +739,8 @@ static ssize_t fsg_store_perf(struct device *dev, struct device_attribute *attr,
 	return count;
 }
 #endif
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 static ssize_t fsg_show_file(struct device *dev, struct device_attribute *attr,
 			     char *buf)
 {
@@ -816,16 +827,22 @@ static ssize_t fsg_store_file(struct device *dev, struct device_attribute *attr,
 	struct rw_semaphore	*filesem = dev_get_drvdata(dev);
 	int		rc = 0;
 
+<<<<<<< HEAD
 
 #ifndef CONFIG_USB_ANDROID_MASS_STORAGE
 	/* disabled in android because we need to allow closing the backing file
 	 * if the media was removed
 	 */
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	if (curlun->prevent_medium_removal && fsg_lun_is_open(curlun)) {
 		LDBG(curlun, "eject attempt prevented\n");
 		return -EBUSY;				/* "Door is locked" */
 	}
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	/* Remove a trailing newline */
 	if (count > 0 && buf[count-1] == '\n')

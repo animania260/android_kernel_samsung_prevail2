@@ -349,7 +349,11 @@ __secondary_data:
  */
 __enable_mmu:
 #if defined(CONFIG_ALIGNMENT_TRAP) && __LINUX_ARM_ARCH__ < 6
+<<<<<<< HEAD
       orr     r0, r0, #CR_A
+=======
+	orr	r0, r0, #CR_A
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #else
 	bic	r0, r0, #CR_A
 #endif
@@ -362,6 +366,7 @@ __enable_mmu:
 #ifdef CONFIG_CPU_ICACHE_DISABLE
 	bic	r0, r0, #CR_I
 #endif
+<<<<<<< HEAD
 #ifdef CONFIG_EMULATE_DOMAIN_MANAGER_V7
 	mov	r5, #(domain_val(DOMAIN_USER, DOMAIN_CLIENT) | \
 		      domain_val(DOMAIN_KERNEL, DOMAIN_CLIENT) | \
@@ -373,6 +378,12 @@ __enable_mmu:
 		      domain_val(DOMAIN_TABLE, DOMAIN_CLIENT) | \
 		      domain_val(DOMAIN_IO, DOMAIN_CLIENT))
 #endif
+=======
+	mov	r5, #(domain_val(DOMAIN_USER, DOMAIN_MANAGER) | \
+		      domain_val(DOMAIN_KERNEL, DOMAIN_MANAGER) | \
+		      domain_val(DOMAIN_TABLE, DOMAIN_MANAGER) | \
+		      domain_val(DOMAIN_IO, DOMAIN_CLIENT))
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	mcr	p15, 0, r5, c3, c0, 0		@ load domain access register
 	mcr	p15, 0, r4, c2, c0, 0		@ load page table pointer
 	b	__turn_mmu_on
@@ -398,6 +409,7 @@ __turn_mmu_on:
 	mcr	p15, 0, r0, c1, c0, 0		@ write control reg
 	mrc	p15, 0, r3, c0, c0, 0		@ read id reg
 	mov	r3, r3
+<<<<<<< HEAD
 #ifdef CONFIG_ARCH_MSM_KRAIT
 	ldr	r3, =0xff00fc00
 	and	r3, r9, r3
@@ -407,6 +419,8 @@ __turn_mmu_on:
 	biceq	r3, r3, #0x400
 	mcreq	p15, 7, r3, c15, c0, 2
 #endif
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	mov	r3, r13
 	mov	pc, r3
 __enable_mmu_end:

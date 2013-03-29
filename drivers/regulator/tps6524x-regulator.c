@@ -481,7 +481,11 @@ static int set_voltage(struct regulator_dev *rdev, int min_uV, int max_uV,
 	if (i >= info->n_voltages)
 		i = info->n_voltages - 1;
 
+<<<<<<< HEAD
 	*selector = info->voltages[i];
+=======
+	*selector = i;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	return write_field(hw, &info->voltage, i);
 }

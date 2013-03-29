@@ -303,6 +303,7 @@ config REGULATOR_TPS65910
 	help
 	  This driver supports TPS65910 voltage regulator chips.
 
+<<<<<<< HEAD
 config REGULATOR_PMIC8058
         tristate "PMIC8058 regulator driver"
         depends on PMIC8058 && (ARCH_MSM8X60 || ARCH_FSM9XXX)
@@ -344,5 +345,7 @@ config REGULATOR_PM8058_XO
 	  chip. It is only supposed to be used when Linux on application
 	  processor is the master in control of XO buffers.
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 endif
 

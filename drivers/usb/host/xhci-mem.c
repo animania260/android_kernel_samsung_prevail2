@@ -81,7 +81,11 @@ static void xhci_segment_free(struct xhci_hcd *xhci, struct xhci_segment *seg)
  * related flags, such as End TRB, Toggle Cycle, and no snoop.
  */
 static void xhci_link_segments(struct xhci_hcd *xhci, struct xhci_segment *prev,
+<<<<<<< HEAD
 		struct xhci_segment *next, bool link_trbs)
+=======
+		struct xhci_segment *next, bool link_trbs, bool isoc)
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 {
 	u32 val;
 
@@ -97,7 +101,13 @@ static void xhci_link_segments(struct xhci_hcd *xhci, struct xhci_segment *prev,
 		val &= ~TRB_TYPE_BITMASK;
 		val |= TRB_TYPE(TRB_LINK);
 		/* Always set the chain bit with 0.95 hardware */
+<<<<<<< HEAD
 		if (xhci_link_trb_quirk(xhci))
+=======
+		/* Set chain bit for isoc rings on AMD 0.96 host */
+		if (xhci_link_trb_quirk(xhci) ||
+				(isoc && (xhci->quirks & XHCI_AMD_0x96_HOST)))
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			val |= TRB_CHAIN;
 		prev->trbs[TRBS_PER_SEGMENT-1].link.control = cpu_to_le32(val);
 	}
@@ -112,6 +122,7 @@ void xhci_ring_free(struct xhci_hcd *xhci, struct xhci_ring *ring)
 	struct xhci_segment *seg;
 	struct xhci_segment *first_seg;
 
+<<<<<<< HEAD
 	if (!ring || !ring->first_seg)
 		return;
 	first_seg = ring->first_seg;
@@ -124,6 +135,22 @@ void xhci_ring_free(struct xhci_hcd *xhci, struct xhci_ring *ring)
 	}
 	xhci_segment_free(xhci, first_seg);
 	ring->first_seg = NULL;
+=======
+	if (!ring)
+		return;
+	if (ring->first_seg) {
+		first_seg = ring->first_seg;
+		seg = first_seg->next;
+		xhci_dbg(xhci, "Freeing ring at %p\n", ring);
+		while (seg != first_seg) {
+			struct xhci_segment *next = seg->next;
+			xhci_segment_free(xhci, seg);
+			seg = next;
+		}
+		xhci_segment_free(xhci, first_seg);
+		ring->first_seg = NULL;
+	}
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	kfree(ring);
 }
 
@@ -152,7 +179,11 @@ static void xhci_initialize_ring_info(struct xhci_ring *ring)
  * See section 4.9.1 and figures 15 and 16.
  */
 static struct xhci_ring *xhci_ring_alloc(struct xhci_hcd *xhci,
+<<<<<<< HEAD
 		unsigned int num_segs, bool link_trbs, gfp_t flags)
+=======
+		unsigned int num_segs, bool link_trbs, bool isoc, gfp_t flags)
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 {
 	struct xhci_ring	*ring;
 	struct xhci_segment	*prev;
@@ -176,14 +207,31 @@ static struct xhci_ring *xhci_ring_alloc(struct xhci_hcd *xhci,
 		struct xhci_segment	*next;
 
 		next = xhci_segment_alloc(xhci, flags);
+<<<<<<< HEAD
 		if (!next)
 			goto fail;
 		xhci_link_segments(xhci, prev, next, link_trbs);
+=======
+		if (!next) {
+			prev = ring->first_seg;
+			while (prev) {
+				next = prev->next;
+				xhci_segment_free(xhci, prev);
+				prev = next;
+			}
+			goto fail;
+		}
+		xhci_link_segments(xhci, prev, next, link_trbs, isoc);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 		prev = next;
 		num_segs--;
 	}
+<<<<<<< HEAD
 	xhci_link_segments(xhci, prev, ring->first_seg, link_trbs);
+=======
+	xhci_link_segments(xhci, prev, ring->first_seg, link_trbs, isoc);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	if (link_trbs) {
 		/* See section 4.9.2.1 and 6.4.4.1 */
@@ -197,7 +245,11 @@ static struct xhci_ring *xhci_ring_alloc(struct xhci_hcd *xhci,
 	return ring;
 
 fail:
+<<<<<<< HEAD
 	xhci_ring_free(xhci, ring);
+=======
+	kfree(ring);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	return NULL;
 }
 
@@ -229,14 +281,22 @@ void xhci_free_or_cache_endpoint_ring(struct xhci_hcd *xhci,
  * pointers to the beginning of the ring.
  */
 static void xhci_reinit_cached_ring(struct xhci_hcd *xhci,
+<<<<<<< HEAD
 		struct xhci_ring *ring)
+=======
+		struct xhci_ring *ring, bool isoc)
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 {
 	struct xhci_segment	*seg = ring->first_seg;
 	do {
 		memset(seg->trbs, 0,
 				sizeof(union xhci_trb)*TRBS_PER_SEGMENT);
 		/* All endpoint rings have link TRBs */
+<<<<<<< HEAD
 		xhci_link_segments(xhci, seg, seg->next, 1);
+=======
+		xhci_link_segments(xhci, seg, seg->next, 1, isoc);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		seg = seg->next;
 	} while (seg != ring->first_seg);
 	xhci_initialize_ring_info(ring);
@@ -540,7 +600,11 @@ struct xhci_stream_info *xhci_alloc_stream_info(struct xhci_hcd *xhci,
 	 */
 	for (cur_stream = 1; cur_stream < num_streams; cur_stream++) {
 		stream_info->stream_rings[cur_stream] =
+<<<<<<< HEAD
 			xhci_ring_alloc(xhci, 1, true, mem_flags);
+=======
+			xhci_ring_alloc(xhci, 1, true, false, mem_flags);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		cur_ring = stream_info->stream_rings[cur_stream];
 		if (!cur_ring)
 			goto cleanup_rings;
@@ -765,7 +829,11 @@ int xhci_alloc_virt_device(struct xhci_hcd *xhci, int slot_id,
 	}
 
 	/* Allocate endpoint 0 ring */
+<<<<<<< HEAD
 	dev->eps[0].ring = xhci_ring_alloc(xhci, 1, true, flags);
+=======
+	dev->eps[0].ring = xhci_ring_alloc(xhci, 1, true, false, flags);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	if (!dev->eps[0].ring)
 		goto fail;
 
@@ -871,7 +939,10 @@ int xhci_setup_addressable_virt_dev(struct xhci_hcd *xhci, struct usb_device *ud
 	struct xhci_virt_device *dev;
 	struct xhci_ep_ctx	*ep0_ctx;
 	struct xhci_slot_ctx    *slot_ctx;
+<<<<<<< HEAD
 	struct xhci_input_control_ctx *ctrl_ctx;
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	u32			port_num;
 	struct usb_device *top_dev;
 
@@ -883,12 +954,17 @@ int xhci_setup_addressable_virt_dev(struct xhci_hcd *xhci, struct usb_device *ud
 		return -EINVAL;
 	}
 	ep0_ctx = xhci_get_ep_ctx(xhci, dev->in_ctx, 0);
+<<<<<<< HEAD
 	ctrl_ctx = xhci_get_input_control_ctx(xhci, dev->in_ctx);
 	slot_ctx = xhci_get_slot_ctx(xhci, dev->in_ctx);
 
 	/* 2) New slot context and endpoint 0 context are valid*/
 	ctrl_ctx->add_flags = cpu_to_le32(SLOT_FLAG | EP0_FLAG);
 
+=======
+	slot_ctx = xhci_get_slot_ctx(xhci, dev->in_ctx);
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	/* 3) Only the control endpoint is valid - one endpoint context */
 	slot_ctx->dev_info |= cpu_to_le32(LAST_CTX(1) | (u32) udev->route);
 	switch (udev->speed) {
@@ -1003,6 +1079,7 @@ static unsigned int xhci_parse_exponent_interval(struct usb_device *udev,
 }
 
 /*
+<<<<<<< HEAD
  * Convert bInterval expressed in frames (in 1-255 range) to exponent of
  * microframes, rounded down to nearest power of 2.
  */
@@ -1014,15 +1091,53 @@ static unsigned int xhci_parse_frame_interval(struct usb_device *udev,
 	interval = fls(8 * ep->desc.bInterval) - 1;
 	interval = clamp_val(interval, 3, 10);
 	if ((1 << interval) != 8 * ep->desc.bInterval)
+=======
+ * Convert bInterval expressed in microframes (in 1-255 range) to exponent of
+ * microframes, rounded down to nearest power of 2.
+ */
+static unsigned int xhci_microframes_to_exponent(struct usb_device *udev,
+		struct usb_host_endpoint *ep, unsigned int desc_interval,
+		unsigned int min_exponent, unsigned int max_exponent)
+{
+	unsigned int interval;
+
+	interval = fls(desc_interval) - 1;
+	interval = clamp_val(interval, min_exponent, max_exponent);
+	if ((1 << interval) != desc_interval)
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		dev_warn(&udev->dev,
 			 "ep %#x - rounding interval to %d microframes, ep desc says %d microframes\n",
 			 ep->desc.bEndpointAddress,
 			 1 << interval,
+<<<<<<< HEAD
 			 8 * ep->desc.bInterval);
+=======
+			 desc_interval);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	return interval;
 }
 
+<<<<<<< HEAD
+=======
+static unsigned int xhci_parse_microframe_interval(struct usb_device *udev,
+		struct usb_host_endpoint *ep)
+{
+	if (ep->desc.bInterval == 0)
+		return 0;
+	return xhci_microframes_to_exponent(udev, ep,
+			ep->desc.bInterval, 0, 15);
+}
+
+
+static unsigned int xhci_parse_frame_interval(struct usb_device *udev,
+		struct usb_host_endpoint *ep)
+{
+	return xhci_microframes_to_exponent(udev, ep,
+			ep->desc.bInterval * 8, 3, 10);
+}
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 /* Return the polling or NAK interval.
  *
  * The polling interval is expressed in "microframes".  If xHCI's Interval field
@@ -1041,7 +1156,11 @@ static unsigned int xhci_get_endpoint_interval(struct usb_device *udev,
 		/* Max NAK rate */
 		if (usb_endpoint_xfer_control(&ep->desc) ||
 		    usb_endpoint_xfer_bulk(&ep->desc)) {
+<<<<<<< HEAD
 			interval = ep->desc.bInterval;
+=======
+			interval = xhci_parse_microframe_interval(udev, ep);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			break;
 		}
 		/* Fall through - SS and HS isoc/int have same decoding */
@@ -1175,10 +1294,17 @@ int xhci_endpoint_init(struct xhci_hcd *xhci,
 	 */
 	if (usb_endpoint_xfer_isoc(&ep->desc))
 		virt_dev->eps[ep_index].new_ring =
+<<<<<<< HEAD
 			xhci_ring_alloc(xhci, 8, true, mem_flags);
 	else
 		virt_dev->eps[ep_index].new_ring =
 			xhci_ring_alloc(xhci, 1, true, mem_flags);
+=======
+			xhci_ring_alloc(xhci, 8, true, true, mem_flags);
+	else
+		virt_dev->eps[ep_index].new_ring =
+			xhci_ring_alloc(xhci, 1, true, false, mem_flags);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	if (!virt_dev->eps[ep_index].new_ring) {
 		/* Attempt to use the ring cache */
 		if (virt_dev->num_rings_cached == 0)
@@ -1187,7 +1313,12 @@ int xhci_endpoint_init(struct xhci_hcd *xhci,
 			virt_dev->ring_cache[virt_dev->num_rings_cached];
 		virt_dev->ring_cache[virt_dev->num_rings_cached] = NULL;
 		virt_dev->num_rings_cached--;
+<<<<<<< HEAD
 		xhci_reinit_cached_ring(xhci, virt_dev->eps[ep_index].new_ring);
+=======
+		xhci_reinit_cached_ring(xhci, virt_dev->eps[ep_index].new_ring,
+			usb_endpoint_xfer_isoc(&ep->desc) ? true : false);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	}
 	virt_dev->eps[ep_index].skip = false;
 	ep_ring = virt_dev->eps[ep_index].new_ring;
@@ -1489,15 +1620,22 @@ void xhci_free_command(struct xhci_hcd *xhci,
 void xhci_mem_cleanup(struct xhci_hcd *xhci)
 {
 	struct pci_dev	*pdev = to_pci_dev(xhci_to_hcd(xhci)->self.controller);
+<<<<<<< HEAD
+=======
+	struct xhci_cd  *cur_cd, *next_cd;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	int size;
 	int i;
 
 	/* Free the Event Ring Segment Table and the actual Event Ring */
+<<<<<<< HEAD
 	if (xhci->ir_set) {
 		xhci_writel(xhci, 0, &xhci->ir_set->erst_size);
 		xhci_write_64(xhci, 0, &xhci->ir_set->erst_base);
 		xhci_write_64(xhci, 0, &xhci->ir_set->erst_dequeue);
 	}
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	size = sizeof(struct xhci_erst_entry)*(xhci->erst.num_entries);
 	if (xhci->erst.entries)
 		pci_free_consistent(pdev, size,
@@ -1509,11 +1647,23 @@ void xhci_mem_cleanup(struct xhci_hcd *xhci)
 	xhci->event_ring = NULL;
 	xhci_dbg(xhci, "Freed event ring\n");
 
+<<<<<<< HEAD
 	xhci_write_64(xhci, 0, &xhci->op_regs->cmd_ring);
+=======
+	xhci->cmd_ring_reserved_trbs = 0;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	if (xhci->cmd_ring)
 		xhci_ring_free(xhci, xhci->cmd_ring);
 	xhci->cmd_ring = NULL;
 	xhci_dbg(xhci, "Freed command ring\n");
+<<<<<<< HEAD
+=======
+	list_for_each_entry_safe(cur_cd, next_cd,
+			&xhci->cancel_cmd_list, cancel_cmd_list) {
+		list_del(&cur_cd->cancel_cmd_list);
+		kfree(cur_cd);
+	}
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	for (i = 1; i < MAX_HC_SLOTS; ++i)
 		xhci_free_virt_device(xhci, i);
@@ -1538,7 +1688,10 @@ void xhci_mem_cleanup(struct xhci_hcd *xhci)
 	xhci->medium_streams_pool = NULL;
 	xhci_dbg(xhci, "Freed medium stream array pool\n");
 
+<<<<<<< HEAD
 	xhci_write_64(xhci, 0, &xhci->op_regs->dcbaa_ptr);
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	if (xhci->dcbaa)
 		pci_free_consistent(pdev, sizeof(*xhci->dcbaa),
 				xhci->dcbaa, xhci->dcbaa->dma);
@@ -2001,9 +2154,16 @@ int xhci_mem_init(struct xhci_hcd *xhci, gfp_t flags)
 		goto fail;
 
 	/* Set up the command ring to have one segments for now. */
+<<<<<<< HEAD
 	xhci->cmd_ring = xhci_ring_alloc(xhci, 1, true, flags);
 	if (!xhci->cmd_ring)
 		goto fail;
+=======
+	xhci->cmd_ring = xhci_ring_alloc(xhci, 1, true, false, flags);
+	if (!xhci->cmd_ring)
+		goto fail;
+	INIT_LIST_HEAD(&xhci->cancel_cmd_list);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	xhci_dbg(xhci, "Allocated command ring at %p\n", xhci->cmd_ring);
 	xhci_dbg(xhci, "First segment DMA is 0x%llx\n",
 			(unsigned long long)xhci->cmd_ring->first_seg->dma);
@@ -2032,7 +2192,12 @@ int xhci_mem_init(struct xhci_hcd *xhci, gfp_t flags)
 	 * the event ring segment table (ERST).  Section 4.9.3.
 	 */
 	xhci_dbg(xhci, "// Allocating event ring\n");
+<<<<<<< HEAD
 	xhci->event_ring = xhci_ring_alloc(xhci, ERST_NUM_SEGS, false, flags);
+=======
+	xhci->event_ring = xhci_ring_alloc(xhci, ERST_NUM_SEGS, false, false,
+						flags);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	if (!xhci->event_ring)
 		goto fail;
 	if (xhci_check_trb_in_td_math(xhci, flags) < 0)
@@ -2106,6 +2271,11 @@ int xhci_mem_init(struct xhci_hcd *xhci, gfp_t flags)
 
 fail:
 	xhci_warn(xhci, "Couldn't initialize memory\n");
+<<<<<<< HEAD
+=======
+	xhci_halt(xhci);
+	xhci_reset(xhci);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	xhci_mem_cleanup(xhci);
 	return -ENOMEM;
 }

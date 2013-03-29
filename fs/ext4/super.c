@@ -433,6 +433,10 @@ void __ext4_error(struct super_block *sb, const char *function,
 	printk(KERN_CRIT "EXT4-fs error (device %s): %s:%d: comm %s: %pV\n",
 	       sb->s_id, function, line, current->comm, &vaf);
 	va_end(args);
+<<<<<<< HEAD
+=======
+	save_error_info(sb, function, line);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	ext4_handle_error(sb);
 }
@@ -859,6 +863,10 @@ static struct inode *ext4_alloc_inode(struct super_block *sb)
 	ei->i_reserved_meta_blocks = 0;
 	ei->i_allocated_meta_blocks = 0;
 	ei->i_da_metadata_calc_len = 0;
+<<<<<<< HEAD
+=======
+	ei->i_da_metadata_calc_last_lblock = 0;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	spin_lock_init(&(ei->i_block_reservation_lock));
 #ifdef CONFIG_QUOTA
 	ei->i_reserved_quota = 0;
@@ -1113,9 +1121,15 @@ static int ext4_show_options(struct seq_file *seq, struct vfsmount *vfs)
 		seq_puts(seq, ",block_validity");
 
 	if (!test_opt(sb, INIT_INODE_TABLE))
+<<<<<<< HEAD
 		seq_puts(seq, ",noinit_inode_table");
 	else if (sbi->s_li_wait_mult != EXT4_DEF_LI_WAIT_MULT)
 		seq_printf(seq, ",init_inode_table=%u",
+=======
+		seq_puts(seq, ",noinit_itable");
+	else if (sbi->s_li_wait_mult != EXT4_DEF_LI_WAIT_MULT)
+		seq_printf(seq, ",init_itable=%u",
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			   (unsigned) sbi->s_li_wait_mult);
 
 	ext4_show_quota_options(seq, sb);
@@ -1291,8 +1305,12 @@ enum {
 	Opt_nomblk_io_submit, Opt_block_validity, Opt_noblock_validity,
 	Opt_inode_readahead_blks, Opt_journal_ioprio,
 	Opt_dioread_nolock, Opt_dioread_lock,
+<<<<<<< HEAD
 	Opt_discard, Opt_nodiscard,
 	Opt_init_inode_table, Opt_noinit_inode_table,
+=======
+	Opt_discard, Opt_nodiscard, Opt_init_itable, Opt_noinit_itable,
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 };
 
 static const match_table_t tokens = {
@@ -1365,9 +1383,15 @@ static const match_table_t tokens = {
 	{Opt_dioread_lock, "dioread_lock"},
 	{Opt_discard, "discard"},
 	{Opt_nodiscard, "nodiscard"},
+<<<<<<< HEAD
 	{Opt_init_inode_table, "init_itable=%u"},
 	{Opt_init_inode_table, "init_itable"},
 	{Opt_noinit_inode_table, "noinit_itable"},
+=======
+	{Opt_init_itable, "init_itable=%u"},
+	{Opt_init_itable, "init_itable"},
+	{Opt_noinit_itable, "noinit_itable"},
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	{Opt_err, NULL},
 };
 
@@ -1844,7 +1868,11 @@ set_qf_format:
 		case Opt_dioread_lock:
 			clear_opt(sb, DIOREAD_NOLOCK);
 			break;
+<<<<<<< HEAD
 		case Opt_init_inode_table:
+=======
+		case Opt_init_itable:
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			set_opt(sb, INIT_INODE_TABLE);
 			if (args[0].from) {
 				if (match_int(&args[0], &option))
@@ -1855,7 +1883,11 @@ set_qf_format:
 				return 0;
 			sbi->s_li_wait_mult = option;
 			break;
+<<<<<<< HEAD
 		case Opt_noinit_inode_table:
+=======
+		case Opt_noinit_itable:
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			clear_opt(sb, INIT_INODE_TABLE);
 			break;
 		default:
@@ -1958,17 +1990,29 @@ static int ext4_fill_flex_info(struct super_block *sb)
 	struct ext4_group_desc *gdp = NULL;
 	ext4_group_t flex_group_count;
 	ext4_group_t flex_group;
+<<<<<<< HEAD
 	int groups_per_flex = 0;
+=======
+	unsigned int groups_per_flex = 0;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	size_t size;
 	int i;
 
 	sbi->s_log_groups_per_flex = sbi->s_es->s_log_groups_per_flex;
+<<<<<<< HEAD
 	groups_per_flex = 1 << sbi->s_log_groups_per_flex;
 
 	if (groups_per_flex < 2) {
 		sbi->s_log_groups_per_flex = 0;
 		return 1;
 	}
+=======
+	if (sbi->s_log_groups_per_flex < 1 || sbi->s_log_groups_per_flex > 31) {
+		sbi->s_log_groups_per_flex = 0;
+		return 1;
+	}
+	groups_per_flex = 1 << sbi->s_log_groups_per_flex;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	/* We allocate both existing and potentially added groups */
 	flex_group_count = ((sbi->s_groups_count + groups_per_flex - 1) +
@@ -2204,7 +2248,13 @@ static void ext4_orphan_cleanup(struct super_block *sb,
 				__func__, inode->i_ino, inode->i_size);
 			jbd_debug(2, "truncating inode %lu to %lld bytes\n",
 				  inode->i_ino, inode->i_size);
+<<<<<<< HEAD
 			ext4_truncate(inode);
+=======
+			mutex_lock(&inode->i_mutex);
+			ext4_truncate(inode);
+			mutex_unlock(&inode->i_mutex);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			nr_truncates++;
 		} else {
 			ext4_msg(sb, KERN_DEBUG,
@@ -3620,7 +3670,12 @@ no_journal:
 		goto failed_mount4;
 	}
 
+<<<<<<< HEAD
 	ext4_setup_super(sb, es, sb->s_flags & MS_RDONLY);
+=======
+	if (ext4_setup_super(sb, es, sb->s_flags & MS_RDONLY))
+		sb->s_flags |= MS_RDONLY;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	/* determine the minimum size of new large inodes, if present */
 	if (sbi->s_inode_size > EXT4_GOOD_OLD_INODE_SIZE) {
@@ -3678,22 +3733,35 @@ no_journal:
 	if (err) {
 		ext4_msg(sb, KERN_ERR, "failed to initialize mballoc (%d)",
 			 err);
+<<<<<<< HEAD
 		goto failed_mount4;
+=======
+		goto failed_mount5;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	}
 
 	err = ext4_register_li_request(sb, first_not_zeroed);
 	if (err)
+<<<<<<< HEAD
 		goto failed_mount4;
+=======
+		goto failed_mount6;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	sbi->s_kobj.kset = ext4_kset;
 	init_completion(&sbi->s_kobj_unregister);
 	err = kobject_init_and_add(&sbi->s_kobj, &ext4_ktype, NULL,
 				   "%s", sb->s_id);
+<<<<<<< HEAD
 	if (err) {
 		ext4_mb_release(sb);
 		ext4_ext_release(sb);
 		goto failed_mount4;
 	};
+=======
+	if (err)
+		goto failed_mount7;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	EXT4_SB(sb)->s_mount_state |= EXT4_ORPHAN_FS;
 	ext4_orphan_cleanup(sb, es);
@@ -3727,13 +3795,26 @@ cantfind_ext4:
 		ext4_msg(sb, KERN_ERR, "VFS: Can't find ext4 filesystem");
 	goto failed_mount;
 
+<<<<<<< HEAD
+=======
+failed_mount7:
+	ext4_unregister_li_request(sb);
+failed_mount6:
+	ext4_ext_release(sb);
+failed_mount5:
+	ext4_mb_release(sb);
+	ext4_release_system_zone(sb);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 failed_mount4:
 	iput(root);
 	sb->s_root = NULL;
 	ext4_msg(sb, KERN_ERR, "mount failed");
 	destroy_workqueue(EXT4_SB(sb)->dio_unwritten_wq);
 failed_mount_wq:
+<<<<<<< HEAD
 	ext4_release_system_zone(sb);
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	if (sbi->s_journal) {
 		jbd2_journal_destroy(sbi->s_journal);
 		sbi->s_journal = NULL;
@@ -4437,7 +4518,11 @@ static int ext4_remount(struct super_block *sb, int *flags, char *data)
 	}
 
 	ext4_setup_system_zone(sb);
+<<<<<<< HEAD
 	if (sbi->s_journal == NULL)
+=======
+	if (sbi->s_journal == NULL && !(old_sb_flags & MS_RDONLY))
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		ext4_commit_super(sb, 1);
 
 #ifdef CONFIG_QUOTA

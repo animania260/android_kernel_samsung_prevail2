@@ -96,7 +96,10 @@ config SND_SOC_ALL_CODECS
 	select SND_SOC_WM9705 if SND_SOC_AC97_BUS
 	select SND_SOC_WM9712 if SND_SOC_AC97_BUS
 	select SND_SOC_WM9713 if SND_SOC_AC97_BUS
+<<<<<<< HEAD
 	select SND_SOC_TIMPANI if MARIMBA_CORE
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
         help
           Normally ASoC codec drivers are only built if a machine driver which
           uses them is also built since they are only usable with a machine
@@ -237,11 +240,18 @@ config SND_SOC_TLV320DAC33
 	tristate
 
 config SND_SOC_TWL4030
+<<<<<<< HEAD
 	select MFD_TWL4030_AUDIO
 	tristate
 
 config SND_SOC_TWL6040
 	select TWL6040_CORE
+=======
+	select TWL4030_CODEC
+	tristate
+
+config SND_SOC_TWL6040
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	tristate
 
 config SND_SOC_UDA134X
@@ -250,9 +260,12 @@ config SND_SOC_UDA134X
 config SND_SOC_UDA1380
         tristate
 
+<<<<<<< HEAD
 config SND_SOC_WCD9310
         tristate
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 config SND_SOC_WL1273
 	tristate
 
@@ -391,6 +404,9 @@ config SND_SOC_WM2000
 
 config SND_SOC_WM9090
 	tristate
+<<<<<<< HEAD
 
 config SND_SOC_MSM_STUB
 	tristate
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y

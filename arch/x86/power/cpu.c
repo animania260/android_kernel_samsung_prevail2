@@ -10,6 +10,10 @@
 
 #include <linux/suspend.h>
 #include <linux/smp.h>
+<<<<<<< HEAD
+=======
+#include <linux/perf_event.h>
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 #include <asm/pgtable.h>
 #include <asm/proto.h>
@@ -224,6 +228,10 @@ static void __restore_processor_state(struct saved_context *ctxt)
 
 	do_fpu_end();
 	mtrr_bp_restore();
+<<<<<<< HEAD
+=======
+	perf_restore_debug_store();
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 /* Needed by apm.c */

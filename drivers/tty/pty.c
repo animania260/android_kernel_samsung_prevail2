@@ -49,7 +49,10 @@ static void pty_close(struct tty_struct *tty, struct file *filp)
 	tty->packet = 0;
 	if (!tty->link)
 		return;
+<<<<<<< HEAD
 	tty->link->packet = 0;
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	set_bit(TTY_OTHER_CLOSED, &tty->link->flags);
 	wake_up_interruptible(&tty->link->read_wait);
 	wake_up_interruptible(&tty->link->write_wait);
@@ -670,12 +673,26 @@ static int ptmx_open(struct inode *inode, struct file *filp)
 
 	nonseekable_open(inode, filp);
 
+<<<<<<< HEAD
+=======
+	retval = tty_alloc_file(filp);
+	if (retval)
+		return retval;
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	/* find a device that is not in use. */
 	tty_lock();
 	index = devpts_new_index(inode);
 	tty_unlock();
+<<<<<<< HEAD
 	if (index < 0)
 		return index;
+=======
+	if (index < 0) {
+		retval = index;
+		goto err_file;
+	}
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	mutex_lock(&tty_mutex);
 	tty_lock();
@@ -689,6 +706,7 @@ static int ptmx_open(struct inode *inode, struct file *filp)
 
 	set_bit(TTY_PTY_LOCK, &tty->flags); /* LOCK THE SLAVE */
 
+<<<<<<< HEAD
 	retval = tty_add_file(tty, filp);
 	if (retval)
 		goto out;
@@ -704,12 +722,32 @@ out1:
 	tty_unlock();
 	return retval;
 out2:
+=======
+	tty_add_file(tty, filp);
+
+	retval = devpts_pty_new(inode, tty->link);
+	if (retval)
+		goto err_release;
+
+	retval = ptm_driver->ops->open(tty, filp);
+	if (retval)
+		goto err_release;
+
+	tty_unlock();
+	return 0;
+err_release:
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	tty_unlock();
 	tty_release(inode, filp);
 	return retval;
 out:
 	devpts_kill_index(inode, index);
 	tty_unlock();
+<<<<<<< HEAD
+=======
+err_file:
+	tty_free_file(filp);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	return retval;
 }
 

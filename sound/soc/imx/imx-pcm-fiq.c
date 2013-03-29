@@ -8,7 +8,12 @@
  *
  *  This program is free software; you can redistribute  it and/or modify it
  *  under  the terms of  the GNU General  Public License as published by the
+<<<<<<< HEAD
  *  Free Software Foundation;  only version 2 of the  License.
+=======
+ *  Free Software Foundation;  either version 2 of the  License, or (at your
+ *  option) any later version.
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
  */
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -237,6 +242,7 @@ static struct snd_pcm_ops imx_pcm_ops = {
 
 static int ssi_irq = 0;
 
+<<<<<<< HEAD
 static int imx_pcm_fiq_new(struct snd_soc_pcm_runtime *rtd)
 {
 	struct snd_card *card = rtd->card->snd_card;
@@ -245,6 +251,14 @@ static int imx_pcm_fiq_new(struct snd_soc_pcm_runtime *rtd)
 	int ret;
 
 	ret = imx_pcm_new(rtd);
+=======
+static int imx_pcm_fiq_new(struct snd_card *card, struct snd_soc_dai *dai,
+	struct snd_pcm *pcm)
+{
+	int ret;
+
+	ret = imx_pcm_new(card, dai, pcm);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	if (ret)
 		return ret;
 

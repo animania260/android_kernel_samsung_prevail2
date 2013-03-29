@@ -28,7 +28,10 @@ Contents:
 2.3  Userspace
 2.4  Ondemand
 2.5  Conservative
+<<<<<<< HEAD
 2.6  Interactive
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 3.   The Governor Interface in the CPUfreq Core
 
@@ -194,6 +197,7 @@ governor but for the opposite direction.  For example when set to its
 default value of '20' it means that if the CPU usage needs to be below
 20% between samples to have the frequency decreased.
 
+<<<<<<< HEAD
 
 2.6 Interactive
 ---------------
@@ -231,6 +235,8 @@ is 85.
 timer_rate: Sample rate for reevaluating cpu load when the system is
 not idle.  Default is 30000 uS.
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 3. The Governor Interface in the CPUfreq Core
 =============================================
 

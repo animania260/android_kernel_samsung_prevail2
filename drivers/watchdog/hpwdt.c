@@ -216,6 +216,10 @@ static int __devinit cru_detect(unsigned long map_entry,
 
 	cmn_regs.u1.reax = CRU_BIOS_SIGNATURE_VALUE;
 
+<<<<<<< HEAD
+=======
+	set_memory_x((unsigned long)bios32_map, 2);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	asminline_call(&cmn_regs, bios32_entrypoint);
 
 	if (cmn_regs.u1.ral != 0) {
@@ -233,8 +237,16 @@ static int __devinit cru_detect(unsigned long map_entry,
 		if ((physical_bios_base + physical_bios_offset)) {
 			cru_rom_addr =
 				ioremap(cru_physical_address, cru_length);
+<<<<<<< HEAD
 			if (cru_rom_addr)
 				retval = 0;
+=======
+			if (cru_rom_addr) {
+				set_memory_x((unsigned long)cru_rom_addr & PAGE_MASK,
+					(cru_length + PAGE_SIZE - 1) >> PAGE_SHIFT);
+				retval = 0;
+			}
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		}
 
 		printk(KERN_DEBUG "hpwdt: CRU Base Address:   0x%lx\n",
@@ -769,6 +781,12 @@ static int __devinit hpwdt_init_one(struct pci_dev *dev,
 	hpwdt_timer_reg = pci_mem_addr + 0x70;
 	hpwdt_timer_con = pci_mem_addr + 0x72;
 
+<<<<<<< HEAD
+=======
+	/* Make sure that timer is disabled until /dev/watchdog is opened */
+	hpwdt_stop();
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	/* Make sure that we have a valid soft_margin */
 	if (hpwdt_change_timer(soft_margin))
 		hpwdt_change_timer(DEFAULT_MARGIN);

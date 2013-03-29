@@ -54,9 +54,18 @@ MODULE_DEVICE_TABLE (usb, wdm_ids);
 #define WDM_POLL_RUNNING	6
 #define WDM_RESPONDING		7
 #define WDM_SUSPENDING		8
+<<<<<<< HEAD
 
 #define WDM_MAX			16
 
+=======
+#define WDM_OVERFLOW		10
+
+#define WDM_MAX			16
+
+/* CDC-WMC r1.1 requires wMaxCommand to be "at least 256 decimal (0x100)" */
+#define WDM_DEFAULT_BUFSIZE	256
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 static DEFINE_MUTEX(wdm_mutex);
 
@@ -88,7 +97,12 @@ struct wdm_device {
 	int			count;
 	dma_addr_t		shandle;
 	dma_addr_t		ihandle;
+<<<<<<< HEAD
 	struct mutex		lock;
+=======
+	struct mutex		wlock;
+	struct mutex		rlock;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	wait_queue_head_t	wait;
 	struct work_struct	rxwork;
 	int			werr;
@@ -105,8 +119,14 @@ static void wdm_out_callback(struct urb *urb)
 	spin_lock(&desc->iuspin);
 	desc->werr = urb->status;
 	spin_unlock(&desc->iuspin);
+<<<<<<< HEAD
 	clear_bit(WDM_IN_USE, &desc->flags);
 	kfree(desc->outbuf);
+=======
+	kfree(desc->outbuf);
+	desc->outbuf = NULL;
+	clear_bit(WDM_IN_USE, &desc->flags);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	wake_up(&desc->wait);
 }
 
@@ -114,6 +134,10 @@ static void wdm_in_callback(struct urb *urb)
 {
 	struct wdm_device *desc = urb->context;
 	int status = urb->status;
+<<<<<<< HEAD
+=======
+	int length = urb->actual_length;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	spin_lock(&desc->iuspin);
 	clear_bit(WDM_RESPONDING, &desc->flags);
@@ -144,9 +168,23 @@ static void wdm_in_callback(struct urb *urb)
 	}
 
 	desc->rerr = status;
+<<<<<<< HEAD
 	desc->reslength = urb->actual_length;
 	memmove(desc->ubuf + desc->length, desc->inbuf, desc->reslength);
 	desc->length += desc->reslength;
+=======
+	if (length + desc->length > desc->wMaxCommand) {
+		/* The buffer would overflow */
+		set_bit(WDM_OVERFLOW, &desc->flags);
+	} else {
+		/* we may already be in overflow */
+		if (!test_bit(WDM_OVERFLOW, &desc->flags)) {
+			memmove(desc->ubuf + desc->length, desc->inbuf, length);
+			desc->length += length;
+			desc->reslength = length;
+		}
+	}
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 skip_error:
 	wake_up(&desc->wait);
 
@@ -309,7 +347,11 @@ static ssize_t wdm_write
 	if (we < 0)
 		return -EIO;
 
+<<<<<<< HEAD
 	desc->outbuf = buf = kmalloc(count, GFP_KERNEL);
+=======
+	buf = kmalloc(count, GFP_KERNEL);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	if (!buf) {
 		rv = -ENOMEM;
 		goto outnl;
@@ -323,7 +365,11 @@ static ssize_t wdm_write
 	}
 
 	/* concurrent writes and disconnect */
+<<<<<<< HEAD
 	r = mutex_lock_interruptible(&desc->lock);
+=======
+	r = mutex_lock_interruptible(&desc->wlock);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	rv = -ERESTARTSYS;
 	if (r) {
 		kfree(buf);
@@ -373,10 +419,18 @@ static ssize_t wdm_write
 	req->wIndex = desc->inum;
 	req->wLength = cpu_to_le16(count);
 	set_bit(WDM_IN_USE, &desc->flags);
+<<<<<<< HEAD
+=======
+	desc->outbuf = buf;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	rv = usb_submit_urb(desc->command, GFP_KERNEL);
 	if (rv < 0) {
 		kfree(buf);
+<<<<<<< HEAD
+=======
+		desc->outbuf = NULL;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		clear_bit(WDM_IN_USE, &desc->flags);
 		dev_err(&desc->intf->dev, "Tx URB error: %d\n", rv);
 	} else {
@@ -386,7 +440,11 @@ static ssize_t wdm_write
 out:
 	usb_autopm_put_interface(desc->intf);
 outnp:
+<<<<<<< HEAD
 	mutex_unlock(&desc->lock);
+=======
+	mutex_unlock(&desc->wlock);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 outnl:
 	return rv < 0 ? rv : count;
 }
@@ -394,22 +452,43 @@ outnl:
 static ssize_t wdm_read
 (struct file *file, char __user *buffer, size_t count, loff_t *ppos)
 {
+<<<<<<< HEAD
 	int rv, cntr = 0;
+=======
+	int rv, cntr;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	int i = 0;
 	struct wdm_device *desc = file->private_data;
 
 
+<<<<<<< HEAD
 	rv = mutex_lock_interruptible(&desc->lock); /*concurrent reads */
 	if (rv < 0)
 		return -ERESTARTSYS;
 
 	if (desc->length == 0) {
+=======
+	rv = mutex_lock_interruptible(&desc->rlock); /*concurrent reads */
+	if (rv < 0)
+		return -ERESTARTSYS;
+
+	cntr = ACCESS_ONCE(desc->length);
+	if (cntr == 0) {
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		desc->read = 0;
 retry:
 		if (test_bit(WDM_DISCONNECTING, &desc->flags)) {
 			rv = -ENODEV;
 			goto err;
 		}
+<<<<<<< HEAD
+=======
+		if (test_bit(WDM_OVERFLOW, &desc->flags)) {
+			clear_bit(WDM_OVERFLOW, &desc->flags);
+			rv = -ENOBUFS;
+			goto err;
+		}
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		i++;
 		if (file->f_flags & O_NONBLOCK) {
 			if (!test_bit(WDM_READ, &desc->flags)) {
@@ -449,6 +528,7 @@ retry:
 			spin_unlock_irq(&desc->iuspin);
 			goto retry;
 		}
+<<<<<<< HEAD
 		if (!desc->reslength) { /* zero length read */
 			spin_unlock_irq(&desc->iuspin);
 			goto retry;
@@ -458,12 +538,32 @@ retry:
 	}
 
 	cntr = count > desc->length ? desc->length : count;
+=======
+
+		if (!desc->reslength) { /* zero length read */
+			dev_dbg(&desc->intf->dev, "%s: zero length - clearing WDM_READ\n", __func__);
+			clear_bit(WDM_READ, &desc->flags);
+			spin_unlock_irq(&desc->iuspin);
+			goto retry;
+		}
+		cntr = desc->length;
+		spin_unlock_irq(&desc->iuspin);
+	}
+
+	if (cntr > count)
+		cntr = count;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	rv = copy_to_user(buffer, desc->ubuf, cntr);
 	if (rv > 0) {
 		rv = -EFAULT;
 		goto err;
 	}
 
+<<<<<<< HEAD
+=======
+	spin_lock_irq(&desc->iuspin);
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	for (i = 0; i < desc->length - cntr; i++)
 		desc->ubuf[i] = desc->ubuf[i + cntr];
 
@@ -471,10 +571,20 @@ retry:
 	/* in case we had outstanding data */
 	if (!desc->length)
 		clear_bit(WDM_READ, &desc->flags);
+<<<<<<< HEAD
 	rv = cntr;
 
 err:
 	mutex_unlock(&desc->lock);
+=======
+
+	spin_unlock_irq(&desc->iuspin);
+
+	rv = cntr;
+
+err:
+	mutex_unlock(&desc->rlock);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	return rv;
 }
 
@@ -498,7 +608,11 @@ static unsigned int wdm_poll(struct file *file, struct poll_table_struct *wait)
 
 	spin_lock_irqsave(&desc->iuspin, flags);
 	if (test_bit(WDM_DISCONNECTING, &desc->flags)) {
+<<<<<<< HEAD
 		mask = POLLERR;
+=======
+		mask = POLLHUP | POLLERR;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		spin_unlock_irqrestore(&desc->iuspin, flags);
 		goto desc_out;
 	}
@@ -540,7 +654,12 @@ static int wdm_open(struct inode *inode, struct file *file)
 	}
 	intf->needs_remote_wakeup = 1;
 
+<<<<<<< HEAD
 	mutex_lock(&desc->lock);
+=======
+	/* using write lock to protect desc->count */
+	mutex_lock(&desc->wlock);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	if (!desc->count++) {
 		desc->werr = 0;
 		desc->rerr = 0;
@@ -553,7 +672,11 @@ static int wdm_open(struct inode *inode, struct file *file)
 	} else {
 		rv = 0;
 	}
+<<<<<<< HEAD
 	mutex_unlock(&desc->lock);
+=======
+	mutex_unlock(&desc->wlock);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	usb_autopm_put_interface(desc->intf);
 out:
 	mutex_unlock(&wdm_mutex);
@@ -565,9 +688,17 @@ static int wdm_release(struct inode *inode, struct file *file)
 	struct wdm_device *desc = file->private_data;
 
 	mutex_lock(&wdm_mutex);
+<<<<<<< HEAD
 	mutex_lock(&desc->lock);
 	desc->count--;
 	mutex_unlock(&desc->lock);
+=======
+
+	/* using write lock to protect desc->count */
+	mutex_lock(&desc->wlock);
+	desc->count--;
+	mutex_unlock(&desc->wlock);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	if (!desc->count) {
 		dev_dbg(&desc->intf->dev, "wdm_release: cleanup");
@@ -630,7 +761,11 @@ static int wdm_probe(struct usb_interface *intf, const struct usb_device_id *id)
 	struct usb_cdc_dmm_desc *dmhd;
 	u8 *buffer = intf->altsetting->extra;
 	int buflen = intf->altsetting->extralen;
+<<<<<<< HEAD
 	u16 maxcom = 0;
+=======
+	u16 maxcom = WDM_DEFAULT_BUFSIZE;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	if (!buffer)
 		goto out;
@@ -665,7 +800,12 @@ next_desc:
 	desc = kzalloc(sizeof(struct wdm_device), GFP_KERNEL);
 	if (!desc)
 		goto out;
+<<<<<<< HEAD
 	mutex_init(&desc->lock);
+=======
+	mutex_init(&desc->rlock);
+	mutex_init(&desc->wlock);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	spin_lock_init(&desc->iuspin);
 	init_waitqueue_head(&desc->wait);
 	desc->wMaxCommand = maxcom;
@@ -716,7 +856,11 @@ next_desc:
 		goto err;
 
 	desc->inbuf = usb_alloc_coherent(interface_to_usbdev(intf),
+<<<<<<< HEAD
 					 desc->bMaxPacketSize0,
+=======
+					 desc->wMaxCommand,
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 					 GFP_KERNEL,
 					 &desc->response->transfer_dma);
 	if (!desc->inbuf)
@@ -779,11 +923,21 @@ static void wdm_disconnect(struct usb_interface *intf)
 	/* to terminate pending flushes */
 	clear_bit(WDM_IN_USE, &desc->flags);
 	spin_unlock_irqrestore(&desc->iuspin, flags);
+<<<<<<< HEAD
 	mutex_lock(&desc->lock);
 	kill_urbs(desc);
 	cancel_work_sync(&desc->rxwork);
 	mutex_unlock(&desc->lock);
 	wake_up_all(&desc->wait);
+=======
+	wake_up_all(&desc->wait);
+	mutex_lock(&desc->rlock);
+	mutex_lock(&desc->wlock);
+	kill_urbs(desc);
+	cancel_work_sync(&desc->rxwork);
+	mutex_unlock(&desc->wlock);
+	mutex_unlock(&desc->rlock);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	if (!desc->count)
 		cleanup(desc);
 	mutex_unlock(&wdm_mutex);
@@ -798,8 +952,15 @@ static int wdm_suspend(struct usb_interface *intf, pm_message_t message)
 	dev_dbg(&desc->intf->dev, "wdm%d_suspend\n", intf->minor);
 
 	/* if this is an autosuspend the caller does the locking */
+<<<<<<< HEAD
 	if (!(message.event & PM_EVENT_AUTO))
 		mutex_lock(&desc->lock);
+=======
+	if (!(message.event & PM_EVENT_AUTO)) {
+		mutex_lock(&desc->rlock);
+		mutex_lock(&desc->wlock);
+	}
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	spin_lock_irq(&desc->iuspin);
 
 	if ((message.event & PM_EVENT_AUTO) &&
@@ -815,8 +976,15 @@ static int wdm_suspend(struct usb_interface *intf, pm_message_t message)
 		kill_urbs(desc);
 		cancel_work_sync(&desc->rxwork);
 	}
+<<<<<<< HEAD
 	if (!(message.event & PM_EVENT_AUTO))
 		mutex_unlock(&desc->lock);
+=======
+	if (!(message.event & PM_EVENT_AUTO)) {
+		mutex_unlock(&desc->wlock);
+		mutex_unlock(&desc->rlock);
+	}
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	return rv;
 }
@@ -854,7 +1022,12 @@ static int wdm_pre_reset(struct usb_interface *intf)
 {
 	struct wdm_device *desc = usb_get_intfdata(intf);
 
+<<<<<<< HEAD
 	mutex_lock(&desc->lock);
+=======
+	mutex_lock(&desc->rlock);
+	mutex_lock(&desc->wlock);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	kill_urbs(desc);
 
 	/*
@@ -875,8 +1048,15 @@ static int wdm_post_reset(struct usb_interface *intf)
 	struct wdm_device *desc = usb_get_intfdata(intf);
 	int rv;
 
+<<<<<<< HEAD
 	rv = recover_from_urb_loss(desc);
 	mutex_unlock(&desc->lock);
+=======
+	clear_bit(WDM_OVERFLOW, &desc->flags);
+	rv = recover_from_urb_loss(desc);
+	mutex_unlock(&desc->wlock);
+	mutex_unlock(&desc->rlock);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	return 0;
 }
 

@@ -413,7 +413,11 @@ config SLUB_STATS
 
 config DEBUG_KMEMLEAK
 	bool "Kernel memory leak detector"
+<<<<<<< HEAD
 	depends on DEBUG_KERNEL && EXPERIMENTAL && \
+=======
+	depends on DEBUG_KERNEL && EXPERIMENTAL && !MEMORY_HOTPLUG && \
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		(X86 || ARM || PPC || MIPS || S390 || SPARC64 || SUPERH || MICROBLAZE || TILE)
 
 	select DEBUG_FS
@@ -667,9 +671,14 @@ config DEBUG_LOCKING_API_SELFTESTS
 	  mutexes and rwsems.
 
 config STACKTRACE
+<<<<<<< HEAD
 	bool "Stacktrace"
 	depends on STACKTRACE_SUPPORT
 	default y
+=======
+	bool
+	depends on STACKTRACE_SUPPORT
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 config DEBUG_STACK_USAGE
 	bool "Stack utilization instrumentation"
@@ -1079,7 +1088,11 @@ config FAULT_INJECTION_STACKTRACE_FILTER
 	depends on FAULT_INJECTION_DEBUG_FS && STACKTRACE_SUPPORT
 	depends on !X86_64
 	select STACKTRACE
+<<<<<<< HEAD
 	select FRAME_POINTER if !PPC && !S390 && !MICROBLAZE && !ARM_UNWIND
+=======
+	select FRAME_POINTER if !PPC && !S390 && !MICROBLAZE
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	help
 	  Provide stacktrace filter for fault-injection capabilities
 

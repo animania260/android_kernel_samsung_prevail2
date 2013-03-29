@@ -1762,8 +1762,13 @@ int ecryptfs_parse_packet_set(struct ecryptfs_crypt_stat *crypt_stat,
 	size_t found_auth_tok;
 	size_t next_packet_is_auth_tok_packet;
 	struct list_head auth_tok_list;
+<<<<<<< HEAD
 	struct ecryptfs_auth_tok *matching_auth_tok = NULL;
 	struct ecryptfs_auth_tok *candidate_auth_tok = NULL;
+=======
+	struct ecryptfs_auth_tok *matching_auth_tok;
+	struct ecryptfs_auth_tok *candidate_auth_tok;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	char *candidate_auth_tok_sig;
 	size_t packet_size;
 	struct ecryptfs_auth_tok *new_auth_tok;
@@ -1970,7 +1975,11 @@ pki_encrypt_session_key(struct key *auth_tok_key,
 {
 	struct ecryptfs_msg_ctx *msg_ctx = NULL;
 	char *payload = NULL;
+<<<<<<< HEAD
 	size_t payload_len = 0;
+=======
+	size_t payload_len;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	struct ecryptfs_message *msg;
 	int rc;
 

@@ -833,6 +833,7 @@ static int hw_breakpoint_pending(unsigned long addr, unsigned int fsr,
 	return ret;
 }
 
+<<<<<<< HEAD
 static void reset_brps_reserved_reg(int n)
 {
 	int i;
@@ -845,6 +846,8 @@ static void reset_brps_reserved_reg(int n)
 
 }
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 /*
  * One-time initialisation.
  */
@@ -892,11 +895,19 @@ static void reset_ctrl_regs(void *info)
 	if (enable_monitor_mode())
 		return;
 
+<<<<<<< HEAD
 #ifdef CONFIG_HAVE_HW_BRKPT_RESERVED_RW_ACCESS
 	reset_brps_reserved_reg(core_num_brps);
 #else
 	reset_brps_reserved_reg(core_num_brps + core_num_reserved_brps);
 #endif
+=======
+	/* We must also reset any reserved registers. */
+	for (i = 0; i < core_num_brps + core_num_reserved_brps; ++i) {
+		write_wb_reg(ARM_BASE_BCR + i, 0UL);
+		write_wb_reg(ARM_BASE_BVR + i, 0UL);
+	}
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	for (i = 0; i < core_num_wrps; ++i) {
 		write_wb_reg(ARM_BASE_WCR + i, 0UL);

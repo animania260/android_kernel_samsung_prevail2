@@ -235,6 +235,7 @@ config CHARGER_GPIO
 	  This driver can be build as a module. If so, the module will be
 	  called gpio-charger.
 
+<<<<<<< HEAD
 config BATTERY_MSM
 	tristate "MSM battery"
 	depends on ARCH_MSM
@@ -376,4 +377,6 @@ config MAX17043_FUEL_GAUGE
 	default n
 	help
 	  MAX17043 Fuel gauge.
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 endif # POWER_SUPPLY

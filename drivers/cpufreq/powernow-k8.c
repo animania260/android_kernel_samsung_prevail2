@@ -32,7 +32,10 @@
 #include <linux/slab.h>
 #include <linux/string.h>
 #include <linux/cpumask.h>
+<<<<<<< HEAD
 #include <linux/sched.h>	/* for current / set_cpus_allowed() */
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #include <linux/io.h>
 #include <linux/delay.h>
 
@@ -54,6 +57,12 @@ static DEFINE_PER_CPU(struct powernow_k8_data *, powernow_data);
 
 static int cpu_family = CPU_OPTERON;
 
+<<<<<<< HEAD
+=======
+/* array to map SW pstate number to acpi state */
+static u32 ps_to_as[8];
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 /* core performance boost */
 static bool cpb_capable, cpb_enabled;
 static struct msr __percpu *msrs;
@@ -80,9 +89,15 @@ static u32 find_khz_freq_from_fid(u32 fid)
 }
 
 static u32 find_khz_freq_from_pstate(struct cpufreq_frequency_table *data,
+<<<<<<< HEAD
 		u32 pstate)
 {
 	return data[pstate].frequency;
+=======
+				     u32 pstate)
+{
+	return data[ps_to_as[pstate]].frequency;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 /* Return the vco fid for an input fid
@@ -926,6 +941,7 @@ static int fill_powernow_table_pstate(struct powernow_k8_data *data,
 			invalidate_entry(powernow_table, i);
 			continue;
 		}
+<<<<<<< HEAD
 		rdmsr(MSR_PSTATE_DEF_BASE + index, lo, hi);
 		if (!(hi & HW_PSTATE_VALID_MASK)) {
 			pr_debug("invalid pstate %d, ignoring\n", index);
@@ -934,15 +950,35 @@ static int fill_powernow_table_pstate(struct powernow_k8_data *data,
 		}
 
 		powernow_table[i].index = index;
+=======
+
+		ps_to_as[index] = i;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 		/* Frequency may be rounded for these */
 		if ((boot_cpu_data.x86 == 0x10 && boot_cpu_data.x86_model < 10)
 				 || boot_cpu_data.x86 == 0x11) {
+<<<<<<< HEAD
+=======
+
+			rdmsr(MSR_PSTATE_DEF_BASE + index, lo, hi);
+			if (!(hi & HW_PSTATE_VALID_MASK)) {
+				pr_debug("invalid pstate %d, ignoring\n", index);
+				invalidate_entry(powernow_table, i);
+				continue;
+			}
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			powernow_table[i].frequency =
 				freq_from_fid_did(lo & 0x3f, (lo >> 6) & 7);
 		} else
 			powernow_table[i].frequency =
 				data->acpi_data.states[i].core_frequency * 1000;
+<<<<<<< HEAD
+=======
+
+		powernow_table[i].index = index;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	}
 	return 0;
 }
@@ -1125,16 +1161,35 @@ static int transition_frequency_pstate(struct powernow_k8_data *data,
 	return res;
 }
 
+<<<<<<< HEAD
 /* Driver entry point to switch to the target frequency */
 static int powernowk8_target(struct cpufreq_policy *pol,
 		unsigned targfreq, unsigned relation)
 {
 	cpumask_var_t oldmask;
+=======
+struct powernowk8_target_arg {
+	struct cpufreq_policy		*pol;
+	unsigned			targfreq;
+	unsigned			relation;
+};
+
+static long powernowk8_target_fn(void *arg)
+{
+	struct powernowk8_target_arg *pta = arg;
+	struct cpufreq_policy *pol = pta->pol;
+	unsigned targfreq = pta->targfreq;
+	unsigned relation = pta->relation;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	struct powernow_k8_data *data = per_cpu(powernow_data, pol->cpu);
 	u32 checkfid;
 	u32 checkvid;
 	unsigned int newstate;
+<<<<<<< HEAD
 	int ret = -EIO;
+=======
+	int ret;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	if (!data)
 		return -EINVAL;
@@ -1142,6 +1197,7 @@ static int powernowk8_target(struct cpufreq_policy *pol,
 	checkfid = data->currfid;
 	checkvid = data->currvid;
 
+<<<<<<< HEAD
 	/* only run on specific CPU from here on. */
 	/* This is poor form: use a workqueue or smp_call_function_single */
 	if (!alloc_cpumask_var(&oldmask, GFP_KERNEL))
@@ -1158,13 +1214,22 @@ static int powernowk8_target(struct cpufreq_policy *pol,
 	if (pending_bit_stuck()) {
 		printk(KERN_ERR PFX "failing targ, change pending bit set\n");
 		goto err_out;
+=======
+	if (pending_bit_stuck()) {
+		printk(KERN_ERR PFX "failing targ, change pending bit set\n");
+		return -EIO;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	}
 
 	pr_debug("targ: cpu %d, %d kHz, min %d, max %d, relation %d\n",
 		pol->cpu, targfreq, pol->min, pol->max, relation);
 
 	if (query_current_values_with_pending_wait(data))
+<<<<<<< HEAD
 		goto err_out;
+=======
+		return -EIO;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	if (cpu_family != CPU_HW_PSTATE) {
 		pr_debug("targ: curr fid 0x%x, vid 0x%x\n",
@@ -1182,26 +1247,41 @@ static int powernowk8_target(struct cpufreq_policy *pol,
 
 	if (cpufreq_frequency_table_target(pol, data->powernow_table,
 				targfreq, relation, &newstate))
+<<<<<<< HEAD
 		goto err_out;
+=======
+		return -EIO;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	mutex_lock(&fidvid_mutex);
 
 	powernow_k8_acpi_pst_values(data, newstate);
 
 	if (cpu_family == CPU_HW_PSTATE)
+<<<<<<< HEAD
 		ret = transition_frequency_pstate(data, newstate);
+=======
+		ret = transition_frequency_pstate(data,
+			data->powernow_table[newstate].index);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	else
 		ret = transition_frequency_fidvid(data, newstate);
 	if (ret) {
 		printk(KERN_ERR PFX "transition frequency failed\n");
+<<<<<<< HEAD
 		ret = 1;
 		mutex_unlock(&fidvid_mutex);
 		goto err_out;
+=======
+		mutex_unlock(&fidvid_mutex);
+		return 1;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	}
 	mutex_unlock(&fidvid_mutex);
 
 	if (cpu_family == CPU_HW_PSTATE)
 		pol->cur = find_khz_freq_from_pstate(data->powernow_table,
+<<<<<<< HEAD
 				newstate);
 	else
 		pol->cur = find_khz_freq_from_fid(data->currfid);
@@ -1211,6 +1291,23 @@ err_out:
 	set_cpus_allowed_ptr(current, oldmask);
 	free_cpumask_var(oldmask);
 	return ret;
+=======
+				data->powernow_table[newstate].index);
+	else
+		pol->cur = find_khz_freq_from_fid(data->currfid);
+
+	return 0;
+}
+
+/* Driver entry point to switch to the target frequency */
+static int powernowk8_target(struct cpufreq_policy *pol,
+		unsigned targfreq, unsigned relation)
+{
+	struct powernowk8_target_arg pta = { .pol = pol, .targfreq = targfreq,
+					     .relation = relation };
+
+	return work_on_cpu(pol->cpu, powernowk8_target_fn, &pta);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 /* Driver entry point to verify the policy and range of frequencies */

@@ -427,6 +427,7 @@ struct spi_device_id {
 			__attribute__((aligned(sizeof(kernel_ulong_t))));
 };
 
+<<<<<<< HEAD
 #define SLIMBUS_NAME_SIZE	32
 #define SLIMBUS_MODULE_PREFIX "slim:"
 
@@ -436,6 +437,8 @@ struct slim_device_id {
 			__attribute__((aligned(sizeof(kernel_ulong_t))));
 };
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 /* dmi */
 enum dmi_field {
 	DMI_NONE,

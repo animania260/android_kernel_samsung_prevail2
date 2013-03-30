@@ -137,6 +137,11 @@ static void netlink_destroy_callback(struct netlink_callback *cb);
 static DEFINE_RWLOCK(nl_table_lock);
 static atomic_t nl_table_users = ATOMIC_INIT(0);
 
+<<<<<<< HEAD
+=======
+#define nl_deref_protected(X) rcu_dereference_protected(X, lockdep_is_held(&nl_table_lock));
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 static ATOMIC_NOTIFIER_HEAD(netlink_chain);
 
 static u32 netlink_group_mask(u32 group)
@@ -331,6 +336,14 @@ netlink_update_listeners(struct sock *sk)
 	struct hlist_node *node;
 	unsigned long mask;
 	unsigned int i;
+<<<<<<< HEAD
+=======
+	struct listeners *listeners;
+
+	listeners = nl_deref_protected(tbl->listeners);
+	if (!listeners)
+		return;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	for (i = 0; i < NLGRPLONGS(tbl->groups); i++) {
 		mask = 0;
@@ -338,7 +351,11 @@ netlink_update_listeners(struct sock *sk)
 			if (i < NLGRPLONGS(nlk_sk(sk)->ngroups))
 				mask |= nlk_sk(sk)->groups[i];
 		}
+<<<<<<< HEAD
 		tbl->listeners->masks[i] = mask;
+=======
+		listeners->masks[i] = mask;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	}
 	/* this function is only called with the netlink table "grabbed", which
 	 * makes sure updates are visible before bind or setsockopt return. */
@@ -519,7 +536,15 @@ static int netlink_release(struct socket *sock)
 	if (netlink_is_kernel(sk)) {
 		BUG_ON(nl_table[sk->sk_protocol].registered == 0);
 		if (--nl_table[sk->sk_protocol].registered == 0) {
+<<<<<<< HEAD
 			kfree(nl_table[sk->sk_protocol].listeners);
+=======
+			struct listeners *old;
+
+			old = nl_deref_protected(nl_table[sk->sk_protocol].listeners);
+			RCU_INIT_POINTER(nl_table[sk->sk_protocol].listeners, NULL);
+			kfree_rcu(old, rcu);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			nl_table[sk->sk_protocol].module = NULL;
 			nl_table[sk->sk_protocol].registered = 0;
 		}
@@ -830,12 +855,26 @@ int netlink_attachskb(struct sock *sk, struct sk_buff *skb,
 	return 0;
 }
 
+<<<<<<< HEAD
 int netlink_sendskb(struct sock *sk, struct sk_buff *skb)
+=======
+static int __netlink_sendskb(struct sock *sk, struct sk_buff *skb)
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 {
 	int len = skb->len;
 
 	skb_queue_tail(&sk->sk_receive_queue, skb);
 	sk->sk_data_ready(sk, len);
+<<<<<<< HEAD
+=======
+	return len;
+}
+
+int netlink_sendskb(struct sock *sk, struct sk_buff *skb)
+{
+	int len = __netlink_sendskb(sk, skb);
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	sock_put(sk);
 	return len;
 }
@@ -943,7 +982,11 @@ int netlink_has_listeners(struct sock *sk, unsigned int group)
 	rcu_read_lock();
 	listeners = rcu_dereference(nl_table[sk->sk_protocol].listeners);
 
+<<<<<<< HEAD
 	if (group - 1 < nl_table[sk->sk_protocol].groups)
+=======
+	if (listeners && group - 1 < nl_table[sk->sk_protocol].groups)
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		res = test_bit(group - 1, listeners->masks);
 
 	rcu_read_unlock();
@@ -960,8 +1003,12 @@ static inline int netlink_broadcast_deliver(struct sock *sk,
 	if (atomic_read(&sk->sk_rmem_alloc) <= sk->sk_rcvbuf &&
 	    !test_bit(0, &nlk->state)) {
 		skb_set_owner_r(skb, sk);
+<<<<<<< HEAD
 		skb_queue_tail(&sk->sk_receive_queue, skb);
 		sk->sk_data_ready(sk, skb->len);
+=======
+		__netlink_sendskb(sk, skb);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		return atomic_read(&sk->sk_rmem_alloc) > sk->sk_rcvbuf;
 	}
 	return -1;
@@ -1339,7 +1386,12 @@ static int netlink_sendmsg(struct kiocb *kiocb, struct socket *sock,
 		dst_pid = addr->nl_pid;
 		dst_group = ffs(addr->nl_groups);
 		err =  -EPERM;
+<<<<<<< HEAD
 		if (dst_group && !netlink_capable(sock, NL_NONROOT_SEND))
+=======
+		if ((dst_group || dst_pid) &&
+		    !netlink_capable(sock, NL_NONROOT_SEND))
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			goto out;
 	} else {
 		dst_pid = nlk->dst_pid;
@@ -1578,7 +1630,11 @@ int __netlink_change_ngroups(struct sock *sk, unsigned int groups)
 		new = kzalloc(sizeof(*new) + NLGRPSZ(groups), GFP_ATOMIC);
 		if (!new)
 			return -ENOMEM;
+<<<<<<< HEAD
 		old = rcu_dereference_raw(tbl->listeners);
+=======
+		old = nl_deref_protected(tbl->listeners);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		memcpy(new->masks, old->masks, NLGRPSZ(tbl->groups));
 		rcu_assign_pointer(tbl->listeners, new);
 
@@ -1659,6 +1715,7 @@ static int netlink_dump(struct sock *sk)
 {
 	struct netlink_sock *nlk = nlk_sk(sk);
 	struct netlink_callback *cb;
+<<<<<<< HEAD
 	struct sk_buff *skb;
 	struct nlmsghdr *nlh;
 	int len, err = -ENOBUFS;
@@ -1666,6 +1723,12 @@ static int netlink_dump(struct sock *sk)
 	skb = sock_rmalloc(sk, NLMSG_GOODSIZE, 0, GFP_KERNEL);
 	if (!skb)
 		goto errout;
+=======
+	struct sk_buff *skb = NULL;
+	struct nlmsghdr *nlh;
+	int len, err = -ENOBUFS;
+	int alloc_size;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	mutex_lock(nlk->cb_mutex);
 
@@ -1675,6 +1738,15 @@ static int netlink_dump(struct sock *sk)
 		goto errout_skb;
 	}
 
+<<<<<<< HEAD
+=======
+	alloc_size = max_t(int, cb->min_dump_alloc, NLMSG_GOODSIZE);
+
+	skb = sock_rmalloc(sk, alloc_size, 0, GFP_KERNEL);
+	if (!skb)
+		goto errout;
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	len = cb->dump(skb, cb);
 
 	if (len > 0) {
@@ -1682,10 +1754,15 @@ static int netlink_dump(struct sock *sk)
 
 		if (sk_filter(sk, skb))
 			kfree_skb(skb);
+<<<<<<< HEAD
 		else {
 			skb_queue_tail(&sk->sk_receive_queue, skb);
 			sk->sk_data_ready(sk, skb->len);
 		}
+=======
+		else
+			__netlink_sendskb(sk, skb);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		return 0;
 	}
 
@@ -1697,10 +1774,15 @@ static int netlink_dump(struct sock *sk)
 
 	if (sk_filter(sk, skb))
 		kfree_skb(skb);
+<<<<<<< HEAD
 	else {
 		skb_queue_tail(&sk->sk_receive_queue, skb);
 		sk->sk_data_ready(sk, skb->len);
 	}
+=======
+	else
+		__netlink_sendskb(sk, skb);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	if (cb->done)
 		cb->done(cb);
@@ -1721,7 +1803,12 @@ int netlink_dump_start(struct sock *ssk, struct sk_buff *skb,
 		       const struct nlmsghdr *nlh,
 		       int (*dump)(struct sk_buff *skb,
 				   struct netlink_callback *),
+<<<<<<< HEAD
 		       int (*done)(struct netlink_callback *))
+=======
+		       int (*done)(struct netlink_callback *),
+		       u16 min_dump_alloc)
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 {
 	struct netlink_callback *cb;
 	struct sock *sk;
@@ -1735,6 +1822,10 @@ int netlink_dump_start(struct sock *ssk, struct sk_buff *skb,
 	cb->dump = dump;
 	cb->done = done;
 	cb->nlh = nlh;
+<<<<<<< HEAD
+=======
+	cb->min_dump_alloc = min_dump_alloc;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	atomic_inc(&skb->users);
 	cb->skb = skb;
 
@@ -2096,6 +2187,10 @@ static void __init netlink_add_usersock_entry(void)
 	rcu_assign_pointer(nl_table[NETLINK_USERSOCK].listeners, listeners);
 	nl_table[NETLINK_USERSOCK].module = THIS_MODULE;
 	nl_table[NETLINK_USERSOCK].registered = 1;
+<<<<<<< HEAD
+=======
+	nl_table[NETLINK_USERSOCK].nl_nonroot = NL_NONROOT_SEND;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	netlink_table_ungrab();
 }

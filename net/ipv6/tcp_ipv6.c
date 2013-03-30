@@ -605,7 +605,12 @@ static int tcp_v6_md5_do_add(struct sock *sk, const struct in6_addr *peer,
 			}
 			sk_nocaps_add(sk, NETIF_F_GSO_MASK);
 		}
+<<<<<<< HEAD
 		if (tcp_alloc_md5sig_pool(sk) == NULL) {
+=======
+		if (tp->md5sig_info->entries6 == 0 &&
+			tcp_alloc_md5sig_pool(sk) == NULL) {
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			kfree(newkey);
 			return -ENOMEM;
 		}
@@ -614,8 +619,14 @@ static int tcp_v6_md5_do_add(struct sock *sk, const struct in6_addr *peer,
 				       (tp->md5sig_info->entries6 + 1)), GFP_ATOMIC);
 
 			if (!keys) {
+<<<<<<< HEAD
 				tcp_free_md5sig_pool();
 				kfree(newkey);
+=======
+				kfree(newkey);
+				if (tp->md5sig_info->entries6 == 0)
+					tcp_free_md5sig_pool();
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 				return -ENOMEM;
 			}
 
@@ -661,6 +672,10 @@ static int tcp_v6_md5_do_del(struct sock *sk, const struct in6_addr *peer)
 				kfree(tp->md5sig_info->keys6);
 				tp->md5sig_info->keys6 = NULL;
 				tp->md5sig_info->alloced6 = 0;
+<<<<<<< HEAD
+=======
+				tcp_free_md5sig_pool();
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			} else {
 				/* shrink the database */
 				if (tp->md5sig_info->entries6 != i)
@@ -669,7 +684,10 @@ static int tcp_v6_md5_do_del(struct sock *sk, const struct in6_addr *peer)
 						(tp->md5sig_info->entries6 - i)
 						* sizeof (tp->md5sig_info->keys6[0]));
 			}
+<<<<<<< HEAD
 			tcp_free_md5sig_pool();
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			return 0;
 		}
 	}
@@ -1058,7 +1076,12 @@ static void tcp_v6_send_response(struct sk_buff *skb, u32 seq, u32 ack, u32 win,
 	__tcp_v6_send_check(buff, &fl6.saddr, &fl6.daddr);
 
 	fl6.flowi6_proto = IPPROTO_TCP;
+<<<<<<< HEAD
 	fl6.flowi6_oif = inet6_iif(skb);
+=======
+	if (ipv6_addr_type(&fl6.daddr) & IPV6_ADDR_LINKLOCAL)
+		fl6.flowi6_oif = inet6_iif(skb);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	fl6.fl6_dport = t1->dest;
 	fl6.fl6_sport = t1->source;
 	security_skb_classify_flow(skb, flowi6_to_flowi(&fl6));
@@ -1094,7 +1117,11 @@ static void tcp_v6_send_reset(struct sock *sk, struct sk_buff *skb)
 
 #ifdef CONFIG_TCP_MD5SIG
 	if (sk)
+<<<<<<< HEAD
 		key = tcp_v6_md5_do_lookup(sk, &ipv6_hdr(skb)->daddr);
+=======
+		key = tcp_v6_md5_do_lookup(sk, &ipv6_hdr(skb)->saddr);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #endif
 
 	if (th->ack)
@@ -1407,6 +1434,11 @@ static struct sock * tcp_v6_syn_recv_sock(struct sock *sk, struct sk_buff *skb,
 		newtp->af_specific = &tcp_sock_ipv6_mapped_specific;
 #endif
 
+<<<<<<< HEAD
+=======
+		newnp->ipv6_ac_list = NULL;
+		newnp->ipv6_fl_list = NULL;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		newnp->pktoptions  = NULL;
 		newnp->opt	   = NULL;
 		newnp->mcast_oif   = inet6_iif(skb);
@@ -1471,6 +1503,10 @@ static struct sock * tcp_v6_syn_recv_sock(struct sock *sk, struct sk_buff *skb,
 	   First: no IPv4 options.
 	 */
 	newinet->inet_opt = NULL;
+<<<<<<< HEAD
+=======
+	newnp->ipv6_ac_list = NULL;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	newnp->ipv6_fl_list = NULL;
 
 	/* Clone RX bits */
@@ -1509,6 +1545,13 @@ static struct sock * tcp_v6_syn_recv_sock(struct sock *sk, struct sk_buff *skb,
 	tcp_mtup_init(newsk);
 	tcp_sync_mss(newsk, dst_mtu(dst));
 	newtp->advmss = dst_metric_advmss(dst);
+<<<<<<< HEAD
+=======
+	if (tcp_sk(sk)->rx_opt.user_mss &&
+	    tcp_sk(sk)->rx_opt.user_mss < newtp->advmss)
+		newtp->advmss = tcp_sk(sk)->rx_opt.user_mss;
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	tcp_initialize_rcv_mss(newsk);
 
 	newinet->inet_daddr = newinet->inet_saddr = LOOPBACK4_IPV6;

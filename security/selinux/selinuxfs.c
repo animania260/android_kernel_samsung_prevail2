@@ -1241,6 +1241,10 @@ static int sel_make_bools(void)
 		kfree(bool_pending_names[i]);
 	kfree(bool_pending_names);
 	kfree(bool_pending_values);
+<<<<<<< HEAD
+=======
+	bool_num = 0;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	bool_pending_names = NULL;
 	bool_pending_values = NULL;
 
@@ -1984,7 +1988,10 @@ __initcall(init_sel_fs);
 void exit_sel_fs(void)
 {
 	kobject_put(selinuxfs_kobj);
+<<<<<<< HEAD
 	kern_unmount(selinuxfs_mount);
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	unregister_filesystem(&sel_fs_type);
 }
 #endif

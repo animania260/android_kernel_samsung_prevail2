@@ -106,7 +106,11 @@ static int mqprio_init(struct Qdisc *sch, struct nlattr *opt)
 	if (!netif_is_multiqueue(dev))
 		return -EOPNOTSUPP;
 
+<<<<<<< HEAD
 	if (nla_len(opt) < sizeof(*qopt))
+=======
+	if (!opt || nla_len(opt) < sizeof(*qopt))
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		return -EINVAL;
 
 	qopt = nla_data(opt);

@@ -28,6 +28,7 @@ config HWMON_VID
 	tristate
 	default n
 
+<<<<<<< HEAD
 config SENSORS_WPCE775X
 	bool "Winbond WPCE775X"
 	depends on I2C
@@ -36,6 +37,8 @@ config SENSORS_WPCE775X
 	  This driver provides support for the Winbond WPCE775XX Embedded
 	  Controller, which provides lcd backlight, LEDs, and Battery control.
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 config HWMON_DEBUG_CHIP
 	bool "Hardware Monitoring Chip debugging messages"
 	default n
@@ -482,8 +485,14 @@ config SENSORS_JC42
 	  If you say yes here, you get support for JEDEC JC42.4 compliant
 	  temperature sensors, which are used on many DDR3 memory modules for
 	  mobile devices and servers.  Support will include, but not be limited
+<<<<<<< HEAD
 	  to, ADT7408, CAT34TS02, CAT6095, MAX6604, MCP9805, MCP98242, MCP98243,
 	  MCP9843, SE97, SE98, STTS424(E), TSE2002B3, and TS3000B3.
+=======
+	  to, ADT7408, AT30TS00, CAT34TS02, CAT6095, MAX6604, MCP9804, MCP9805,
+	  MCP98242, MCP98243, MCP9843, SE97, SE98, STTS424(E), STTS2002,
+	  STTS3000, TSE2002B3, TSE2002GB2, TS3000B3, and TS3000GB2.
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	  This driver can also be built as a module.  If so, the module
 	  will be called jc42.
@@ -775,6 +784,7 @@ config SENSORS_MAX6650
 	  This driver can also be built as a module.  If so, the module
 	  will be called max6650.
 
+<<<<<<< HEAD
 config SENSORS_MSM_ADC
 	tristate "MSM ADC Driver for current measurement"
 	depends on ARCH_MSM7X30 || ARCH_MSM8X60 || ARCH_FSM9XXX
@@ -797,6 +807,8 @@ config SENSORS_PM8XXX_ADC
 	  The driver supports reading the HKADC, XOADC and support to set and receive
 	  temperature threshold notifications using the Battery temperature module.
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 config SENSORS_PC87360
 	tristate "National Semiconductor PC87360 family"
 	select HWMON_VID

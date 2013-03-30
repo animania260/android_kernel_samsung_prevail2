@@ -130,9 +130,23 @@ qh_refresh (struct ehci_hcd *ehci, struct ehci_qh *qh)
 	else {
 		qtd = list_entry (qh->qtd_list.next,
 				struct ehci_qtd, qtd_list);
+<<<<<<< HEAD
 		/* first qtd may already be partially processed */
 		if (cpu_to_hc32(ehci, qtd->qtd_dma) == qh->hw->hw_current)
 			qtd = NULL;
+=======
+		/*
+		 * first qtd may already be partially processed.
+		 * If we come here during unlink, the QH overlay region
+		 * might have reference to the just unlinked qtd. The
+		 * qtd is updated in qh_completions(). Update the QH
+		 * overlay here.
+		 */
+		if (qh->hw->hw_token & ACTIVE_BIT(ehci)) {
+			qh->hw->hw_qtd_next = qtd->hw_next;
+			qtd = NULL;
+		}
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	}
 
 	if (qtd)
@@ -442,11 +456,27 @@ qh_completions (struct ehci_hcd *ehci, struct ehci_qh *qh)
 			else if (last_status == -EINPROGRESS && !urb->unlinked)
 				continue;
 
+<<<<<<< HEAD
 			/* qh unlinked; token in overlay may be most current */
 			if (state == QH_STATE_IDLE
 					&& cpu_to_hc32(ehci, qtd->qtd_dma)
 						== hw->hw_current) {
 				token = hc32_to_cpu(ehci, hw->hw_token);
+=======
+			/*
+			 * If this was the active qtd when the qh was unlinked
+			 * and the overlay's token is active, then the overlay
+			 * hasn't been written back to the qtd yet so use its
+			 * token instead of the qtd's.  After the qtd is
+			 * processed and removed, the overlay won't be valid
+			 * any more.
+			 */
+			if (state == QH_STATE_IDLE &&
+					qh->qtd_list.next == &qtd->qtd_list &&
+					(hw->hw_token & ACTIVE_BIT(ehci))) {
+				token = hc32_to_cpu(ehci, hw->hw_token);
+				hw->hw_token &= ~ACTIVE_BIT(ehci);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 				/* An unlink may leave an incomplete
 				 * async transaction in the TT buffer.
@@ -649,7 +679,11 @@ qh_urb_transaction (
 	/*
 	 * data transfer stage:  buffer setup
 	 */
+<<<<<<< HEAD
 	i = urb->num_sgs;
+=======
+	i = urb->num_mapped_sgs;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	if (len > 0 && i > 0) {
 		sg = urb->sg;
 		buf = sg_dma_address(sg);
@@ -995,12 +1029,15 @@ static void qh_link_async (struct ehci_hcd *ehci, struct ehci_qh *qh)
 	head->qh_next.qh = qh;
 	head->hw->hw_next = dma;
 
+<<<<<<< HEAD
 	/*
 	 * flush qh descriptor into memory immediately,
 	 * see comments in qh_append_tds.
 	 * */
 	ehci_sync_mem();
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	qh_get(qh);
 	qh->xacterrs = 0;
 	qh->qh_state = QH_STATE_LINKED;
@@ -1088,6 +1125,7 @@ static struct ehci_qh *qh_append_tds (
 			wmb ();
 			dummy->hw_token = token;
 
+<<<<<<< HEAD
 			/*
 			 * Writing to dma coherent buffer on ARM may
 			 * be delayed to reach memory, so HC may not see
@@ -1100,6 +1138,8 @@ static struct ehci_qh *qh_append_tds (
 			 * */
 			ehci_sync_mem();
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			urb->hcpriv = qh_get (qh);
 		}
 	}
@@ -1162,6 +1202,7 @@ submit_async (
 		qtd_list_free (ehci, urb, qtd_list);
 	return rc;
 }
+<<<<<<< HEAD
 /*-------------------------------------------------------------------------*/
 /* This function creates the qtds and submits them for the
  * SINGLE_STEP_SET_FEATURE Test.
@@ -1266,6 +1307,9 @@ cleanup:
 	return -1;
 }
 #endif
+=======
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 /*-------------------------------------------------------------------------*/
 
 /* the async qh for the qtds being reclaimed are now unlinked from the HC */

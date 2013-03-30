@@ -27,7 +27,10 @@
 #include <linux/memory.h>
 #include <linux/math64.h>
 #include <linux/fault-inject.h>
+<<<<<<< HEAD
 #include <linux/stacktrace.h>
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 #include <trace/events/kmem.h>
 
@@ -192,12 +195,17 @@ static LIST_HEAD(slab_caches);
 /*
  * Tracking user of a slab.
  */
+<<<<<<< HEAD
 #define TRACK_ADDRS_COUNT 16
 struct track {
 	unsigned long addr;	/* Called from address */
 #ifdef CONFIG_STACKTRACE
 	unsigned long addrs[TRACK_ADDRS_COUNT];	/* Called from address */
 #endif
+=======
+struct track {
+	unsigned long addr;	/* Called from address */
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	int cpu;		/* Was running on cpu */
 	int pid;		/* Pid context */
 	unsigned long when;	/* When did the operation occur */
@@ -425,6 +433,7 @@ static void set_track(struct kmem_cache *s, void *object,
 	struct track *p = get_track(s, object, alloc);
 
 	if (addr) {
+<<<<<<< HEAD
 #ifdef CONFIG_STACKTRACE
 		struct stack_trace trace;
 		int i;
@@ -443,6 +452,8 @@ static void set_track(struct kmem_cache *s, void *object,
 		for (i = trace.nr_entries; i < TRACK_ADDRS_COUNT; i++)
 			p->addrs[i] = 0;
 #endif
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		p->addr = addr;
 		p->cpu = smp_processor_id();
 		p->pid = current->pid;
@@ -467,6 +478,7 @@ static void print_track(const char *s, struct track *t)
 
 	printk(KERN_ERR "INFO: %s in %pS age=%lu cpu=%u pid=%d\n",
 		s, (void *)t->addr, jiffies - t->when, t->cpu, t->pid);
+<<<<<<< HEAD
 #ifdef CONFIG_STACKTRACE
 	{
 		int i;
@@ -477,6 +489,8 @@ static void print_track(const char *s, struct track *t)
 				break;
 	}
 #endif
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 static void print_tracking(struct kmem_cache *s, void *object)
@@ -590,10 +604,17 @@ static void init_object(struct kmem_cache *s, void *object, u8 val)
 		memset(p + s->objsize, val, s->inuse - s->objsize);
 }
 
+<<<<<<< HEAD
 static u8 *check_bytes8(u8 *start, u8 value, unsigned int bytes)
 {
 	while (bytes) {
 		if (*start != value)
+=======
+static u8 *check_bytes(u8 *start, unsigned int value, unsigned int bytes)
+{
+	while (bytes) {
+		if (*start != (u8)value)
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			return start;
 		start++;
 		bytes--;
@@ -601,6 +622,7 @@ static u8 *check_bytes8(u8 *start, u8 value, unsigned int bytes)
 	return NULL;
 }
 
+<<<<<<< HEAD
 static u8 *check_bytes(u8 *start, u8 value, unsigned int bytes)
 {
 	u64 value64;
@@ -633,6 +655,8 @@ static u8 *check_bytes(u8 *start, u8 value, unsigned int bytes)
 	return check_bytes8(start, value, bytes % 8);
 }
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 static void restore_bytes(struct kmem_cache *s, char *message, u8 data,
 						void *from, void *to)
 {
@@ -1522,6 +1546,10 @@ static struct page *get_any_partial(struct kmem_cache *s, gfp_t flags)
 	struct zone *zone;
 	enum zone_type high_zoneidx = gfp_zone(flags);
 	struct page *page;
+<<<<<<< HEAD
+=======
+	unsigned int cpuset_mems_cookie;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	/*
 	 * The defrag ratio allows a configuration of the tradeoffs between
@@ -1545,6 +1573,7 @@ static struct page *get_any_partial(struct kmem_cache *s, gfp_t flags)
 			get_cycles() % 1024 > s->remote_node_defrag_ratio)
 		return NULL;
 
+<<<<<<< HEAD
 	get_mems_allowed();
 	zonelist = node_zonelist(slab_node(current->mempolicy), flags);
 	for_each_zone_zonelist(zone, z, zonelist, high_zoneidx) {
@@ -1562,6 +1591,34 @@ static struct page *get_any_partial(struct kmem_cache *s, gfp_t flags)
 		}
 	}
 	put_mems_allowed();
+=======
+	do {
+		cpuset_mems_cookie = get_mems_allowed();
+		zonelist = node_zonelist(slab_node(current->mempolicy), flags);
+		for_each_zone_zonelist(zone, z, zonelist, high_zoneidx) {
+			struct kmem_cache_node *n;
+
+			n = get_node(s, zone_to_nid(zone));
+
+			if (n && cpuset_zone_allowed_hardwall(zone, flags) &&
+					n->nr_partial > s->min_partial) {
+				page = get_partial_node(n);
+				if (page) {
+					/*
+					 * Return the object even if
+					 * put_mems_allowed indicated that
+					 * the cpuset mems_allowed was
+					 * updated in parallel. It's a
+					 * harmless race between the alloc
+					 * and the cpuset update.
+					 */
+					put_mems_allowed(cpuset_mems_cookie);
+					return page;
+				}
+			}
+		}
+	} while (!put_mems_allowed(cpuset_mems_cookie));
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #endif
 	return NULL;
 }
@@ -1883,6 +1940,14 @@ static void *__slab_alloc(struct kmem_cache *s, gfp_t gfpflags, int node,
 	if (unlikely(!node_match(c, node)))
 		goto another_slab;
 
+<<<<<<< HEAD
+=======
+	/* must check again c->freelist in case of cpu migration or IRQ */
+	object = c->freelist;
+	if (object)
+		goto update_freelist;
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	stat(s, ALLOC_REFILL);
 
 load_freelist:
@@ -1892,6 +1957,10 @@ load_freelist:
 	if (kmem_cache_debug(s))
 		goto debug;
 
+<<<<<<< HEAD
+=======
+update_freelist:
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	c->freelist = get_freepointer(s, object);
 	page->inuse = page->objects;
 	page->freelist = NULL;
@@ -3498,13 +3567,22 @@ struct kmem_cache *kmem_cache_create(const char *name, size_t size,
 		if (kmem_cache_open(s, n,
 				size, align, flags, ctor)) {
 			list_add(&s->list, &slab_caches);
+<<<<<<< HEAD
 			if (sysfs_slab_add(s)) {
+=======
+			up_write(&slub_lock);
+			if (sysfs_slab_add(s)) {
+				down_write(&slub_lock);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 				list_del(&s->list);
 				kfree(n);
 				kfree(s);
 				goto err;
 			}
+<<<<<<< HEAD
 			up_write(&slub_lock);
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			return s;
 		}
 		kfree(n);

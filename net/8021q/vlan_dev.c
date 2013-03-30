@@ -154,7 +154,11 @@ static netdev_tx_t vlan_dev_hard_start_xmit(struct sk_buff *skb,
 		skb = __vlan_hwaccel_put_tag(skb, vlan_tci);
 	}
 
+<<<<<<< HEAD
 	skb_set_dev(skb, vlan_dev_info(dev)->real_dev);
+=======
+	skb->dev = vlan_dev_info(dev)->real_dev;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	len = skb->len;
 	ret = dev_queue_xmit(skb);
 

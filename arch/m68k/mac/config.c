@@ -950,6 +950,12 @@ int __init mac_platform_init(void)
 {
 	u8 *swim_base;
 
+<<<<<<< HEAD
+=======
+	if (!MACH_IS_MAC)
+		return -ENODEV;
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	/*
 	 * Serial devices
 	 */

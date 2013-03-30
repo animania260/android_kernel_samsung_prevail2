@@ -368,6 +368,11 @@ static void mxs_auart_settermios(struct uart_port *u,
 
 	writel(ctrl, u->membase + AUART_LINECTRL);
 	writel(ctrl2, u->membase + AUART_CTRL2);
+<<<<<<< HEAD
+=======
+
+	uart_update_timeout(u, termios->c_cflag, baud);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 static irqreturn_t mxs_auart_irq_handle(int irq, void *context)

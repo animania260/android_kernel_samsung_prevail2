@@ -203,7 +203,11 @@ ENTRY(v6_flush_kern_dcache_area)
  *	- start   - virtual start address of region
  *	- end     - virtual end address of region
  */
+<<<<<<< HEAD
 ENTRY(v6_dma_inv_range)
+=======
+v6_dma_inv_range:
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #ifdef CONFIG_DMA_CACHE_RWFO
 	ldrb	r2, [r0]			@ read for ownership
 	strb	r2, [r0]			@ write for ownership
@@ -248,7 +252,11 @@ ENTRY(v6_dma_inv_range)
  *	- start   - virtual start address of region
  *	- end     - virtual end address of region
  */
+<<<<<<< HEAD
 ENTRY(v6_dma_clean_range)
+=======
+v6_dma_clean_range:
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	bic	r0, r0, #D_CACHE_LINE_SIZE - 1
 1:
 #ifdef CONFIG_DMA_CACHE_RWFO
@@ -272,11 +280,14 @@ ENTRY(v6_dma_clean_range)
  *	- end     - virtual end address of region
  */
 ENTRY(v6_dma_flush_range)
+<<<<<<< HEAD
 #ifdef CONFIG_CACHE_FLUSH_RANGE_LIMIT
 	sub	r2, r1, r0
 	cmp	r2, #CONFIG_CACHE_FLUSH_RANGE_LIMIT
 	bhi	v6_dma_flush_dcache_all
 #endif
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #ifdef CONFIG_DMA_CACHE_RWFO
 	ldrb	r2, [r0]		@ read for ownership
 	strb	r2, [r0]		@ write for ownership
@@ -299,6 +310,7 @@ ENTRY(v6_dma_flush_range)
 	mcr	p15, 0, r0, c7, c10, 4		@ drain write buffer
 	mov	pc, lr
 
+<<<<<<< HEAD
 #ifdef CONFIG_CACHE_FLUSH_RANGE_LIMIT
 v6_dma_flush_dcache_all:
 	mov	r0, #0
@@ -311,6 +323,8 @@ v6_dma_flush_dcache_all:
 	mov	pc, lr
 #endif
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 /*
  *	dma_map_area(start, size, dir)
  *	- start	- kernel virtual start address
@@ -358,7 +372,10 @@ ENTRY(v6_cache_fns)
 	.long	v6_flush_kern_dcache_area
 	.long	v6_dma_map_area
 	.long	v6_dma_unmap_area
+<<<<<<< HEAD
 	.long	v6_dma_inv_range
 	.long	v6_dma_clean_range
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	.long	v6_dma_flush_range
 	.size	v6_cache_fns, . - v6_cache_fns

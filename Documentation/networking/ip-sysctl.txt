@@ -147,7 +147,11 @@ tcp_adv_win_scale - INTEGER
 	(if tcp_adv_win_scale > 0) or bytes-bytes/2^(-tcp_adv_win_scale),
 	if it is <= 0.
 	Possible values are [-31, 31], inclusive.
+<<<<<<< HEAD
 	Default: 2
+=======
+	Default: 1
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 tcp_allowed_congestion_control - STRING
 	Show/set the congestion control choices available to non-privileged
@@ -407,7 +411,11 @@ tcp_rmem - vector of 3 INTEGERs: min, default, max
 	net.core.rmem_max.  Calling setsockopt() with SO_RCVBUF disables
 	automatic tuning of that socket's receive buffer size, in which
 	case this value is ignored.
+<<<<<<< HEAD
 	Default: between 87380B and 4MB, depending on RAM size.
+=======
+	Default: between 87380B and 6MB, depending on RAM size.
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 tcp_sack - BOOLEAN
 	Enable select acknowledgments (SACKS).
@@ -534,6 +542,14 @@ tcp_thin_dupack - BOOLEAN
 	Documentation/networking/tcp-thin.txt
 	Default: 0
 
+<<<<<<< HEAD
+=======
+tcp_challenge_ack_limit - INTEGER
+	Limits number of Challenge ACK sent per second, as recommended
+	in RFC 5961 (Improving TCP's Robustness to Blind In-Window Attacks)
+	Default: 100
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 UDP variables:
 
 udp_mem - vector of 3 INTEGERs: min, pressure, max
@@ -1043,6 +1059,7 @@ conf/all/forwarding - BOOLEAN
 
 	This referred to as global forwarding.
 
+<<<<<<< HEAD
 proxy_ndp - INTEGER
 	Do proxy ndp.
 
@@ -1052,6 +1069,11 @@ proxy_ndp - INTEGER
 		2 NDP packets are sent to userspace, where a userspace proxy
                   can be implemented
 
+=======
+proxy_ndp - BOOLEAN
+	Do proxy ndp.
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 conf/interface/*:
 	Change special settings per interface.
 

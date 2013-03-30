@@ -320,6 +320,10 @@ static ssize_t mtd_write(struct file *file, const char __user *buf, size_t count
 			ops.mode = MTD_OOB_RAW;
 			ops.datbuf = kbuf;
 			ops.oobbuf = NULL;
+<<<<<<< HEAD
+=======
+			ops.ooboffs = 0;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			ops.len = len;
 
 			ret = mtd->write_oob(mtd, *ppos, &ops);
@@ -1192,7 +1196,11 @@ err_unregister_chdev:
 static void __exit cleanup_mtdchar(void)
 {
 	unregister_mtd_user(&mtdchar_notifier);
+<<<<<<< HEAD
 	kern_unmount(mtd_inode_mnt);
+=======
+	mntput(mtd_inode_mnt);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	unregister_filesystem(&mtd_inodefs_type);
 	__unregister_chrdev(MTD_CHAR_MAJOR, 0, 1 << MINORBITS, "mtd");
 }

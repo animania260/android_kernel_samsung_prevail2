@@ -99,7 +99,10 @@ struct cpuinfo_x86 {
 	u16			apicid;
 	u16			initial_apicid;
 	u16			x86_clflush_size;
+<<<<<<< HEAD
 #ifdef CONFIG_SMP
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	/* number of cores as seen by the OS: */
 	u16			booted_cores;
 	/* Physical processor id: */
@@ -110,7 +113,10 @@ struct cpuinfo_x86 {
 	u8			compute_unit_id;
 	/* Index into per_cpu list: */
 	u16			cpu_index;
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 } __attribute__((__aligned__(SMP_CACHE_BYTES)));
 
 #define X86_VENDOR_INTEL	0
@@ -454,6 +460,10 @@ struct thread_struct {
 	unsigned long		trap_no;
 	unsigned long		error_code;
 	/* floating point and extended processor state */
+<<<<<<< HEAD
+=======
+	unsigned long		has_fpu;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	struct fpu		fpu;
 #ifdef CONFIG_X86_32
 	/* Virtual 86 mode info */

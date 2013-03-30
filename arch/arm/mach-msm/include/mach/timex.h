@@ -18,8 +18,11 @@
 
 #define CLOCK_TICK_RATE		1000000
 
+<<<<<<< HEAD
 #ifdef CONFIG_MSM_SMP
 #define ARCH_HAS_READ_CURRENT_TIMER
 #endif
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #endif

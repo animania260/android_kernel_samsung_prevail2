@@ -1,9 +1,12 @@
 config ARM_GIC
+<<<<<<< HEAD
 	select IRQ_DOMAIN
 	bool
 	select MSM_SHOW_RESUME_IRQ
 
 config GIC_NON_BANKED
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	bool
 
 config ARM_VIC
@@ -44,6 +47,7 @@ config SHARP_PARAM
 
 config SHARP_SCOOP
 	bool
+<<<<<<< HEAD
 
 config FIQ_GLUE
 	bool
@@ -94,3 +98,5 @@ config FIQ_DEBUGGER_CONSOLE_DEFAULT_ENABLE
 	help
 	  If enabled, this puts the fiq debugger into console mode by default.
 	  Otherwise, the fiq debugger will start out in debug mode.
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y

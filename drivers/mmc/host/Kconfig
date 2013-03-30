@@ -442,6 +442,7 @@ config MMC_SDRICOH_CS
 config MMC_TMIO_CORE
 	tristate
 
+<<<<<<< HEAD
 config MMC_MSM
 	tristate "Qualcomm SDCC Controller Support"
 	depends on MMC && ARCH_MSM
@@ -540,6 +541,8 @@ config MMC_MSM_SPS_SUPPORT
 	help
 	  Select Y to use SPS BAM as data mover
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 config MMC_TMIO
 	tristate "Toshiba Mobile IO Controller (TMIO) MMC/SD function support"
 	depends on MFD_TMIO || MFD_ASIC3

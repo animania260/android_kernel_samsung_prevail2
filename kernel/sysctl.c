@@ -96,7 +96,10 @@ extern char core_pattern[];
 extern unsigned int core_pipe_limit;
 extern int pid_max;
 extern int min_free_kbytes;
+<<<<<<< HEAD
 extern int min_free_order_shift;
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 extern int pid_max_min, pid_max_max;
 extern int sysctl_drop_caches;
 extern int percpu_pagelist_fraction;
@@ -173,7 +176,11 @@ static int proc_taint(struct ctl_table *table, int write,
 #endif
 
 #ifdef CONFIG_PRINTK
+<<<<<<< HEAD
 static int proc_dmesg_restrict(struct ctl_table *table, int write,
+=======
+static int proc_dointvec_minmax_sysadmin(struct ctl_table *table, int write,
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 				void __user *buffer, size_t *lenp, loff_t *ppos);
 #endif
 
@@ -710,7 +717,11 @@ static struct ctl_table kern_table[] = {
 		.data		= &dmesg_restrict,
 		.maxlen		= sizeof(int),
 		.mode		= 0644,
+<<<<<<< HEAD
 		.proc_handler	= proc_dointvec_minmax,
+=======
+		.proc_handler	= proc_dointvec_minmax_sysadmin,
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		.extra1		= &zero,
 		.extra2		= &one,
 	},
@@ -719,7 +730,11 @@ static struct ctl_table kern_table[] = {
 		.data		= &kptr_restrict,
 		.maxlen		= sizeof(int),
 		.mode		= 0644,
+<<<<<<< HEAD
 		.proc_handler	= proc_dmesg_restrict,
+=======
+		.proc_handler	= proc_dointvec_minmax_sysadmin,
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		.extra1		= &zero,
 		.extra2		= &two,
 	},
@@ -985,6 +1000,7 @@ static struct ctl_table kern_table[] = {
 		.proc_handler	= proc_dointvec,
 	},
 #endif
+<<<<<<< HEAD
 #ifdef CONFIG_ARM
 	{
 		.procname	= "boot_reason",
@@ -998,6 +1014,8 @@ static struct ctl_table kern_table[] = {
  * NOTE: do not add new entries to this table unless you have read
  * Documentation/sysctl/ctl_unnumbered.txt
  */
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	{ }
 };
 
@@ -1203,6 +1221,7 @@ static struct ctl_table vm_table[] = {
 		.extra1		= &zero,
 	},
 	{
+<<<<<<< HEAD
 		.procname	= "min_free_order_shift",
 		.data		= &min_free_order_shift,
 		.maxlen		= sizeof(min_free_order_shift),
@@ -1210,6 +1229,8 @@ static struct ctl_table vm_table[] = {
 		.proc_handler	= &proc_dointvec
 	},
 	{
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		.procname	= "percpu_pagelist_fraction",
 		.data		= &percpu_pagelist_fraction,
 		.maxlen		= sizeof(percpu_pagelist_fraction),
@@ -2437,7 +2458,11 @@ static int proc_taint(struct ctl_table *table, int write,
 }
 
 #ifdef CONFIG_PRINTK
+<<<<<<< HEAD
 static int proc_dmesg_restrict(struct ctl_table *table, int write,
+=======
+static int proc_dointvec_minmax_sysadmin(struct ctl_table *table, int write,
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 				void __user *buffer, size_t *lenp, loff_t *ppos)
 {
 	if (write && !capable(CAP_SYS_ADMIN))

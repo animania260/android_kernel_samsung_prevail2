@@ -360,6 +360,10 @@ static int pppol2tp_sendmsg(struct kiocb *iocb, struct socket *sock, struct msgh
 	l2tp_xmit_skb(session, skb, session->hdr_len);
 
 	sock_put(ps->tunnel_sock);
+<<<<<<< HEAD
+=======
+	sock_put(sk);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	return error;
 
@@ -908,7 +912,11 @@ static int pppol2tp_getname(struct socket *sock, struct sockaddr *uaddr,
 		goto end_put_sess;
 	}
 
+<<<<<<< HEAD
 	inet = inet_sk(sk);
+=======
+	inet = inet_sk(tunnel->sock);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	if (tunnel->version == 2) {
 		struct sockaddr_pppol2tp sp;
 		len = sizeof(sp);

@@ -511,7 +511,11 @@ static inline int check_pmd_range(struct vm_area_struct *vma, pud_t *pud,
 	do {
 		next = pmd_addr_end(addr, end);
 		split_huge_page_pmd(vma->vm_mm, pmd);
+<<<<<<< HEAD
 		if (pmd_none_or_clear_bad(pmd))
+=======
+		if (pmd_none_or_trans_huge_or_clear_bad(pmd))
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			continue;
 		if (check_pte_range(vma, pmd, addr, next, nodes,
 				    flags, private))
@@ -606,17 +610,31 @@ check_range(struct mm_struct *mm, unsigned long start, unsigned long end,
 	return first;
 }
 
+<<<<<<< HEAD
 /* Apply policy to a single VMA */
 static int policy_vma(struct vm_area_struct *vma, struct mempolicy *new)
 {
 	int err = 0;
 	struct mempolicy *old = vma->vm_policy;
+=======
+/*
+ * Apply policy to a single VMA
+ * This must be called with the mmap_sem held for writing.
+ */
+static int vma_replace_policy(struct vm_area_struct *vma,
+						struct mempolicy *pol)
+{
+	int err;
+	struct mempolicy *old;
+	struct mempolicy *new;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	pr_debug("vma %lx-%lx/%lx vm_ops %p vm_file %p set_policy %p\n",
 		 vma->vm_start, vma->vm_end, vma->vm_pgoff,
 		 vma->vm_ops, vma->vm_file,
 		 vma->vm_ops ? vma->vm_ops->set_policy : NULL);
 
+<<<<<<< HEAD
 	if (vma->vm_ops && vma->vm_ops->set_policy)
 		err = vma->vm_ops->set_policy(vma, new);
 	if (!err) {
@@ -624,6 +642,25 @@ static int policy_vma(struct vm_area_struct *vma, struct mempolicy *new)
 		vma->vm_policy = new;
 		mpol_put(old);
 	}
+=======
+	new = mpol_dup(pol);
+	if (IS_ERR(new))
+		return PTR_ERR(new);
+
+	if (vma->vm_ops && vma->vm_ops->set_policy) {
+		err = vma->vm_ops->set_policy(vma, new);
+		if (err)
+			goto err_out;
+	}
+
+	old = vma->vm_policy;
+	vma->vm_policy = new; /* protected by mmap_sem */
+	mpol_put(old);
+
+	return 0;
+ err_out:
+	mpol_put(new);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	return err;
 }
 
@@ -666,7 +703,11 @@ static int mbind_range(struct mm_struct *mm, unsigned long start,
 			if (err)
 				goto out;
 		}
+<<<<<<< HEAD
 		err = policy_vma(vma, new_pol);
+=======
+		err = vma_replace_policy(vma, new_pol);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		if (err)
 			goto out;
 	}
@@ -933,7 +974,11 @@ static int migrate_to_node(struct mm_struct *mm, int source, int dest,
 
 	if (!list_empty(&pagelist)) {
 		err = migrate_pages(&pagelist, new_node_page, dest,
+<<<<<<< HEAD
 								false, true);
+=======
+							false, MIGRATE_SYNC);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		if (err)
 			putback_lru_pages(&pagelist);
 	}
@@ -1496,8 +1541,23 @@ struct mempolicy *get_vma_policy(struct task_struct *task,
 									addr);
 			if (vpol)
 				pol = vpol;
+<<<<<<< HEAD
 		} else if (vma->vm_policy)
 			pol = vma->vm_policy;
+=======
+		} else if (vma->vm_policy) {
+			pol = vma->vm_policy;
+
+			/*
+			 * shmem_alloc_page() passes MPOL_F_SHARED policy with
+			 * a pseudo vma whose vma->vm_ops=NULL. Take a reference
+			 * count on these policies which will be dropped by
+			 * mpol_cond_put() later
+			 */
+			if (mpol_needs_cond_ref(pol))
+				mpol_get(pol);
+		}
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	}
 	if (!pol)
 		pol = &default_policy;
@@ -1817,18 +1877,36 @@ struct page *
 alloc_pages_vma(gfp_t gfp, int order, struct vm_area_struct *vma,
 		unsigned long addr, int node)
 {
+<<<<<<< HEAD
 	struct mempolicy *pol = get_vma_policy(current, vma, addr);
 	struct zonelist *zl;
 	struct page *page;
 
 	get_mems_allowed();
+=======
+	struct mempolicy *pol;
+	struct zonelist *zl;
+	struct page *page;
+	unsigned int cpuset_mems_cookie;
+
+retry_cpuset:
+	pol = get_vma_policy(current, vma, addr);
+	cpuset_mems_cookie = get_mems_allowed();
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	if (unlikely(pol->mode == MPOL_INTERLEAVE)) {
 		unsigned nid;
 
 		nid = interleave_nid(pol, vma, addr, PAGE_SHIFT + order);
 		mpol_cond_put(pol);
 		page = alloc_page_interleave(gfp, order, nid);
+<<<<<<< HEAD
 		put_mems_allowed();
+=======
+		if (unlikely(!put_mems_allowed(cpuset_mems_cookie) && !page))
+			goto retry_cpuset;
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		return page;
 	}
 	zl = policy_zonelist(gfp, pol, node);
@@ -1839,7 +1917,12 @@ alloc_pages_vma(gfp_t gfp, int order, struct vm_area_struct *vma,
 		struct page *page =  __alloc_pages_nodemask(gfp, order,
 						zl, policy_nodemask(gfp, pol));
 		__mpol_put(pol);
+<<<<<<< HEAD
 		put_mems_allowed();
+=======
+		if (unlikely(!put_mems_allowed(cpuset_mems_cookie) && !page))
+			goto retry_cpuset;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		return page;
 	}
 	/*
@@ -1847,7 +1930,12 @@ alloc_pages_vma(gfp_t gfp, int order, struct vm_area_struct *vma,
 	 */
 	page = __alloc_pages_nodemask(gfp, order, zl,
 				      policy_nodemask(gfp, pol));
+<<<<<<< HEAD
 	put_mems_allowed();
+=======
+	if (unlikely(!put_mems_allowed(cpuset_mems_cookie) && !page))
+		goto retry_cpuset;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	return page;
 }
 
@@ -1874,11 +1962,21 @@ struct page *alloc_pages_current(gfp_t gfp, unsigned order)
 {
 	struct mempolicy *pol = current->mempolicy;
 	struct page *page;
+<<<<<<< HEAD
+=======
+	unsigned int cpuset_mems_cookie;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	if (!pol || in_interrupt() || (gfp & __GFP_THISNODE))
 		pol = &default_policy;
 
+<<<<<<< HEAD
 	get_mems_allowed();
+=======
+retry_cpuset:
+	cpuset_mems_cookie = get_mems_allowed();
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	/*
 	 * No reference counting needed for current->mempolicy
 	 * nor system default_policy
@@ -1889,7 +1987,14 @@ struct page *alloc_pages_current(gfp_t gfp, unsigned order)
 		page = __alloc_pages_nodemask(gfp, order,
 				policy_zonelist(gfp, pol, numa_node_id()),
 				policy_nodemask(gfp, pol));
+<<<<<<< HEAD
 	put_mems_allowed();
+=======
+
+	if (unlikely(!put_mems_allowed(cpuset_mems_cookie) && !page))
+		goto retry_cpuset;
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	return page;
 }
 EXPORT_SYMBOL(alloc_pages_current);
@@ -1934,6 +2039,7 @@ struct mempolicy *__mpol_dup(struct mempolicy *old)
 	return new;
 }
 
+<<<<<<< HEAD
 /*
  * If *frompol needs [has] an extra ref, copy *frompol to *tompol ,
  * eliminate the * MPOL_F_* flags that require conditional ref and
@@ -1956,6 +2062,8 @@ struct mempolicy *__mpol_cond_copy(struct mempolicy *tompol,
 	return tompol;
 }
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 /* Slow path of a mempolicy comparison */
 int __mpol_equal(struct mempolicy *a, struct mempolicy *b)
 {
@@ -1992,7 +2100,11 @@ int __mpol_equal(struct mempolicy *a, struct mempolicy *b)
  */
 
 /* lookup first element intersecting start-end */
+<<<<<<< HEAD
 /* Caller holds sp->lock */
+=======
+/* Caller holds sp->mutex */
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 static struct sp_node *
 sp_lookup(struct shared_policy *sp, unsigned long start, unsigned long end)
 {
@@ -2056,27 +2168,49 @@ mpol_shared_policy_lookup(struct shared_policy *sp, unsigned long idx)
 
 	if (!sp->root.rb_node)
 		return NULL;
+<<<<<<< HEAD
 	spin_lock(&sp->lock);
+=======
+	mutex_lock(&sp->mutex);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	sn = sp_lookup(sp, idx, idx+1);
 	if (sn) {
 		mpol_get(sn->policy);
 		pol = sn->policy;
 	}
+<<<<<<< HEAD
 	spin_unlock(&sp->lock);
 	return pol;
 }
 
+=======
+	mutex_unlock(&sp->mutex);
+	return pol;
+}
+
+static void sp_free(struct sp_node *n)
+{
+	mpol_put(n->policy);
+	kmem_cache_free(sn_cache, n);
+}
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 static void sp_delete(struct shared_policy *sp, struct sp_node *n)
 {
 	pr_debug("deleting %lx-l%lx\n", n->start, n->end);
 	rb_erase(&n->nd, &sp->root);
+<<<<<<< HEAD
 	mpol_put(n->policy);
 	kmem_cache_free(sn_cache, n);
+=======
+	sp_free(n);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 static struct sp_node *sp_alloc(unsigned long start, unsigned long end,
 				struct mempolicy *pol)
 {
+<<<<<<< HEAD
 	struct sp_node *n = kmem_cache_alloc(sn_cache, GFP_KERNEL);
 
 	if (!n)
@@ -2086,6 +2220,26 @@ static struct sp_node *sp_alloc(unsigned long start, unsigned long end,
 	mpol_get(pol);
 	pol->flags |= MPOL_F_SHARED;	/* for unref */
 	n->policy = pol;
+=======
+	struct sp_node *n;
+	struct mempolicy *newpol;
+
+	n = kmem_cache_alloc(sn_cache, GFP_KERNEL);
+	if (!n)
+		return NULL;
+
+	newpol = mpol_dup(pol);
+	if (IS_ERR(newpol)) {
+		kmem_cache_free(sn_cache, n);
+		return NULL;
+	}
+	newpol->flags |= MPOL_F_SHARED;
+
+	n->start = start;
+	n->end = end;
+	n->policy = newpol;
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	return n;
 }
 
@@ -2093,10 +2247,17 @@ static struct sp_node *sp_alloc(unsigned long start, unsigned long end,
 static int shared_policy_replace(struct shared_policy *sp, unsigned long start,
 				 unsigned long end, struct sp_node *new)
 {
+<<<<<<< HEAD
 	struct sp_node *n, *new2 = NULL;
 
 restart:
 	spin_lock(&sp->lock);
+=======
+	struct sp_node *n;
+	int ret = 0;
+
+	mutex_lock(&sp->mutex);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	n = sp_lookup(sp, start, end);
 	/* Take care of old policies in the same range. */
 	while (n && n->start < end) {
@@ -2109,6 +2270,7 @@ restart:
 		} else {
 			/* Old policy spanning whole new range. */
 			if (n->end > end) {
+<<<<<<< HEAD
 				if (!new2) {
 					spin_unlock(&sp->lock);
 					new2 = sp_alloc(end, n->end, n->policy);
@@ -2119,6 +2281,16 @@ restart:
 				n->end = start;
 				sp_insert(sp, new2);
 				new2 = NULL;
+=======
+				struct sp_node *new2;
+				new2 = sp_alloc(end, n->end, n->policy);
+				if (!new2) {
+					ret = -ENOMEM;
+					goto out;
+				}
+				n->end = start;
+				sp_insert(sp, new2);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 				break;
 			} else
 				n->end = start;
@@ -2129,12 +2301,18 @@ restart:
 	}
 	if (new)
 		sp_insert(sp, new);
+<<<<<<< HEAD
 	spin_unlock(&sp->lock);
 	if (new2) {
 		mpol_put(new2->policy);
 		kmem_cache_free(sn_cache, new2);
 	}
 	return 0;
+=======
+out:
+	mutex_unlock(&sp->mutex);
+	return ret;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 /**
@@ -2152,7 +2330,11 @@ void mpol_shared_policy_init(struct shared_policy *sp, struct mempolicy *mpol)
 	int ret;
 
 	sp->root = RB_ROOT;		/* empty tree == default mempolicy */
+<<<<<<< HEAD
 	spin_lock_init(&sp->lock);
+=======
+	mutex_init(&sp->mutex);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	if (mpol) {
 		struct vm_area_struct pvma;
@@ -2206,7 +2388,11 @@ int mpol_set_shared_policy(struct shared_policy *info,
 	}
 	err = shared_policy_replace(info, vma->vm_pgoff, vma->vm_pgoff+sz, new);
 	if (err && new)
+<<<<<<< HEAD
 		kmem_cache_free(sn_cache, new);
+=======
+		sp_free(new);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	return err;
 }
 
@@ -2218,16 +2404,26 @@ void mpol_free_shared_policy(struct shared_policy *p)
 
 	if (!p->root.rb_node)
 		return;
+<<<<<<< HEAD
 	spin_lock(&p->lock);
+=======
+	mutex_lock(&p->mutex);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	next = rb_first(&p->root);
 	while (next) {
 		n = rb_entry(next, struct sp_node, nd);
 		next = rb_next(&n->nd);
+<<<<<<< HEAD
 		rb_erase(&n->nd, &p->root);
 		mpol_put(n->policy);
 		kmem_cache_free(sn_cache, n);
 	}
 	spin_unlock(&p->lock);
+=======
+		sp_delete(p, n);
+	}
+	mutex_unlock(&p->mutex);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 /* assumes fs == KERNEL_DS */
@@ -2284,8 +2480,12 @@ void numa_default_policy(void)
  */
 
 /*
+<<<<<<< HEAD
  * "local" is pseudo-policy:  MPOL_PREFERRED with MPOL_F_LOCAL flag
  * Used only for mpol_parse_str() and mpol_to_str()
+=======
+ * "local" is implemented internally by MPOL_PREFERRED with MPOL_F_LOCAL flag.
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
  */
 #define MPOL_LOCAL MPOL_MAX
 static const char * const policy_modes[] =
@@ -2300,14 +2500,22 @@ static const char * const policy_modes[] =
 
 #ifdef CONFIG_TMPFS
 /**
+<<<<<<< HEAD
  * mpol_parse_str - parse string to mempolicy
  * @str:  string containing mempolicy to parse
  * @mpol:  pointer to struct mempolicy pointer, returned on success.
  * @no_context:  flag whether to "contextualize" the mempolicy
+=======
+ * mpol_parse_str - parse string to mempolicy, for tmpfs mpol mount option.
+ * @str:  string containing mempolicy to parse
+ * @mpol:  pointer to struct mempolicy pointer, returned on success.
+ * @unused:  redundant argument, to be removed later.
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
  *
  * Format of input:
  *	<mode>[=<flags>][:<nodelist>]
  *
+<<<<<<< HEAD
  * if @no_context is true, save the input nodemask in w.user_nodemask in
  * the returned mempolicy.  This will be used to "clone" the mempolicy in
  * a specific context [cpuset] at a later time.  Used to parse tmpfs mpol
@@ -2322,6 +2530,15 @@ int mpol_parse_str(char *str, struct mempolicy **mpol, int no_context)
 	struct mempolicy *new = NULL;
 	unsigned short mode;
 	unsigned short uninitialized_var(mode_flags);
+=======
+ * On success, returns 0, else 1
+ */
+int mpol_parse_str(char *str, struct mempolicy **mpol, int unused)
+{
+	struct mempolicy *new = NULL;
+	unsigned short mode;
+	unsigned short mode_flags;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	nodemask_t nodes;
 	char *nodelist = strchr(str, ':');
 	char *flags = strchr(str, '=');
@@ -2409,6 +2626,7 @@ int mpol_parse_str(char *str, struct mempolicy **mpol, int no_context)
 	if (IS_ERR(new))
 		goto out;
 
+<<<<<<< HEAD
 	if (no_context) {
 		/* save for contextualization */
 		new->w.user_nodemask = nodes;
@@ -2427,6 +2645,25 @@ int mpol_parse_str(char *str, struct mempolicy **mpol, int no_context)
 			goto out;
 		}
 	}
+=======
+	/*
+	 * Save nodes for mpol_to_str() to show the tmpfs mount options
+	 * for /proc/mounts, /proc/pid/mounts and /proc/pid/mountinfo.
+	 */
+	if (mode != MPOL_PREFERRED)
+		new->v.nodes = nodes;
+	else if (nodelist)
+		new->v.preferred_node = first_node(nodes);
+	else
+		new->flags |= MPOL_F_LOCAL;
+
+	/*
+	 * Save nodes for contextualization: this will be used to "clone"
+	 * the mempolicy in a specific context [cpuset] at a later time.
+	 */
+	new->w.user_nodemask = nodes;
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	err = 0;
 
 out:
@@ -2446,13 +2683,21 @@ out:
  * @buffer:  to contain formatted mempolicy string
  * @maxlen:  length of @buffer
  * @pol:  pointer to mempolicy to be formatted
+<<<<<<< HEAD
  * @no_context:  "context free" mempolicy - use nodemask in w.user_nodemask
+=======
+ * @unused:  redundant argument, to be removed later.
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
  *
  * Convert a mempolicy into a string.
  * Returns the number of characters in buffer (if positive)
  * or an error (negative)
  */
+<<<<<<< HEAD
 int mpol_to_str(char *buffer, int maxlen, struct mempolicy *pol, int no_context)
+=======
+int mpol_to_str(char *buffer, int maxlen, struct mempolicy *pol, int unused)
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 {
 	char *p = buffer;
 	int l;
@@ -2478,7 +2723,11 @@ int mpol_to_str(char *buffer, int maxlen, struct mempolicy *pol, int no_context)
 	case MPOL_PREFERRED:
 		nodes_clear(nodes);
 		if (flags & MPOL_F_LOCAL)
+<<<<<<< HEAD
 			mode = MPOL_LOCAL;	/* pseudo-policy */
+=======
+			mode = MPOL_LOCAL;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		else
 			node_set(pol->v.preferred_node, nodes);
 		break;
@@ -2486,6 +2735,7 @@ int mpol_to_str(char *buffer, int maxlen, struct mempolicy *pol, int no_context)
 	case MPOL_BIND:
 		/* Fall through */
 	case MPOL_INTERLEAVE:
+<<<<<<< HEAD
 		if (no_context)
 			nodes = pol->w.user_nodemask;
 		else
@@ -2494,6 +2744,13 @@ int mpol_to_str(char *buffer, int maxlen, struct mempolicy *pol, int no_context)
 
 	default:
 		BUG();
+=======
+		nodes = pol->v.nodes;
+		break;
+
+	default:
+		return -EINVAL;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	}
 
 	l = strlen(policy_modes[mode]);

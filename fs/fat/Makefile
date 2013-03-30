@@ -2,7 +2,10 @@
 # Makefile for the Linux fat filesystem support.
 #
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 obj-$(CONFIG_FAT_FS) += fat.o
 obj-$(CONFIG_VFAT_FS) += vfat.o
 obj-$(CONFIG_MSDOS_FS) += msdos.o

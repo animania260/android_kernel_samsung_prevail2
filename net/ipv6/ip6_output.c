@@ -100,6 +100,11 @@ static int ip6_finish_output2(struct sk_buff *skb)
 {
 	struct dst_entry *dst = skb_dst(skb);
 	struct net_device *dev = dst->dev;
+<<<<<<< HEAD
+=======
+	struct neighbour *neigh;
+	int res;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	skb->protocol = htons(ETH_P_IPV6);
 	skb->dev = dev;
@@ -134,10 +139,29 @@ static int ip6_finish_output2(struct sk_buff *skb)
 				skb->len);
 	}
 
+<<<<<<< HEAD
 	if (dst->hh)
 		return neigh_hh_output(dst->hh, skb);
 	else if (dst->neighbour)
 		return dst->neighbour->output(skb);
+=======
+	rcu_read_lock();
+	if (dst->hh) {
+		res = neigh_hh_output(dst->hh, skb);
+
+		rcu_read_unlock();
+		return res;
+	} else {
+		neigh = dst_get_neighbour(dst);
+		if (neigh) {
+			res = neigh->output(skb);
+
+			rcu_read_unlock();
+			return res;
+		}
+		rcu_read_unlock();
+	}
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	IP6_INC_STATS_BH(dev_net(dst->dev),
 			 ip6_dst_idev(dst), IPSTATS_MIB_OUTNOROUTES);
@@ -385,6 +409,10 @@ int ip6_forward(struct sk_buff *skb)
 	struct ipv6hdr *hdr = ipv6_hdr(skb);
 	struct inet6_skb_parm *opt = IP6CB(skb);
 	struct net *net = dev_net(dst->dev);
+<<<<<<< HEAD
+=======
+	struct neighbour *n;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	u32 mtu;
 
 	if (net->ipv6.devconf_all->forwarding == 0)
@@ -437,9 +465,14 @@ int ip6_forward(struct sk_buff *skb)
 	}
 
 	/* XXX: idev->cnf.proxy_ndp? */
+<<<<<<< HEAD
 	if ((net->ipv6.devconf_all->proxy_ndp == 1 &&
 	    pneigh_lookup(&nd_tbl, net, &hdr->daddr, skb->dev, 0))
 	    || net->ipv6.devconf_all->proxy_ndp >= 2) {
+=======
+	if (net->ipv6.devconf_all->proxy_ndp &&
+	    pneigh_lookup(&nd_tbl, net, &hdr->daddr, skb->dev, 0)) {
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		int proxied = ip6_forward_proxy_check(skb);
 		if (proxied > 0)
 			return ip6_input(skb);
@@ -460,11 +493,18 @@ int ip6_forward(struct sk_buff *skb)
 	   send redirects to source routed frames.
 	   We don't send redirects to frames decapsulated from IPsec.
 	 */
+<<<<<<< HEAD
 	if (skb->dev == dst->dev && dst->neighbour && opt->srcrt == 0 &&
 	    !skb_sec_path(skb)) {
 		struct in6_addr *target = NULL;
 		struct rt6_info *rt;
 		struct neighbour *n = dst->neighbour;
+=======
+	n = dst_get_neighbour(dst);
+	if (skb->dev == dst->dev && n && opt->srcrt == 0 && !skb_sec_path(skb)) {
+		struct in6_addr *target = NULL;
+		struct rt6_info *rt;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 		/*
 		 *	incoming and outgoing devices are the same
@@ -950,8 +990,16 @@ out:
 static int ip6_dst_lookup_tail(struct sock *sk,
 			       struct dst_entry **dst, struct flowi6 *fl6)
 {
+<<<<<<< HEAD
 	int err;
 	struct net *net = sock_net(sk);
+=======
+	struct net *net = sock_net(sk);
+#ifdef CONFIG_IPV6_OPTIMISTIC_DAD
+	struct neighbour *n;
+#endif
+	int err;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	if (*dst == NULL)
 		*dst = ip6_route_output(net, sk, fl6);
@@ -977,11 +1025,21 @@ static int ip6_dst_lookup_tail(struct sock *sk,
 	 * dst entry and replace it instead with the
 	 * dst entry of the nexthop router
 	 */
+<<<<<<< HEAD
 	if ((*dst)->neighbour && !((*dst)->neighbour->nud_state & NUD_VALID)) {
+=======
+	rcu_read_lock();
+	n = dst_get_neighbour(*dst);
+	if (n && !(n->nud_state & NUD_VALID)) {
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		struct inet6_ifaddr *ifp;
 		struct flowi6 fl_gw6;
 		int redirect;
 
+<<<<<<< HEAD
+=======
+		rcu_read_unlock();
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		ifp = ipv6_get_ifaddr(net, &fl6->saddr,
 				      (*dst)->dev, 1);
 
@@ -1001,6 +1059,11 @@ static int ip6_dst_lookup_tail(struct sock *sk,
 			if ((err = (*dst)->error))
 				goto out_err_release;
 		}
+<<<<<<< HEAD
+=======
+	} else {
+		rcu_read_unlock();
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	}
 #endif
 
@@ -1173,6 +1236,32 @@ static inline struct ipv6_rt_hdr *ip6_rthdr_dup(struct ipv6_rt_hdr *src,
 	return src ? kmemdup(src, (src->hdrlen + 1) * 8, gfp) : NULL;
 }
 
+<<<<<<< HEAD
+=======
+static void ip6_append_data_mtu(int *mtu,
+				int *maxfraglen,
+				unsigned int fragheaderlen,
+				struct sk_buff *skb,
+				struct rt6_info *rt)
+{
+	if (!(rt->dst.flags & DST_XFRM_TUNNEL)) {
+		if (skb == NULL) {
+			/* first fragment, reserve header_len */
+			*mtu = *mtu - rt->dst.header_len;
+
+		} else {
+			/*
+			 * this fragment is not first, the headers
+			 * space is regarded as data space.
+			 */
+			*mtu = dst_mtu(rt->dst.path);
+		}
+		*maxfraglen = ((*mtu - fragheaderlen) & ~7)
+			      + fragheaderlen - sizeof(struct frag_hdr);
+	}
+}
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 int ip6_append_data(struct sock *sk, int getfrag(void *from, char *to,
 	int offset, int len, int odd, struct sk_buff *skb),
 	void *from, int length, int transhdrlen,
@@ -1182,7 +1271,11 @@ int ip6_append_data(struct sock *sk, int getfrag(void *from, char *to,
 	struct inet_sock *inet = inet_sk(sk);
 	struct ipv6_pinfo *np = inet6_sk(sk);
 	struct inet_cork *cork;
+<<<<<<< HEAD
 	struct sk_buff *skb;
+=======
+	struct sk_buff *skb, *skb_prev = NULL;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	unsigned int maxfraglen, fragheaderlen;
 	int exthdrlen;
 	int hh_len;
@@ -1239,8 +1332,17 @@ int ip6_append_data(struct sock *sk, int getfrag(void *from, char *to,
 		inet->cork.fl.u.ip6 = *fl6;
 		np->cork.hop_limit = hlimit;
 		np->cork.tclass = tclass;
+<<<<<<< HEAD
 		mtu = np->pmtudisc == IPV6_PMTUDISC_PROBE ?
 		      rt->dst.dev->mtu : dst_mtu(rt->dst.path);
+=======
+		if (rt->dst.flags & DST_XFRM_TUNNEL)
+			mtu = np->pmtudisc == IPV6_PMTUDISC_PROBE ?
+			      rt->dst.dev->mtu : dst_mtu(&rt->dst);
+		else
+			mtu = np->pmtudisc == IPV6_PMTUDISC_PROBE ?
+			      rt->dst.dev->mtu : dst_mtu(rt->dst.path);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		if (np->frag_size < mtu) {
 			if (np->frag_size)
 				mtu = np->frag_size;
@@ -1335,6 +1437,7 @@ int ip6_append_data(struct sock *sk, int getfrag(void *from, char *to,
 			unsigned int fraglen;
 			unsigned int fraggap;
 			unsigned int alloclen;
+<<<<<<< HEAD
 			struct sk_buff *skb_prev;
 alloc_new_skb:
 			skb_prev = skb;
@@ -1344,22 +1447,43 @@ alloc_new_skb:
 				fraggap = skb_prev->len - maxfraglen;
 			else
 				fraggap = 0;
+=======
+alloc_new_skb:
+			/* There's no room in the current skb */
+			if (skb)
+				fraggap = skb->len - maxfraglen;
+			else
+				fraggap = 0;
+			/* update mtu and maxfraglen if necessary */
+			if (skb == NULL || skb_prev == NULL)
+				ip6_append_data_mtu(&mtu, &maxfraglen,
+						    fragheaderlen, skb, rt);
+
+			skb_prev = skb;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 			/*
 			 * If remaining data exceeds the mtu,
 			 * we know we need more fragment(s).
 			 */
 			datalen = length + fraggap;
+<<<<<<< HEAD
 			if (datalen > (cork->length <= mtu && !(cork->flags & IPCORK_ALLFRAG) ? mtu : maxfraglen) - fragheaderlen)
 				datalen = maxfraglen - fragheaderlen;
 
 			fraglen = datalen + fragheaderlen;
+=======
+
+			if (datalen > (cork->length <= mtu && !(cork->flags & IPCORK_ALLFRAG) ? mtu : maxfraglen) - fragheaderlen)
+				datalen = maxfraglen - fragheaderlen - rt->dst.trailer_len;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			if ((flags & MSG_MORE) &&
 			    !(rt->dst.dev->features&NETIF_F_SG))
 				alloclen = mtu;
 			else
 				alloclen = datalen + fragheaderlen;
 
+<<<<<<< HEAD
 			/*
 			 * The last fragment gets additional space at tail.
 			 * Note: we overallocate on fragments with MSG_MODE
@@ -1367,6 +1491,18 @@ alloc_new_skb:
 			 */
 			if (datalen == length + fraggap)
 				alloclen += rt->dst.trailer_len;
+=======
+			if (datalen != length + fraggap) {
+				/*
+				 * this is not the last fragment, the trailer
+				 * space is regarded as data space.
+				 */
+				datalen += rt->dst.trailer_len;
+			}
+
+			alloclen += rt->dst.trailer_len;
+			fraglen = datalen + fragheaderlen;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 			/*
 			 * We just reserve space for fragment header.

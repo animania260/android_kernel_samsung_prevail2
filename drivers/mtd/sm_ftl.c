@@ -1256,7 +1256,11 @@ static void sm_remove_dev(struct mtd_blktrans_dev *dev)
 
 static struct mtd_blktrans_ops sm_ftl_ops = {
 	.name		= "smblk",
+<<<<<<< HEAD
 	.major		= -1,
+=======
+	.major		= 0,
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	.part_bits	= SM_FTL_PARTN_BITS,
 	.blksize	= SM_SECTOR_SIZE,
 	.getgeo		= sm_getgeo,

@@ -223,7 +223,11 @@ static void encode_nlm_stat(struct xdr_stream *xdr,
 {
 	__be32 *p;
 
+<<<<<<< HEAD
 	BUG_ON(be32_to_cpu(stat) > NLM_LCK_DENIED_GRACE_PERIOD);
+=======
+	WARN_ON_ONCE(be32_to_cpu(stat) > NLM_LCK_DENIED_GRACE_PERIOD);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	p = xdr_reserve_space(xdr, 4);
 	*p = stat;
 }
@@ -236,7 +240,11 @@ static int decode_nlm_stat(struct xdr_stream *xdr,
 	p = xdr_inline_decode(xdr, 4);
 	if (unlikely(p == NULL))
 		goto out_overflow;
+<<<<<<< HEAD
 	if (unlikely(*p > nlm_lck_denied_grace_period))
+=======
+	if (unlikely(ntohl(*p) > ntohl(nlm_lck_denied_grace_period)))
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		goto out_enum;
 	*stat = *p;
 	return 0;

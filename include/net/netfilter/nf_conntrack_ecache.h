@@ -18,6 +18,10 @@ struct nf_conntrack_ecache {
 	u16 ctmask;		/* bitmask of ct events to be delivered */
 	u16 expmask;		/* bitmask of expect events to be delivered */
 	u32 pid;		/* netlink pid of destroyer */
+<<<<<<< HEAD
+=======
+	struct timer_list timeout;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 };
 
 static inline struct nf_conntrack_ecache *

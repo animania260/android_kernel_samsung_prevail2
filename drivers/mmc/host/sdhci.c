@@ -1044,7 +1044,11 @@ static void sdhci_set_clock(struct sdhci_host *host, unsigned int clock)
 	u16 clk = 0;
 	unsigned long timeout;
 
+<<<<<<< HEAD
 	if (clock && clock == host->clock)
+=======
+	if (clock == host->clock)
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		return;
 
 	if (host->ops->set_clock) {
@@ -1340,8 +1344,12 @@ static void sdhci_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 		if ((ios->timing == MMC_TIMING_UHS_SDR50) ||
 		    (ios->timing == MMC_TIMING_UHS_SDR104) ||
 		    (ios->timing == MMC_TIMING_UHS_DDR50) ||
+<<<<<<< HEAD
 		    (ios->timing == MMC_TIMING_UHS_SDR25) ||
 		    (ios->timing == MMC_TIMING_UHS_SDR12))
+=======
+		    (ios->timing == MMC_TIMING_UHS_SDR25))
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			ctrl |= SDHCI_CTRL_HISPD;
 
 		ctrl_2 = sdhci_readw(host, SDHCI_HOST_CONTROL2);
@@ -2227,9 +2235,14 @@ int sdhci_suspend_host(struct sdhci_host *host, pm_message_t state)
 	/* Disable tuning since we are suspending */
 	if (host->version >= SDHCI_SPEC_300 && host->tuning_count &&
 	    host->tuning_mode == SDHCI_TUNING_MODE_1) {
+<<<<<<< HEAD
 		host->flags &= ~SDHCI_NEEDS_RETUNING;
 		mod_timer(&host->tuning_timer, jiffies +
 			host->tuning_count * HZ);
+=======
+		del_timer_sync(&host->tuning_timer);
+		host->flags &= ~SDHCI_NEEDS_RETUNING;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	}
 
 	ret = mmc_suspend_host(host->mmc);
@@ -2453,6 +2466,7 @@ int sdhci_add_host(struct sdhci_host *host)
 	if (caps[0] & SDHCI_TIMEOUT_CLK_UNIT)
 		host->timeout_clk *= 1000;
 
+<<<<<<< HEAD
  	/*
 	 * In case of Host Controller v3.00, find out whether clock
 	 * multiplier is supported.
@@ -2469,6 +2483,8 @@ int sdhci_add_host(struct sdhci_host *host)
 	if (host->clk_mul)
 		host->clk_mul += 1;
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	/*
 	 * In case of Host Controller v3.00, find out whether clock
 	 * multiplier is supported.
@@ -2533,8 +2549,14 @@ int sdhci_add_host(struct sdhci_host *host)
 	    mmc_card_is_removable(mmc))
 		mmc->caps |= MMC_CAP_NEEDS_POLL;
 
+<<<<<<< HEAD
 	/* UHS-I mode(s) supported by the host controller. */
 	if (host->version >= SDHCI_SPEC_300)
+=======
+	/* Any UHS-I mode in caps implies SDR12 and SDR25 support. */
+	if (caps[1] & (SDHCI_SUPPORT_SDR104 | SDHCI_SUPPORT_SDR50 |
+		       SDHCI_SUPPORT_DDR50))
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		mmc->caps |= MMC_CAP_UHS_SDR12 | MMC_CAP_UHS_SDR25;
 
 	/* SDR104 supports also implies SDR50 support */

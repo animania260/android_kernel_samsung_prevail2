@@ -1113,8 +1113,15 @@ static int set_serial_info(struct async_struct * info,
 		    (new_serial.close_delay != state->close_delay) ||
 		    (new_serial.xmit_fifo_size != state->xmit_fifo_size) ||
 		    ((new_serial.flags & ~ASYNC_USR_MASK) !=
+<<<<<<< HEAD
 		     (state->flags & ~ASYNC_USR_MASK)))
 			return -EPERM;
+=======
+		     (state->flags & ~ASYNC_USR_MASK))) {
+			tty_unlock();
+			return -EPERM;
+		}
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		state->flags = ((state->flags & ~ASYNC_USR_MASK) |
 			       (new_serial.flags & ASYNC_USR_MASK));
 		info->flags = ((info->flags & ~ASYNC_USR_MASK) |

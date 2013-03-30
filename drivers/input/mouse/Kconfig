@@ -322,6 +322,7 @@ config MOUSE_SYNAPTICS_I2C
 	  To compile this driver as a module, choose M here: the
 	  module will be called synaptics_i2c.
 
+<<<<<<< HEAD
 config MOUSE_QCITP
 	tristate "Quanta Computer Inc. Touchpad"
 	depends on I2C
@@ -331,4 +332,6 @@ config MOUSE_QCITP
 	  smartbook platforms.
 
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 endif

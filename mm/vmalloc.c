@@ -256,7 +256,11 @@ struct vmap_area {
 	struct rb_node rb_node;		/* address sorted rbtree */
 	struct list_head list;		/* address sorted list */
 	struct list_head purge_list;	/* "lazy purge" list */
+<<<<<<< HEAD
 	void *private;
+=======
+	struct vm_struct *vm;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	struct rcu_head rcu_head;
 };
 
@@ -1174,9 +1178,16 @@ void __init vmalloc_init(void)
 	/* Import existing vmlist entries. */
 	for (tmp = vmlist; tmp; tmp = tmp->next) {
 		va = kzalloc(sizeof(struct vmap_area), GFP_NOWAIT);
+<<<<<<< HEAD
 		va->flags = tmp->flags | VM_VM_AREA;
 		va->va_start = (unsigned long)tmp->addr;
 		va->va_end = va->va_start + tmp->size;
+=======
+		va->flags = VM_VM_AREA;
+		va->va_start = (unsigned long)tmp->addr;
+		va->va_end = va->va_start + tmp->size;
+		va->vm = tmp;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		__insert_vmap_area(va);
 	}
 
@@ -1267,18 +1278,36 @@ EXPORT_SYMBOL_GPL(map_vm_area);
 DEFINE_RWLOCK(vmlist_lock);
 struct vm_struct *vmlist;
 
+<<<<<<< HEAD
 static void insert_vmalloc_vm(struct vm_struct *vm, struct vmap_area *va,
 			      unsigned long flags, void *caller)
 {
 	struct vm_struct *tmp, **p;
 
+=======
+static void setup_vmalloc_vm(struct vm_struct *vm, struct vmap_area *va,
+			      unsigned long flags, void *caller)
+{
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	vm->flags = flags;
 	vm->addr = (void *)va->va_start;
 	vm->size = va->va_end - va->va_start;
 	vm->caller = caller;
+<<<<<<< HEAD
 	va->private = vm;
 	va->flags |= VM_VM_AREA;
 
+=======
+	va->vm = vm;
+	va->flags |= VM_VM_AREA;
+}
+
+static void insert_vmalloc_vmlist(struct vm_struct *vm)
+{
+	struct vm_struct *tmp, **p;
+
+	vm->flags &= ~VM_UNLIST;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	write_lock(&vmlist_lock);
 	for (p = &vmlist; (tmp = *p) != NULL; p = &tmp->next) {
 		if (tmp->addr >= vm->addr)
@@ -1289,6 +1318,16 @@ static void insert_vmalloc_vm(struct vm_struct *vm, struct vmap_area *va,
 	write_unlock(&vmlist_lock);
 }
 
+<<<<<<< HEAD
+=======
+static void insert_vmalloc_vm(struct vm_struct *vm, struct vmap_area *va,
+			      unsigned long flags, void *caller)
+{
+	setup_vmalloc_vm(vm, va, flags, caller);
+	insert_vmalloc_vmlist(vm);
+}
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 static struct vm_struct *__get_vm_area_node(unsigned long size,
 		unsigned long align, unsigned long flags, unsigned long start,
 		unsigned long end, int node, gfp_t gfp_mask, void *caller)
@@ -1327,7 +1366,22 @@ static struct vm_struct *__get_vm_area_node(unsigned long size,
 		return NULL;
 	}
 
+<<<<<<< HEAD
 	insert_vmalloc_vm(area, va, flags, caller);
+=======
+	/*
+	 * When this function is called from __vmalloc_node_range,
+	 * we do not add vm_struct to vmlist here to avoid
+	 * accessing uninitialized members of vm_struct such as
+	 * pages and nr_pages fields. They will be set later.
+	 * To distinguish it from others, we use a VM_UNLIST flag.
+	 */
+	if (flags & VM_UNLIST)
+		setup_vmalloc_vm(area, va, flags, caller);
+	else
+		insert_vmalloc_vm(area, va, flags, caller);
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	return area;
 }
 
@@ -1375,7 +1429,11 @@ static struct vm_struct *find_vm_area(const void *addr)
 
 	va = find_vmap_area((unsigned long)addr);
 	if (va && va->flags & VM_VM_AREA)
+<<<<<<< HEAD
 		return va->private;
+=======
+		return va->vm;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	return NULL;
 }
@@ -1394,6 +1452,7 @@ struct vm_struct *remove_vm_area(const void *addr)
 
 	va = find_vmap_area((unsigned long)addr);
 	if (va && va->flags & VM_VM_AREA) {
+<<<<<<< HEAD
 		struct vm_struct *vm = va->private;
 		struct vm_struct *tmp, **p;
 		/*
@@ -1406,6 +1465,23 @@ struct vm_struct *remove_vm_area(const void *addr)
 			;
 		*p = tmp->next;
 		write_unlock(&vmlist_lock);
+=======
+		struct vm_struct *vm = va->vm;
+
+		if (!(vm->flags & VM_UNLIST)) {
+			struct vm_struct *tmp, **p;
+			/*
+			 * remove from list and disallow access to
+			 * this vm_struct before unmap. (address range
+			 * confliction is maintained by vmap.)
+			 */
+			write_lock(&vmlist_lock);
+			for (p = &vmlist; (tmp = *p) != vm; p = &tmp->next)
+				;
+			*p = tmp->next;
+			write_unlock(&vmlist_lock);
+		}
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 		vmap_debug_free_range(va->va_start, va->va_end);
 		free_unmap_vmap_area(va);
@@ -1611,6 +1687,7 @@ void *__vmalloc_node_range(unsigned long size, unsigned long align,
 	struct vm_struct *area;
 	void *addr;
 	unsigned long real_size = size;
+<<<<<<< HEAD
 #ifdef CONFIG_FIX_MOVABLE_ZONE
 	unsigned long total_pages = total_unmovable_pages;
 #else
@@ -1623,11 +1700,31 @@ void *__vmalloc_node_range(unsigned long size, unsigned long align,
 
 	area = __get_vm_area_node(size, align, VM_ALLOC, start, end, node,
 				  gfp_mask, caller);
+=======
+
+	size = PAGE_ALIGN(size);
+	if (!size || (size >> PAGE_SHIFT) > totalram_pages)
+		return NULL;
+
+	area = __get_vm_area_node(size, align, VM_ALLOC | VM_UNLIST,
+				  start, end, node, gfp_mask, caller);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	if (!area)
 		return NULL;
 
 	addr = __vmalloc_area_node(area, gfp_mask, prot, node, caller);
+<<<<<<< HEAD
+=======
+	if (!addr)
+		return NULL;
+
+	/*
+	 * In this function, newly allocated vm_struct is not added
+	 * to vmlist at __get_vm_area_node(). so, it is added here.
+	 */
+	insert_vmalloc_vmlist(area);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	/*
 	 * A ref_count = 3 is needed because the vm_struct and vmap_area

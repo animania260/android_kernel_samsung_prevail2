@@ -424,6 +424,10 @@ config COMEDI_ADQ12B
 
 config COMEDI_NI_AT_A2150
 	tristate "NI AT-A2150 ISA card support"
+<<<<<<< HEAD
+=======
+	select COMEDI_FC
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	depends on COMEDI_NI_COMMON
 	depends on VIRT_TO_BUS
 	default N

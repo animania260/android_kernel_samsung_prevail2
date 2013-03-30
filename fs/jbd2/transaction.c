@@ -178,7 +178,12 @@ repeat:
 		if (!new_transaction)
 			goto alloc_transaction;
 		write_lock(&journal->j_state_lock);
+<<<<<<< HEAD
 		if (!journal->j_running_transaction) {
+=======
+		if (!journal->j_running_transaction &&
+		    !journal->j_barrier_count) {
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			jbd2_get_transaction(journal, new_transaction);
 			new_transaction = NULL;
 		}
@@ -1902,6 +1907,11 @@ zap_buffer_unlocked:
 	clear_buffer_mapped(bh);
 	clear_buffer_req(bh);
 	clear_buffer_new(bh);
+<<<<<<< HEAD
+=======
+	clear_buffer_delay(bh);
+	clear_buffer_unwritten(bh);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	bh->b_bdev = NULL;
 	return may_free;
 }

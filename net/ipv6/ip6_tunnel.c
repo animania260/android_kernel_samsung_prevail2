@@ -289,6 +289,11 @@ static struct ip6_tnl *ip6_tnl_create(struct net *net, struct ip6_tnl_parm *p)
 	if ((err = register_netdevice(dev)) < 0)
 		goto failed_free;
 
+<<<<<<< HEAD
+=======
+	strcpy(t->parms.name, dev->name);
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	dev_hold(dev);
 	ip6_tnl_link(ip6n, t);
 	return t;
@@ -1397,7 +1402,10 @@ ip6_tnl_dev_init_gen(struct net_device *dev)
 	struct ip6_tnl *t = netdev_priv(dev);
 
 	t->dev = dev;
+<<<<<<< HEAD
 	strcpy(t->parms.name, dev->name);
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	dev->tstats = alloc_percpu(struct pcpu_tstats);
 	if (!dev->tstats)
 		return -ENOMEM;
@@ -1477,6 +1485,10 @@ static void __net_exit ip6_tnl_destroy_tunnels(struct ip6_tnl_net *ip6n)
 static int __net_init ip6_tnl_init_net(struct net *net)
 {
 	struct ip6_tnl_net *ip6n = net_generic(net, ip6_tnl_net_id);
+<<<<<<< HEAD
+=======
+	struct ip6_tnl *t = NULL;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	int err;
 
 	ip6n->tnls[0] = ip6n->tnls_wc;
@@ -1497,6 +1509,13 @@ static int __net_init ip6_tnl_init_net(struct net *net)
 	err = register_netdev(ip6n->fb_tnl_dev);
 	if (err < 0)
 		goto err_register;
+<<<<<<< HEAD
+=======
+
+	t = netdev_priv(ip6n->fb_tnl_dev);
+
+	strcpy(t->parms.name, ip6n->fb_tnl_dev->name);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	return 0;
 
 err_register:

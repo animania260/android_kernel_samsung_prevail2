@@ -269,4 +269,8 @@ obj-$(CONFIG_ARCH_OMAP4)		+= hwspinlock.o
 disp-$(CONFIG_OMAP2_DSS)		:= display.o
 obj-y					+= $(disp-m) $(disp-y)
 
+<<<<<<< HEAD
 obj-y					+= common-board-devices.o twl-common.o
+=======
+obj-y					+= common-board-devices.o
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y

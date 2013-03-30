@@ -27,7 +27,10 @@
 #include <linux/stringify.h>
 #include <asm/traps.h>
 #include <asm/cacheflush.h>
+<<<<<<< HEAD
 #include <asm/mmu_writeable.h>
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 #define MIN_STACK_SIZE(addr) 				\
 	min((unsigned long)MAX_STACK_SIZE,		\
@@ -82,6 +85,7 @@ int __kprobes arch_prepare_kprobe(struct kprobe *p)
 
 void __kprobes arch_arm_kprobe(struct kprobe *p)
 {
+<<<<<<< HEAD
 	unsigned long flags;
 
 	mem_text_writeable_spinlock(&flags);
@@ -90,6 +94,10 @@ void __kprobes arch_arm_kprobe(struct kprobe *p)
 	flush_insns(p->addr, 1);
 	mem_text_address_restore();
 	mem_text_writeable_spinunlock(&flags);
+=======
+	*p->addr = KPROBE_BREAKPOINT_INSTRUCTION;
+	flush_insns(p->addr, 1);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 /*
@@ -101,6 +109,7 @@ void __kprobes arch_arm_kprobe(struct kprobe *p)
  */
 int __kprobes __arch_disarm_kprobe(void *p)
 {
+<<<<<<< HEAD
 	unsigned long flags;
 	struct kprobe *kp = p;
 	mem_text_writeable_spinlock(&flags);
@@ -109,6 +118,11 @@ int __kprobes __arch_disarm_kprobe(void *p)
 	flush_insns(kp->addr, 1);
 	mem_text_address_restore();
 	mem_text_writeable_spinunlock(&flags);
+=======
+	struct kprobe *kp = p;
+	*kp->addr = kp->opcode;
+	flush_insns(kp->addr, 1);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	return 0;
 }
 

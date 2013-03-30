@@ -1497,9 +1497,20 @@ long arch_ptrace(struct task_struct *child, long request,
 		if (index < PT_FPR0) {
 			tmp = ptrace_get_reg(child, (int) index);
 		} else {
+<<<<<<< HEAD
 			flush_fp_to_thread(child);
 			tmp = ((unsigned long *)child->thread.fpr)
 				[TS_FPRWIDTH * (index - PT_FPR0)];
+=======
+			unsigned int fpidx = index - PT_FPR0;
+
+			flush_fp_to_thread(child);
+			if (fpidx < (PT_FPSCR - PT_FPR0))
+				tmp = ((unsigned long *)child->thread.fpr)
+					[fpidx * TS_FPRWIDTH];
+			else
+				tmp = child->thread.fpscr.val;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		}
 		ret = put_user(tmp, datalp);
 		break;
@@ -1525,9 +1536,20 @@ long arch_ptrace(struct task_struct *child, long request,
 		if (index < PT_FPR0) {
 			ret = ptrace_put_reg(child, index, data);
 		} else {
+<<<<<<< HEAD
 			flush_fp_to_thread(child);
 			((unsigned long *)child->thread.fpr)
 				[TS_FPRWIDTH * (index - PT_FPR0)] = data;
+=======
+			unsigned int fpidx = index - PT_FPR0;
+
+			flush_fp_to_thread(child);
+			if (fpidx < (PT_FPSCR - PT_FPR0))
+				((unsigned long *)child->thread.fpr)
+					[fpidx * TS_FPRWIDTH] = data;
+			else
+				child->thread.fpscr.val = data;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			ret = 0;
 		}
 		break;

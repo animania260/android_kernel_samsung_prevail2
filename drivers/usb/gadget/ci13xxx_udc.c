@@ -155,7 +155,10 @@ static struct {
 #define CAP_ENDPTLISTADDR   (0x018UL)
 #define CAP_PORTSC          (0x044UL)
 #define CAP_DEVLC           (0x084UL)
+<<<<<<< HEAD
 #define CAP_ENDPTPIPEID     (0x0BCUL)
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #define CAP_USBMODE         (hw_bank.lpm ? 0x0C8UL : 0x068UL)
 #define CAP_ENDPTSETUPSTAT  (hw_bank.lpm ? 0x0D8UL : 0x06CUL)
 #define CAP_ENDPTPRIME      (hw_bank.lpm ? 0x0DCUL : 0x070UL)
@@ -319,6 +322,7 @@ static int hw_device_reset(struct ci13xxx *udc)
 	hw_cwrite(CAP_USBMODE, USBMODE_CM, USBMODE_CM_DEVICE);
 	hw_cwrite(CAP_USBMODE, USBMODE_SLOM, USBMODE_SLOM);  /* HW >= 2.3 */
 
+<<<<<<< HEAD
 	/*
 	 * ITC (Interrupt Threshold Control) field is to set the maximum
 	 * rate at which the device controller will issue interrupts.
@@ -330,6 +334,8 @@ static int hw_device_reset(struct ci13xxx *udc)
 	if (udc->udc_driver->flags & CI13XXX_ZERO_ITC)
 		hw_cwrite(CAP_USBCMD, USBCMD_ITC_MASK, USBCMD_ITC(0));
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	if (hw_cread(CAP_USBMODE, USBMODE_CM) != USBMODE_CM_DEVICE) {
 		pr_err("cannot enter in device mode");
 		pr_err("lpm = %i", hw_bank.lpm);
@@ -429,10 +435,13 @@ static int hw_ep_enable(int num, int dir, int type)
 		data |= ENDPTCTRL_RXE;
 	}
 	hw_cwrite(CAP_ENDPTCTRL + num * sizeof(u32), mask, data);
+<<<<<<< HEAD
 
 	/* make sure endpoint is enabled before returning */
 	mb();
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	return 0;
 }
 
@@ -499,18 +508,27 @@ static int hw_ep_prime(int num, int dir, int is_ctrl)
  */
 static int hw_ep_set_halt(int num, int dir, int value)
 {
+<<<<<<< HEAD
 	u32 addr, mask_xs, mask_xr;
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	if (value != 0 && value != 1)
 		return -EINVAL;
 
 	do {
+<<<<<<< HEAD
 		if (hw_cread(CAP_ENDPTSETUPSTAT, BIT(num)))
 			return 0;
 
 		addr = CAP_ENDPTCTRL + num * sizeof(u32);
 		mask_xs = dir ? ENDPTCTRL_TXS : ENDPTCTRL_RXS;
 		mask_xr = dir ? ENDPTCTRL_TXR : ENDPTCTRL_RXR;
+=======
+		u32 addr = CAP_ENDPTCTRL + num * sizeof(u32);
+		u32 mask_xs = dir ? ENDPTCTRL_TXS : ENDPTCTRL_RXS;
+		u32 mask_xr = dir ? ENDPTCTRL_TXR : ENDPTCTRL_RXR;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 		/* data toggle - reserved for EP0 but it's in ESS */
 		hw_cwrite(addr, mask_xs|mask_xr, value ? mask_xs : mask_xr);
@@ -1240,7 +1258,11 @@ static ssize_t show_registers(struct device *dev,
 {
 	struct ci13xxx *udc = container_of(dev, struct ci13xxx, gadget.dev);
 	unsigned long flags;
+<<<<<<< HEAD
 	u32 *dump;
+=======
+	u32 dump[512];
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	unsigned i, k, n = 0;
 
 	dbg_trace("[%s] %p\n", __func__, buf);
@@ -1248,12 +1270,18 @@ static ssize_t show_registers(struct device *dev,
 		dev_err(dev, "[%s] EINVAL\n", __func__);
 		return 0;
 	}
+<<<<<<< HEAD
 	dump = kmalloc(2048, GFP_KERNEL);
 	if (dump == NULL)
 		return -ENOMEM;
 
 	spin_lock_irqsave(udc->lock, flags);
 	k = hw_register_read(dump, 512);
+=======
+
+	spin_lock_irqsave(udc->lock, flags);
+	k = hw_register_read(dump, sizeof(dump)/sizeof(u32));
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	spin_unlock_irqrestore(udc->lock, flags);
 
 	for (i = 0; i < k; i++) {
@@ -1261,7 +1289,11 @@ static ssize_t show_registers(struct device *dev,
 			       "reg[0x%04X] = 0x%08X\n",
 			       i * (unsigned)sizeof(u32), dump[i]);
 	}
+<<<<<<< HEAD
 	kfree(dump);
+=======
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	return n;
 }
 
@@ -1341,6 +1373,7 @@ static ssize_t show_requests(struct device *dev, struct device_attribute *attr,
 }
 static DEVICE_ATTR(requests, S_IRUSR, show_requests, NULL);
 
+<<<<<<< HEAD
 /* EP# and Direction */
 static ssize_t prime_ept(struct device *dev,
 			       struct device_attribute *attr,
@@ -1468,6 +1501,8 @@ static ssize_t usb_remote_wakeup(struct device *dev,
 }
 static DEVICE_ATTR(wakeup, S_IWUSR, 0, usb_remote_wakeup);
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 /**
  * dbg_create_files: initializes the attribute interface
  * @dev: device
@@ -1504,6 +1539,7 @@ __maybe_unused static int dbg_create_files(struct device *dev)
 	retval = device_create_file(dev, &dev_attr_requests);
 	if (retval)
 		goto rm_registers;
+<<<<<<< HEAD
 	retval = device_create_file(dev, &dev_attr_wakeup);
 	if (retval)
 		goto rm_remote_wakeup;
@@ -1522,6 +1558,10 @@ rm_prime:
 	device_remove_file(dev, &dev_attr_prime);
 rm_remote_wakeup:
 	device_remove_file(dev, &dev_attr_wakeup);
+=======
+	return 0;
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
  rm_registers:
 	device_remove_file(dev, &dev_attr_registers);
  rm_qheads:
@@ -1558,7 +1598,10 @@ __maybe_unused static int dbg_remove_files(struct device *dev)
 	device_remove_file(dev, &dev_attr_events);
 	device_remove_file(dev, &dev_attr_driver);
 	device_remove_file(dev, &dev_attr_device);
+<<<<<<< HEAD
 	device_remove_file(dev, &dev_attr_wakeup);
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	return 0;
 }
 
@@ -1639,6 +1682,7 @@ static int _hardware_enqueue(struct ci13xxx_ep *mEp, struct ci13xxx_req *mReq)
 		if (!mReq->req.no_interrupt)
 			mReq->ptr->token  |= TD_IOC;
 	}
+<<<<<<< HEAD
 
 	/* MSM Specific: updating the request as required for
 	 * SPS mode. Enable MSM proprietary DMA engine acording
@@ -1656,6 +1700,8 @@ static int _hardware_enqueue(struct ci13xxx_ep *mEp, struct ci13xxx_req *mReq)
 		}
 	}
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	mReq->ptr->page[0]  = mReq->req.dma;
 	for (i = 1; i < 5; i++)
 		mReq->ptr->page[i] =
@@ -1685,6 +1731,7 @@ static int _hardware_enqueue(struct ci13xxx_ep *mEp, struct ci13xxx_req *mReq)
 	}
 
 	/*  QH configuration */
+<<<<<<< HEAD
 	if (!list_empty(&mEp->qh.queue)) {
 		struct ci13xxx_req *mReq = \
 			list_entry(mEp->qh.queue.next,
@@ -1735,6 +1782,12 @@ static int _hardware_enqueue(struct ci13xxx_ep *mEp, struct ci13xxx_req *mReq)
 	mEp->qh.ptr->cap |=  QH_ZLT;
 
 prime:
+=======
+	mEp->qh.ptr->td.next   = mReq->dma;    /* TERMINATE = 0 */
+	mEp->qh.ptr->td.token &= ~TD_STATUS;   /* clear status */
+	mEp->qh.ptr->cap |=  QH_ZLT;
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	wmb();   /* synchronize before ep prime */
 
 	ret = hw_ep_prime(mEp->num, mEp->dir,
@@ -1757,6 +1810,7 @@ static int _hardware_dequeue(struct ci13xxx_ep *mEp, struct ci13xxx_req *mReq)
 	if (mReq->req.status != -EALREADY)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	/* clean speculative fetches on req->ptr->token */
 	mb();
 
@@ -1767,6 +1821,11 @@ static int _hardware_dequeue(struct ci13xxx_ep *mEp, struct ci13xxx_req *mReq)
 		if ((mReq->req.udc_priv & MSM_SPS_MODE) &&
 			(mReq->req.udc_priv & MSM_TBE))
 			return -EBUSY;
+=======
+	if ((TD_STATUS_ACTIVE & mReq->ptr->token) != 0)
+		return -EBUSY;
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	if (mReq->zptr) {
 		if ((TD_STATUS_ACTIVE & mReq->zptr->token) != 0)
 			return -EBUSY;
@@ -1810,9 +1869,12 @@ static int _ep_nuke(struct ci13xxx_ep *mEp)
 __releases(mEp->lock)
 __acquires(mEp->lock)
 {
+<<<<<<< HEAD
 	struct ci13xxx_ep *mEpTemp = mEp;
 	unsigned val;
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	trace("%p", mEp);
 
 	if (mEp == NULL)
@@ -1827,6 +1889,7 @@ __acquires(mEp->lock)
 			list_entry(mEp->qh.queue.next,
 				   struct ci13xxx_req, queue);
 		list_del_init(&mReq->queue);
+<<<<<<< HEAD
 
 		/* MSM Specific: Clear end point proprietary register */
 		if (CI13XX_REQ_VENDOR_ID(mReq->req.udc_priv) == MSM_VENDOR_ID) {
@@ -1858,6 +1921,13 @@ __acquires(mEp->lock)
 				mReq->req.length)
 				mEpTemp = &_udc->ep0in;
 			mReq->req.complete(&mEpTemp->ep, &mReq->req);
+=======
+		mReq->req.status = -ESHUTDOWN;
+
+		if (mReq->req.complete != NULL) {
+			spin_unlock(mEp->lock);
+			mReq->req.complete(&mEp->ep, &mReq->req);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			spin_lock(mEp->lock);
 		}
 	}
@@ -1886,7 +1956,10 @@ static int _gadget_stop_activity(struct usb_gadget *gadget)
 	udc->gadget.speed = USB_SPEED_UNKNOWN;
 	udc->remote_wakeup = 0;
 	udc->suspended = 0;
+<<<<<<< HEAD
 	udc->configured = 0;
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	spin_unlock_irqrestore(udc->lock, flags);
 
 	/* flush all endpoints */
@@ -1936,11 +2009,14 @@ __acquires(udc->lock)
 	dbg_event(0xFF, "BUS RST", 0);
 
 	spin_unlock(udc->lock);
+<<<<<<< HEAD
 
 	/*stop charging upon reset */
 	if (udc->transceiver)
 		otg_set_power(udc->transceiver, 0);
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	retval = _gadget_stop_activity(&udc->gadget);
 	if (retval)
 		goto done;
@@ -2108,12 +2184,16 @@ __acquires(mEp->lock)
 	struct ci13xxx_req *mReq, *mReqTemp;
 	struct ci13xxx_ep *mEpTemp = mEp;
 	int uninitialized_var(retval);
+<<<<<<< HEAD
 	int req_dequeue = 1;
 	struct ci13xxx *udc = _udc;
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	trace("%p", mEp);
 
 	if (list_empty(&mEp->qh.queue))
+<<<<<<< HEAD
 		return 0;
 
 	list_for_each_entry_safe(mReq, mReqTemp, &mEp->qh.queue,
@@ -2137,6 +2217,15 @@ dequeue:
 			break;
 		}
 		req_dequeue = 0;
+=======
+		return -EINVAL;
+
+	list_for_each_entry_safe(mReq, mReqTemp, &mEp->qh.queue,
+			queue) {
+		retval = _hardware_dequeue(mEp, mReq);
+		if (retval < 0)
+			break;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		list_del_init(&mReq->queue);
 		dbg_done(_usb_addr(mEp), mReq->ptr->token, retval);
 		if (mReq->req.complete != NULL) {
@@ -2221,8 +2310,11 @@ __acquires(udc->lock)
 		do {
 			hw_test_and_set_setup_guard();
 			memcpy(&req, &mEp->qh.ptr->setup, sizeof(req));
+<<<<<<< HEAD
 			/* Ensure buffer is read before acknowledging to h/w */
 			mb();
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		} while (!hw_test_and_clear_setup_guard());
 
 		type = req.bRequestType;
@@ -2284,10 +2376,13 @@ __acquires(udc->lock)
 				break;
 			err = isr_setup_status_phase(udc);
 			break;
+<<<<<<< HEAD
 		case USB_REQ_SET_CONFIGURATION:
 			if (type == (USB_DIR_OUT|USB_TYPE_STANDARD))
 				udc->configured = !!req.wValue;
 			goto delegate;
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		case USB_REQ_SET_FEATURE:
 			if (type == (USB_DIR_OUT|USB_RECIP_ENDPOINT) &&
 					le16_to_cpu(req.wValue) ==
@@ -2401,15 +2496,22 @@ static int ep_enable(struct usb_ep *ep,
 	else if (mEp->type == USB_ENDPOINT_XFER_ISOC)
 		mEp->qh.ptr->cap &= ~QH_MULT;
 	else
+<<<<<<< HEAD
 		mEp->qh.ptr->cap |= QH_ZLT;
+=======
+		mEp->qh.ptr->cap &= ~QH_ZLT;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	mEp->qh.ptr->cap |=
 		(mEp->ep.maxpacket << ffs_nr(QH_MAX_PKT)) & QH_MAX_PKT;
 	mEp->qh.ptr->td.next |= TD_TERMINATE;   /* needed? */
 
+<<<<<<< HEAD
 	/* complete all the updates to ept->head before enabling endpoint*/
 	mb();
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	/*
 	 * Enable endpoints in the HW other than ep0 as ep0
 	 * is always enabled
@@ -2539,7 +2641,10 @@ static int ep_queue(struct usb_ep *ep, struct usb_request *req,
 	struct ci13xxx_req *mReq = container_of(req, struct ci13xxx_req, req);
 	int retval = 0;
 	unsigned long flags;
+<<<<<<< HEAD
 	struct ci13xxx *udc = _udc;
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	trace("%p, %p, %X", ep, req, gfp_flags);
 
@@ -2548,6 +2653,7 @@ static int ep_queue(struct usb_ep *ep, struct usb_request *req,
 
 	spin_lock_irqsave(mEp->lock, flags);
 
+<<<<<<< HEAD
 	if (!udc->configured && mEp->type !=
 		USB_ENDPOINT_XFER_CONTROL) {
 		spin_unlock_irqrestore(mEp->lock, flags);
@@ -2557,6 +2663,8 @@ static int ep_queue(struct usb_ep *ep, struct usb_request *req,
 		return -ESHUTDOWN;
 	}
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	if (mEp->type == USB_ENDPOINT_XFER_CONTROL) {
 		if (req->length)
 			mEp = (_udc->ep0_dir == RX) ?
@@ -2609,7 +2717,10 @@ static int ep_queue(struct usb_ep *ep, struct usb_request *req,
 static int ep_dequeue(struct usb_ep *ep, struct usb_request *req)
 {
 	struct ci13xxx_ep  *mEp  = container_of(ep,  struct ci13xxx_ep, ep);
+<<<<<<< HEAD
 	struct ci13xxx_ep *mEpTemp = mEp;
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	struct ci13xxx_req *mReq = container_of(req, struct ci13xxx_req, req);
 	unsigned long flags;
 
@@ -2638,10 +2749,14 @@ static int ep_dequeue(struct usb_ep *ep, struct usb_request *req)
 
 	if (mReq->req.complete != NULL) {
 		spin_unlock(mEp->lock);
+<<<<<<< HEAD
 		if ((mEp->type == USB_ENDPOINT_XFER_CONTROL) &&
 				mReq->req.length)
 			mEpTemp = &_udc->ep0in;
 		mReq->req.complete(&mEpTemp->ep, &mReq->req);
+=======
+		mReq->req.complete(&mEp->ep, &mReq->req);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		spin_lock(mEp->lock);
 	}
 
@@ -2781,10 +2896,19 @@ static int ci13xxx_vbus_session(struct usb_gadget *_gadget, int is_active)
 		if (is_active) {
 			pm_runtime_get_sync(&_gadget->dev);
 			hw_device_reset(udc);
+<<<<<<< HEAD
 			if (udc->softconnect)
 				hw_device_state(udc->ep0out.qh.dma);
 		} else {
 			hw_device_state(0);
+=======
+			hw_device_state(udc->ep0out.qh.dma);
+		} else {
+			hw_device_state(0);
+			if (udc->udc_driver->notify_event)
+				udc->udc_driver->notify_event(udc,
+				CI13XXX_CONTROLLER_STOPPED_EVENT);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			_gadget_stop_activity(&udc->gadget);
 			pm_runtime_put_sync(&_gadget->dev);
 		}
@@ -2793,6 +2917,7 @@ static int ci13xxx_vbus_session(struct usb_gadget *_gadget, int is_active)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int ci13xxx_vbus_draw(struct usb_gadget *_gadget, unsigned mA)
 {
 	struct ci13xxx *udc = container_of(_gadget, struct ci13xxx, gadget);
@@ -2825,6 +2950,42 @@ static int ci13xxx_pullup(struct usb_gadget *_gadget, int is_active)
 }
 
 
+=======
+static int ci13xxx_wakeup(struct usb_gadget *_gadget)
+{
+	struct ci13xxx *udc = container_of(_gadget, struct ci13xxx, gadget);
+	unsigned long flags;
+	int ret = 0;
+
+	trace();
+
+	spin_lock_irqsave(udc->lock, flags);
+	if (!udc->remote_wakeup) {
+		ret = -EOPNOTSUPP;
+		dbg_trace("remote wakeup feature is not enabled\n");
+		goto out;
+	}
+	if (!hw_cread(CAP_PORTSC, PORTSC_SUSP)) {
+		ret = -EINVAL;
+		dbg_trace("port is not suspended\n");
+		goto out;
+	}
+	hw_cwrite(CAP_PORTSC, PORTSC_FPR, PORTSC_FPR);
+out:
+	spin_unlock_irqrestore(udc->lock, flags);
+	return ret;
+}
+
+static int ci13xxx_vbus_draw(struct usb_gadget *_gadget, unsigned mA)
+{
+	struct ci13xxx *udc = container_of(_gadget, struct ci13xxx, gadget);
+
+	if (udc->transceiver)
+		return otg_set_power(udc->transceiver, mA);
+	return -ENOTSUPP;
+}
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 /**
  * Device operations part of the API to the USB controller hardware,
  * which don't involve endpoints (or i/o)
@@ -2834,7 +2995,10 @@ static const struct usb_gadget_ops usb_gadget_ops = {
 	.vbus_session	= ci13xxx_vbus_session,
 	.wakeup		= ci13xxx_wakeup,
 	.vbus_draw	= ci13xxx_vbus_draw,
+<<<<<<< HEAD
 	.pullup		= ci13xxx_pullup,
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 };
 
 /**
@@ -2852,7 +3016,10 @@ int usb_gadget_probe_driver(struct usb_gadget_driver *driver,
 	unsigned long flags;
 	int i, j;
 	int retval = -ENOMEM;
+<<<<<<< HEAD
 	bool put = false;
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	trace("%p", driver);
 
@@ -2939,10 +3106,15 @@ int usb_gadget_probe_driver(struct usb_gadget_driver *driver,
 	/* bind gadget */
 	driver->driver.bus     = NULL;
 	udc->gadget.dev.driver = &driver->driver;
+<<<<<<< HEAD
 	udc->softconnect = 1;
 
 	spin_unlock_irqrestore(udc->lock, flags);
 	pm_runtime_get_sync(&udc->gadget.dev);
+=======
+
+	spin_unlock_irqrestore(udc->lock, flags);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	retval = bind(&udc->gadget);                /* MAY SLEEP */
 	spin_lock_irqsave(udc->lock, flags);
 
@@ -2952,16 +3124,25 @@ int usb_gadget_probe_driver(struct usb_gadget_driver *driver,
 	}
 
 	udc->driver = driver;
+<<<<<<< HEAD
+=======
+	pm_runtime_get_sync(&udc->gadget.dev);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	if (udc->udc_driver->flags & CI13XXX_PULLUP_ON_VBUS) {
 		if (udc->vbus_active) {
 			if (udc->udc_driver->flags & CI13XXX_REGS_SHARED)
 				hw_device_reset(udc);
 		} else {
+<<<<<<< HEAD
 			put = true;
+=======
+			pm_runtime_put_sync(&udc->gadget.dev);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			goto done;
 		}
 	}
 
+<<<<<<< HEAD
 	if (!udc->softconnect) {
 		put = true;
 		goto done;
@@ -2973,6 +3154,14 @@ int usb_gadget_probe_driver(struct usb_gadget_driver *driver,
 	spin_unlock_irqrestore(udc->lock, flags);
 	if (retval || put)
 		pm_runtime_put_sync(&udc->gadget.dev);
+=======
+	retval = hw_device_state(udc->ep0out.qh.dma);
+	if (retval)
+		pm_runtime_put_sync(&udc->gadget.dev);
+
+ done:
+	spin_unlock_irqrestore(udc->lock, flags);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	return retval;
 }
 EXPORT_SYMBOL(usb_gadget_probe_driver);
@@ -3003,6 +3192,12 @@ int usb_gadget_unregister_driver(struct usb_gadget_driver *driver)
 	if (!(udc->udc_driver->flags & CI13XXX_PULLUP_ON_VBUS) ||
 			udc->vbus_active) {
 		hw_device_state(0);
+<<<<<<< HEAD
+=======
+		if (udc->udc_driver->notify_event)
+			udc->udc_driver->notify_event(udc,
+			CI13XXX_CONTROLLER_STOPPED_EVENT);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		_gadget_stop_activity(&udc->gadget);
 		pm_runtime_put(&udc->gadget.dev);
 	}

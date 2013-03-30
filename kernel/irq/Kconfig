@@ -52,10 +52,13 @@ config IRQ_EDGE_EOI_HANDLER
 config GENERIC_IRQ_CHIP
        bool
 
+<<<<<<< HEAD
 # Generic irq_domain hw <--> linux irq number translation
 config IRQ_DOMAIN
 	bool
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 # Support forced irq threading
 config IRQ_FORCED_THREADING
        bool

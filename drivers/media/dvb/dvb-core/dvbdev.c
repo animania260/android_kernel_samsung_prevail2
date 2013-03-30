@@ -243,6 +243,10 @@ int dvb_register_device(struct dvb_adapter *adap, struct dvb_device **pdvbdev,
 	if (minor == MAX_DVB_MINORS) {
 		kfree(dvbdevfops);
 		kfree(dvbdev);
+<<<<<<< HEAD
+=======
+		up_write(&minor_rwsem);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		mutex_unlock(&dvbdev_register_lock);
 		return -EINVAL;
 	}

@@ -113,6 +113,10 @@ struct module {
 	int has_cleanup;
 	struct buffer dev_table_buf;
 	char	     srcversion[25];
+<<<<<<< HEAD
+=======
+	int is_dot_o;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 };
 
 struct elf_info {

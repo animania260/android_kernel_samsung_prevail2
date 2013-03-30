@@ -328,6 +328,10 @@ struct ieee80211_work {
 		struct {
 			struct sk_buff *frame;
 			u32 wait;
+<<<<<<< HEAD
+=======
+			bool status;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		} offchan_tx;
 	};
 
@@ -372,6 +376,10 @@ struct ieee80211_if_managed {
 
 	unsigned long timers_running; /* used for quiesce/restart */
 	bool powersave; /* powersave requested for this iface */
+<<<<<<< HEAD
+=======
+	bool broken_ap; /* AP is broken -- turn off powersave */
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	enum ieee80211_smps_mode req_smps, /* requested smps mode */
 				 ap_smps, /* smps mode AP thinks we're in */
 				 driver_smps_mode; /* smps mode request */
@@ -1167,11 +1175,17 @@ void ieee80211_sched_scan_stopped_work(struct work_struct *work);
 bool ieee80211_cfg_on_oper_channel(struct ieee80211_local *local);
 void ieee80211_offchannel_enable_all_ps(struct ieee80211_local *local,
 					bool tell_ap);
+<<<<<<< HEAD
 void ieee80211_offchannel_stop_vifs(struct ieee80211_local *local,
 				    bool offchannel_ps_enable);
 void ieee80211_offchannel_return(struct ieee80211_local *local,
 				 bool enable_beaconing,
 				 bool offchannel_ps_disable);
+=======
+void ieee80211_offchannel_stop_vifs(struct ieee80211_local *local);
+void ieee80211_offchannel_return(struct ieee80211_local *local,
+				 bool enable_beaconing);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 void ieee80211_hw_roc_setup(struct ieee80211_local *local);
 
 /* interface handling */

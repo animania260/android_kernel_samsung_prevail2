@@ -62,6 +62,10 @@
 #include <asm/reboot.h>
 #include <asm/stackprotector.h>
 #include <asm/hypervisor.h>
+<<<<<<< HEAD
+=======
+#include <asm/pci_x86.h>
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 #include "xen-ops.h"
 #include "mmu.h"
@@ -197,6 +201,12 @@ static void __init xen_banner(void)
 	       xen_feature(XENFEAT_mmu_pt_update_preserve_ad) ? " (preserve-AD)" : "");
 }
 
+<<<<<<< HEAD
+=======
+#define CPUID_THERM_POWER_LEAF 6
+#define APERFMPERF_PRESENT 0
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 static __read_mostly unsigned int cpuid_leaf1_edx_mask = ~0;
 static __read_mostly unsigned int cpuid_leaf1_ecx_mask = ~0;
 
@@ -217,6 +227,14 @@ static void xen_cpuid(unsigned int *ax, unsigned int *bx,
 		maskedx = cpuid_leaf1_edx_mask;
 		break;
 
+<<<<<<< HEAD
+=======
+	case CPUID_THERM_POWER_LEAF:
+		/* Disabling APERFMPERF for kernel usage */
+		maskecx = ~(1 << APERFMPERF_PRESENT);
+		break;
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	case 0xb:
 		/* Suppress extended topology stuff */
 		maskebx = 0;
@@ -794,7 +812,20 @@ static void xen_write_cr4(unsigned long cr4)
 
 	native_write_cr4(cr4);
 }
+<<<<<<< HEAD
 
+=======
+#ifdef CONFIG_X86_64
+static inline unsigned long xen_read_cr8(void)
+{
+	return 0;
+}
+static inline void xen_write_cr8(unsigned long val)
+{
+	BUG_ON(val);
+}
+#endif
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 static int xen_write_msr_safe(unsigned int msr, unsigned low, unsigned high)
 {
 	int ret;
@@ -959,6 +990,14 @@ static const struct pv_cpu_ops xen_cpu_ops __initconst = {
 	.read_cr4_safe = native_read_cr4_safe,
 	.write_cr4 = xen_write_cr4,
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_X86_64
+	.read_cr8 = xen_read_cr8,
+	.write_cr8 = xen_write_cr8,
+#endif
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	.wbinvd = native_wbinvd,
 
 	.read_msr = native_read_msr_safe,
@@ -966,6 +1005,11 @@ static const struct pv_cpu_ops xen_cpu_ops __initconst = {
 	.read_tsc = native_read_tsc,
 	.read_pmc = native_read_pmc,
 
+<<<<<<< HEAD
+=======
+	.read_tscp = native_read_tscp,
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	.iret = xen_iret,
 	.irq_enable_sysexit = xen_sysexit,
 #ifdef CONFIG_X86_64
@@ -1259,8 +1303,15 @@ asmlinkage void __init xen_start_kernel(void)
 		/* Make sure ACS will be enabled */
 		pci_request_acs();
 	}
+<<<<<<< HEAD
 		
 
+=======
+#ifdef CONFIG_PCI
+	/* PCI BIOS service won't work from a PV guest. */
+	pci_probe &= ~PCI_PROBE_BIOS;
+#endif
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	xen_raw_console_write("about to get started...\n");
 
 	xen_setup_runstate_info(0);
@@ -1337,7 +1388,11 @@ static int __cpuinit xen_hvm_cpu_notify(struct notifier_block *self,
 	int cpu = (long)hcpu;
 	switch (action) {
 	case CPU_UP_PREPARE:
+<<<<<<< HEAD
 		per_cpu(xen_vcpu, cpu) = &HYPERVISOR_shared_info->vcpu_info[cpu];
+=======
+		xen_vcpu_setup(cpu);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		if (xen_have_vector_callback)
 			xen_init_lock_cpu(cpu);
 		break;
@@ -1367,7 +1422,10 @@ static void __init xen_hvm_guest_init(void)
 	xen_hvm_smp_init();
 	register_cpu_notifier(&xen_hvm_cpu_notifier);
 	xen_unplug_emulated_devices();
+<<<<<<< HEAD
 	have_vcpu_info_placement = 0;
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	x86_init.irqs.intr_init = xen_init_IRQ;
 	xen_hvm_init_time_ops();
 	xen_hvm_init_mmu_ops();

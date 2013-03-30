@@ -8,7 +8,11 @@
 
 #ifdef __powerpc64__
 
+<<<<<<< HEAD
 extern char _end[];
+=======
+extern char __end_interrupts[];
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 static inline int in_kernel_text(unsigned long addr)
 {

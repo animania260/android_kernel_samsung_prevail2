@@ -110,6 +110,10 @@ int ramfs_nommu_expand_for_mapping(struct inode *inode, size_t newsize)
 
 		/* prevent the page from being discarded on memory pressure */
 		SetPageDirty(page);
+<<<<<<< HEAD
+=======
+		SetPageUptodate(page);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 		unlock_page(page);
 		put_page(page);

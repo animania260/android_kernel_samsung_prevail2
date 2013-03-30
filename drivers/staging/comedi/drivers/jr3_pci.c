@@ -913,7 +913,11 @@ static int jr3_pci_attach(struct comedi_device *dev,
 	}
 
 	/*  Reset DSP card */
+<<<<<<< HEAD
 	devpriv->iobase->channel[0].reset = 0;
+=======
+	writel(0, &devpriv->iobase->channel[0].reset);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	result = comedi_load_firmware(dev, "jr3pci.idm", jr3_download_firmware);
 	printk("Firmare load %d\n", result);

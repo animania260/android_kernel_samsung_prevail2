@@ -418,10 +418,15 @@ static int pptp_bind(struct socket *sock, struct sockaddr *uservaddr,
 	lock_sock(sk);
 
 	opt->src_addr = sp->sa_addr.pptp;
+<<<<<<< HEAD
 	if (add_chan(po)) {
 		release_sock(sk);
 		error = -EBUSY;
 	}
+=======
+	if (add_chan(po))
+		error = -EBUSY;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	release_sock(sk);
 	return error;

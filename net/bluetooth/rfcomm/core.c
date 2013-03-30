@@ -62,6 +62,10 @@ static DEFINE_MUTEX(rfcomm_mutex);
 #define rfcomm_lock()	mutex_lock(&rfcomm_mutex)
 #define rfcomm_unlock()	mutex_unlock(&rfcomm_mutex)
 
+<<<<<<< HEAD
+=======
+static unsigned long rfcomm_event;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 static LIST_HEAD(session_list);
 
@@ -119,6 +123,10 @@ static inline void rfcomm_schedule(void)
 {
 	if (!rfcomm_thread)
 		return;
+<<<<<<< HEAD
+=======
+	set_bit(RFCOMM_SCHED_WAKEUP, &rfcomm_event);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	wake_up_process(rfcomm_thread);
 }
 
@@ -464,6 +472,10 @@ static int __rfcomm_dlc_close(struct rfcomm_dlc *d, int err)
 
 	switch (d->state) {
 	case BT_CONNECT:
+<<<<<<< HEAD
+=======
+	case BT_CONFIG:
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		if (test_and_clear_bit(RFCOMM_DEFER_SETUP, &d->flags)) {
 			set_bit(RFCOMM_AUTH_REJECT, &d->flags);
 			rfcomm_schedule();
@@ -1145,7 +1157,10 @@ static int rfcomm_recv_ua(struct rfcomm_session *s, u8 dlci)
 			if (list_empty(&s->dlcs)) {
 				s->state = BT_DISCONN;
 				rfcomm_send_disc(s, 0);
+<<<<<<< HEAD
 				rfcomm_session_clear_timer(s);
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			}
 
 			break;
@@ -1159,6 +1174,7 @@ static int rfcomm_recv_ua(struct rfcomm_session *s, u8 dlci)
 			break;
 
 		case BT_DISCONN:
+<<<<<<< HEAD
 			/* rfcomm_session_put is called later so don't do
 			 * anything here otherwise we will mess up the session
 			 * reference counter:
@@ -1171,6 +1187,14 @@ static int rfcomm_recv_ua(struct rfcomm_session *s, u8 dlci)
 			 * will explicitly call put to balance the initial hold
 			 * done after session add.
 			 */
+=======
+			/* When socket is closed and we are not RFCOMM
+			 * initiator rfcomm_process_rx already calls
+			 * rfcomm_session_put() */
+			if (s->sock->sk->sk_state != BT_CLOSED)
+				if (list_empty(&s->dlcs))
+					rfcomm_session_put(s);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			break;
 		}
 	}
@@ -1859,10 +1883,14 @@ static inline void rfcomm_process_rx(struct rfcomm_session *s)
 	/* Get data directly from socket receive queue without copying it. */
 	while ((skb = skb_dequeue(&sk->sk_receive_queue))) {
 		skb_orphan(skb);
+<<<<<<< HEAD
 		if (!skb_linearize(skb))
 			rfcomm_recv_frame(s, skb);
 		else
 			kfree_skb(skb);
+=======
+		rfcomm_recv_frame(s, skb);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	}
 
 	if (sk->sk_state == BT_CLOSED) {
@@ -2045,6 +2073,7 @@ static int rfcomm_run(void *unused)
 
 	rfcomm_add_listener(BDADDR_ANY);
 
+<<<<<<< HEAD
 	while (1) {
 		set_current_state(TASK_INTERRUPTIBLE);
 
@@ -2057,6 +2086,21 @@ static int rfcomm_run(void *unused)
 		schedule();
 	}
 	__set_current_state(TASK_RUNNING);
+=======
+	while (!kthread_should_stop()) {
+		set_current_state(TASK_INTERRUPTIBLE);
+		if (!test_bit(RFCOMM_SCHED_WAKEUP, &rfcomm_event)) {
+			/* No pending events. Let's sleep.
+			 * Incoming connections and data will wake us up. */
+			schedule();
+		}
+		set_current_state(TASK_RUNNING);
+
+		/* Process stuff */
+		clear_bit(RFCOMM_SCHED_WAKEUP, &rfcomm_event);
+		rfcomm_process_sessions();
+	}
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	rfcomm_kill_listener();
 

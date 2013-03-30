@@ -80,11 +80,19 @@ static int try_one_irq(int irq, struct irq_desc *desc, bool force)
 
 	/*
 	 * All handlers must agree on IRQF_SHARED, so we test just the
+<<<<<<< HEAD
 	 * first. Check for action->next as well.
 	 */
 	action = desc->action;
 	if (!action || !(action->flags & IRQF_SHARED) ||
 	    (action->flags & __IRQF_TIMER) || !action->next)
+=======
+	 * first.
+	 */
+	action = desc->action;
+	if (!action || !(action->flags & IRQF_SHARED) ||
+	    (action->flags & __IRQF_TIMER))
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		goto out;
 
 	/* Already running on another processor */
@@ -102,6 +110,10 @@ static int try_one_irq(int irq, struct irq_desc *desc, bool force)
 	do {
 		if (handle_irq_event(desc) == IRQ_HANDLED)
 			ret = IRQ_HANDLED;
+<<<<<<< HEAD
+=======
+		/* Make sure that there is still a valid action */
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		action = desc->action;
 	} while ((desc->istate & IRQS_PENDING) && action);
 	desc->istate &= ~IRQS_POLL_INPROGRESS;
@@ -115,7 +127,11 @@ static int misrouted_irq(int irq)
 	struct irq_desc *desc;
 	int i, ok = 0;
 
+<<<<<<< HEAD
 	if (atomic_inc_return(&irq_poll_active) == 1)
+=======
+	if (atomic_inc_return(&irq_poll_active) != 1)
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		goto out;
 
 	irq_poll_cpu = smp_processor_id();

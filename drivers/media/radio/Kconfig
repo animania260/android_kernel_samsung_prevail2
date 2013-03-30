@@ -443,6 +443,7 @@ config RADIO_WL1273
 # TI's ST based wl128x FM radio
 source "drivers/media/radio/wl128x/Kconfig"
 
+<<<<<<< HEAD
 config RADIO_TAVARUA
 	tristate "Qualcomm Tavaraua I2C FM support"
 	depends on I2C && VIDEO_V4L2 && MARIMBA_CORE
@@ -477,4 +478,6 @@ config RADIO_IRIS_TRANSPORT
           To compile this driver as a module, choose M here: the
           module will be called radio-iris-transport.
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 endif # RADIO_ADAPTERS

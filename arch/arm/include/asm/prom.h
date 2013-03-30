@@ -16,6 +16,14 @@
 #include <asm/setup.h>
 #include <asm/irq.h>
 
+<<<<<<< HEAD
+=======
+static inline void irq_dispose_mapping(unsigned int virq)
+{
+	return;
+}
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 extern struct machine_desc *setup_machine_fdt(unsigned int dt_phys);
 extern void arm_dt_memblock_reserve(void);
 

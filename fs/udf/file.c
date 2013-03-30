@@ -39,12 +39,17 @@
 #include "udf_i.h"
 #include "udf_sb.h"
 
+<<<<<<< HEAD
 static int udf_adinicb_readpage(struct file *file, struct page *page)
+=======
+static void __udf_adinicb_readpage(struct page *page)
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 {
 	struct inode *inode = page->mapping->host;
 	char *kaddr;
 	struct udf_inode_info *iinfo = UDF_I(inode);
 
+<<<<<<< HEAD
 	BUG_ON(!PageLocked(page));
 
 	kaddr = kmap(page);
@@ -53,6 +58,20 @@ static int udf_adinicb_readpage(struct file *file, struct page *page)
 	flush_dcache_page(page);
 	SetPageUptodate(page);
 	kunmap(page);
+=======
+	kaddr = kmap(page);
+	memcpy(kaddr, iinfo->i_ext.i_data + iinfo->i_lenEAttr, inode->i_size);
+	memset(kaddr + inode->i_size, 0, PAGE_CACHE_SIZE - inode->i_size);
+	flush_dcache_page(page);
+	SetPageUptodate(page);
+	kunmap(page);
+}
+
+static int udf_adinicb_readpage(struct file *file, struct page *page)
+{
+	BUG_ON(!PageLocked(page));
+	__udf_adinicb_readpage(page);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	unlock_page(page);
 
 	return 0;
@@ -77,6 +96,28 @@ static int udf_adinicb_writepage(struct page *page,
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static int udf_adinicb_write_begin(struct file *file,
+			struct address_space *mapping, loff_t pos,
+			unsigned len, unsigned flags, struct page **pagep,
+			void **fsdata)
+{
+	struct page *page;
+
+	if (WARN_ON_ONCE(pos >= PAGE_CACHE_SIZE))
+		return -EIO;
+	page = grab_cache_page_write_begin(mapping, 0, flags);
+	if (!page)
+		return -ENOMEM;
+	*pagep = page;
+
+	if (!PageUptodate(page) && len != PAGE_CACHE_SIZE)
+		__udf_adinicb_readpage(page);
+	return 0;
+}
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 static int udf_adinicb_write_end(struct file *file,
 			struct address_space *mapping,
 			loff_t pos, unsigned len, unsigned copied,
@@ -98,8 +139,13 @@ static int udf_adinicb_write_end(struct file *file,
 const struct address_space_operations udf_adinicb_aops = {
 	.readpage	= udf_adinicb_readpage,
 	.writepage	= udf_adinicb_writepage,
+<<<<<<< HEAD
 	.write_begin = simple_write_begin,
 	.write_end = udf_adinicb_write_end,
+=======
+	.write_begin	= udf_adinicb_write_begin,
+	.write_end	= udf_adinicb_write_end,
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 };
 
 static ssize_t udf_file_aio_write(struct kiocb *iocb, const struct iovec *iov,
@@ -125,7 +171,10 @@ static ssize_t udf_file_aio_write(struct kiocb *iocb, const struct iovec *iov,
 			err = udf_expand_file_adinicb(inode);
 			if (err) {
 				udf_debug("udf_expand_adinicb: err=%d\n", err);
+<<<<<<< HEAD
 				up_write(&iinfo->i_data_sem);
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 				return err;
 			}
 		} else {
@@ -133,9 +182,16 @@ static ssize_t udf_file_aio_write(struct kiocb *iocb, const struct iovec *iov,
 				iinfo->i_lenAlloc = pos + count;
 			else
 				iinfo->i_lenAlloc = inode->i_size;
+<<<<<<< HEAD
 		}
 	}
 	up_write(&iinfo->i_data_sem);
+=======
+			up_write(&iinfo->i_data_sem);
+		}
+	} else
+		up_write(&iinfo->i_data_sem);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	retval = generic_file_aio_write(iocb, iov, nr_segs, ppos);
 	if (retval > 0)
@@ -201,12 +257,18 @@ out:
 static int udf_release_file(struct inode *inode, struct file *filp)
 {
 	if (filp->f_mode & FMODE_WRITE) {
+<<<<<<< HEAD
 		mutex_lock(&inode->i_mutex);
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		down_write(&UDF_I(inode)->i_data_sem);
 		udf_discard_prealloc(inode);
 		udf_truncate_tail_extent(inode);
 		up_write(&UDF_I(inode)->i_data_sem);
+<<<<<<< HEAD
 		mutex_unlock(&inode->i_mutex);
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	}
 	return 0;
 }

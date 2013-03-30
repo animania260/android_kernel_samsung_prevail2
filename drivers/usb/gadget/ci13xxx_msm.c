@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2010-2011, Code Aurora Forum. All rights reserved.
+=======
+/* Copyright (c) 2010, Code Aurora Forum. All rights reserved.
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -9,6 +13,14 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
+<<<<<<< HEAD
+=======
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ *
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
  */
 
 #include <linux/module.h>
@@ -29,12 +41,31 @@ static irqreturn_t msm_udc_irq(int irq, void *data)
 static void ci13xxx_msm_notify_event(struct ci13xxx *udc, unsigned event)
 {
 	struct device *dev = udc->gadget.dev.parent;
+<<<<<<< HEAD
+=======
+	int val;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	switch (event) {
 	case CI13XXX_CONTROLLER_RESET_EVENT:
 		dev_dbg(dev, "CI13XXX_CONTROLLER_RESET_EVENT received\n");
 		writel(0, USB_AHBBURST);
+<<<<<<< HEAD
 		writel_relaxed(0x08, USB_AHBMODE);
+=======
+		writel(0, USB_AHBMODE);
+		break;
+	case CI13XXX_CONTROLLER_STOPPED_EVENT:
+		dev_dbg(dev, "CI13XXX_CONTROLLER_STOPPED_EVENT received\n");
+		/*
+		 * Put the transceiver in non-driving mode. Otherwise host
+		 * may not detect soft-disconnection.
+		 */
+		val = otg_io_read(udc->transceiver, ULPI_FUNC_CTRL);
+		val &= ~ULPI_FUNC_CTRL_OPMODE_MASK;
+		val |= ULPI_FUNC_CTRL_OPMODE_NONDRIVING;
+		otg_io_write(udc->transceiver, val, ULPI_FUNC_CTRL);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		break;
 	default:
 		dev_dbg(dev, "unknown ci13xxx_udc event\n");
@@ -47,7 +78,10 @@ static struct ci13xxx_udc_driver ci13xxx_msm_udc_driver = {
 	.flags			= CI13XXX_REGS_SHARED |
 				  CI13XXX_REQUIRE_TRANSCEIVER |
 				  CI13XXX_PULLUP_ON_VBUS |
+<<<<<<< HEAD
 				  CI13XXX_ZERO_ITC |
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 				  CI13XXX_DISABLE_STREAMING,
 
 	.notify_event		= ci13xxx_msm_notify_event,

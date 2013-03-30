@@ -814,6 +814,10 @@ static int __init ne_drv_probe(struct platform_device *pdev)
 		dev->irq = irq[this_dev];
 		dev->mem_end = bad[this_dev];
 	}
+<<<<<<< HEAD
+=======
+	SET_NETDEV_DEV(dev, &pdev->dev);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	err = do_ne_probe(dev);
 	if (err) {
 		free_netdev(dev);

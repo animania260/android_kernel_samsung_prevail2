@@ -297,6 +297,12 @@ static struct mtd_part_parser redboot_parser = {
 	.name = "RedBoot",
 };
 
+<<<<<<< HEAD
+=======
+/* mtd parsers will request the module by parser name */
+MODULE_ALIAS("RedBoot");
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 static int __init redboot_parser_init(void)
 {
 	return register_mtd_parser(&redboot_parser);

@@ -24,7 +24,11 @@
 
 int rtc_hctosys_ret = -ENODEV;
 
+<<<<<<< HEAD
 int rtc_hctosys(void)
+=======
+static int __init rtc_hctosys(void)
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 {
 	int err = -ENODEV;
 	struct rtc_time tm;

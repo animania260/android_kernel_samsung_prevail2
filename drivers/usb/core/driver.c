@@ -1278,6 +1278,7 @@ static int usb_resume_both(struct usb_device *udev, pm_message_t msg)
 	return status;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_USB_OTG
 void usb_hnp_polling_work(struct work_struct *work)
 {
@@ -1316,6 +1317,8 @@ out:
 }
 #endif
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 static void choose_wakeup(struct usb_device *udev, pm_message_t msg)
 {
 	int	w;
@@ -1621,7 +1624,11 @@ int usb_autopm_get_interface_async(struct usb_interface *intf)
 	dev_vdbg(&intf->dev, "%s: cnt %d -> %d\n",
 			__func__, atomic_read(&intf->dev.power.usage_count),
 			status);
+<<<<<<< HEAD
 	if (status > 0)
+=======
+	if (status > 0 || status == -EINPROGRESS)
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		status = 0;
 	return status;
 }
@@ -1706,6 +1713,14 @@ int usb_runtime_suspend(struct device *dev)
 		return -EAGAIN;
 
 	status = usb_suspend_both(udev, PMSG_AUTO_SUSPEND);
+<<<<<<< HEAD
+=======
+
+	/* Allow a retry if autosuspend failed temporarily */
+	if (status == -EAGAIN || status == -EBUSY)
+		usb_mark_last_busy(udev);
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	/* The PM core reacts badly unless the return code is 0,
 	 * -EAGAIN, or -EBUSY, so always return -EBUSY on an error.
 	 */

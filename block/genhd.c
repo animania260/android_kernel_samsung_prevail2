@@ -36,6 +36,10 @@ static DEFINE_IDR(ext_devt_idr);
 
 static struct device_type disk_type;
 
+<<<<<<< HEAD
+=======
+static void disk_alloc_events(struct gendisk *disk);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 static void disk_add_events(struct gendisk *disk);
 static void disk_del_events(struct gendisk *disk);
 static void disk_release_events(struct gendisk *disk);
@@ -602,6 +606,11 @@ void add_disk(struct gendisk *disk)
 	disk->major = MAJOR(devt);
 	disk->first_minor = MINOR(devt);
 
+<<<<<<< HEAD
+=======
+	disk_alloc_events(disk);
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	/* Register BDI before referencing it from bdev */ 
 	bdi = &disk->queue->backing_dev_info;
 	bdi_register_dev(bdi, disk_devt(disk));
@@ -611,6 +620,15 @@ void add_disk(struct gendisk *disk)
 	register_disk(disk);
 	blk_register_queue(disk);
 
+<<<<<<< HEAD
+=======
+	/*
+	 * Take an extra ref on queue which will be put on disk_release()
+	 * so that it sticks around as long as @disk is there.
+	 */
+	WARN_ON_ONCE(blk_get_queue(disk->queue));
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	retval = sysfs_create_link(&disk_to_dev(disk)->kobj, &bdi->dev->kobj,
 				   "bdi");
 	WARN_ON(retval);
@@ -735,7 +753,11 @@ void __init printk_all_partitions(void)
 		struct hd_struct *part;
 		char name_buf[BDEVNAME_SIZE];
 		char devt_buf[BDEVT_SIZE];
+<<<<<<< HEAD
 		u8 uuid[PARTITION_META_INFO_UUIDLTH * 2 + 1];
+=======
+		char uuid_buf[PARTITION_META_INFO_UUIDLTH * 2 + 5];
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 		/*
 		 * Don't show empty devices or things that have been
@@ -754,14 +776,26 @@ void __init printk_all_partitions(void)
 		while ((part = disk_part_iter_next(&piter))) {
 			bool is_part0 = part == &disk->part0;
 
+<<<<<<< HEAD
 			uuid[0] = 0;
 			if (part->info)
 				part_unpack_uuid(part->info->uuid, uuid);
+=======
+			uuid_buf[0] = '\0';
+			if (part->info)
+				snprintf(uuid_buf, sizeof(uuid_buf), "%pU",
+					 part->info->uuid);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 			printk("%s%s %10llu %s %s", is_part0 ? "" : "  ",
 			       bdevt_str(part_devt(part), devt_buf),
 			       (unsigned long long)part->nr_sects >> 1,
+<<<<<<< HEAD
 			       disk_name(disk, part->partno, name_buf), uuid);
+=======
+			       disk_name(disk, part->partno, name_buf),
+			       uuid_buf);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			if (is_part0) {
 				if (disk->driverfs_dev != NULL &&
 				    disk->driverfs_dev->driver != NULL)
@@ -1103,6 +1137,7 @@ static void disk_release(struct device *dev)
 	disk_replace_part_tbl(disk, NULL);
 	free_part_stats(&disk->part0);
 	free_part_info(&disk->part0);
+<<<<<<< HEAD
 	kfree(disk);
 }
 
@@ -1121,6 +1156,12 @@ static int disk_uevent(struct device *dev, struct kobj_uevent_env *env)
 	return 0;
 }
 
+=======
+	if (disk->queue)
+		blk_put_queue(disk->queue);
+	kfree(disk);
+}
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 struct class block_class = {
 	.name		= "block",
 };
@@ -1139,7 +1180,10 @@ static struct device_type disk_type = {
 	.groups		= disk_attr_groups,
 	.release	= disk_release,
 	.devnode	= block_devnode,
+<<<<<<< HEAD
 	.uevent		= disk_uevent,
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 };
 
 #ifdef CONFIG_PROC_FS
@@ -1493,9 +1537,15 @@ static void __disk_unblock_events(struct gendisk *disk, bool check_now)
 	intv = disk_events_poll_jiffies(disk);
 	set_timer_slack(&ev->dwork.timer, intv / 4);
 	if (check_now)
+<<<<<<< HEAD
 		queue_delayed_work(system_nrt_wq, &ev->dwork, 0);
 	else if (intv)
 		queue_delayed_work(system_nrt_wq, &ev->dwork, intv);
+=======
+		queue_delayed_work(system_nrt_freezable_wq, &ev->dwork, 0);
+	else if (intv)
+		queue_delayed_work(system_nrt_freezable_wq, &ev->dwork, intv);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 out_unlock:
 	spin_unlock_irqrestore(&ev->lock, flags);
 }
@@ -1536,7 +1586,11 @@ void disk_check_events(struct gendisk *disk)
 	spin_lock_irqsave(&ev->lock, flags);
 	if (!ev->block) {
 		cancel_delayed_work(&ev->dwork);
+<<<<<<< HEAD
 		queue_delayed_work(system_nrt_wq, &ev->dwork, 0);
+=======
+		queue_delayed_work(system_nrt_freezable_wq, &ev->dwork, 0);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	}
 	spin_unlock_irqrestore(&ev->lock, flags);
 }
@@ -1574,7 +1628,11 @@ unsigned int disk_clear_events(struct gendisk *disk, unsigned int mask)
 
 	/* uncondtionally schedule event check and wait for it to finish */
 	disk_block_events(disk);
+<<<<<<< HEAD
 	queue_delayed_work(system_nrt_wq, &ev->dwork, 0);
+=======
+	queue_delayed_work(system_nrt_freezable_wq, &ev->dwork, 0);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	flush_delayed_work(&ev->dwork);
 	__disk_unblock_events(disk, false);
 
@@ -1611,7 +1669,11 @@ static void disk_events_workfn(struct work_struct *work)
 
 	intv = disk_events_poll_jiffies(disk);
 	if (!ev->block && intv)
+<<<<<<< HEAD
 		queue_delayed_work(system_nrt_wq, &ev->dwork, intv);
+=======
+		queue_delayed_work(system_nrt_freezable_wq, &ev->dwork, intv);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	spin_unlock_irq(&ev->lock);
 
@@ -1749,9 +1811,15 @@ module_param_cb(events_dfl_poll_msecs, &disk_events_dfl_poll_msecs_param_ops,
 		&disk_events_dfl_poll_msecs, 0644);
 
 /*
+<<<<<<< HEAD
  * disk_{add|del|release}_events - initialize and destroy disk_events.
  */
 static void disk_add_events(struct gendisk *disk)
+=======
+ * disk_{alloc|add|del|release}_events - initialize and destroy disk_events.
+ */
+static void disk_alloc_events(struct gendisk *disk)
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 {
 	struct disk_events *ev;
 
@@ -1764,6 +1832,7 @@ static void disk_add_events(struct gendisk *disk)
 		return;
 	}
 
+<<<<<<< HEAD
 	if (sysfs_create_files(&disk_to_dev(disk)->kobj,
 			       disk_events_attrs) < 0) {
 		pr_warn("%s: failed to create sysfs files for events\n",
@@ -1774,6 +1843,8 @@ static void disk_add_events(struct gendisk *disk)
 
 	disk->ev = ev;
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	INIT_LIST_HEAD(&ev->node);
 	ev->disk = disk;
 	spin_lock_init(&ev->lock);
@@ -1782,8 +1853,26 @@ static void disk_add_events(struct gendisk *disk)
 	ev->poll_msecs = -1;
 	INIT_DELAYED_WORK(&ev->dwork, disk_events_workfn);
 
+<<<<<<< HEAD
 	mutex_lock(&disk_events_mutex);
 	list_add_tail(&ev->node, &disk_events);
+=======
+	disk->ev = ev;
+}
+
+static void disk_add_events(struct gendisk *disk)
+{
+	if (!disk->ev)
+		return;
+
+	/* FIXME: error handling */
+	if (sysfs_create_files(&disk_to_dev(disk)->kobj, disk_events_attrs) < 0)
+		pr_warn("%s: failed to create sysfs files for events\n",
+			disk->disk_name);
+
+	mutex_lock(&disk_events_mutex);
+	list_add_tail(&disk->ev->node, &disk_events);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	mutex_unlock(&disk_events_mutex);
 
 	/*

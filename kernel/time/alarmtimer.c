@@ -181,7 +181,11 @@ static enum hrtimer_restart alarmtimer_fired(struct hrtimer *timer)
 		struct alarm *alarm;
 		ktime_t expired = next->expires;
 
+<<<<<<< HEAD
 		if (expired.tv64 >= now.tv64)
+=======
+		if (expired.tv64 > now.tv64)
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			break;
 
 		alarm = container_of(next, struct alarm, node);

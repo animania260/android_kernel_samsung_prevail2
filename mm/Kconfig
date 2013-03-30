@@ -136,7 +136,11 @@ config MEMORY_HOTPLUG
 	bool "Allow for memory hot-add"
 	depends on SPARSEMEM || X86_64_ACPI_NUMA
 	depends on HOTPLUG && ARCH_ENABLE_MEMORY_HOTPLUG
+<<<<<<< HEAD
 	depends on (IA64 || X86 || PPC_BOOK3S_64 || SUPERH || S390 || ARM)
+=======
+	depends on (IA64 || X86 || PPC_BOOK3S_64 || SUPERH || S390)
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 config MEMORY_HOTPLUG_SPARSE
 	def_bool y

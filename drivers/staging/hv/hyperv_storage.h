@@ -218,6 +218,10 @@ struct vstor_packet {
 #define STORVSC_MAX_LUNS_PER_TARGET			64
 #define STORVSC_MAX_TARGETS				1
 #define STORVSC_MAX_CHANNELS				1
+<<<<<<< HEAD
+=======
+#define STORVSC_MAX_CMD_LEN				16
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 struct hv_storvsc_request;
 

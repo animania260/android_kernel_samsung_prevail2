@@ -910,6 +910,11 @@ int ieee80211_register_hw(struct ieee80211_hw *hw)
 		wiphy_debug(local->hw.wiphy, "Failed to initialize wep: %d\n",
 			    result);
 
+<<<<<<< HEAD
+=======
+	ieee80211_led_init(local);
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	rtnl_lock();
 
 	result = ieee80211_init_rate_ctrl_alg(local,
@@ -931,8 +936,11 @@ int ieee80211_register_hw(struct ieee80211_hw *hw)
 
 	rtnl_unlock();
 
+<<<<<<< HEAD
 	ieee80211_led_init(local);
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	local->network_latency_notifier.notifier_call =
 		ieee80211_max_network_latency;
 	result = pm_qos_add_notifier(PM_QOS_NETWORK_LATENCY,

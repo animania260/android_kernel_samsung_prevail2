@@ -314,12 +314,20 @@ static int asix_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
 	skb_pull(skb, 4);
 
 	while (skb->len > 0) {
+<<<<<<< HEAD
 		if ((short)(header & 0x0000ffff) !=
 		    ~((short)((header & 0xffff0000) >> 16))) {
 			netdev_err(dev->net, "asix_rx_fixup() Bad Header Length\n");
 		}
 		/* get the packet length */
 		size = (u16) (header & 0x0000ffff);
+=======
+		if ((header & 0x07ff) != ((~header >> 16) & 0x07ff))
+			netdev_err(dev->net, "asix_rx_fixup() Bad Header Length\n");
+
+		/* get the packet length */
+		size = (u16) (header & 0x000007ff);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 		if ((skb->len) - ((size + 1) & 0xfffe) == 0) {
 			u8 alignment = (unsigned long)skb->data & 0x3;
@@ -372,7 +380,11 @@ static int asix_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
 
 		skb_pull(skb, (size + 1) & 0xfffe);
 
+<<<<<<< HEAD
 		if (skb->len == 0)
+=======
+		if (skb->len < sizeof(header))
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			break;
 
 		head = (u8 *) skb->data;
@@ -399,7 +411,11 @@ static struct sk_buff *asix_tx_fixup(struct usbnet *dev, struct sk_buff *skb,
 	u32 packet_len;
 	u32 padbytes = 0xffff0000;
 
+<<<<<<< HEAD
 	padlen = ((skb->len + 4) % 512) ? 0 : 4;
+=======
+	padlen = ((skb->len + 4) & (dev->maxpacket - 1)) ? 0 : 4;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	if ((!skb_cloned(skb)) &&
 	    ((headroom + tailroom) >= (4 + padlen))) {
@@ -421,7 +437,11 @@ static struct sk_buff *asix_tx_fixup(struct usbnet *dev, struct sk_buff *skb,
 	cpu_to_le32s(&packet_len);
 	skb_copy_to_linear_data(skb, &packet_len, sizeof(packet_len));
 
+<<<<<<< HEAD
 	if ((skb->len % 512) == 0) {
+=======
+	if (padlen) {
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		cpu_to_le32s(&padbytes);
 		memcpy(skb_tail_pointer(skb), &padbytes, sizeof(padbytes));
 		skb_put(skb, sizeof(padbytes));
@@ -1486,6 +1506,13 @@ static const struct usb_device_id	products [] = {
 	USB_DEVICE (0x6189, 0x182d),
 	.driver_info =  (unsigned long) &ax8817x_info,
 }, {
+<<<<<<< HEAD
+=======
+	// Sitecom LN-031 "USB 2.0 10/100/1000 Ethernet adapter"
+	USB_DEVICE (0x0df6, 0x0056),
+	.driver_info =  (unsigned long) &ax88178_info,
+}, {
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	// corega FEther USB2-TX
 	USB_DEVICE (0x07aa, 0x0017),
 	.driver_info =  (unsigned long) &ax8817x_info,
@@ -1534,6 +1561,13 @@ static const struct usb_device_id	products [] = {
 	USB_DEVICE (0x2001, 0x3c05),
 	.driver_info = (unsigned long) &ax88772_info,
 }, {
+<<<<<<< HEAD
+=======
+       // DLink DUB-E100 H/W Ver C1
+       USB_DEVICE (0x2001, 0x1a02),
+       .driver_info = (unsigned long) &ax88772_info,
+}, {
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	// Linksys USB1000
 	USB_DEVICE (0x1737, 0x0039),
 	.driver_info = (unsigned long) &ax88178_info,
@@ -1561,6 +1595,13 @@ static const struct usb_device_id	products [] = {
 	// ASIX 88772a
 	USB_DEVICE(0x0db0, 0xa877),
 	.driver_info = (unsigned long) &ax88772_info,
+<<<<<<< HEAD
+=======
+}, {
+	// Asus USB Ethernet Adapter
+	USB_DEVICE (0x0b95, 0x7e2b),
+	.driver_info = (unsigned long) &ax88772_info,
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 },
 	{ },		// END
 };

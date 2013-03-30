@@ -59,7 +59,11 @@ static ssize_t jz4740_hwmon_read_adcin(struct device *dev,
 {
 	struct jz4740_hwmon *hwmon = dev_get_drvdata(dev);
 	struct completion *completion = &hwmon->read_completion;
+<<<<<<< HEAD
 	unsigned long t;
+=======
+	long t;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	unsigned long val;
 	int ret;
 

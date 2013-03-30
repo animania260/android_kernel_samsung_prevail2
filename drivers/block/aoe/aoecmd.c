@@ -35,6 +35,10 @@ new_skb(ulong len)
 		skb_reset_mac_header(skb);
 		skb_reset_network_header(skb);
 		skb->protocol = __constant_htons(ETH_P_AOE);
+<<<<<<< HEAD
+=======
+		skb_checksum_none_assert(skb);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	}
 	return skb;
 }

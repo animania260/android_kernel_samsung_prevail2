@@ -991,6 +991,12 @@ static int acpi_processor_setup_cpuidle(struct acpi_processor *pr)
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
+=======
+	if (!dev)
+		return -EINVAL;
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	dev->cpu = pr->id;
 	for (i = 0; i < CPUIDLE_STATE_MAX; i++) {
 		dev->states[i].name[0] = '\0';

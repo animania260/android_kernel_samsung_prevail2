@@ -1023,7 +1023,14 @@ test_ctrl_queue(struct usbtest_dev *dev, struct usbtest_param *param)
 		case 13:	/* short read, resembling case 10 */
 			req.wValue = cpu_to_le16((USB_DT_CONFIG << 8) | 0);
 			/* last data packet "should" be DATA1, not DATA0 */
+<<<<<<< HEAD
 			len = 1024 - udev->descriptor.bMaxPacketSize0;
+=======
+			if (udev->speed == USB_SPEED_SUPER)
+				len = 1024 - 512;
+			else
+				len = 1024 - udev->descriptor.bMaxPacketSize0;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			expected = -EREMOTEIO;
 			break;
 		case 14:	/* short read; try to fill the last packet */
@@ -1382,11 +1389,23 @@ static int test_halt(struct usbtest_dev *tdev, int ep, struct urb *urb)
 
 static int halt_simple(struct usbtest_dev *dev)
 {
+<<<<<<< HEAD
 	int		ep;
 	int		retval = 0;
 	struct urb	*urb;
 
 	urb = simple_alloc_urb(testdev_to_usbdev(dev), 0, 512);
+=======
+	int			ep;
+	int			retval = 0;
+	struct urb		*urb;
+	struct usb_device	*udev = testdev_to_usbdev(dev);
+
+	if (udev->speed == USB_SPEED_SUPER)
+		urb = simple_alloc_urb(udev, 0, 1024);
+	else
+		urb = simple_alloc_urb(udev, 0, 512);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	if (urb == NULL)
 		return -ENOMEM;
 

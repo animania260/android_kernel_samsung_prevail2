@@ -41,11 +41,15 @@ static struct cpufreq_driver *cpufreq_driver;
 static DEFINE_PER_CPU(struct cpufreq_policy *, cpufreq_cpu_data);
 #ifdef CONFIG_HOTPLUG_CPU
 /* This one keeps track of the previously set governor of a removed CPU */
+<<<<<<< HEAD
 struct cpufreq_cpu_save_data {
 	char gov[CPUFREQ_NAME_LEN];
 	unsigned int max, min;
 };
 static DEFINE_PER_CPU(struct cpufreq_cpu_save_data, cpufreq_policy_save);
+=======
+static DEFINE_PER_CPU(char[CPUFREQ_NAME_LEN], cpufreq_cpu_governor);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #endif
 static DEFINE_SPINLOCK(cpufreq_driver_lock);
 
@@ -72,7 +76,11 @@ static DEFINE_PER_CPU(int, cpufreq_policy_cpu);
 static DEFINE_PER_CPU(struct rw_semaphore, cpu_policy_rwsem);
 
 #define lock_policy_rwsem(mode, cpu)					\
+<<<<<<< HEAD
 int lock_policy_rwsem_##mode						\
+=======
+static int lock_policy_rwsem_##mode					\
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 (int cpu)								\
 {									\
 	int policy_cpu = per_cpu(cpufreq_policy_cpu, cpu);		\
@@ -97,7 +105,11 @@ static void unlock_policy_rwsem_read(int cpu)
 	up_read(&per_cpu(cpu_policy_rwsem, policy_cpu));
 }
 
+<<<<<<< HEAD
 void unlock_policy_rwsem_write(int cpu)
+=======
+static void unlock_policy_rwsem_write(int cpu)
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 {
 	int policy_cpu = per_cpu(cpufreq_policy_cpu, cpu);
 	BUG_ON(policy_cpu == -1);
@@ -397,6 +409,7 @@ static ssize_t store_##file_name					\
 }
 
 store_one(scaling_min_freq, min);
+<<<<<<< HEAD
 #ifdef CONFIG_SEC_DVFS
 static ssize_t store_scaling_max_freq
 (struct cpufreq_policy *policy, const char *buf, size_t count)
@@ -420,6 +433,9 @@ static ssize_t store_scaling_max_freq
 #else
 store_one(scaling_max_freq, max);
 #endif
+=======
+store_one(scaling_max_freq, max);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 /**
  * show_cpuinfo_cur_freq - current CPU frequency as detected by hardware
@@ -714,12 +730,17 @@ static int cpufreq_add_dev_policy(unsigned int cpu,
 #ifdef CONFIG_HOTPLUG_CPU
 	struct cpufreq_governor *gov;
 
+<<<<<<< HEAD
 	gov = __find_governor(per_cpu(cpufreq_policy_save, cpu).gov);
+=======
+	gov = __find_governor(per_cpu(cpufreq_cpu_governor, cpu));
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	if (gov) {
 		policy->governor = gov;
 		pr_debug("Restoring governor %s for cpu %d\n",
 		       policy->governor->name, cpu);
 	}
+<<<<<<< HEAD
 	if (per_cpu(cpufreq_policy_save, cpu).min) {
 		policy->min = per_cpu(cpufreq_policy_save, cpu).min;
 		policy->user_policy.min = policy->min;
@@ -730,6 +751,8 @@ static int cpufreq_add_dev_policy(unsigned int cpu,
 	}
 	pr_debug("Restoring CPU%d min %d and max %d\n",
 		cpu, policy->min, policy->max);
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #endif
 
 	for_each_cpu(j, policy->cpus) {
@@ -1079,12 +1102,17 @@ static int __cpufreq_remove_dev(struct sys_device *sys_dev)
 #ifdef CONFIG_SMP
 
 #ifdef CONFIG_HOTPLUG_CPU
+<<<<<<< HEAD
 	strncpy(per_cpu(cpufreq_policy_save, cpu).gov, data->governor->name,
 			CPUFREQ_NAME_LEN);
 	per_cpu(cpufreq_policy_save, cpu).min = data->min;
 	per_cpu(cpufreq_policy_save, cpu).max = data->max;
 	pr_debug("Saving CPU%d policy min %d and max %d\n",
 			cpu, data->min, data->max);
+=======
+	strncpy(per_cpu(cpufreq_cpu_governor, cpu), data->governor->name,
+			CPUFREQ_NAME_LEN);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #endif
 
 	/* if we have other CPUs still registered, we need to unlink them,
@@ -1108,12 +1136,17 @@ static int __cpufreq_remove_dev(struct sys_device *sys_dev)
 				continue;
 			pr_debug("removing link for cpu %u\n", j);
 #ifdef CONFIG_HOTPLUG_CPU
+<<<<<<< HEAD
 			strncpy(per_cpu(cpufreq_policy_save, j).gov,
 				data->governor->name, CPUFREQ_NAME_LEN);
 			per_cpu(cpufreq_policy_save, j).min = data->min;
 			per_cpu(cpufreq_policy_save, j).max = data->max;
 			pr_debug("Saving CPU%d policy min %d and max %d\n",
 					j, data->min, data->max);
+=======
+			strncpy(per_cpu(cpufreq_cpu_governor, j),
+				data->governor->name, CPUFREQ_NAME_LEN);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #endif
 			cpu_sys_dev = get_cpu_sysdev(j);
 			kobj = &cpu_sys_dev->kobj;
@@ -1599,11 +1632,16 @@ void cpufreq_unregister_governor(struct cpufreq_governor *governor)
 	for_each_present_cpu(cpu) {
 		if (cpu_online(cpu))
 			continue;
+<<<<<<< HEAD
 		if (!strcmp(per_cpu(cpufreq_policy_save, cpu).gov,
 					governor->name))
 			strcpy(per_cpu(cpufreq_policy_save, cpu).gov, "\0");
 		per_cpu(cpufreq_policy_save, cpu).min = 0;
 		per_cpu(cpufreq_policy_save, cpu).max = 0;
+=======
+		if (!strcmp(per_cpu(cpufreq_cpu_governor, cpu), governor->name))
+			strcpy(per_cpu(cpufreq_cpu_governor, cpu), "\0");
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	}
 #endif
 
@@ -1800,6 +1838,7 @@ static int __cpuinit cpufreq_cpu_callback(struct notifier_block *nfb,
 		case CPU_ONLINE:
 		case CPU_ONLINE_FROZEN:
 			cpufreq_add_dev(sys_dev);
+<<<<<<< HEAD
 #ifdef CONFIG_SEC_DVFS
 			if (cpu == NON_BOOT_CPU) {
 #ifndef CONFIG_SEC_DVFS_UNI
@@ -1825,6 +1864,8 @@ static int __cpuinit cpufreq_cpu_callback(struct notifier_block *nfb,
 #endif
 			}
 #endif
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			break;
 		case CPU_DOWN_PREPARE:
 		case CPU_DOWN_PREPARE_FROZEN:

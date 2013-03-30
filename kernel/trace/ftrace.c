@@ -952,7 +952,11 @@ struct ftrace_func_probe {
 };
 
 enum {
+<<<<<<< HEAD
 	FTRACE_ENABLE_CALLS		= (1 << 0),
+=======
+	FTRACE_UPDATE_CALLS		= (1 << 0),
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	FTRACE_DISABLE_CALLS		= (1 << 1),
 	FTRACE_UPDATE_TRACE_FUNC	= (1 << 2),
 	FTRACE_START_FUNC_RET		= (1 << 3),
@@ -1182,8 +1186,19 @@ alloc_and_copy_ftrace_hash(int size_bits, struct ftrace_hash *hash)
 	return NULL;
 }
 
+<<<<<<< HEAD
 static int
 ftrace_hash_move(struct ftrace_hash **dst, struct ftrace_hash *src)
+=======
+static void
+ftrace_hash_rec_disable(struct ftrace_ops *ops, int filter_hash);
+static void
+ftrace_hash_rec_enable(struct ftrace_ops *ops, int filter_hash);
+
+static int
+ftrace_hash_move(struct ftrace_ops *ops, int enable,
+		 struct ftrace_hash **dst, struct ftrace_hash *src)
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 {
 	struct ftrace_func_entry *entry;
 	struct hlist_node *tp, *tn;
@@ -1193,9 +1208,22 @@ ftrace_hash_move(struct ftrace_hash **dst, struct ftrace_hash *src)
 	unsigned long key;
 	int size = src->count;
 	int bits = 0;
+<<<<<<< HEAD
 	int i;
 
 	/*
+=======
+	int ret;
+	int i;
+
+	/*
+	 * Remove the current set, update the hash and add
+	 * them back.
+	 */
+	ftrace_hash_rec_disable(ops, enable);
+
+	/*
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	 * If the new source is empty, just free dst and assign it
 	 * the empty_hash.
 	 */
@@ -1215,9 +1243,16 @@ ftrace_hash_move(struct ftrace_hash **dst, struct ftrace_hash *src)
 	if (bits > FTRACE_HASH_MAX_BITS)
 		bits = FTRACE_HASH_MAX_BITS;
 
+<<<<<<< HEAD
 	new_hash = alloc_ftrace_hash(bits);
 	if (!new_hash)
 		return -ENOMEM;
+=======
+	ret = -ENOMEM;
+	new_hash = alloc_ftrace_hash(bits);
+	if (!new_hash)
+		goto out;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	size = 1 << src->size_bits;
 	for (i = 0; i < size; i++) {
@@ -1236,7 +1271,20 @@ ftrace_hash_move(struct ftrace_hash **dst, struct ftrace_hash *src)
 	rcu_assign_pointer(*dst, new_hash);
 	free_ftrace_hash_rcu(old_hash);
 
+<<<<<<< HEAD
 	return 0;
+=======
+	ret = 0;
+ out:
+	/*
+	 * Enable regardless of ret:
+	 *  On success, we enable the new hash.
+	 *  On failure, we re-enable the original hash.
+	 */
+	ftrace_hash_rec_enable(ops, enable);
+
+	return ret;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 /*
@@ -1498,7 +1546,11 @@ int ftrace_text_reserved(void *start, void *end)
 
 
 static int
+<<<<<<< HEAD
 __ftrace_replace_code(struct dyn_ftrace *rec, int enable)
+=======
+__ftrace_replace_code(struct dyn_ftrace *rec, int update)
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 {
 	unsigned long ftrace_addr;
 	unsigned long flag = 0UL;
@@ -1506,17 +1558,28 @@ __ftrace_replace_code(struct dyn_ftrace *rec, int enable)
 	ftrace_addr = (unsigned long)FTRACE_ADDR;
 
 	/*
+<<<<<<< HEAD
 	 * If we are enabling tracing:
+=======
+	 * If we are updating calls:
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	 *
 	 *   If the record has a ref count, then we need to enable it
 	 *   because someone is using it.
 	 *
 	 *   Otherwise we make sure its disabled.
 	 *
+<<<<<<< HEAD
 	 * If we are disabling tracing, then disable all records that
 	 * are enabled.
 	 */
 	if (enable && (rec->flags & ~FTRACE_FL_MASK))
+=======
+	 * If we are disabling calls, then disable all records that
+	 * are enabled.
+	 */
+	if (update && (rec->flags & ~FTRACE_FL_MASK))
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		flag = FTRACE_FL_ENABLED;
 
 	/* If the state of this record hasn't changed, then do nothing */
@@ -1532,7 +1595,11 @@ __ftrace_replace_code(struct dyn_ftrace *rec, int enable)
 	return ftrace_make_nop(NULL, rec, ftrace_addr);
 }
 
+<<<<<<< HEAD
 static void ftrace_replace_code(int enable)
+=======
+static void ftrace_replace_code(int update)
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 {
 	struct dyn_ftrace *rec;
 	struct ftrace_page *pg;
@@ -1546,7 +1613,11 @@ static void ftrace_replace_code(int enable)
 		if (rec->flags & FTRACE_FL_FREE)
 			continue;
 
+<<<<<<< HEAD
 		failed = __ftrace_replace_code(rec, enable);
+=======
+		failed = __ftrace_replace_code(rec, update);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		if (failed) {
 			ftrace_bug(failed, rec->ip);
 			/* Stop processing */
@@ -1596,7 +1667,11 @@ static int __ftrace_modify_code(void *data)
 {
 	int *command = data;
 
+<<<<<<< HEAD
 	if (*command & FTRACE_ENABLE_CALLS)
+=======
+	if (*command & FTRACE_UPDATE_CALLS)
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		ftrace_replace_code(1);
 	else if (*command & FTRACE_DISABLE_CALLS)
 		ftrace_replace_code(0);
@@ -1652,7 +1727,11 @@ static int ftrace_startup(struct ftrace_ops *ops, int command)
 		return -ENODEV;
 
 	ftrace_start_up++;
+<<<<<<< HEAD
 	command |= FTRACE_ENABLE_CALLS;
+=======
+	command |= FTRACE_UPDATE_CALLS;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	/* ops marked global share the filter hashes */
 	if (ops->flags & FTRACE_OPS_FL_GLOBAL) {
@@ -1704,8 +1783,12 @@ static void ftrace_shutdown(struct ftrace_ops *ops, int command)
 	if (ops != &global_ops || !global_start_up)
 		ops->flags &= ~FTRACE_OPS_FL_ENABLED;
 
+<<<<<<< HEAD
 	if (!ftrace_start_up)
 		command |= FTRACE_DISABLE_CALLS;
+=======
+	command |= FTRACE_UPDATE_CALLS;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	if (saved_ftrace_func != ftrace_trace_function) {
 		saved_ftrace_func = ftrace_trace_function;
@@ -1727,7 +1810,11 @@ static void ftrace_startup_sysctl(void)
 	saved_ftrace_func = NULL;
 	/* ftrace_start_up is true if we want ftrace running */
 	if (ftrace_start_up)
+<<<<<<< HEAD
 		ftrace_run_update_code(FTRACE_ENABLE_CALLS);
+=======
+		ftrace_run_update_code(FTRACE_UPDATE_CALLS);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 static void ftrace_shutdown_sysctl(void)
@@ -2036,7 +2123,11 @@ static void reset_iter_read(struct ftrace_iterator *iter)
 {
 	iter->pos = 0;
 	iter->func_pos = 0;
+<<<<<<< HEAD
 	iter->flags &= ~(FTRACE_ITER_PRINTALL & FTRACE_ITER_HASH);
+=======
+	iter->flags &= ~(FTRACE_ITER_PRINTALL | FTRACE_ITER_HASH);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 static void *t_start(struct seq_file *m, loff_t *pos)
@@ -2877,7 +2968,15 @@ ftrace_set_regex(struct ftrace_ops *ops, unsigned char *buf, int len,
 		ftrace_match_records(hash, buf, len);
 
 	mutex_lock(&ftrace_lock);
+<<<<<<< HEAD
 	ret = ftrace_hash_move(orig_hash, hash);
+=======
+	ret = ftrace_hash_move(ops, enable, orig_hash, hash);
+	if (!ret && ops->flags & FTRACE_OPS_FL_ENABLED
+	    && ftrace_enabled)
+		ftrace_run_update_code(FTRACE_UPDATE_CALLS);
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	mutex_unlock(&ftrace_lock);
 
 	mutex_unlock(&ftrace_regex_lock);
@@ -3060,6 +3159,7 @@ ftrace_regex_release(struct inode *inode, struct file *file)
 			orig_hash = &iter->ops->notrace_hash;
 
 		mutex_lock(&ftrace_lock);
+<<<<<<< HEAD
 		/*
 		 * Remove the current set, update the hash and add
 		 * them back.
@@ -3072,6 +3172,14 @@ ftrace_regex_release(struct inode *inode, struct file *file)
 			    && ftrace_enabled)
 				ftrace_run_update_code(FTRACE_ENABLE_CALLS);
 		}
+=======
+		ret = ftrace_hash_move(iter->ops, filter_hash,
+				       orig_hash, iter->hash);
+		if (!ret && (iter->ops->flags & FTRACE_OPS_FL_ENABLED)
+		    && ftrace_enabled)
+			ftrace_run_update_code(FTRACE_UPDATE_CALLS);
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		mutex_unlock(&ftrace_lock);
 	}
 	free_ftrace_hash(iter->hash);
@@ -3412,6 +3520,7 @@ static void ftrace_init_module(struct module *mod,
 	ftrace_process_locs(mod, start, end);
 }
 
+<<<<<<< HEAD
 static int ftrace_module_notify(struct notifier_block *self,
 				unsigned long val, void *data)
 {
@@ -3427,20 +3536,62 @@ static int ftrace_module_notify(struct notifier_block *self,
 		ftrace_release_mod(mod);
 		break;
 	}
+=======
+static int ftrace_module_notify_enter(struct notifier_block *self,
+				      unsigned long val, void *data)
+{
+	struct module *mod = data;
+
+	if (val == MODULE_STATE_COMING)
+		ftrace_init_module(mod, mod->ftrace_callsites,
+				   mod->ftrace_callsites +
+				   mod->num_ftrace_callsites);
+	return 0;
+}
+
+static int ftrace_module_notify_exit(struct notifier_block *self,
+				     unsigned long val, void *data)
+{
+	struct module *mod = data;
+
+	if (val == MODULE_STATE_GOING)
+		ftrace_release_mod(mod);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	return 0;
 }
 #else
+<<<<<<< HEAD
 static int ftrace_module_notify(struct notifier_block *self,
 				unsigned long val, void *data)
+=======
+static int ftrace_module_notify_enter(struct notifier_block *self,
+				      unsigned long val, void *data)
+{
+	return 0;
+}
+static int ftrace_module_notify_exit(struct notifier_block *self,
+				     unsigned long val, void *data)
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 {
 	return 0;
 }
 #endif /* CONFIG_MODULES */
 
+<<<<<<< HEAD
 struct notifier_block ftrace_module_nb = {
 	.notifier_call = ftrace_module_notify,
 	.priority = 0,
+=======
+struct notifier_block ftrace_module_enter_nb = {
+	.notifier_call = ftrace_module_notify_enter,
+	.priority = INT_MAX,	/* Run before anything that can use kprobes */
+};
+
+struct notifier_block ftrace_module_exit_nb = {
+	.notifier_call = ftrace_module_notify_exit,
+	.priority = INT_MIN,	/* Run after anything that can remove kprobes */
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 };
 
 extern unsigned long __start_mcount_loc[];
@@ -3474,9 +3625,19 @@ void __init ftrace_init(void)
 				  __start_mcount_loc,
 				  __stop_mcount_loc);
 
+<<<<<<< HEAD
 	ret = register_module_notifier(&ftrace_module_nb);
 	if (ret)
 		pr_warning("Failed to register trace ftrace module notifier\n");
+=======
+	ret = register_module_notifier(&ftrace_module_enter_nb);
+	if (ret)
+		pr_warning("Failed to register trace ftrace module enter notifier\n");
+
+	ret = register_module_notifier(&ftrace_module_exit_nb);
+	if (ret)
+		pr_warning("Failed to register trace ftrace module exit notifier\n");
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	set_ftrace_early_filters();
 

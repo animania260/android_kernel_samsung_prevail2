@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2011-2012, Code Aurora Forum. All rights reserved.
+=======
+ * Copyright (c) 2011, Code Aurora Forum. All rights reserved.
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -16,18 +20,25 @@
 #include <linux/kernel.h>
 #include <linux/platform_device.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <linux/string.h>
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #include <linux/err.h>
 #include <linux/msm_ssbi.h>
 #include <linux/mfd/core.h>
 #include <linux/mfd/pm8xxx/pm8921.h>
 #include <linux/mfd/pm8xxx/core.h>
+<<<<<<< HEAD
 #include <linux/mfd/pm8xxx/regulator.h>
 #include <linux/leds-pm8xxx.h>
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 #define REG_HWREV		0x002  /* PMIC4 revision */
 #define REG_HWREV_2		0x0E8  /* PMIC4 revision 2 */
 
+<<<<<<< HEAD
 #define REG_MPP_BASE		0x050
 #define REG_IRQ_BASE		0x1BB
 
@@ -62,6 +73,11 @@ struct pm8921 {
 	struct mfd_cell					*mfd_regulators;
 	struct pm8xxx_regulator_core_platform_data	*regulator_cdata;
 	u32						rev_registers;
+=======
+struct pm8921 {
+	struct device			*dev;
+	struct pm_irq_chip		*irq_chip;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 };
 
 static int pm8921_readb(const struct device *dev, u16 addr, u8 *val)
@@ -106,6 +122,7 @@ static int pm8921_read_irq_stat(const struct device *dev, int irq)
 	return pm8xxx_get_irq_stat(pmic->irq_chip, irq);
 }
 
+<<<<<<< HEAD
 static enum pm8xxx_version pm8921_get_version(const struct device *dev)
 {
 	const struct pm8xxx_drvdata *pm8921_drvdata = dev_get_drvdata(dev);
@@ -132,12 +149,15 @@ static int pm8921_get_revision(const struct device *dev)
 	return pmic->rev_registers & PM8921_REVISION_MASK;
 }
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 static struct pm8xxx_drvdata pm8921_drvdata = {
 	.pmic_readb		= pm8921_readb,
 	.pmic_writeb		= pm8921_writeb,
 	.pmic_read_buf		= pm8921_read_buf,
 	.pmic_write_buf		= pm8921_write_buf,
 	.pmic_read_irq_stat	= pm8921_read_irq_stat,
+<<<<<<< HEAD
 	.pmic_get_version	= pm8921_get_version,
 	.pmic_get_revision	= pm8921_get_revision,
 };
@@ -581,6 +601,21 @@ pm8921_add_subdevices(const struct pm8921_platform_data *pdata,
 	if (pdata->irq_pdata) {
 		pdata->irq_pdata->irq_cdata.nirqs = PM8921_NR_IRQS;
 		pdata->irq_pdata->irq_cdata.base_addr = REG_IRQ_BASE;
+=======
+};
+
+static int __devinit pm8921_add_subdevices(const struct pm8921_platform_data
+					   *pdata,
+					   struct pm8921 *pmic,
+					   u32 rev)
+{
+	int ret = 0, irq_base = 0;
+	struct pm_irq_chip *irq_chip;
+
+	if (pdata->irq_pdata) {
+		pdata->irq_pdata->irq_cdata.nirqs = PM8921_NR_IRQS;
+		pdata->irq_pdata->irq_cdata.rev = rev;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		irq_base = pdata->irq_pdata->irq_base;
 		irq_chip = pm8xxx_irq_init(pmic->dev, pdata->irq_pdata);
 
@@ -591,6 +626,7 @@ pm8921_add_subdevices(const struct pm8921_platform_data *pdata,
 		}
 		pmic->irq_chip = irq_chip;
 	}
+<<<<<<< HEAD
 
 	if (pdata->gpio_pdata) {
 		if (version == PM8XXX_VERSION_8917) {
@@ -854,6 +890,18 @@ static int __devinit pm8921_probe(struct platform_device *pdev)
 	int revision;
 	int rc;
 	u8 val;
+=======
+	return ret;
+}
+
+static int __devinit pm8921_probe(struct platform_device *pdev)
+{
+	const struct pm8921_platform_data *pdata = pdev->dev.platform_data;
+	struct pm8921 *pmic;
+	int rc;
+	u8 val;
+	u32 rev;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	if (!pdata) {
 		pr_err("missing platform data\n");
@@ -873,7 +921,11 @@ static int __devinit pm8921_probe(struct platform_device *pdev)
 		goto err_read_rev;
 	}
 	pr_info("PMIC revision 1: %02X\n", val);
+<<<<<<< HEAD
 	pmic->rev_registers = val;
+=======
+	rev = val;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	/* Read PMIC chip revision 2 */
 	rc = msm_ssbi_read(pdev->dev.parent, REG_HWREV_2, &val, sizeof(val));
@@ -883,12 +935,17 @@ static int __devinit pm8921_probe(struct platform_device *pdev)
 		goto err_read_rev;
 	}
 	pr_info("PMIC revision 2: %02X\n", val);
+<<<<<<< HEAD
 	pmic->rev_registers |= val << BITS_PER_BYTE;
+=======
+	rev |= val << BITS_PER_BYTE;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	pmic->dev = &pdev->dev;
 	pm8921_drvdata.pm_chip_data = pmic;
 	platform_set_drvdata(pdev, &pm8921_drvdata);
 
+<<<<<<< HEAD
 	/* Print out human readable version and revision names. */
 	version = pm8xxx_get_version(pmic->dev);
 	revision = pm8xxx_get_revision(pmic->dev);
@@ -920,6 +977,9 @@ static int __devinit pm8921_probe(struct platform_device *pdev)
 	pr_info("PMIC Restart Reason: %s\n", pm8921_restart_reason[val]);
 
 	rc = pm8921_add_subdevices(pdata, pmic);
+=======
+	rc = pm8921_add_subdevices(pdata, pmic, rev);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	if (rc) {
 		pr_err("Cannot add subdevices rc=%d\n", rc);
 		goto err;
@@ -933,8 +993,11 @@ static int __devinit pm8921_probe(struct platform_device *pdev)
 err:
 	mfd_remove_devices(pmic->dev);
 	platform_set_drvdata(pdev, NULL);
+<<<<<<< HEAD
 	kfree(pmic->mfd_regulators);
 	kfree(pmic->regulator_cdata);
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 err_read_rev:
 	kfree(pmic);
 	return rc;
@@ -944,11 +1007,15 @@ static int __devexit pm8921_remove(struct platform_device *pdev)
 {
 	struct pm8xxx_drvdata *drvdata;
 	struct pm8921 *pmic = NULL;
+<<<<<<< HEAD
 	int i;
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	drvdata = platform_get_drvdata(pdev);
 	if (drvdata)
 		pmic = drvdata->pm_chip_data;
+<<<<<<< HEAD
 	if (pmic) {
 		if (pmic->dev)
 			mfd_remove_devices(pmic->dev);
@@ -966,6 +1033,16 @@ static int __devexit pm8921_remove(struct platform_device *pdev)
 		kfree(pmic);
 	}
 	platform_set_drvdata(pdev, NULL);
+=======
+	if (pmic)
+		mfd_remove_devices(pmic->dev);
+	if (pmic->irq_chip) {
+		pm8xxx_irq_exit(pmic->irq_chip);
+		pmic->irq_chip = NULL;
+	}
+	platform_set_drvdata(pdev, NULL);
+	kfree(pmic);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	return 0;
 }
@@ -983,7 +1060,11 @@ static int __init pm8921_init(void)
 {
 	return platform_driver_register(&pm8921_driver);
 }
+<<<<<<< HEAD
 postcore_initcall(pm8921_init);
+=======
+subsys_initcall(pm8921_init);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 static void __exit pm8921_exit(void)
 {

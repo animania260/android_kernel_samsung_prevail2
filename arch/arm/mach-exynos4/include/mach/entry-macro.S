@@ -50,7 +50,11 @@
 
 		bic     \irqnr, \irqstat, #0x1c00
 
+<<<<<<< HEAD
 		cmp     \irqnr, #15
+=======
+		cmp     \irqnr, #29
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		cmpcc	\irqnr, \irqnr
 		cmpne	\irqnr, \tmp
 		cmpcs	\irqnr, \irqnr
@@ -71,3 +75,17 @@
 		strcc	\irqstat, [\base, #GIC_CPU_EOI]
 		cmpcs	\irqnr, \irqnr
 		.endm
+<<<<<<< HEAD
+=======
+
+		/* As above, this assumes that irqstat and base are preserved.. */
+
+		.macro test_for_ltirq, irqnr, irqstat, base, tmp
+		bic	\irqnr, \irqstat, #0x1c00
+		mov	\tmp, #0
+		cmp	\irqnr, #29
+		moveq	\tmp, #1
+		streq	\irqstat, [\base, #GIC_CPU_EOI]
+		cmp	\tmp, #0
+		.endm
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y

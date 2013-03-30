@@ -69,9 +69,17 @@
 
 #define SO_RXQ_OVFL             40
 
+<<<<<<< HEAD
+=======
+#ifdef __KERNEL__
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 /* O_NONBLOCK clashes with the bits used for socket types.  Therefore we
  * have to define SOCK_NONBLOCK to a different value here.
  */
 #define SOCK_NONBLOCK	0x40000000
+<<<<<<< HEAD
+=======
+#endif /* __KERNEL__ */
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 #endif /* _ASM_SOCKET_H */

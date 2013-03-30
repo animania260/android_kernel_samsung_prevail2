@@ -235,11 +235,14 @@ static int omap_pcm_trigger(struct snd_pcm_substream *substream, int cmd)
 	case SNDRV_PCM_TRIGGER_PAUSE_PUSH:
 		prtd->period_index = -1;
 		omap_stop_dma(prtd->dma_ch);
+<<<<<<< HEAD
 		/* Since we are using self linking, there is a
 		   chance that the DMA as re-enabled the channel
 		   just after disabling it */
 		while (omap_get_dma_active_status(prtd->dma_ch))
 			omap_stop_dma(prtd->dma_ch);
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		break;
 	default:
 		ret = -EINVAL;
@@ -285,6 +288,7 @@ static int omap_pcm_open(struct snd_pcm_substream *substream)
 					    SNDRV_PCM_HW_PARAM_PERIODS);
 	if (ret < 0)
 		goto out;
+<<<<<<< HEAD
 	if (cpu_is_omap44xx()) {
 		/* ABE needs a step of 24 * 4 data bits, and HDMI 32 * 4
 		 * Ensure buffer size satisfies both constraints.
@@ -294,6 +298,8 @@ static int omap_pcm_open(struct snd_pcm_substream *substream)
 		if (ret < 0)
 			goto out;
 	}
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	prtd = kzalloc(sizeof(*prtd), GFP_KERNEL);
 	if (prtd == NULL) {
@@ -380,11 +386,17 @@ static void omap_pcm_free_dma_buffers(struct snd_pcm *pcm)
 	}
 }
 
+<<<<<<< HEAD
 static int omap_pcm_new(struct snd_soc_pcm_runtime *rtd)
 {
 	struct snd_card *card = rtd->card->snd_card;
 	struct snd_soc_dai *dai = rtd->cpu_dai;
 	struct snd_pcm *pcm = rtd->pcm;
+=======
+static int omap_pcm_new(struct snd_card *card, struct snd_soc_dai *dai,
+		 struct snd_pcm *pcm)
+{
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	int ret = 0;
 
 	if (!card->dev->dma_mask)

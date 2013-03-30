@@ -192,7 +192,10 @@ int regulator_suspend_finish(void);
 #ifdef CONFIG_REGULATOR
 void regulator_has_full_constraints(void);
 void regulator_use_dummy_regulator(void);
+<<<<<<< HEAD
 void regulator_suppress_info_printing(void);
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #else
 static inline void regulator_has_full_constraints(void)
 {
@@ -201,10 +204,13 @@ static inline void regulator_has_full_constraints(void)
 static inline void regulator_use_dummy_regulator(void)
 {
 }
+<<<<<<< HEAD
 
 static inline void regulator_suppress_info_printing(void)
 {
 }
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #endif
 
 #endif

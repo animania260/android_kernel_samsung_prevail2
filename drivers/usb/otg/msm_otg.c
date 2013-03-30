@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2009-2012, Code Aurora Forum. All rights reserved.
+=======
+/* Copyright (c) 2009-2011, Code Aurora Forum. All rights reserved.
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -9,6 +13,14 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
+<<<<<<< HEAD
+=======
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ *
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
  */
 
 #include <linux/module.h>
@@ -25,8 +37,11 @@
 #include <linux/debugfs.h>
 #include <linux/seq_file.h>
 #include <linux/pm_runtime.h>
+<<<<<<< HEAD
 #include <linux/of.h>
 #include <linux/dma-mapping.h>
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 #include <linux/usb.h>
 #include <linux/usb/otg.h>
@@ -36,6 +51,7 @@
 #include <linux/usb/msm_hsusb.h>
 #include <linux/usb/msm_hsusb_hw.h>
 #include <linux/regulator/consumer.h>
+<<<<<<< HEAD
 #include <linux/mfd/pm8xxx/pm8921-charger.h>
 #include <linux/pm_qos_params.h>
 #include <linux/power_supply.h>
@@ -43,11 +59,18 @@
 #include <mach/clk.h>
 #include <mach/msm_xo.h>
 #include <mach/msm_bus.h>
+=======
+
+#include <mach/clk.h>
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 #define MSM_USB_BASE	(motg->regs)
 #define DRIVER_NAME	"msm_otg"
 
+<<<<<<< HEAD
 #define ID_TIMER_FREQ		(jiffies + msecs_to_jiffies(500))
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #define ULPI_IO_TIMEOUT_USEC	(10 * 1000)
 
 #define USB_PHY_3P3_VOL_MIN	3050000 /* uV */
@@ -60,6 +83,7 @@
 #define USB_PHY_1P8_HPM_LOAD	50000	/* uA */
 #define USB_PHY_1P8_LPM_LOAD	4000	/* uA */
 
+<<<<<<< HEAD
 #define USB_PHY_VDD_DIG_VOL_MIN	1045000 /* uV */
 #define USB_PHY_VDD_DIG_VOL_MAX	1320000 /* uV */
 
@@ -102,6 +126,14 @@ static inline bool aca_enabled(void)
 	return debug_aca_enabled;
 #endif
 }
+=======
+#define USB_PHY_VDD_DIG_VOL_MIN	1000000 /* uV */
+#define USB_PHY_VDD_DIG_VOL_MAX	1320000 /* uV */
+
+static struct regulator *hsusb_3p3;
+static struct regulator *hsusb_1p8;
+static struct regulator *hsusb_vddcx;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 static int msm_hsusb_init_vddcx(struct msm_otg *motg, int init)
 {
@@ -126,6 +158,7 @@ static int msm_hsusb_init_vddcx(struct msm_otg *motg, int init)
 
 		ret = regulator_enable(hsusb_vddcx);
 		if (ret) {
+<<<<<<< HEAD
 			regulator_set_voltage(hsusb_vddcx, 0,
 			USB_PHY_VDD_DIG_VOL_MIN);
 			regulator_put(hsusb_vddcx);
@@ -148,6 +181,20 @@ static int msm_hsusb_init_vddcx(struct msm_otg *motg, int init)
 					"for hsusb vddcx\n");
 			return ret;
 		}
+=======
+			dev_err(motg->otg.dev, "unable to enable hsusb vddcx\n");
+			regulator_put(hsusb_vddcx);
+		}
+	} else {
+		ret = regulator_set_voltage(hsusb_vddcx, 0,
+			USB_PHY_VDD_DIG_VOL_MAX);
+		if (ret)
+			dev_err(motg->otg.dev, "unable to set the voltage "
+					"for hsusb vddcx\n");
+		ret = regulator_disable(hsusb_vddcx);
+		if (ret)
+			dev_err(motg->otg.dev, "unable to disable hsusb vddcx\n");
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 		regulator_put(hsusb_vddcx);
 	}
@@ -169,32 +216,64 @@ static int msm_hsusb_ldo_init(struct msm_otg *motg, int init)
 		rc = regulator_set_voltage(hsusb_3p3, USB_PHY_3P3_VOL_MIN,
 				USB_PHY_3P3_VOL_MAX);
 		if (rc) {
+<<<<<<< HEAD
 			dev_err(motg->otg.dev, "unable to set voltage level for"
 					"hsusb 3p3\n");
+=======
+			dev_err(motg->otg.dev, "unable to set voltage level "
+					"for hsusb 3p3\n");
+			goto put_3p3;
+		}
+		rc = regulator_enable(hsusb_3p3);
+		if (rc) {
+			dev_err(motg->otg.dev, "unable to enable the hsusb 3p3\n");
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			goto put_3p3;
 		}
 		hsusb_1p8 = regulator_get(motg->otg.dev, "HSUSB_1p8");
 		if (IS_ERR(hsusb_1p8)) {
 			dev_err(motg->otg.dev, "unable to get hsusb 1p8\n");
 			rc = PTR_ERR(hsusb_1p8);
+<<<<<<< HEAD
 			goto put_3p3_lpm;
+=======
+			goto disable_3p3;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		}
 		rc = regulator_set_voltage(hsusb_1p8, USB_PHY_1P8_VOL_MIN,
 				USB_PHY_1P8_VOL_MAX);
 		if (rc) {
+<<<<<<< HEAD
 			dev_err(motg->otg.dev, "unable to set voltage level for"
 					"hsusb 1p8\n");
+=======
+			dev_err(motg->otg.dev, "unable to set voltage level "
+					"for hsusb 1p8\n");
+			goto put_1p8;
+		}
+		rc = regulator_enable(hsusb_1p8);
+		if (rc) {
+			dev_err(motg->otg.dev, "unable to enable the hsusb 1p8\n");
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			goto put_1p8;
 		}
 
 		return 0;
 	}
 
+<<<<<<< HEAD
 put_1p8:
 	regulator_set_voltage(hsusb_1p8, 0, USB_PHY_1P8_VOL_MAX);
 	regulator_put(hsusb_1p8);
 put_3p3_lpm:
 	regulator_set_voltage(hsusb_3p3, 0, USB_PHY_3P3_VOL_MAX);
+=======
+	regulator_disable(hsusb_1p8);
+put_1p8:
+	regulator_put(hsusb_1p8);
+disable_3p3:
+	regulator_disable(hsusb_3p3);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 put_3p3:
 	regulator_put(hsusb_3p3);
 	return rc;
@@ -224,6 +303,7 @@ static int msm_hsusb_config_vddcx(int high)
 
 	return ret;
 }
+<<<<<<< HEAD
 #else
 static int msm_hsusb_config_vddcx(int high)
 {
@@ -236,11 +316,24 @@ static int msm_hsusb_ldo_enable(struct msm_otg *motg, int on)
 	int ret = 0;
 
 	if (IS_ERR(hsusb_1p8)) {
+=======
+#endif
+
+static int msm_hsusb_ldo_set_mode(int on)
+{
+	int ret = 0;
+
+	if (!hsusb_1p8 || IS_ERR(hsusb_1p8)) {
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		pr_err("%s: HSUSB_1p8 is not initialized\n", __func__);
 		return -ENODEV;
 	}
 
+<<<<<<< HEAD
 	if (IS_ERR(hsusb_3p3)) {
+=======
+	if (!hsusb_3p3 || IS_ERR(hsusb_3p3)) {
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		pr_err("%s: HSUSB_3p3 is not initialized\n", __func__);
 		return -ENODEV;
 	}
@@ -249,6 +342,7 @@ static int msm_hsusb_ldo_enable(struct msm_otg *motg, int on)
 		ret = regulator_set_optimum_mode(hsusb_1p8,
 				USB_PHY_1P8_HPM_LOAD);
 		if (ret < 0) {
+<<<<<<< HEAD
 			pr_err("%s: Unable to set HPM of the regulator:"
 				"HSUSB_1p8\n", __func__);
 			return ret;
@@ -304,6 +398,31 @@ static int msm_hsusb_ldo_enable(struct msm_otg *motg, int on)
 		ret = regulator_set_optimum_mode(hsusb_3p3, 0);
 		if (ret < 0)
 			pr_err("%s: Unable to set LPM of the regulator:"
+=======
+			pr_err("%s: Unable to set HPM of the regulator "
+				"HSUSB_1p8\n", __func__);
+			return ret;
+		}
+		ret = regulator_set_optimum_mode(hsusb_3p3,
+				USB_PHY_3P3_HPM_LOAD);
+		if (ret < 0) {
+			pr_err("%s: Unable to set HPM of the regulator "
+				"HSUSB_3p3\n", __func__);
+			regulator_set_optimum_mode(hsusb_1p8,
+				USB_PHY_1P8_LPM_LOAD);
+			return ret;
+		}
+	} else {
+		ret = regulator_set_optimum_mode(hsusb_1p8,
+				USB_PHY_1P8_LPM_LOAD);
+		if (ret < 0)
+			pr_err("%s: Unable to set LPM of the regulator "
+				"HSUSB_1p8\n", __func__);
+		ret = regulator_set_optimum_mode(hsusb_3p3,
+				USB_PHY_3P3_LPM_LOAD);
+		if (ret < 0)
+			pr_err("%s: Unable to set LPM of the regulator "
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 				"HSUSB_3p3\n", __func__);
 	}
 
@@ -311,6 +430,7 @@ static int msm_hsusb_ldo_enable(struct msm_otg *motg, int on)
 	return ret < 0 ? ret : 0;
 }
 
+<<<<<<< HEAD
 static void msm_hsusb_mhl_switch_enable(struct msm_otg *motg, bool on)
 {
 	static struct regulator *mhl_analog_switch;
@@ -339,6 +459,8 @@ put_analog_switch:
 	regulator_put(mhl_analog_switch);
 }
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 static int ulpi_read(struct otg_transceiver *otg, u32 reg)
 {
 	struct msm_otg *motg = container_of(otg, struct msm_otg, otg);
@@ -430,9 +552,12 @@ static int msm_otg_phy_clk_reset(struct msm_otg *motg)
 {
 	int ret;
 
+<<<<<<< HEAD
 	if (IS_ERR(motg->phy_reset_clk))
 		return 0;
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	ret = clk_reset(motg->phy_reset_clk, CLK_RESET_ASSERT);
 	if (ret) {
 		dev_err(motg->otg.dev, "usb phy clk assert failed\n");
@@ -497,6 +622,7 @@ static int msm_otg_phy_reset(struct msm_otg *motg)
 }
 
 #define LINK_RESET_TIMEOUT_USEC		(250 * 1000)
+<<<<<<< HEAD
 static int msm_otg_link_reset(struct msm_otg *motg)
 {
 	int cnt = 0;
@@ -519,14 +645,21 @@ static int msm_otg_link_reset(struct msm_otg *motg)
 	return 0;
 }
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 static int msm_otg_reset(struct otg_transceiver *otg)
 {
 	struct msm_otg *motg = container_of(otg, struct msm_otg, otg);
 	struct msm_otg_platform_data *pdata = motg->pdata;
+<<<<<<< HEAD
+=======
+	int cnt = 0;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	int ret;
 	u32 val = 0;
 	u32 ulpi_val = 0;
 
+<<<<<<< HEAD
 	/*
 	 * USB PHY and Link reset also reset the USB BAM.
 	 * Thus perform reset operation only once to avoid
@@ -540,12 +673,15 @@ static int msm_otg_reset(struct otg_transceiver *otg)
 	}
 
 	clk_enable(motg->clk);
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	ret = msm_otg_phy_reset(motg);
 	if (ret) {
 		dev_err(otg->dev, "phy_reset failed\n");
 		return ret;
 	}
 
+<<<<<<< HEAD
 	aca_id_turned_on = false;
 	ret = msm_otg_link_reset(motg);
 	if (ret) {
@@ -563,6 +699,30 @@ static int msm_otg_reset(struct otg_transceiver *otg)
 
 	if (pdata->otg_control == OTG_PHY_CONTROL) {
 		val = readl_relaxed(USB_OTGSC);
+=======
+	ulpi_init(motg);
+
+	writel(USBCMD_RESET, USB_USBCMD);
+	while (cnt < LINK_RESET_TIMEOUT_USEC) {
+		if (!(readl(USB_USBCMD) & USBCMD_RESET))
+			break;
+		udelay(1);
+		cnt++;
+	}
+	if (cnt >= LINK_RESET_TIMEOUT_USEC)
+		return -ETIMEDOUT;
+
+	/* select ULPI phy */
+	writel(0x80000000, USB_PORTSC);
+
+	msleep(100);
+
+	writel(0x0, USB_AHBBURST);
+	writel(0x00, USB_AHBMODE);
+
+	if (pdata->otg_control == OTG_PHY_CONTROL) {
+		val = readl(USB_OTGSC);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		if (pdata->mode == USB_OTG) {
 			ulpi_val = ULPI_INT_IDGRD | ULPI_INT_SESS_VALID;
 			val |= OTGSC_IDIE | OTGSC_BSVIE;
@@ -570,6 +730,7 @@ static int msm_otg_reset(struct otg_transceiver *otg)
 			ulpi_val = ULPI_INT_SESS_VALID;
 			val |= OTGSC_BSVIE;
 		}
+<<<<<<< HEAD
 		writel_relaxed(val, USB_OTGSC);
 		ulpi_write(otg, ulpi_val, ULPI_USB_INT_EN_RISE);
 		ulpi_write(otg, ulpi_val, ULPI_USB_INT_EN_FALL);
@@ -598,6 +759,11 @@ static int msm_otg_set_suspend(struct otg_transceiver *otg, int suspend)
 			pm_runtime_put(otg->dev);
 		else
 			pm_runtime_resume(otg->dev);
+=======
+		writel(val, USB_OTGSC);
+		ulpi_write(otg, ulpi_val, ULPI_USB_INT_EN_RISE);
+		ulpi_write(otg, ulpi_val, ULPI_USB_INT_EN_FALL);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	}
 
 	return 0;
@@ -613,17 +779,23 @@ static int msm_otg_suspend(struct msm_otg *motg)
 	struct usb_bus *bus = otg->host;
 	struct msm_otg_platform_data *pdata = motg->pdata;
 	int cnt = 0;
+<<<<<<< HEAD
 	bool host_bus_suspend, dcp;
 	u32 phy_ctrl_val = 0, cmd_val;
 	unsigned ret;
 	u32 portsc;
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	if (atomic_read(&motg->in_lpm))
 		return 0;
 
 	disable_irq(motg->irq);
+<<<<<<< HEAD
 	host_bus_suspend = otg->host && !test_bit(ID, &motg->inputs);
 	dcp = motg->chg_type == USB_DCP_CHARGER;
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	/*
 	 * Chipidea 45-nm PHY suspend sequence:
 	 *
@@ -648,12 +820,17 @@ static int msm_otg_suspend(struct msm_otg *motg)
 		ulpi_write(otg, 0x08, 0x09);
 	}
 
+<<<<<<< HEAD
 
 	/* Set the PHCD bit, only if it is not set by the controller.
+=======
+	/*
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	 * PHY may take some time or even fail to enter into low power
 	 * mode (LPM). Hence poll for 500 msec and reset the PHY and link
 	 * in failure case.
 	 */
+<<<<<<< HEAD
 	portsc = readl_relaxed(USB_PORTSC);
 	if (!(portsc & PORTSC_PHCD)) {
 		writel_relaxed(portsc | PORTSC_PHCD,
@@ -664,6 +841,14 @@ static int msm_otg_suspend(struct msm_otg *motg)
 			udelay(1);
 			cnt++;
 		}
+=======
+	writel(readl(USB_PORTSC) | PORTSC_PHCD, USB_PORTSC);
+	while (cnt < PHY_SUSPEND_TIMEOUT_USEC) {
+		if (readl(USB_PORTSC) & PORTSC_PHCD)
+			break;
+		udelay(1);
+		cnt++;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	}
 
 	if (cnt >= PHY_SUSPEND_TIMEOUT_USEC) {
@@ -679,6 +864,7 @@ static int msm_otg_suspend(struct msm_otg *motg)
 	 * line must be disabled till async interrupt enable bit is cleared
 	 * in USBCMD register. Assert STP (ULPI interface STOP signal) to
 	 * block data communication from PHY.
+<<<<<<< HEAD
 	 *
 	 * PHY retention mode is disallowed while entering to LPM with wall
 	 * charger connected.  But PHY is put into suspend mode. Hence
@@ -735,12 +921,40 @@ static int msm_otg_suspend(struct msm_otg *motg)
 		if (motg->pdata->pmic_id_irq)
 			enable_irq_wake(motg->pdata->pmic_id_irq);
 	}
+=======
+	 */
+	writel(readl(USB_USBCMD) | ASYNC_INTR_CTRL | ULPI_STP_CTRL, USB_USBCMD);
+
+	if (motg->pdata->phy_type == SNPS_28NM_INTEGRATED_PHY &&
+			motg->pdata->otg_control == OTG_PMIC_CONTROL)
+		writel(readl(USB_PHY_CTRL) | PHY_RETEN, USB_PHY_CTRL);
+
+	clk_disable(motg->pclk);
+	clk_disable(motg->clk);
+	if (motg->core_clk)
+		clk_disable(motg->core_clk);
+
+	if (!IS_ERR(motg->pclk_src))
+		clk_disable(motg->pclk_src);
+
+	if (motg->pdata->phy_type == SNPS_28NM_INTEGRATED_PHY &&
+			motg->pdata->otg_control == OTG_PMIC_CONTROL) {
+		msm_hsusb_ldo_set_mode(0);
+		msm_hsusb_config_vddcx(0);
+	}
+
+	if (device_may_wakeup(otg->dev))
+		enable_irq_wake(motg->irq);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	if (bus)
 		clear_bit(HCD_FLAG_HW_ACCESSIBLE, &(bus_to_hcd(bus))->flags);
 
 	atomic_set(&motg->in_lpm, 1);
 	enable_irq(motg->irq);
+<<<<<<< HEAD
 	wake_unlock(&motg->wlock);
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	dev_info(otg->dev, "USB in low power mode\n");
 
@@ -753,12 +967,16 @@ static int msm_otg_resume(struct msm_otg *motg)
 	struct usb_bus *bus = otg->host;
 	int cnt = 0;
 	unsigned temp;
+<<<<<<< HEAD
 	u32 phy_ctrl_val = 0;
 	unsigned ret;
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	if (!atomic_read(&motg->in_lpm))
 		return 0;
 
+<<<<<<< HEAD
 	wake_lock(&motg->wlock);
 
 	/* Vote for TCXO when waking up the phy */
@@ -787,6 +1005,21 @@ static int msm_otg_resume(struct msm_otg *motg)
 				~(PHY_IDHV_INTEN | PHY_OTGSESSVLDHV_INTEN);
 		writel_relaxed(phy_ctrl_val, USB_PHY_CTRL);
 		motg->lpm_flags &= ~PHY_RETENTIONED;
+=======
+	if (!IS_ERR(motg->pclk_src))
+		clk_enable(motg->pclk_src);
+
+	clk_enable(motg->pclk);
+	clk_enable(motg->clk);
+	if (motg->core_clk)
+		clk_enable(motg->core_clk);
+
+	if (motg->pdata->phy_type == SNPS_28NM_INTEGRATED_PHY &&
+			motg->pdata->otg_control == OTG_PMIC_CONTROL) {
+		msm_hsusb_ldo_set_mode(1);
+		msm_hsusb_config_vddcx(1);
+		writel(readl(USB_PHY_CTRL) & ~PHY_RETEN, USB_PHY_CTRL);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	}
 
 	temp = readl(USB_USBCMD);
@@ -821,11 +1054,16 @@ static int msm_otg_resume(struct msm_otg *motg)
 	}
 
 skip_phy_resume:
+<<<<<<< HEAD
 	if (device_may_wakeup(otg->dev)) {
 		disable_irq_wake(motg->irq);
 		if (motg->pdata->pmic_id_irq)
 			disable_irq_wake(motg->pdata->pmic_id_irq);
 	}
+=======
+	if (device_may_wakeup(otg->dev))
+		disable_irq_wake(motg->irq);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	if (bus)
 		set_bit(HCD_FLAG_HW_ACCESSIBLE, &(bus_to_hcd(bus))->flags);
 
@@ -833,6 +1071,10 @@ skip_phy_resume:
 
 	if (motg->async_int) {
 		motg->async_int = 0;
+<<<<<<< HEAD
+=======
+		pm_runtime_put(otg->dev);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		enable_irq(motg->irq);
 	}
 
@@ -842,6 +1084,7 @@ skip_phy_resume:
 }
 #endif
 
+<<<<<<< HEAD
 static int msm_otg_notify_chg_type(struct msm_otg *motg)
 {
 	static int charger_type;
@@ -922,6 +1165,15 @@ static void msm_otg_notify_charger(struct msm_otg *motg, unsigned mA)
 	if (msm_otg_notify_power_supply(motg, mA))
 		pm8921_charger_vbus_draw(mA);
 
+=======
+static void msm_otg_notify_charger(struct msm_otg *motg, unsigned mA)
+{
+	if (motg->cur_power == mA)
+		return;
+
+	/* TODO: Notify PMIC about available current */
+	dev_info(motg->otg.dev, "Avail curr from USB = %u\n", mA);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	motg->cur_power = mA;
 }
 
@@ -956,10 +1208,15 @@ static void msm_otg_start_host(struct otg_transceiver *otg, int on)
 	if (on) {
 		dev_dbg(otg->dev, "host on\n");
 
+<<<<<<< HEAD
 		if (pdata->otg_control == OTG_PHY_CONTROL)
 			ulpi_write(otg, OTG_COMP_DISABLE,
 				ULPI_SET(ULPI_PWR_CLK_MNG_REG));
 
+=======
+		if (pdata->vbus_power)
+			pdata->vbus_power(1);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		/*
 		 * Some boards have a switch cotrolled by gpio
 		 * to enable/disable internal HUB. Enable internal
@@ -967,6 +1224,7 @@ static void msm_otg_start_host(struct otg_transceiver *otg, int on)
 		 */
 		if (pdata->setup_gpio)
 			pdata->setup_gpio(OTG_STATE_A_HOST);
+<<<<<<< HEAD
 		usb_add_hcd(hcd, hcd->irq, IRQF_SHARED);
 	} else {
 		dev_dbg(otg->dev, "host off\n");
@@ -1072,6 +1330,21 @@ static void msm_hsusb_vbus_power(struct msm_otg *motg, bool on)
 		}
 		pm8921_disable_source_current(on);
 		vbus_is_on = false;
+=======
+#ifdef CONFIG_USB
+		usb_add_hcd(hcd, hcd->irq, IRQF_SHARED);
+#endif
+	} else {
+		dev_dbg(otg->dev, "host off\n");
+
+#ifdef CONFIG_USB
+		usb_remove_hcd(hcd);
+#endif
+		if (pdata->setup_gpio)
+			pdata->setup_gpio(OTG_STATE_UNDEFINED);
+		if (pdata->vbus_power)
+			pdata->vbus_power(0);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	}
 }
 
@@ -1089,6 +1362,7 @@ static int msm_otg_set_host(struct otg_transceiver *otg, struct usb_bus *host)
 		return -ENODEV;
 	}
 
+<<<<<<< HEAD
 	if (!motg->pdata->vbus_power && host) {
 		vbus_otg = regulator_get(motg->otg.dev, "vbus_otg");
 		if (IS_ERR(vbus_otg)) {
@@ -1103,6 +1377,12 @@ static int msm_otg_set_host(struct otg_transceiver *otg, struct usb_bus *host)
 			usb_unregister_notify(&motg->usbdev_nb);
 			msm_otg_start_host(otg, 0);
 			msm_hsusb_vbus_power(motg, 0);
+=======
+	if (!host) {
+		if (otg->state == OTG_STATE_A_HOST) {
+			pm_runtime_get_sync(otg->dev);
+			msm_otg_start_host(otg, 0);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			otg->host = NULL;
 			otg->state = OTG_STATE_UNDEFINED;
 			schedule_work(&motg->sm_work);
@@ -1110,17 +1390,23 @@ static int msm_otg_set_host(struct otg_transceiver *otg, struct usb_bus *host)
 			otg->host = NULL;
 		}
 
+<<<<<<< HEAD
 		if (vbus_otg)
 			regulator_put(vbus_otg);
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		return 0;
 	}
 
 	hcd = bus_to_hcd(host);
 	hcd->power_budget = motg->pdata->power_budget;
 
+<<<<<<< HEAD
 	motg->usbdev_nb.notifier_call = msm_otg_usbdev_notify;
 	usb_register_notify(&motg->usbdev_nb);
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	otg->host = host;
 	dev_dbg(otg->dev, "host driver registered w/ tranceiver\n");
 
@@ -1138,7 +1424,10 @@ static int msm_otg_set_host(struct otg_transceiver *otg, struct usb_bus *host)
 
 static void msm_otg_start_peripheral(struct otg_transceiver *otg, int on)
 {
+<<<<<<< HEAD
 	int ret;
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	struct msm_otg *motg = container_of(otg, struct msm_otg, otg);
 	struct msm_otg_platform_data *pdata = motg->pdata;
 
@@ -1154,6 +1443,7 @@ static void msm_otg_start_peripheral(struct otg_transceiver *otg, int on)
 		 */
 		if (pdata->setup_gpio)
 			pdata->setup_gpio(OTG_STATE_B_PERIPHERAL);
+<<<<<<< HEAD
 		/*
 		 * vote for minimum dma_latency to prevent idle
 		 * power collapse(pc) while running in peripheral mode.
@@ -1167,10 +1457,13 @@ static void msm_otg_start_peripheral(struct otg_transceiver *otg, int on)
 				dev_err(motg->otg.dev, "%s: Failed to vote for "
 					   "bus bandwidth %d\n", __func__, ret);
 		}
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		usb_gadget_vbus_connect(otg->gadget);
 	} else {
 		dev_dbg(otg->dev, "gadget off\n");
 		usb_gadget_vbus_disconnect(otg->gadget);
+<<<<<<< HEAD
 		otg_pm_qos_update_latency(motg, 0);
 		/* Configure BUS performance parameters to default */
 		if (motg->bus_perf_client) {
@@ -1180,6 +1473,8 @@ static void msm_otg_start_peripheral(struct otg_transceiver *otg, int on)
 				dev_err(motg->otg.dev, "%s: Failed to devote "
 					   "for bus bw %d\n", __func__, ret);
 		}
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		if (pdata->setup_gpio)
 			pdata->setup_gpio(OTG_STATE_UNDEFINED);
 	}
@@ -1228,6 +1523,7 @@ static int msm_otg_set_peripheral(struct otg_transceiver *otg,
 	return 0;
 }
 
+<<<<<<< HEAD
 static bool msm_chg_aca_detect(struct msm_otg *motg)
 {
 	struct otg_transceiver *otg = &motg->otg;
@@ -1410,6 +1706,18 @@ static bool msm_chg_check_secondary_det(struct msm_otg *motg)
 	case CI_45NM_INTEGRATED_PHY:
 		chg_det = ulpi_read(otg, 0x34);
 		ret = chg_det & (1 << 4);
+=======
+static bool msm_chg_check_secondary_det(struct msm_otg *motg)
+{
+	struct otg_transceiver *otg = &motg->otg;
+	u32 chg_det;
+	bool ret = false;
+
+	switch (motg->pdata->phy_type) {
+	case CI_45NM_INTEGRATED_PHY:
+		chg_det = ulpi_read(otg, 0x34);
+		ret = chg_det & (1 << 4);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		break;
 	case SNPS_28NM_INTEGRATED_PHY:
 		chg_det = ulpi_read(otg, 0x87);
@@ -1448,9 +1756,12 @@ static void msm_chg_enable_secondary_det(struct msm_otg *motg)
 		ulpi_write(otg, chg_det, 0x34);
 		break;
 	case SNPS_28NM_INTEGRATED_PHY:
+<<<<<<< HEAD
 		/* Turn off VDP_SRC */
 		ulpi_write(otg, 0x3, 0x86);
 		msleep(20);
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		/*
 		 * Configure DM as current source, DP as current sink
 		 * and enable battery charging comparators.
@@ -1595,7 +1906,11 @@ static void msm_chg_block_on(struct msm_otg *motg)
 		break;
 	case SNPS_28NM_INTEGRATED_PHY:
 		/* Clear charger detecting control bits */
+<<<<<<< HEAD
 		ulpi_write(otg, 0x1F, 0x86);
+=======
+		ulpi_write(otg, 0x3F, 0x86);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		/* Clear alt interrupt latch and enable bits */
 		ulpi_write(otg, 0x1F, 0x92);
 		ulpi_write(otg, 0x1F, 0x95);
@@ -1636,6 +1951,7 @@ static void msm_chg_block_off(struct msm_otg *motg)
 	ulpi_write(otg, func_ctrl, ULPI_FUNC_CTRL);
 }
 
+<<<<<<< HEAD
 static const char *chg_to_string(enum usb_chg_type chg_type)
 {
 	switch (chg_type) {
@@ -1654,25 +1970,42 @@ static const char *chg_to_string(enum usb_chg_type chg_type)
 #define MSM_CHG_DCD_MAX_RETRIES		6 /* Tdcd_tmout = 6 * 100 msec */
 #define MSM_CHG_PRIMARY_DET_TIME	(50 * HZ/1000) /* TVDPSRC_ON */
 #define MSM_CHG_SECONDARY_DET_TIME	(50 * HZ/1000) /* TVDMSRC_ON */
+=======
+#define MSM_CHG_DCD_POLL_TIME		(100 * HZ/1000) /* 100 msec */
+#define MSM_CHG_DCD_MAX_RETRIES		6 /* Tdcd_tmout = 6 * 100 msec */
+#define MSM_CHG_PRIMARY_DET_TIME	(40 * HZ/1000) /* TVDPSRC_ON */
+#define MSM_CHG_SECONDARY_DET_TIME	(40 * HZ/1000) /* TVDMSRC_ON */
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 static void msm_chg_detect_work(struct work_struct *w)
 {
 	struct msm_otg *motg = container_of(w, struct msm_otg, chg_work.work);
 	struct otg_transceiver *otg = &motg->otg;
+<<<<<<< HEAD
 	bool is_dcd = false, tmout, vout, is_aca;
+=======
+	bool is_dcd, tmout, vout;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	unsigned long delay;
 
 	dev_dbg(otg->dev, "chg detection work\n");
 	switch (motg->chg_state) {
 	case USB_CHG_STATE_UNDEFINED:
+<<<<<<< HEAD
 		msm_chg_block_on(motg);
 		if (motg->pdata->enable_dcd)
 			msm_chg_enable_dcd(motg);
 		msm_chg_enable_aca_det(motg);
+=======
+		pm_runtime_get_sync(otg->dev);
+		msm_chg_block_on(motg);
+		msm_chg_enable_dcd(motg);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		motg->chg_state = USB_CHG_STATE_WAIT_FOR_DCD;
 		motg->dcd_retries = 0;
 		delay = MSM_CHG_DCD_POLL_TIME;
 		break;
 	case USB_CHG_STATE_WAIT_FOR_DCD:
+<<<<<<< HEAD
 		is_aca = msm_chg_aca_detect(motg);
 		if (is_aca) {
 			/*
@@ -1692,6 +2025,12 @@ static void msm_chg_detect_work(struct work_struct *w)
 		if (is_dcd || tmout) {
 			if (motg->pdata->enable_dcd)
 				msm_chg_disable_dcd(motg);
+=======
+		is_dcd = msm_chg_check_dcd(motg);
+		tmout = ++motg->dcd_retries == MSM_CHG_DCD_MAX_RETRIES;
+		if (is_dcd || tmout) {
+			msm_chg_disable_dcd(motg);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			msm_chg_enable_primary_det(motg);
 			delay = MSM_CHG_PRIMARY_DET_TIME;
 			motg->chg_state = USB_CHG_STATE_DCD_DONE;
@@ -1702,22 +2041,28 @@ static void msm_chg_detect_work(struct work_struct *w)
 	case USB_CHG_STATE_DCD_DONE:
 		vout = msm_chg_check_primary_det(motg);
 		if (vout) {
+<<<<<<< HEAD
 			if (test_bit(ID_A, &motg->inputs)) {
 				motg->chg_type = USB_ACA_DOCK_CHARGER;
 				motg->chg_state = USB_CHG_STATE_DETECTED;
 				delay = 0;
 				break;
 			}
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			msm_chg_enable_secondary_det(motg);
 			delay = MSM_CHG_SECONDARY_DET_TIME;
 			motg->chg_state = USB_CHG_STATE_PRIMARY_DONE;
 		} else {
+<<<<<<< HEAD
 			if (test_bit(ID_A, &motg->inputs)) {
 				motg->chg_type = USB_ACA_A_CHARGER;
 				motg->chg_state = USB_CHG_STATE_DETECTED;
 				delay = 0;
 				break;
 			}
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			motg->chg_type = USB_SDP_CHARGER;
 			motg->chg_state = USB_CHG_STATE_DETECTED;
 			delay = 0;
@@ -1735,10 +2080,14 @@ static void msm_chg_detect_work(struct work_struct *w)
 		motg->chg_state = USB_CHG_STATE_DETECTED;
 	case USB_CHG_STATE_DETECTED:
 		msm_chg_block_off(motg);
+<<<<<<< HEAD
 		msm_chg_enable_aca_det(motg);
 		msm_chg_enable_aca_intr(motg);
 		dev_dbg(otg->dev, "chg_type = %s\n",
 			chg_to_string(motg->chg_type));
+=======
+		dev_dbg(otg->dev, "charger = %d\n", motg->chg_type);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		schedule_work(&motg->sm_work);
 		return;
 	default:
@@ -1762,6 +2111,7 @@ static void msm_otg_init_sm(struct msm_otg *motg)
 
 	switch (pdata->mode) {
 	case USB_OTG:
+<<<<<<< HEAD
 		if (pdata->otg_control == OTG_USER_CONTROL) {
 			if (pdata->default_mode == USB_HOST) {
 				clear_bit(ID, &motg->inputs);
@@ -1773,14 +2123,22 @@ static void msm_otg_init_sm(struct msm_otg *motg)
 				clear_bit(B_SESS_VLD, &motg->inputs);
 			}
 		} else if (pdata->otg_control == OTG_PHY_CONTROL) {
+=======
+		if (pdata->otg_control == OTG_PHY_CONTROL) {
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			if (otgsc & OTGSC_ID)
 				set_bit(ID, &motg->inputs);
 			else
 				clear_bit(ID, &motg->inputs);
+<<<<<<< HEAD
+=======
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			if (otgsc & OTGSC_BSV)
 				set_bit(B_SESS_VLD, &motg->inputs);
 			else
 				clear_bit(B_SESS_VLD, &motg->inputs);
+<<<<<<< HEAD
 		} else if (pdata->otg_control == OTG_PMIC_CONTROL) {
 			if (pdata->pmic_id_irq) {
 				if (irq_read_line(pdata->pmic_id_irq))
@@ -1793,6 +2151,18 @@ static void msm_otg_init_sm(struct msm_otg *motg)
 			 * driver initialization. Wait for it.
 			 */
 			wait_for_completion(&pmic_vbus_init);
+=======
+		} else if (pdata->otg_control == OTG_USER_CONTROL) {
+			if (pdata->default_mode == USB_HOST) {
+				clear_bit(ID, &motg->inputs);
+			} else if (pdata->default_mode == USB_PERIPHERAL) {
+				set_bit(ID, &motg->inputs);
+				set_bit(B_SESS_VLD, &motg->inputs);
+			} else {
+				set_bit(ID, &motg->inputs);
+				clear_bit(B_SESS_VLD, &motg->inputs);
+			}
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		}
 		break;
 	case USB_HOST:
@@ -1800,6 +2170,7 @@ static void msm_otg_init_sm(struct msm_otg *motg)
 		break;
 	case USB_PERIPHERAL:
 		set_bit(ID, &motg->inputs);
+<<<<<<< HEAD
 		if (pdata->otg_control == OTG_PHY_CONTROL) {
 			if (otgsc & OTGSC_BSV)
 				set_bit(B_SESS_VLD, &motg->inputs);
@@ -1812,6 +2183,12 @@ static void msm_otg_init_sm(struct msm_otg *motg)
 			 */
 			wait_for_completion(&pmic_vbus_init);
 		}
+=======
+		if (otgsc & OTGSC_BSV)
+			set_bit(B_SESS_VLD, &motg->inputs);
+		else
+			clear_bit(B_SESS_VLD, &motg->inputs);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		break;
 	default:
 		break;
@@ -1823,12 +2200,16 @@ static void msm_otg_sm_work(struct work_struct *w)
 	struct msm_otg *motg = container_of(w, struct msm_otg, sm_work);
 	struct otg_transceiver *otg = &motg->otg;
 
+<<<<<<< HEAD
 	pm_runtime_resume(otg->dev);
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	switch (otg->state) {
 	case OTG_STATE_UNDEFINED:
 		dev_dbg(otg->dev, "OTG_STATE_UNDEFINED state\n");
 		msm_otg_reset(otg);
 		msm_otg_init_sm(motg);
+<<<<<<< HEAD
 		psy = power_supply_get_by_name("usb");
 		if (!psy)
 			pr_err("couldn't get usb power supply\n");
@@ -1864,6 +2245,16 @@ static void msm_otg_sm_work(struct work_struct *w)
 			msm_chg_enable_aca_det(motg);
 			msm_chg_disable_aca_intr(motg);
 			mod_timer(&motg->id_timer, ID_TIMER_FREQ);
+=======
+		otg->state = OTG_STATE_B_IDLE;
+		/* FALL THROUGH */
+	case OTG_STATE_B_IDLE:
+		dev_dbg(otg->dev, "OTG_STATE_B_IDLE state\n");
+		if (!test_bit(ID, &motg->inputs) && otg->host) {
+			/* disable BSV bit */
+			writel(readl(USB_OTGSC) & ~OTGSC_BSVIE, USB_OTGSC);
+			msm_otg_start_host(otg, 1);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			otg->state = OTG_STATE_A_HOST;
 		} else if (test_bit(B_SESS_VLD, &motg->inputs)) {
 			switch (motg->chg_state) {
@@ -1873,6 +2264,7 @@ static void msm_otg_sm_work(struct work_struct *w)
 			case USB_CHG_STATE_DETECTED:
 				switch (motg->chg_type) {
 				case USB_DCP_CHARGER:
+<<<<<<< HEAD
 					/* Enable VDP_SRC */
 					ulpi_write(otg, 0x2, 0x85);
 					msm_otg_notify_charger(motg,
@@ -1887,6 +2279,10 @@ static void msm_otg_sm_work(struct work_struct *w)
 					 * (ID_B --> ID_C) PHY_ALT interrupt can
 					 * not be detected in LPM.
 					 */
+=======
+					msm_otg_notify_charger(motg,
+							IDEV_CHG_MAX);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 					break;
 				case USB_CDP_CHARGER:
 					msm_otg_notify_charger(motg,
@@ -1894,6 +2290,7 @@ static void msm_otg_sm_work(struct work_struct *w)
 					msm_otg_start_peripheral(otg, 1);
 					otg->state = OTG_STATE_B_PERIPHERAL;
 					break;
+<<<<<<< HEAD
 				case USB_ACA_C_CHARGER:
 					msm_otg_notify_charger(motg,
 							IDEV_ACA_CHG_MAX);
@@ -1901,6 +2298,10 @@ static void msm_otg_sm_work(struct work_struct *w)
 					otg->state = OTG_STATE_B_PERIPHERAL;
 					break;
 				case USB_SDP_CHARGER:
+=======
+				case USB_SDP_CHARGER:
+					msm_otg_notify_charger(motg, IUNIT);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 					msm_otg_start_peripheral(otg, 1);
 					otg->state = OTG_STATE_B_PERIPHERAL;
 					break;
@@ -1912,6 +2313,7 @@ static void msm_otg_sm_work(struct work_struct *w)
 				break;
 			}
 		} else {
+<<<<<<< HEAD
 			cancel_delayed_work_sync(&motg->chg_work);
 			motg->chg_state = USB_CHG_STATE_UNDEFINED;
 			motg->chg_type = USB_INVALID_CHARGER;
@@ -1920,10 +2322,27 @@ static void msm_otg_sm_work(struct work_struct *w)
 			pm_runtime_put_noidle(otg->dev);
 			pm_runtime_suspend(otg->dev);
 		}
+=======
+			/*
+			 * If charger detection work is pending, decrement
+			 * the pm usage counter to balance with the one that
+			 * is incremented in charger detection work.
+			 */
+			if (cancel_delayed_work_sync(&motg->chg_work)) {
+				pm_runtime_put_sync(otg->dev);
+				msm_otg_reset(otg);
+			}
+			msm_otg_notify_charger(motg, 0);
+			motg->chg_state = USB_CHG_STATE_UNDEFINED;
+			motg->chg_type = USB_INVALID_CHARGER;
+		}
+		pm_runtime_put_sync(otg->dev);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		break;
 	case OTG_STATE_B_PERIPHERAL:
 		dev_dbg(otg->dev, "OTG_STATE_B_PERIPHERAL state\n");
 		if (!test_bit(B_SESS_VLD, &motg->inputs) ||
+<<<<<<< HEAD
 				!test_bit(ID, &motg->inputs) ||
 				!test_bit(ID_C, &motg->inputs)) {
 			msm_otg_start_peripheral(otg, 0);
@@ -1931,10 +2350,21 @@ static void msm_otg_sm_work(struct work_struct *w)
 			schedule_work(w);
 		} else if (test_bit(ID_C, &motg->inputs)) {
 			msm_otg_notify_charger(motg, IDEV_ACA_CHG_MAX);
+=======
+				!test_bit(ID, &motg->inputs)) {
+			msm_otg_notify_charger(motg, 0);
+			msm_otg_start_peripheral(otg, 0);
+			motg->chg_state = USB_CHG_STATE_UNDEFINED;
+			motg->chg_type = USB_INVALID_CHARGER;
+			otg->state = OTG_STATE_B_IDLE;
+			msm_otg_reset(otg);
+			schedule_work(w);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		}
 		break;
 	case OTG_STATE_A_HOST:
 		dev_dbg(otg->dev, "OTG_STATE_A_HOST state\n");
+<<<<<<< HEAD
 		if (test_bit(ID, &motg->inputs) &&
 				!test_bit(ID_A, &motg->inputs)) {
 			msm_otg_start_host(otg, 0);
@@ -1967,6 +2397,13 @@ static void msm_otg_sm_work(struct work_struct *w)
 		} else if (!test_bit(ID, &motg->inputs)) {
 			msm_otg_notify_charger(motg, 0);
 			msm_hsusb_vbus_power(motg, 1);
+=======
+		if (test_bit(ID, &motg->inputs)) {
+			msm_otg_start_host(otg, 0);
+			otg->state = OTG_STATE_B_IDLE;
+			msm_otg_reset(otg);
+			schedule_work(w);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		}
 		break;
 	default:
@@ -1978,6 +2415,7 @@ static irqreturn_t msm_otg_irq(int irq, void *data)
 {
 	struct msm_otg *motg = data;
 	struct otg_transceiver *otg = &motg->otg;
+<<<<<<< HEAD
 	u32 otgsc = 0, usbsts;
 
 	if (atomic_read(&motg->in_lpm)) {
@@ -1996,6 +2434,14 @@ static irqreturn_t msm_otg_irq(int irq, void *data)
 			dev_dbg(otg->dev, "ACA work from IRQ\n");
 			schedule_work(&motg->sm_work);
 		}
+=======
+	u32 otgsc = 0;
+
+	if (atomic_read(&motg->in_lpm)) {
+		disable_irq_nosync(irq);
+		motg->async_int = 1;
+		pm_runtime_get(otg->dev);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		return IRQ_HANDLED;
 	}
 
@@ -2004,6 +2450,7 @@ static irqreturn_t msm_otg_irq(int irq, void *data)
 		return IRQ_NONE;
 
 	if ((otgsc & OTGSC_IDIS) && (otgsc & OTGSC_IDIE)) {
+<<<<<<< HEAD
 		if (otgsc & OTGSC_ID) {
 			dev_dbg(otg->dev, "ID set\n");
 			set_bit(ID, &motg->inputs);
@@ -2070,6 +2517,25 @@ static irqreturn_t msm_pmic_id_irq(int irq, void *data)
 	if (motg->otg.state != OTG_STATE_UNDEFINED)
 		schedule_work(&motg->sm_work);
 
+=======
+		if (otgsc & OTGSC_ID)
+			set_bit(ID, &motg->inputs);
+		else
+			clear_bit(ID, &motg->inputs);
+		dev_dbg(otg->dev, "ID set/clear\n");
+		pm_runtime_get_noresume(otg->dev);
+	} else if ((otgsc & OTGSC_BSVIS) && (otgsc & OTGSC_BSVIE)) {
+		if (otgsc & OTGSC_BSV)
+			set_bit(B_SESS_VLD, &motg->inputs);
+		else
+			clear_bit(B_SESS_VLD, &motg->inputs);
+		dev_dbg(otg->dev, "BSV set/clear\n");
+		pm_runtime_get_noresume(otg->dev);
+	}
+
+	writel(otgsc, USB_OTGSC);
+	schedule_work(&motg->sm_work);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	return IRQ_HANDLED;
 }
 
@@ -2163,7 +2629,11 @@ static ssize_t msm_otg_mode_write(struct file *file, const char __user *ubuf,
 		goto out;
 	}
 
+<<<<<<< HEAD
 	pm_runtime_resume(otg->dev);
+=======
+	pm_runtime_get_sync(otg->dev);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	schedule_work(&motg->sm_work);
 out:
 	return status;
@@ -2177,6 +2647,7 @@ const struct file_operations msm_otg_mode_fops = {
 	.release = single_release,
 };
 
+<<<<<<< HEAD
 static int msm_otg_show_otg_state(struct seq_file *s, void *unused)
 {
 	struct msm_otg *motg = s->private;
@@ -2318,11 +2789,19 @@ static int msm_otg_debugfs_init(struct msm_otg *motg)
 {
 	struct dentry *msm_otg_dentry;
 
+=======
+static struct dentry *msm_otg_dbg_root;
+static struct dentry *msm_otg_dbg_mode;
+
+static int msm_otg_debugfs_init(struct msm_otg *motg)
+{
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	msm_otg_dbg_root = debugfs_create_dir("msm_otg", NULL);
 
 	if (!msm_otg_dbg_root || IS_ERR(msm_otg_dbg_root))
 		return -ENODEV;
 
+<<<<<<< HEAD
 	if (motg->pdata->mode == USB_OTG &&
 		motg->pdata->otg_control == OTG_USER_CONTROL) {
 
@@ -2371,11 +2850,22 @@ static int msm_otg_debugfs_init(struct msm_otg *motg)
 		debugfs_remove_recursive(msm_otg_dbg_root);
 		return -ENODEV;
 	}
+=======
+	msm_otg_dbg_mode = debugfs_create_file("mode", S_IRUGO | S_IWUSR,
+				msm_otg_dbg_root, motg, &msm_otg_mode_fops);
+	if (!msm_otg_dbg_mode) {
+		debugfs_remove(msm_otg_dbg_root);
+		msm_otg_dbg_root = NULL;
+		return -ENODEV;
+	}
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	return 0;
 }
 
 static void msm_otg_debugfs_cleanup(void)
 {
+<<<<<<< HEAD
 	debugfs_remove_recursive(msm_otg_dbg_root);
 }
 
@@ -2491,6 +2981,10 @@ struct msm_otg_platform_data *msm_otg_dt_to_pdata(struct platform_device *pdev)
 	of_property_read_u32(node, "qcom,hsusb-otg-pmic-id-irq",
 				&pdata->pmic_id_irq);
 	return pdata;
+=======
+	debugfs_remove(msm_otg_dbg_mode);
+	debugfs_remove(msm_otg_dbg_root);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 static int __init msm_otg_probe(struct platform_device *pdev)
@@ -2499,6 +2993,7 @@ static int __init msm_otg_probe(struct platform_device *pdev)
 	struct resource *res;
 	struct msm_otg *motg;
 	struct otg_transceiver *otg;
+<<<<<<< HEAD
 	struct msm_otg_platform_data *pdata;
 
 	dev_info(&pdev->dev, "msm_otg probe\n");
@@ -2518,6 +3013,13 @@ static int __init msm_otg_probe(struct platform_device *pdev)
 		return -ENODEV;
 	} else {
 		pdata = pdev->dev.platform_data;
+=======
+
+	dev_info(&pdev->dev, "msm_otg probe\n");
+	if (!pdev->dev.platform_data) {
+		dev_err(&pdev->dev, "No platform data given. Bailing out\n");
+		return -ENODEV;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	}
 
 	motg = kzalloc(sizeof(struct msm_otg), GFP_KERNEL);
@@ -2526,6 +3028,7 @@ static int __init msm_otg_probe(struct platform_device *pdev)
 		return -ENOMEM;
 	}
 
+<<<<<<< HEAD
 	the_msm_otg = motg;
 	motg->pdata = pdata;
 	otg = &motg->otg;
@@ -2553,11 +3056,28 @@ static int __init msm_otg_probe(struct platform_device *pdev)
 	motg->clk = clk_get(&pdev->dev, "alt_core_clk");
 	if (IS_ERR(motg->clk)) {
 		dev_err(&pdev->dev, "failed to get alt_core_clk\n");
+=======
+	motg->pdata = pdev->dev.platform_data;
+	otg = &motg->otg;
+	otg->dev = &pdev->dev;
+
+	motg->phy_reset_clk = clk_get(&pdev->dev, "usb_phy_clk");
+	if (IS_ERR(motg->phy_reset_clk)) {
+		dev_err(&pdev->dev, "failed to get usb_phy_clk\n");
+		ret = PTR_ERR(motg->phy_reset_clk);
+		goto free_motg;
+	}
+
+	motg->clk = clk_get(&pdev->dev, "usb_hs_clk");
+	if (IS_ERR(motg->clk)) {
+		dev_err(&pdev->dev, "failed to get usb_hs_clk\n");
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		ret = PTR_ERR(motg->clk);
 		goto put_phy_reset_clk;
 	}
 	clk_set_rate(motg->clk, 60000000);
 
+<<<<<<< HEAD
 	/* pm qos request to prevent apps idle power collapse */
 	if (motg->pdata->swfi_latency)
 		pm_qos_add_request(&motg->pm_qos_req_dma,
@@ -2565,11 +3085,16 @@ static int __init msm_otg_probe(struct platform_device *pdev)
 
 	/*
 	 * USB Core is running its protocol engine based on CORE CLK,
+=======
+	/*
+	 * If USB Core is running its protocol engine based on CORE CLK,
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	 * CORE CLK  must be running at >55Mhz for correct HSUSB
 	 * operation and USB core cannot tolerate frequency changes on
 	 * CORE CLK. For such USB cores, vote for maximum clk frequency
 	 * on pclk source
 	 */
+<<<<<<< HEAD
 	motg->core_clk = clk_get(&pdev->dev, "core_clk");
 	if (IS_ERR(motg->core_clk)) {
 		motg->core_clk = NULL;
@@ -2586,18 +3111,55 @@ static int __init msm_otg_probe(struct platform_device *pdev)
 		goto put_core_clk;
 	}
 
+=======
+	 if (motg->pdata->pclk_src_name) {
+		motg->pclk_src = clk_get(&pdev->dev,
+			motg->pdata->pclk_src_name);
+		if (IS_ERR(motg->pclk_src))
+			goto put_clk;
+		clk_set_rate(motg->pclk_src, INT_MAX);
+		clk_enable(motg->pclk_src);
+	} else
+		motg->pclk_src = ERR_PTR(-ENOENT);
+
+
+	motg->pclk = clk_get(&pdev->dev, "usb_hs_pclk");
+	if (IS_ERR(motg->pclk)) {
+		dev_err(&pdev->dev, "failed to get usb_hs_pclk\n");
+		ret = PTR_ERR(motg->pclk);
+		goto put_pclk_src;
+	}
+
+	/*
+	 * USB core clock is not present on all MSM chips. This
+	 * clock is introduced to remove the dependency on AXI
+	 * bus frequency.
+	 */
+	motg->core_clk = clk_get(&pdev->dev, "usb_hs_core_clk");
+	if (IS_ERR(motg->core_clk))
+		motg->core_clk = NULL;
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (!res) {
 		dev_err(&pdev->dev, "failed to get platform resource mem\n");
 		ret = -ENODEV;
+<<<<<<< HEAD
 		goto put_pclk;
+=======
+		goto put_core_clk;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	}
 
 	motg->regs = ioremap(res->start, resource_size(res));
 	if (!motg->regs) {
 		dev_err(&pdev->dev, "ioremap failed\n");
 		ret = -ENOMEM;
+<<<<<<< HEAD
 		goto put_pclk;
+=======
+		goto put_core_clk;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	}
 	dev_info(&pdev->dev, "OTG regs = %p\n", motg->regs);
 
@@ -2608,6 +3170,7 @@ static int __init msm_otg_probe(struct platform_device *pdev)
 		goto free_regs;
 	}
 
+<<<<<<< HEAD
 	motg->xo_handle = msm_xo_get(MSM_XO_CXO, "usb");
 	if (IS_ERR(motg->xo_handle)) {
 		dev_err(&pdev->dev, "%s not able to get the handle "
@@ -2623,10 +3186,14 @@ static int __init msm_otg_probe(struct platform_device *pdev)
 		goto free_xo_handle;
 	}
 
+=======
+	clk_enable(motg->clk);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	clk_enable(motg->pclk);
 
 	ret = msm_hsusb_init_vddcx(motg, 1);
 	if (ret) {
+<<<<<<< HEAD
 		dev_err(&pdev->dev, "hsusb vddcx init failed\n");
 		goto devote_xo_handle;
 	}
@@ -2635,11 +3202,16 @@ static int __init msm_otg_probe(struct platform_device *pdev)
 	if (ret) {
 		dev_err(&pdev->dev, "hsusb vddcx configuration failed\n");
 		goto free_init_vddcx;
+=======
+		dev_err(&pdev->dev, "hsusb vddcx configuration failed\n");
+		goto free_regs;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	}
 
 	ret = msm_hsusb_ldo_init(motg, 1);
 	if (ret) {
 		dev_err(&pdev->dev, "hsusb vreg configuration failed\n");
+<<<<<<< HEAD
 		goto free_init_vddcx;
 	}
 
@@ -2660,18 +3232,43 @@ static int __init msm_otg_probe(struct platform_device *pdev)
 	INIT_DELAYED_WORK(&motg->chg_work, msm_chg_detect_work);
 	setup_timer(&motg->id_timer, msm_otg_id_timer_func,
 				(unsigned long) motg);
+=======
+		goto vddcx_exit;
+	}
+	ret = msm_hsusb_ldo_set_mode(1);
+	if (ret) {
+		dev_err(&pdev->dev, "hsusb vreg enable failed\n");
+		goto ldo_exit;
+	}
+
+	if (motg->core_clk)
+		clk_enable(motg->core_clk);
+
+	writel(0, USB_USBINTR);
+	writel(0, USB_OTGSC);
+
+	INIT_WORK(&motg->sm_work, msm_otg_sm_work);
+	INIT_DELAYED_WORK(&motg->chg_work, msm_chg_detect_work);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	ret = request_irq(motg->irq, msm_otg_irq, IRQF_SHARED,
 					"msm_otg", motg);
 	if (ret) {
 		dev_err(&pdev->dev, "request irq failed\n");
+<<<<<<< HEAD
 		goto destroy_wlock;
+=======
+		goto disable_clks;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	}
 
 	otg->init = msm_otg_reset;
 	otg->set_host = msm_otg_set_host;
 	otg->set_peripheral = msm_otg_set_peripheral;
 	otg->set_power = msm_otg_set_power;
+<<<<<<< HEAD
 	otg->set_suspend = msm_otg_set_suspend;
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	otg->io_ops = &msm_otg_io_ops;
 
@@ -2681,6 +3278,7 @@ static int __init msm_otg_probe(struct platform_device *pdev)
 		goto free_irq;
 	}
 
+<<<<<<< HEAD
 	if (motg->pdata->mode == USB_OTG &&
 		motg->pdata->otg_control == OTG_PMIC_CONTROL) {
 		if (motg->pdata->pmic_id_irq) {
@@ -2772,6 +3370,48 @@ put_phy_reset_clk:
 free_motg:
 	if (motg->pdata->swfi_latency)
 		pm_qos_remove_request(&motg->pm_qos_req_dma);
+=======
+	platform_set_drvdata(pdev, motg);
+	device_init_wakeup(&pdev->dev, 1);
+
+	if (motg->pdata->mode == USB_OTG &&
+			motg->pdata->otg_control == OTG_USER_CONTROL) {
+		ret = msm_otg_debugfs_init(motg);
+		if (ret)
+			dev_dbg(&pdev->dev, "mode debugfs file is"
+					"not available\n");
+	}
+
+	pm_runtime_set_active(&pdev->dev);
+	pm_runtime_enable(&pdev->dev);
+
+	return 0;
+free_irq:
+	free_irq(motg->irq, motg);
+disable_clks:
+	clk_disable(motg->pclk);
+	clk_disable(motg->clk);
+ldo_exit:
+	msm_hsusb_ldo_init(motg, 0);
+vddcx_exit:
+	msm_hsusb_init_vddcx(motg, 0);
+free_regs:
+	iounmap(motg->regs);
+put_core_clk:
+	if (motg->core_clk)
+		clk_put(motg->core_clk);
+	clk_put(motg->pclk);
+put_pclk_src:
+	if (!IS_ERR(motg->pclk_src)) {
+		clk_disable(motg->pclk_src);
+		clk_put(motg->pclk_src);
+	}
+put_clk:
+	clk_put(motg->clk);
+put_phy_reset_clk:
+	clk_put(motg->phy_reset_clk);
+free_motg:
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	kfree(motg);
 	return ret;
 }
@@ -2785,10 +3425,13 @@ static int __devexit msm_otg_remove(struct platform_device *pdev)
 	if (otg->host || otg->gadget)
 		return -EBUSY;
 
+<<<<<<< HEAD
 	if (pdev->dev.of_node)
 		msm_otg_setup_devices(pdev, motg->pdata->mode, false);
 	if (motg->pdata->otg_control == OTG_PMIC_CONTROL)
 		pm8921_charger_unregister_vbus_sn(0);
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	msm_otg_debugfs_cleanup();
 	cancel_delayed_work_sync(&motg->chg_work);
 	cancel_work_sync(&motg->sm_work);
@@ -2797,11 +3440,15 @@ static int __devexit msm_otg_remove(struct platform_device *pdev)
 
 	device_init_wakeup(&pdev->dev, 0);
 	pm_runtime_disable(&pdev->dev);
+<<<<<<< HEAD
 	wake_lock_destroy(&motg->wlock);
 
 	msm_hsusb_mhl_switch_enable(motg, 0);
 	if (motg->pdata->pmic_id_irq)
 		free_irq(motg->pdata->pmic_id_irq, motg);
+=======
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	otg_set_transceiver(NULL);
 	free_irq(motg->irq, motg);
 
@@ -2822,15 +3469,27 @@ static int __devexit msm_otg_remove(struct platform_device *pdev)
 		dev_err(otg->dev, "Unable to suspend PHY\n");
 
 	clk_disable(motg->pclk);
+<<<<<<< HEAD
 	clk_disable(motg->core_clk);
 	msm_xo_put(motg->xo_handle);
 	msm_hsusb_ldo_enable(motg, 0);
 	msm_hsusb_ldo_init(motg, 0);
 	msm_hsusb_init_vddcx(motg, 0);
+=======
+	clk_disable(motg->clk);
+	if (motg->core_clk)
+		clk_disable(motg->core_clk);
+	if (!IS_ERR(motg->pclk_src)) {
+		clk_disable(motg->pclk_src);
+		clk_put(motg->pclk_src);
+	}
+	msm_hsusb_ldo_init(motg, 0);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	iounmap(motg->regs);
 	pm_runtime_set_suspended(&pdev->dev);
 
+<<<<<<< HEAD
 	if (!IS_ERR(motg->phy_reset_clk))
 		clk_put(motg->phy_reset_clk);
 	clk_put(motg->pclk);
@@ -2844,6 +3503,16 @@ static int __devexit msm_otg_remove(struct platform_device *pdev)
 		msm_bus_scale_unregister_client(motg->bus_perf_client);
 
 	kfree(motg);
+=======
+	clk_put(motg->phy_reset_clk);
+	clk_put(motg->pclk);
+	clk_put(motg->clk);
+	if (motg->core_clk)
+		clk_put(motg->core_clk);
+
+	kfree(motg);
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	return 0;
 }
 
@@ -2855,10 +3524,23 @@ static int msm_otg_runtime_idle(struct device *dev)
 
 	dev_dbg(dev, "OTG runtime idle\n");
 
+<<<<<<< HEAD
 	if (otg->state == OTG_STATE_UNDEFINED)
 		return -EAGAIN;
 	else
 		return 0;
+=======
+	/*
+	 * It is observed some times that a spurious interrupt
+	 * comes when PHY is put into LPM immediately after PHY reset.
+	 * This 1 sec delay also prevents entering into LPM immediately
+	 * after asynchronous interrupt.
+	 */
+	if (otg->state != OTG_STATE_UNDEFINED)
+		pm_schedule_suspend(dev, 1000);
+
+	return -EAGAIN;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 static int msm_otg_runtime_suspend(struct device *dev)
@@ -2874,7 +3556,10 @@ static int msm_otg_runtime_resume(struct device *dev)
 	struct msm_otg *motg = dev_get_drvdata(dev);
 
 	dev_dbg(dev, "OTG runtime resume\n");
+<<<<<<< HEAD
 	pm_runtime_get_noresume(dev);
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	return msm_otg_resume(motg);
 }
 #endif
@@ -2882,6 +3567,7 @@ static int msm_otg_runtime_resume(struct device *dev)
 #ifdef CONFIG_PM_SLEEP
 static int msm_otg_pm_suspend(struct device *dev)
 {
+<<<<<<< HEAD
 	int ret;
 
 	dev_dbg(dev, "OTG PM suspend\n");
@@ -2894,11 +3580,18 @@ static int msm_otg_pm_suspend(struct device *dev)
 	ret =  msm_otg_suspend(dev_get_drvdata(dev));
 #endif
 	return ret;
+=======
+	struct msm_otg *motg = dev_get_drvdata(dev);
+
+	dev_dbg(dev, "OTG PM suspend\n");
+	return msm_otg_suspend(motg);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 static int msm_otg_pm_resume(struct device *dev)
 {
 	struct msm_otg *motg = dev_get_drvdata(dev);
+<<<<<<< HEAD
 
 	dev_dbg(dev, "OTG PM resume\n");
 
@@ -2911,6 +3604,25 @@ static int msm_otg_pm_resume(struct device *dev)
 #endif
 
 	return msm_otg_resume(motg);
+=======
+	int ret;
+
+	dev_dbg(dev, "OTG PM resume\n");
+
+	ret = msm_otg_resume(motg);
+	if (ret)
+		return ret;
+
+	/*
+	 * Runtime PM Documentation recommends bringing the
+	 * device to full powered state upon resume.
+	 */
+	pm_runtime_disable(dev);
+	pm_runtime_set_active(dev);
+	pm_runtime_enable(dev);
+
+	return 0;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 #endif
 
@@ -2922,12 +3634,15 @@ static const struct dev_pm_ops msm_otg_dev_pm_ops = {
 };
 #endif
 
+<<<<<<< HEAD
 static struct of_device_id msm_otg_dt_match[] = {
 	{	.compatible = "qcom,hsusb-otg",
 	},
 	{}
 };
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 static struct platform_driver msm_otg_driver = {
 	.remove = __devexit_p(msm_otg_remove),
 	.driver = {
@@ -2936,7 +3651,10 @@ static struct platform_driver msm_otg_driver = {
 #ifdef CONFIG_PM
 		.pm = &msm_otg_dev_pm_ops,
 #endif
+<<<<<<< HEAD
 		.of_match_table = msm_otg_dt_match,
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	},
 };
 

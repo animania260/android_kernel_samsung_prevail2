@@ -561,8 +561,17 @@ got:
 	if (IS_DIRSYNC(inode))
 		handle->h_sync = 1;
 	if (insert_inode_locked(inode) < 0) {
+<<<<<<< HEAD
 		err = -EINVAL;
 		goto fail_drop;
+=======
+		/*
+		 * Likely a bitmap corruption causing inode to be allocated
+		 * twice.
+		 */
+		err = -EIO;
+		goto fail;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	}
 	spin_lock(&sbi->s_next_gen_lock);
 	inode->i_generation = sbi->s_next_generation++;

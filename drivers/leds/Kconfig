@@ -182,6 +182,7 @@ config LEDS_GPIO
 	  defined as platform devices and/or OpenFirmware platform devices.
 	  The code to use these bindings can be selected below.
 
+<<<<<<< HEAD
 config LEDS_MSM_PDM
 	tristate "LED Support through PDM"
 	depends on LEDS_CLASS
@@ -194,6 +195,8 @@ config LEDS_MSM_PDM
 	  To compile this driver as a module, choose M here: the
 	  module will be called leds-msm-pdm.
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 config LEDS_GPIO_PLATFORM
 	bool "Platform device bindings for GPIO LEDs"
 	depends on LEDS_GPIO
@@ -223,12 +226,15 @@ config LEDS_LP3944
 	  To compile this driver as a module, choose M here: the
 	  module will be called leds-lp3944.
 
+<<<<<<< HEAD
 config LEDS_CPLD
 	tristate "LED Support for CPLD connected LEDs"
 	depends on LEDS_CLASS
 	help
 	  This option enables support for the LEDs connected to CPLD
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 config LEDS_LP5521
 	tristate "LED Support for N.S. LP5521 LED driver chip"
 	depends on LEDS_CLASS && I2C
@@ -287,6 +293,7 @@ config LEDS_PCA955X
 	  LED driver chips accessed via the I2C bus.  Supported
 	  devices include PCA9550, PCA9551, PCA9552, and PCA9553.
 
+<<<<<<< HEAD
 config LEDS_PM8XXX
 	tristate "LED Support for Qualcomm PMIC8XXX"
 	depends on MFD_PM8XXX
@@ -298,6 +305,8 @@ config LEDS_PM8XXX
 	  To compile this driver as a module, choose M here: the module will
 	  be called leds-pmic8xxx.
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 config LEDS_WM831X_STATUS
 	tristate "LED support for status LEDs on WM831x PMICs"
 	depends on LEDS_CLASS
@@ -352,6 +361,7 @@ config LEDS_BD2802
 	  This option enables support for BD2802GU RGB LED driver chips
 	  accessed via the I2C bus.
 
+<<<<<<< HEAD
 config LEDS_MSM_PMIC
         tristate "LED Support for Qualcomm PMIC connected LEDs"
         default n
@@ -370,6 +380,8 @@ config LEDS_PMIC8058
 	  (Power Management IC) chip on Qualcomm reference boards,
 	  for example SURF and FFAs.
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 config LEDS_INTEL_SS4200
 	tristate "LED driver for Intel NAS SS4200 series"
 	depends on LEDS_CLASS
@@ -416,6 +428,7 @@ config LEDS_MC13783
 	  This option enable support for on-chip LED drivers found
 	  on Freescale Semiconductor MC13783 PMIC.
 
+<<<<<<< HEAD
 config LEDS_QCIBL
 	tristate "LED Support for Quanta LCD backlight"
 	depends on SENSORS_WPCE775X && ARCH_MSM_SCORPION
@@ -424,6 +437,8 @@ config LEDS_QCIBL
 	  Say Y here if you want to use the Quanta backlight driver for ST15
 	  platform.
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 config LEDS_NS2
 	tristate "LED support for Network Space v2 GPIO LEDs"
 	depends on LEDS_CLASS
@@ -521,12 +536,15 @@ config LEDS_TRIGGER_DEFAULT_ON
 	  This allows LEDs to be initialised in the ON state.
 	  If unsure, say Y.
 
+<<<<<<< HEAD
 config LEDS_TRIGGER_SLEEP
 	tristate "LED Sleep Mode Trigger"
 	depends on LEDS_TRIGGERS && HAS_EARLYSUSPEND
 	help
 	  This turns LEDs on when the screen is off but the cpu still running.
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 comment "iptables trigger is under Netfilter config (LED target)"
 	depends on LEDS_TRIGGERS
 

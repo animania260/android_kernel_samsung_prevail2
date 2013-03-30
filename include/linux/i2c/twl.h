@@ -657,13 +657,18 @@ struct twl4030_power_data {
 extern void twl4030_power_init(struct twl4030_power_data *triton2_scripts);
 extern int twl4030_remove_script(u8 flags);
 
+<<<<<<< HEAD
 struct twl4030_codec_data {
+=======
+struct twl4030_codec_audio_data {
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	unsigned int digimic_delay; /* in ms */
 	unsigned int ramp_delay_value;
 	unsigned int offset_cncl_path;
 	unsigned int check_defaults:1;
 	unsigned int reset_registers:1;
 	unsigned int hs_extmute:1;
+<<<<<<< HEAD
 	u16 hs_left_step;
 	u16 hs_right_step;
 	u16 hf_left_step;
@@ -687,11 +692,27 @@ struct twl4030_audio_data {
 	unsigned int	audio_mclk;
 	struct twl4030_codec_data *codec;
 	struct twl4030_vibra_data *vibra;
+=======
+	void (*set_hs_extmute)(int mute);
+};
+
+struct twl4030_codec_vibra_data {
+	unsigned int	coexist;
+};
+
+struct twl4030_codec_data {
+	unsigned int	audio_mclk;
+	struct twl4030_codec_audio_data		*audio;
+	struct twl4030_codec_vibra_data		*vibra;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	/* twl6040 */
 	int audpwron_gpio;	/* audio power-on gpio */
 	int naudint_irq;	/* audio interrupt */
+<<<<<<< HEAD
 	unsigned int irq_base;
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 };
 
 struct twl4030_platform_data {
@@ -703,7 +724,11 @@ struct twl4030_platform_data {
 	struct twl4030_keypad_data		*keypad;
 	struct twl4030_usb_data			*usb;
 	struct twl4030_power_data		*power;
+<<<<<<< HEAD
 	struct twl4030_audio_data		*audio;
+=======
+	struct twl4030_codec_data		*codec;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	/* Common LDO regulators for TWL4030/TWL6030 */
 	struct regulator_init_data		*vdac;

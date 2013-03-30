@@ -532,6 +532,10 @@ static int ccid3_hc_tx_getsockopt(struct sock *sk, const int optname, int len,
 	case DCCP_SOCKOPT_CCID_TX_INFO:
 		if (len < sizeof(tfrc))
 			return -EINVAL;
+<<<<<<< HEAD
+=======
+		memset(&tfrc, 0, sizeof(tfrc));
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		tfrc.tfrctx_x	   = hc->tx_x;
 		tfrc.tfrctx_x_recv = hc->tx_x_recv;
 		tfrc.tfrctx_x_calc = hc->tx_x_calc;

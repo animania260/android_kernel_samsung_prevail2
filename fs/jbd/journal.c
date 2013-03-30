@@ -1131,6 +1131,17 @@ static int journal_get_superblock(journal_t *journal)
 		goto out;
 	}
 
+<<<<<<< HEAD
+=======
+	if (be32_to_cpu(sb->s_first) == 0 ||
+	    be32_to_cpu(sb->s_first) >= journal->j_maxlen) {
+		printk(KERN_WARNING
+			"JBD: Invalid start block of journal: %u\n",
+			be32_to_cpu(sb->s_first));
+		goto out;
+	}
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	return 0;
 
 out:

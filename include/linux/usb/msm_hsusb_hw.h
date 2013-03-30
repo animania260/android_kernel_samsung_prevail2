@@ -21,7 +21,10 @@
 #define USB_CAPLENGTH        (MSM_USB_BASE + 0x0100) /* 8 bit */
 
 #define USB_USBCMD           (MSM_USB_BASE + 0x0140)
+<<<<<<< HEAD
 #define USB_USBSTS           (MSM_USB_BASE + 0x0144)
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #define USB_PORTSC           (MSM_USB_BASE + 0x0184)
 #define USB_OTGSC            (MSM_USB_BASE + 0x01A4)
 #define USB_USBMODE          (MSM_USB_BASE + 0x01A8)
@@ -38,11 +41,15 @@
 #define ULPI_RUN              (1 << 30)
 #define ULPI_WRITE            (1 << 29)
 #define ULPI_READ             (0 << 29)
+<<<<<<< HEAD
 #define ULPI_SYNC_STATE       (1 << 27)
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #define ULPI_ADDR(n)          (((n) & 255) << 16)
 #define ULPI_DATA(n)          ((n) & 255)
 #define ULPI_DATA_READ(n)     (((n) >> 8) & 255)
 
+<<<<<<< HEAD
 /* synopsys 28nm phy registers */
 #define ULPI_PWR_CLK_MNG_REG	0x88
 #define OTG_COMP_DISABLE	BIT(0)
@@ -57,6 +64,14 @@
 /* OTG definitions */
 #define OTGSC_INTSTS_MASK	(0x7f << 16)
 #define OTGSC_IDPU		(1 << 5)
+=======
+#define ASYNC_INTR_CTRL         (1 << 29) /* Enable async interrupt */
+#define ULPI_STP_CTRL           (1 << 30) /* Block communication with PHY */
+#define PHY_RETEN               (1 << 1) /* PHY retention enable/disable */
+
+/* OTG definitions */
+#define OTGSC_INTSTS_MASK	(0x7f << 16)
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #define OTGSC_ID		(1 << 8)
 #define OTGSC_BSV		(1 << 11)
 #define OTGSC_IDIS		(1 << 16)

@@ -11,6 +11,10 @@
 #define KMSG_COMPONENT "zfcp"
 #define pr_fmt(fmt) KMSG_COMPONENT ": " fmt
 
+<<<<<<< HEAD
+=======
+#include <linux/compat.h>
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #include <linux/slab.h>
 #include <linux/types.h>
 #include <linux/miscdevice.h>
@@ -292,7 +296,11 @@ void zfcp_cfdc_adapter_access_changed(struct zfcp_adapter *adapter)
 	}
 	read_unlock_irqrestore(&adapter->port_list_lock, flags);
 
+<<<<<<< HEAD
 	shost_for_each_device(sdev, port->adapter->scsi_host) {
+=======
+	shost_for_each_device(sdev, adapter->scsi_host) {
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		zfcp_sdev = sdev_to_zfcp(sdev);
 		status = atomic_read(&zfcp_sdev->status);
 		if ((status & ZFCP_STATUS_COMMON_ACCESS_DENIED) ||

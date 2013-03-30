@@ -1023,7 +1023,10 @@ xfs_buf_iodone_callbacks(
 	XFS_BUF_UNDELAYWRITE(bp);
 
 	trace_xfs_buf_error_relse(bp, _RET_IP_);
+<<<<<<< HEAD
 	xfs_force_shutdown(mp, SHUTDOWN_META_IO_ERROR);
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 do_callbacks:
 	xfs_buf_do_callbacks(bp);

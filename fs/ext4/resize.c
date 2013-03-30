@@ -499,6 +499,10 @@ static int add_new_gdb(handle_t *handle, struct inode *inode,
 	return err;
 
 exit_inode:
+<<<<<<< HEAD
+=======
+	kfree(n_group_desc);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	/* ext4_handle_release_buffer(handle, iloc.bh); */
 	brelse(iloc.bh);
 exit_dindj:

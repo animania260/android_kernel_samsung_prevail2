@@ -37,6 +37,10 @@
 #define TI_5152_BOOT_PRODUCT_ID		0x5152	/* no EEPROM, no firmware */
 #define TI_5052_EEPROM_PRODUCT_ID	0x505A	/* EEPROM, no firmware */
 #define TI_5052_FIRMWARE_PRODUCT_ID	0x505F	/* firmware is running */
+<<<<<<< HEAD
+=======
+#define FRI2_PRODUCT_ID			0x5053  /* Fish River Island II */
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 /* Multi-Tech vendor and product ids */
 #define MTS_VENDOR_ID			0x06E0
@@ -49,6 +53,13 @@
 #define MTS_MT9234ZBA_PRODUCT_ID	0xF115
 #define MTS_MT9234ZBAOLD_PRODUCT_ID	0x0319
 
+<<<<<<< HEAD
+=======
+/* Abbott Diabetics vendor and product ids */
+#define ABBOTT_VENDOR_ID		0x1a61
+#define ABBOTT_PRODUCT_ID		0x3410
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 /* Commands */
 #define TI_GET_VERSION			0x01
 #define TI_GET_PORT_STATUS		0x02

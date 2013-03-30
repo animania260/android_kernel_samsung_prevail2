@@ -584,7 +584,11 @@ static bool
 drm_monitor_supports_rb(struct edid *edid)
 {
 	if (edid->revision >= 4) {
+<<<<<<< HEAD
 		bool ret;
+=======
+		bool ret = false;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		drm_for_each_detailed_block((u8 *)edid, is_rb, &ret);
 		return ret;
 	}

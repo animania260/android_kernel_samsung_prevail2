@@ -30,12 +30,18 @@
 /**
  * struct pmic8xxx_pwrkey - pmic8xxx pwrkey information
  * @key_press_irq: key press irq number
+<<<<<<< HEAD
  * @pdata: platform data
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
  */
 struct pmic8xxx_pwrkey {
 	struct input_dev *pwr;
 	int key_press_irq;
+<<<<<<< HEAD
 	const struct pm8xxx_pwrkey_platform_data *pdata;
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 };
 
 static irqreturn_t pwrkey_press_irq(int irq, void *_pwrkey)
@@ -100,9 +106,13 @@ static int __devinit pmic8xxx_pwrkey_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	/* Valid range of pwr key trigger delay is 1/64 sec to 2 seconds. */
 	if (pdata->kpd_trigger_delay_us > USEC_PER_SEC * 2 ||
 		pdata->kpd_trigger_delay_us < USEC_PER_SEC / 64) {
+=======
+	if (pdata->kpd_trigger_delay_us > 62500) {
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		dev_err(&pdev->dev, "invalid power key trigger delay\n");
 		return -EINVAL;
 	}
@@ -111,8 +121,11 @@ static int __devinit pmic8xxx_pwrkey_probe(struct platform_device *pdev)
 	if (!pwrkey)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	pwrkey->pdata = pdata;
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	pwr = input_allocate_device();
 	if (!pwr) {
 		dev_dbg(&pdev->dev, "Can't allocate power button\n");
@@ -126,8 +139,13 @@ static int __devinit pmic8xxx_pwrkey_probe(struct platform_device *pdev)
 	pwr->phys = "pmic8xxx_pwrkey/input0";
 	pwr->dev.parent = &pdev->dev;
 
+<<<<<<< HEAD
 	delay = (pdata->kpd_trigger_delay_us << 6) / USEC_PER_SEC;
 	delay = ilog2(delay);
+=======
+	delay = (pdata->kpd_trigger_delay_us << 10) / USEC_PER_SEC;
+	delay = 1 + ilog2(delay);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	err = pm8xxx_readb(pdev->dev.parent, PON_CNTL_1, &pon_cntl);
 	if (err < 0) {
@@ -159,7 +177,11 @@ static int __devinit pmic8xxx_pwrkey_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, pwrkey);
 
+<<<<<<< HEAD
 	err = request_any_context_irq(key_press_irq, pwrkey_press_irq,
+=======
+	err = request_irq(key_press_irq, pwrkey_press_irq,
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		IRQF_TRIGGER_RISING, "pmic8xxx_pwrkey_press", pwrkey);
 	if (err < 0) {
 		dev_dbg(&pdev->dev, "Can't get %d IRQ for pwrkey: %d\n",
@@ -167,7 +189,11 @@ static int __devinit pmic8xxx_pwrkey_probe(struct platform_device *pdev)
 		goto unreg_input_dev;
 	}
 
+<<<<<<< HEAD
 	err = request_any_context_irq(key_release_irq, pwrkey_release_irq,
+=======
+	err = request_irq(key_release_irq, pwrkey_release_irq,
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		 IRQF_TRIGGER_RISING, "pmic8xxx_pwrkey_release", pwrkey);
 	if (err < 0) {
 		dev_dbg(&pdev->dev, "Can't get %d IRQ for pwrkey: %d\n",

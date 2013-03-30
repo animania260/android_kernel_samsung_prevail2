@@ -793,7 +793,11 @@ static int adp8860_i2c_suspend(struct i2c_client *client, pm_message_t message)
 
 static int adp8860_i2c_resume(struct i2c_client *client)
 {
+<<<<<<< HEAD
 	adp8860_set_bits(client, ADP8860_MDCR, NSTBY);
+=======
+	adp8860_set_bits(client, ADP8860_MDCR, NSTBY | BLEN);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	return 0;
 }

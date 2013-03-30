@@ -24,10 +24,18 @@
 #include <linux/init.h>
 #include <linux/delay.h>
 #include <linux/pm.h>
+<<<<<<< HEAD
 #include <linux/platform_device.h>
 #include <linux/slab.h>
 #include <linux/i2c/twl.h>
 #include <linux/mfd/twl6040.h>
+=======
+#include <linux/i2c.h>
+#include <linux/gpio.h>
+#include <linux/platform_device.h>
+#include <linux/slab.h>
+#include <linux/i2c/twl.h>
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 #include <sound/core.h>
 #include <sound/pcm.h>
@@ -76,6 +84,7 @@ struct twl6040_jack_data {
 
 /* codec private data */
 struct twl6040_data {
+<<<<<<< HEAD
 	int codec_powered;
 	int pll;
 	int non_lp;
@@ -88,6 +97,16 @@ struct twl6040_data {
 	u16 hf_left_step;
 	u16 hf_right_step;
 	struct snd_pcm_hw_constraint_list *sysclk_constraints;
+=======
+	int audpwron;
+	int naudint;
+	int codec_powered;
+	int pll;
+	int non_lp;
+	unsigned int sysclk;
+	struct snd_pcm_hw_constraint_list *sysclk_constraints;
+	struct completion ready;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	struct twl6040_jack_data hs_jack;
 	struct snd_soc_codec *codec;
 	struct workqueue_struct *workqueue;
@@ -120,6 +139,7 @@ static const u8 twl6040_reg[TWL6040_CACHEREGNUM] = {
 	0x18, /* TWL6040_MICLCTL	0x0C	- No input selected on Left Mic */
 	0x18, /* TWL6040_MICRCTL	0x0D	- No input selected on Right Mic */
 	0x00, /* TWL6040_MICGAIN	0x0E	*/
+<<<<<<< HEAD
 	0x00, /* TWL6040_LINEGAIN	0x0F	*/
 	0x00, /* TWL6040_HSLCTL		0x10	*/
 	0x00, /* TWL6040_HSRCTL		0x11	*/
@@ -129,6 +149,17 @@ static const u8 twl6040_reg[TWL6040_CACHEREGNUM] = {
 	0x1D, /* TWL6040_HFLGAIN	0x15	*/
 	0x00, /* TWL6040_HFRCTL		0x16	*/
 	0x1D, /* TWL6040_HFRGAIN	0x17	*/
+=======
+	0x1B, /* TWL6040_LINEGAIN	0x0F	*/
+	0x00, /* TWL6040_HSLCTL		0x10	*/
+	0x00, /* TWL6040_HSRCTL		0x11	*/
+	0x00, /* TWL6040_HSGAIN		0x12	*/
+	0x00, /* TWL6040_EARCTL		0x13	*/
+	0x00, /* TWL6040_HFLCTL		0x14	*/
+	0x00, /* TWL6040_HFLGAIN	0x15	*/
+	0x00, /* TWL6040_HFRCTL		0x16	*/
+	0x00, /* TWL6040_HFRGAIN	0x17	*/
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	0x00, /* TWL6040_VIBCTLL	0x18	*/
 	0x00, /* TWL6040_VIBDATL	0x19	*/
 	0x00, /* TWL6040_VIBCTLR	0x1A	*/
@@ -242,13 +273,20 @@ static inline void twl6040_write_reg_cache(struct snd_soc_codec *codec,
 static int twl6040_read_reg_volatile(struct snd_soc_codec *codec,
 			unsigned int reg)
 {
+<<<<<<< HEAD
 	struct twl6040 *twl6040 = codec->control_data;
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	u8 value;
 
 	if (reg >= TWL6040_CACHEREGNUM)
 		return -EIO;
 
+<<<<<<< HEAD
 	value = twl6040_reg_read(twl6040, reg);
+=======
+	twl_i2c_read_u8(TWL_MODULE_AUDIO_VOICE, &value, reg);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	twl6040_write_reg_cache(codec, reg, value);
 
 	return value;
@@ -260,13 +298,20 @@ static int twl6040_read_reg_volatile(struct snd_soc_codec *codec,
 static int twl6040_write(struct snd_soc_codec *codec,
 			unsigned int reg, unsigned int value)
 {
+<<<<<<< HEAD
 	struct twl6040 *twl6040 = codec->control_data;
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	if (reg >= TWL6040_CACHEREGNUM)
 		return -EIO;
 
 	twl6040_write_reg_cache(codec, reg, value);
+<<<<<<< HEAD
 	return twl6040_reg_write(twl6040, reg, value);
+=======
+	return twl_i2c_write_u8(TWL_MODULE_AUDIO_VOICE, value, reg);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 static void twl6040_init_vio_regs(struct snd_soc_codec *codec)
@@ -274,6 +319,7 @@ static void twl6040_init_vio_regs(struct snd_soc_codec *codec)
 	u8 *cache = codec->reg_cache;
 	int reg, i;
 
+<<<<<<< HEAD
 	for (i = 0; i < TWL6040_VIOREGNUM; i++) {
 		reg = twl6040_vio_reg[i];
 		/*
@@ -289,6 +335,17 @@ static void twl6040_init_vio_regs(struct snd_soc_codec *codec)
 		case TWL6040_REG_LDOCTL:
 		case TWL6040_REG_GPOCTL:
 		case TWL6040_REG_ACCCTL:
+=======
+	/* allow registers to be accessed by i2c */
+	twl6040_write(codec, TWL6040_REG_ACCCTL, cache[TWL6040_REG_ACCCTL]);
+
+	for (i = 0; i < TWL6040_VIOREGNUM; i++) {
+		reg = twl6040_vio_reg[i];
+		/* skip read-only registers (ASICID, ASICREV, STATUS) */
+		switch (reg) {
+		case TWL6040_REG_ASICID:
+		case TWL6040_REG_ASICREV:
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		case TWL6040_REG_STATUS:
 			continue;
 		default:
@@ -305,6 +362,7 @@ static void twl6040_init_vdd_regs(struct snd_soc_codec *codec)
 
 	for (i = 0; i < TWL6040_VDDREGNUM; i++) {
 		reg = twl6040_vdd_reg[i];
+<<<<<<< HEAD
 		/* skip vibra and PLL registers */
 		switch (reg) {
 		case TWL6040_REG_VIBCTLL:
@@ -319,6 +377,8 @@ static void twl6040_init_vdd_regs(struct snd_soc_codec *codec)
 			break;
 		}
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		twl6040_write(codec, reg, cache[reg]);
 	}
 }
@@ -343,11 +403,15 @@ static inline int twl6040_hs_ramp_step(struct snd_soc_codec *codec,
 	if (headset->ramp == TWL6040_RAMP_UP) {
 		/* ramp step up */
 		if (val < headset->left_vol) {
+<<<<<<< HEAD
 			if (val + left_step > headset->left_vol)
 				val = headset->left_vol;
 			else
 				val += left_step;
 
+=======
+			val += left_step;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			reg &= ~TWL6040_HSL_VOL_MASK;
 			twl6040_write(codec, TWL6040_REG_HSGAIN,
 					(reg | (~val & TWL6040_HSL_VOL_MASK)));
@@ -357,11 +421,15 @@ static inline int twl6040_hs_ramp_step(struct snd_soc_codec *codec,
 	} else if (headset->ramp == TWL6040_RAMP_DOWN) {
 		/* ramp step down */
 		if (val > 0x0) {
+<<<<<<< HEAD
 			if ((int)val - (int)left_step < 0)
 				val = 0;
 			else
 				val -= left_step;
 
+=======
+			val -= left_step;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			reg &= ~TWL6040_HSL_VOL_MASK;
 			twl6040_write(codec, TWL6040_REG_HSGAIN, reg |
 						(~val & TWL6040_HSL_VOL_MASK));
@@ -378,11 +446,15 @@ static inline int twl6040_hs_ramp_step(struct snd_soc_codec *codec,
 	if (headset->ramp == TWL6040_RAMP_UP) {
 		/* ramp step up */
 		if (val < headset->right_vol) {
+<<<<<<< HEAD
 			if (val + right_step > headset->right_vol)
 				val = headset->right_vol;
 			else
 				val += right_step;
 
+=======
+			val += right_step;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			reg &= ~TWL6040_HSR_VOL_MASK;
 			twl6040_write(codec, TWL6040_REG_HSGAIN,
 				(reg | (~val << TWL6040_HSR_VOL_SHIFT)));
@@ -392,11 +464,15 @@ static inline int twl6040_hs_ramp_step(struct snd_soc_codec *codec,
 	} else if (headset->ramp == TWL6040_RAMP_DOWN) {
 		/* ramp step down */
 		if (val > 0x0) {
+<<<<<<< HEAD
 			if ((int)val - (int)right_step < 0)
 				val = 0;
 			else
 				val -= right_step;
 
+=======
+			val -= right_step;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			reg &= ~TWL6040_HSR_VOL_MASK;
 			twl6040_write(codec, TWL6040_REG_HSGAIN,
 					 reg | (~val << TWL6040_HSR_VOL_SHIFT));
@@ -427,11 +503,15 @@ static inline int twl6040_hf_ramp_step(struct snd_soc_codec *codec,
 	if (handsfree->ramp == TWL6040_RAMP_UP) {
 		/* ramp step up */
 		if (val < handsfree->left_vol) {
+<<<<<<< HEAD
 			if (val + left_step > handsfree->left_vol)
 				val = handsfree->left_vol;
 			else
 				val += left_step;
 
+=======
+			val += left_step;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			reg &= ~TWL6040_HF_VOL_MASK;
 			twl6040_write(codec, TWL6040_REG_HFLGAIN,
 						reg | (0x1D - val));
@@ -441,11 +521,15 @@ static inline int twl6040_hf_ramp_step(struct snd_soc_codec *codec,
 	} else if (handsfree->ramp == TWL6040_RAMP_DOWN) {
 		/* ramp step down */
 		if (val > 0) {
+<<<<<<< HEAD
 			if ((int)val - (int)left_step < 0)
 				val = 0;
 			else
 				val -= left_step;
 
+=======
+			val -= left_step;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			reg &= ~TWL6040_HF_VOL_MASK;
 			twl6040_write(codec, TWL6040_REG_HFLGAIN,
 						reg | (0x1D - val));
@@ -462,11 +546,15 @@ static inline int twl6040_hf_ramp_step(struct snd_soc_codec *codec,
 	if (handsfree->ramp == TWL6040_RAMP_UP) {
 		/* ramp step up */
 		if (val < handsfree->right_vol) {
+<<<<<<< HEAD
 			if (val + right_step > handsfree->right_vol)
 				val = handsfree->right_vol;
 			else
 				val += right_step;
 
+=======
+			val += right_step;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			reg &= ~TWL6040_HF_VOL_MASK;
 			twl6040_write(codec, TWL6040_REG_HFRGAIN,
 						reg | (0x1D - val));
@@ -476,11 +564,15 @@ static inline int twl6040_hf_ramp_step(struct snd_soc_codec *codec,
 	} else if (handsfree->ramp == TWL6040_RAMP_DOWN) {
 		/* ramp step down */
 		if (val > 0) {
+<<<<<<< HEAD
 			if ((int)val - (int)right_step < 0)
 				val = 0;
 			else
 				val -= right_step;
 
+=======
+			val -= right_step;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			reg &= ~TWL6040_HF_VOL_MASK;
 			twl6040_write(codec, TWL6040_REG_HFRGAIN,
 						reg | (0x1D - val));
@@ -509,9 +601,17 @@ static void twl6040_pga_hs_work(struct work_struct *work)
 
 	/* HS PGA volumes have 4 bits of resolution to ramp */
 	for (i = 0; i <= 16; i++) {
+<<<<<<< HEAD
 		headset_complete = twl6040_hs_ramp_step(codec,
 						headset->left_step,
 						headset->right_step);
+=======
+		headset_complete = 1;
+		if (headset->ramp != TWL6040_RAMP_NONE)
+			headset_complete = twl6040_hs_ramp_step(codec,
+							headset->left_step,
+							headset->right_step);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 		/* ramp finished ? */
 		if (headset_complete)
@@ -552,9 +652,17 @@ static void twl6040_pga_hf_work(struct work_struct *work)
 
 	/* HF PGA volumes have 5 bits of resolution to ramp */
 	for (i = 0; i <= 32; i++) {
+<<<<<<< HEAD
 		handsfree_complete = twl6040_hf_ramp_step(codec,
 						handsfree->left_step,
 						handsfree->right_step);
+=======
+		handsfree_complete = 1;
+		if (handsfree->ramp != TWL6040_RAMP_NONE)
+			handsfree_complete = twl6040_hf_ramp_step(codec,
+							handsfree->left_step,
+							handsfree->right_step);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 		/* ramp finished ? */
 		if (handsfree_complete)
@@ -595,16 +703,22 @@ static int pga_event(struct snd_soc_dapm_widget *w,
 		out = &priv->headset;
 		work = &priv->hs_delayed_work;
 		queue = priv->hs_workqueue;
+<<<<<<< HEAD
 		out->left_step = priv->hs_left_step;
 		out->right_step = priv->hs_right_step;
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		out->step_delay = 5;	/* 5 ms between volume ramp steps */
 		break;
 	case 4:
 		out = &priv->handsfree;
 		work = &priv->hf_delayed_work;
 		queue = priv->hf_workqueue;
+<<<<<<< HEAD
 		out->left_step = priv->hf_left_step;
 		out->right_step = priv->hf_right_step;
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		out->step_delay = 5;	/* 5 ms between volume ramp steps */
 		if (SND_SOC_DAPM_EVENT_ON(event))
 			priv->non_lp++;
@@ -637,6 +751,11 @@ static int pga_event(struct snd_soc_dapm_widget *w,
 
 		if (!delayed_work_pending(work)) {
 			/* use volume ramp for power-down */
+<<<<<<< HEAD
+=======
+			out->left_step = 1;
+			out->right_step = 1;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			out->ramp = TWL6040_RAMP_DOWN;
 			INIT_COMPLETION(out->ramp_done);
 
@@ -652,6 +771,91 @@ static int pga_event(struct snd_soc_dapm_widget *w,
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+/* twl6040 codec manual power-up sequence */
+static void twl6040_power_up(struct snd_soc_codec *codec)
+{
+	u8 ncpctl, ldoctl, lppllctl, accctl;
+
+	ncpctl = twl6040_read_reg_cache(codec, TWL6040_REG_NCPCTL);
+	ldoctl = twl6040_read_reg_cache(codec, TWL6040_REG_LDOCTL);
+	lppllctl = twl6040_read_reg_cache(codec, TWL6040_REG_LPPLLCTL);
+	accctl = twl6040_read_reg_cache(codec, TWL6040_REG_ACCCTL);
+
+	/* enable reference system */
+	ldoctl |= TWL6040_REFENA;
+	twl6040_write(codec, TWL6040_REG_LDOCTL, ldoctl);
+	msleep(10);
+	/* enable internal oscillator */
+	ldoctl |= TWL6040_OSCENA;
+	twl6040_write(codec, TWL6040_REG_LDOCTL, ldoctl);
+	udelay(10);
+	/* enable high-side ldo */
+	ldoctl |= TWL6040_HSLDOENA;
+	twl6040_write(codec, TWL6040_REG_LDOCTL, ldoctl);
+	udelay(244);
+	/* enable negative charge pump */
+	ncpctl |= TWL6040_NCPENA | TWL6040_NCPOPEN;
+	twl6040_write(codec, TWL6040_REG_NCPCTL, ncpctl);
+	udelay(488);
+	/* enable low-side ldo */
+	ldoctl |= TWL6040_LSLDOENA;
+	twl6040_write(codec, TWL6040_REG_LDOCTL, ldoctl);
+	udelay(244);
+	/* enable low-power pll */
+	lppllctl |= TWL6040_LPLLENA;
+	twl6040_write(codec, TWL6040_REG_LPPLLCTL, lppllctl);
+	/* reset state machine */
+	accctl |= TWL6040_RESETSPLIT;
+	twl6040_write(codec, TWL6040_REG_ACCCTL, accctl);
+	mdelay(5);
+	accctl &= ~TWL6040_RESETSPLIT;
+	twl6040_write(codec, TWL6040_REG_ACCCTL, accctl);
+	/* disable internal oscillator */
+	ldoctl &= ~TWL6040_OSCENA;
+	twl6040_write(codec, TWL6040_REG_LDOCTL, ldoctl);
+}
+
+/* twl6040 codec manual power-down sequence */
+static void twl6040_power_down(struct snd_soc_codec *codec)
+{
+	u8 ncpctl, ldoctl, lppllctl, accctl;
+
+	ncpctl = twl6040_read_reg_cache(codec, TWL6040_REG_NCPCTL);
+	ldoctl = twl6040_read_reg_cache(codec, TWL6040_REG_LDOCTL);
+	lppllctl = twl6040_read_reg_cache(codec, TWL6040_REG_LPPLLCTL);
+	accctl = twl6040_read_reg_cache(codec, TWL6040_REG_ACCCTL);
+
+	/* enable internal oscillator */
+	ldoctl |= TWL6040_OSCENA;
+	twl6040_write(codec, TWL6040_REG_LDOCTL, ldoctl);
+	udelay(10);
+	/* disable low-power pll */
+	lppllctl &= ~TWL6040_LPLLENA;
+	twl6040_write(codec, TWL6040_REG_LPPLLCTL, lppllctl);
+	/* disable low-side ldo */
+	ldoctl &= ~TWL6040_LSLDOENA;
+	twl6040_write(codec, TWL6040_REG_LDOCTL, ldoctl);
+	udelay(244);
+	/* disable negative charge pump */
+	ncpctl &= ~(TWL6040_NCPENA | TWL6040_NCPOPEN);
+	twl6040_write(codec, TWL6040_REG_NCPCTL, ncpctl);
+	udelay(488);
+	/* disable high-side ldo */
+	ldoctl &= ~TWL6040_HSLDOENA;
+	twl6040_write(codec, TWL6040_REG_LDOCTL, ldoctl);
+	udelay(244);
+	/* disable internal oscillator */
+	ldoctl &= ~TWL6040_OSCENA;
+	twl6040_write(codec, TWL6040_REG_LDOCTL, ldoctl);
+	/* disable reference system */
+	ldoctl &= ~TWL6040_REFENA;
+	twl6040_write(codec, TWL6040_REG_LDOCTL, ldoctl);
+	msleep(10);
+}
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 /* set headset dac and driver power mode */
 static int headset_power_mode(struct snd_soc_codec *codec, int high_perf)
 {
@@ -687,6 +891,7 @@ static int twl6040_power_mode_event(struct snd_soc_dapm_widget *w,
 {
 	struct snd_soc_codec *codec = w->codec;
 	struct twl6040_data *priv = snd_soc_codec_get_drvdata(codec);
+<<<<<<< HEAD
 	int ret = 0;
 
 	if (SND_SOC_DAPM_EVENT_ON(event)) {
@@ -707,6 +912,17 @@ static int twl6040_power_mode_event(struct snd_soc_dapm_widget *w,
 	msleep(1);
 
 	return ret;
+=======
+
+	if (SND_SOC_DAPM_EVENT_ON(event))
+		priv->non_lp++;
+	else
+		priv->non_lp--;
+
+	msleep(1);
+
+	return 0;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 static void twl6040_hs_jack_report(struct snd_soc_codec *codec,
@@ -751,6 +967,7 @@ static void twl6040_accessory_work(struct work_struct *work)
 }
 
 /* audio interrupt handler */
+<<<<<<< HEAD
 static irqreturn_t twl6040_audio_handler(int irq, void *data)
 {
 	struct snd_soc_codec *codec = data;
@@ -759,11 +976,38 @@ static irqreturn_t twl6040_audio_handler(int irq, void *data)
 	u8 intid;
 
 	intid = twl6040_reg_read(twl6040, TWL6040_REG_INTID);
+=======
+static irqreturn_t twl6040_naudint_handler(int irq, void *data)
+{
+	struct snd_soc_codec *codec = data;
+	struct twl6040_data *priv = snd_soc_codec_get_drvdata(codec);
+	u8 intid;
+
+	twl_i2c_read_u8(TWL_MODULE_AUDIO_VOICE, &intid, TWL6040_REG_INTID);
+
+	if (intid & TWL6040_THINT)
+		dev_alert(codec->dev, "die temp over-limit detection\n");
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	if ((intid & TWL6040_PLUGINT) || (intid & TWL6040_UNPLUGINT))
 		queue_delayed_work(priv->workqueue, &priv->delayed_work,
 							msecs_to_jiffies(200));
 
+<<<<<<< HEAD
+=======
+	if (intid & TWL6040_HOOKINT)
+		dev_info(codec->dev, "hook detection\n");
+
+	if (intid & TWL6040_HFINT)
+		dev_alert(codec->dev, "hf drivers over current detection\n");
+
+	if (intid & TWL6040_VIBINT)
+		dev_alert(codec->dev, "vib drivers over current detection\n");
+
+	if (intid & TWL6040_READYINT)
+		complete(&priv->ready);
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	return IRQ_HANDLED;
 }
 
@@ -1011,6 +1255,7 @@ static const struct snd_kcontrol_new hfr_mux_controls =
 static const struct snd_kcontrol_new ep_driver_switch_controls =
 	SOC_DAPM_SINGLE("Switch", TWL6040_REG_EARCTL, 0, 1, 0);
 
+<<<<<<< HEAD
 /* Headset power mode */
 static const char *twl6040_headset_power_texts[] = {
 	"Low-Power", "High-Perfomance",
@@ -1048,6 +1293,8 @@ static int twl6040_headset_power_put_enum(struct snd_kcontrol *kcontrol,
 	return ret;
 }
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 static const struct snd_kcontrol_new twl6040_snd_controls[] = {
 	/* Capture gains */
 	SOC_DOUBLE_TLV("Capture Preamplifier Volume",
@@ -1066,10 +1313,13 @@ static const struct snd_kcontrol_new twl6040_snd_controls[] = {
 		TWL6040_REG_HFLGAIN, TWL6040_REG_HFRGAIN, 0, 0x1D, 1, hf_tlv),
 	SOC_SINGLE_TLV("Earphone Playback Volume",
 		TWL6040_REG_EARCTL, 1, 0xF, 1, ep_tlv),
+<<<<<<< HEAD
 
 	SOC_ENUM_EXT("Headset Power Mode", twl6040_headset_power_enum,
 		twl6040_headset_power_get_enum,
 		twl6040_headset_power_put_enum),
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 };
 
 static const struct snd_soc_dapm_widget twl6040_dapm_widgets[] = {
@@ -1243,11 +1493,44 @@ static int twl6040_add_widgets(struct snd_soc_codec *codec)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int twl6040_set_bias_level(struct snd_soc_codec *codec,
 				enum snd_soc_bias_level level)
 {
 	struct twl6040 *twl6040 = codec->control_data;
 	struct twl6040_data *priv = snd_soc_codec_get_drvdata(codec);
+=======
+static int twl6040_power_up_completion(struct snd_soc_codec *codec,
+					int naudint)
+{
+	struct twl6040_data *priv = snd_soc_codec_get_drvdata(codec);
+	int time_left;
+	u8 intid;
+
+	time_left = wait_for_completion_timeout(&priv->ready,
+				msecs_to_jiffies(144));
+
+	if (!time_left) {
+		twl_i2c_read_u8(TWL_MODULE_AUDIO_VOICE, &intid,
+							TWL6040_REG_INTID);
+		if (!(intid & TWL6040_READYINT)) {
+			dev_err(codec->dev, "timeout waiting for READYINT\n");
+			return -ETIMEDOUT;
+		}
+	}
+
+	priv->codec_powered = 1;
+
+	return 0;
+}
+
+static int twl6040_set_bias_level(struct snd_soc_codec *codec,
+				enum snd_soc_bias_level level)
+{
+	struct twl6040_data *priv = snd_soc_codec_get_drvdata(codec);
+	int audpwron = priv->audpwron;
+	int naudint = priv->naudint;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	int ret;
 
 	switch (level) {
@@ -1259,30 +1542,83 @@ static int twl6040_set_bias_level(struct snd_soc_codec *codec,
 		if (priv->codec_powered)
 			break;
 
+<<<<<<< HEAD
 		ret = twl6040_power(twl6040, 1);
 		if (ret)
 			return ret;
 
 		priv->codec_powered = 1;
+=======
+		if (gpio_is_valid(audpwron)) {
+			/* use AUDPWRON line */
+			gpio_set_value(audpwron, 1);
+
+			/* wait for power-up completion */
+			ret = twl6040_power_up_completion(codec, naudint);
+			if (ret)
+				return ret;
+
+			/* sync registers updated during power-up sequence */
+			twl6040_read_reg_volatile(codec, TWL6040_REG_NCPCTL);
+			twl6040_read_reg_volatile(codec, TWL6040_REG_LDOCTL);
+			twl6040_read_reg_volatile(codec, TWL6040_REG_LPPLLCTL);
+		} else {
+			/* use manual power-up sequence */
+			twl6040_power_up(codec);
+			priv->codec_powered = 1;
+		}
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 		/* initialize vdd/vss registers with reg_cache */
 		twl6040_init_vdd_regs(codec);
 
 		/* Set external boost GPO */
 		twl6040_write(codec, TWL6040_REG_GPOCTL, 0x02);
+<<<<<<< HEAD
+=======
+
+		/* Set initial minimal gain values */
+		twl6040_write(codec, TWL6040_REG_HSGAIN, 0xFF);
+		twl6040_write(codec, TWL6040_REG_EARCTL, 0x1E);
+		twl6040_write(codec, TWL6040_REG_HFLGAIN, 0x1D);
+		twl6040_write(codec, TWL6040_REG_HFRGAIN, 0x1D);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		break;
 	case SND_SOC_BIAS_OFF:
 		if (!priv->codec_powered)
 			break;
 
+<<<<<<< HEAD
 		twl6040_power(twl6040, 0);
+=======
+		if (gpio_is_valid(audpwron)) {
+			/* use AUDPWRON line */
+			gpio_set_value(audpwron, 0);
+
+			/* power-down sequence latency */
+			udelay(500);
+
+			/* sync registers updated during power-down sequence */
+			twl6040_read_reg_volatile(codec, TWL6040_REG_NCPCTL);
+			twl6040_read_reg_volatile(codec, TWL6040_REG_LDOCTL);
+			twl6040_write_reg_cache(codec, TWL6040_REG_LPPLLCTL,
+						0x00);
+		} else {
+			/* use manual power-down sequence */
+			twl6040_power_down(codec);
+		}
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		priv->codec_powered = 0;
 		break;
 	}
 
+<<<<<<< HEAD
 	/* get PLL and sysclk after power transition */
 	priv->pll = twl6040_get_pll(twl6040);
 	priv->sysclk = twl6040_get_sysclk(twl6040);
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	codec->dapm.bias_level = level;
 
 	return 0;
@@ -1291,6 +1627,7 @@ static int twl6040_set_bias_level(struct snd_soc_codec *codec,
 /* set of rates for each pll: low-power and high-performance */
 
 static unsigned int lp_rates[] = {
+<<<<<<< HEAD
 	8000,
 	11250,
 	16000,
@@ -1298,6 +1635,8 @@ static unsigned int lp_rates[] = {
 	32000,
 	44100,
 	48000,
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	88200,
 	96000,
 };
@@ -1308,10 +1647,13 @@ static struct snd_pcm_hw_constraint_list lp_constraints = {
 };
 
 static unsigned int hp_rates[] = {
+<<<<<<< HEAD
 	8000,
 	16000,
 	32000,
 	48000,
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	96000,
 };
 
@@ -1340,40 +1682,65 @@ static int twl6040_hw_params(struct snd_pcm_substream *substream,
 {
 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
 	struct snd_soc_codec *codec = rtd->codec;
+<<<<<<< HEAD
 	struct twl6040 *twl6040 = codec->control_data;
 	struct twl6040_data *priv = snd_soc_codec_get_drvdata(codec);
 	unsigned int sysclk;
 	int rate, ret;
+=======
+	struct twl6040_data *priv = snd_soc_codec_get_drvdata(codec);
+	u8 lppllctl;
+	int rate;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	/* nothing to do for high-perf pll, it supports only 48 kHz */
 	if (priv->pll == TWL6040_HPPLL_ID)
 		return 0;
 
+<<<<<<< HEAD
+=======
+	lppllctl = twl6040_read_reg_cache(codec, TWL6040_REG_LPPLLCTL);
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	rate = params_rate(params);
 	switch (rate) {
 	case 11250:
 	case 22500:
 	case 44100:
 	case 88200:
+<<<<<<< HEAD
 		sysclk = 17640000;
+=======
+		lppllctl |= TWL6040_LPLLFIN;
+		priv->sysclk = 17640000;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		break;
 	case 8000:
 	case 16000:
 	case 32000:
 	case 48000:
 	case 96000:
+<<<<<<< HEAD
 		sysclk = 19200000;
+=======
+		lppllctl &= ~TWL6040_LPLLFIN;
+		priv->sysclk = 19200000;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		break;
 	default:
 		dev_err(codec->dev, "unsupported rate %d\n", rate);
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	ret = twl6040_set_pll(twl6040, TWL6040_LPPLL_ID, priv->clk_in, sysclk);
 	if (ret)
 		return ret;
 
 	priv->sysclk = twl6040_get_sysclk(twl6040);
+=======
+	twl6040_write(codec, TWL6040_REG_LPPLLCTL, lppllctl);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	return 0;
 }
@@ -1416,6 +1783,7 @@ static int twl6040_set_dai_sysclk(struct snd_soc_dai *codec_dai,
 		int clk_id, unsigned int freq, int dir)
 {
 	struct snd_soc_codec *codec = codec_dai->codec;
+<<<<<<< HEAD
 	struct twl6040 *twl6040 = codec->control_data;
 	struct twl6040_data *priv = snd_soc_codec_get_drvdata(codec);
 	int ret = 0;
@@ -1435,6 +1803,101 @@ static int twl6040_set_dai_sysclk(struct snd_soc_dai *codec_dai,
 		if (ret)
 			return ret;
 
+=======
+	struct twl6040_data *priv = snd_soc_codec_get_drvdata(codec);
+	u8 hppllctl, lppllctl;
+
+	hppllctl = twl6040_read_reg_cache(codec, TWL6040_REG_HPPLLCTL);
+	lppllctl = twl6040_read_reg_cache(codec, TWL6040_REG_LPPLLCTL);
+
+	switch (clk_id) {
+	case TWL6040_SYSCLK_SEL_LPPLL:
+		switch (freq) {
+		case 32768:
+			/* headset dac and driver must be in low-power mode */
+			headset_power_mode(codec, 0);
+
+			/* clk32k input requires low-power pll */
+			lppllctl |= TWL6040_LPLLENA;
+			twl6040_write(codec, TWL6040_REG_LPPLLCTL, lppllctl);
+			mdelay(5);
+			lppllctl &= ~TWL6040_HPLLSEL;
+			twl6040_write(codec, TWL6040_REG_LPPLLCTL, lppllctl);
+			hppllctl &= ~TWL6040_HPLLENA;
+			twl6040_write(codec, TWL6040_REG_HPPLLCTL, hppllctl);
+			break;
+		default:
+			dev_err(codec->dev, "unknown mclk freq %d\n", freq);
+			return -EINVAL;
+		}
+
+		/* lppll divider */
+		switch (priv->sysclk) {
+		case 17640000:
+			lppllctl |= TWL6040_LPLLFIN;
+			break;
+		case 19200000:
+			lppllctl &= ~TWL6040_LPLLFIN;
+			break;
+		default:
+			/* sysclk not yet configured */
+			lppllctl &= ~TWL6040_LPLLFIN;
+			priv->sysclk = 19200000;
+			break;
+		}
+
+		twl6040_write(codec, TWL6040_REG_LPPLLCTL, lppllctl);
+
+		priv->pll = TWL6040_LPPLL_ID;
+		priv->sysclk_constraints = &lp_constraints;
+		break;
+	case TWL6040_SYSCLK_SEL_HPPLL:
+		hppllctl &= ~TWL6040_MCLK_MSK;
+
+		switch (freq) {
+		case 12000000:
+			/* mclk input, pll enabled */
+			hppllctl |= TWL6040_MCLK_12000KHZ |
+				    TWL6040_HPLLSQRBP |
+				    TWL6040_HPLLENA;
+			break;
+		case 19200000:
+			/* mclk input, pll disabled */
+			hppllctl |= TWL6040_MCLK_19200KHZ |
+				    TWL6040_HPLLSQRENA |
+				    TWL6040_HPLLBP;
+			break;
+		case 26000000:
+			/* mclk input, pll enabled */
+			hppllctl |= TWL6040_MCLK_26000KHZ |
+				    TWL6040_HPLLSQRBP |
+				    TWL6040_HPLLENA;
+			break;
+		case 38400000:
+			/* clk slicer, pll disabled */
+			hppllctl |= TWL6040_MCLK_38400KHZ |
+				    TWL6040_HPLLSQRENA |
+				    TWL6040_HPLLBP;
+			break;
+		default:
+			dev_err(codec->dev, "unknown mclk freq %d\n", freq);
+			return -EINVAL;
+		}
+
+		/* headset dac and driver must be in high-performance mode */
+		headset_power_mode(codec, 1);
+
+		twl6040_write(codec, TWL6040_REG_HPPLLCTL, hppllctl);
+		udelay(500);
+		lppllctl |= TWL6040_HPLLSEL;
+		twl6040_write(codec, TWL6040_REG_LPPLLCTL, lppllctl);
+		lppllctl &= ~TWL6040_LPLLENA;
+		twl6040_write(codec, TWL6040_REG_LPPLLCTL, lppllctl);
+
+		/* high-performance pll can provide only 19.2 MHz */
+		priv->pll = TWL6040_HPPLL_ID;
+		priv->sysclk = 19200000;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		priv->sysclk_constraints = &hp_constraints;
 		break;
 	default:
@@ -1442,10 +1905,13 @@ static int twl6040_set_dai_sysclk(struct snd_soc_dai *codec_dai,
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	priv->pll = twl6040_get_pll(twl6040);
 	priv->clk_in = freq;
 	priv->sysclk = twl6040_get_sysclk(twl6040);
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	return 0;
 }
 
@@ -1456,6 +1922,7 @@ static struct snd_soc_dai_ops twl6040_dai_ops = {
 	.set_sysclk	= twl6040_set_dai_sysclk,
 };
 
+<<<<<<< HEAD
 static struct snd_soc_dai_driver twl6040_dai[] = {
 {
 	.name = "twl6040-ul",
@@ -1483,12 +1950,26 @@ static struct snd_soc_dai_driver twl6040_dai[] = {
 	.name = "twl6040-dl2",
 	.playback = {
 		.stream_name = "Handsfree Playback",
+=======
+static struct snd_soc_dai_driver twl6040_dai = {
+	.name = "twl6040-hifi",
+	.playback = {
+		.stream_name = "Playback",
+		.channels_min = 1,
+		.channels_max = 4,
+		.rates = TWL6040_RATES,
+		.formats = TWL6040_FORMATS,
+	},
+	.capture = {
+		.stream_name = "Capture",
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		.channels_min = 1,
 		.channels_max = 2,
 		.rates = TWL6040_RATES,
 		.formats = TWL6040_FORMATS,
 	},
 	.ops = &twl6040_dai_ops,
+<<<<<<< HEAD
 },
 {
 	.name = "twl6040-vib",
@@ -1501,6 +1982,8 @@ static struct snd_soc_dai_driver twl6040_dai[] = {
 	},
 	.ops = &twl6040_dai_ops,
 },
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 };
 
 #ifdef CONFIG_PM
@@ -1525,9 +2008,17 @@ static int twl6040_resume(struct snd_soc_codec *codec)
 
 static int twl6040_probe(struct snd_soc_codec *codec)
 {
+<<<<<<< HEAD
 	struct twl6040_data *priv;
 	struct twl4030_codec_data *pdata = dev_get_platdata(codec->dev);
 	int ret = 0;
+=======
+	struct twl4030_codec_data *twl_codec = codec->dev->platform_data;
+	struct twl6040_data *priv;
+	int audpwron, naudint;
+	int ret = 0;
+	u8 icrev, intmr = TWL6040_ALLINT_MSK;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	priv = kzalloc(sizeof(struct twl6040_data), GFP_KERNEL);
 	if (priv == NULL)
@@ -1535,6 +2026,7 @@ static int twl6040_probe(struct snd_soc_codec *codec)
 	snd_soc_codec_set_drvdata(codec, priv);
 
 	priv->codec = codec;
+<<<<<<< HEAD
 	codec->control_data = dev_get_drvdata(codec->dev->parent);
 
 	if (pdata && pdata->hs_left_step && pdata->hs_right_step) {
@@ -1555,6 +2047,25 @@ static int twl6040_probe(struct snd_soc_codec *codec)
 
 	priv->sysclk_constraints = &hp_constraints;
 	priv->workqueue = create_singlethread_workqueue("twl6040-codec");
+=======
+
+	twl_i2c_read_u8(TWL_MODULE_AUDIO_VOICE, &icrev, TWL6040_REG_ASICREV);
+
+	if (twl_codec && (icrev > 0))
+		audpwron = twl_codec->audpwron_gpio;
+	else
+		audpwron = -EINVAL;
+
+	if (twl_codec)
+		naudint = twl_codec->naudint_irq;
+	else
+		naudint = 0;
+
+	priv->audpwron = audpwron;
+	priv->naudint = naudint;
+	priv->workqueue = create_singlethread_workqueue("twl6040-codec");
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	if (!priv->workqueue) {
 		ret = -ENOMEM;
 		goto work_err;
@@ -1564,6 +2075,7 @@ static int twl6040_probe(struct snd_soc_codec *codec)
 
 	mutex_init(&priv->mutex);
 
+<<<<<<< HEAD
 	init_completion(&priv->headset.ramp_done);
 	init_completion(&priv->handsfree.ramp_done);
 
@@ -1571,16 +2083,63 @@ static int twl6040_probe(struct snd_soc_codec *codec)
 	if (priv->hf_workqueue == NULL) {
 		ret = -ENOMEM;
 		goto hfwq_err;
+=======
+	init_completion(&priv->ready);
+	init_completion(&priv->headset.ramp_done);
+	init_completion(&priv->handsfree.ramp_done);
+
+	if (gpio_is_valid(audpwron)) {
+		ret = gpio_request(audpwron, "audpwron");
+		if (ret)
+			goto gpio1_err;
+
+		ret = gpio_direction_output(audpwron, 0);
+		if (ret)
+			goto gpio2_err;
+
+		priv->codec_powered = 0;
+
+		/* enable only codec ready interrupt */
+		intmr &= ~(TWL6040_READYMSK | TWL6040_PLUGMSK);
+
+		/* reset interrupt status to allow correct power up sequence */
+		twl6040_read_reg_volatile(codec, TWL6040_REG_INTID);
+	}
+	twl6040_write(codec, TWL6040_REG_INTMR, intmr);
+
+	if (naudint) {
+		/* audio interrupt */
+		ret = request_threaded_irq(naudint, NULL,
+				twl6040_naudint_handler,
+				IRQF_TRIGGER_LOW | IRQF_ONESHOT,
+				"twl6040_codec", codec);
+		if (ret)
+			goto gpio2_err;
+	}
+
+	/* init vio registers */
+	twl6040_init_vio_regs(codec);
+
+	priv->hf_workqueue = create_singlethread_workqueue("twl6040-hf");
+	if (priv->hf_workqueue == NULL) {
+		ret = -ENOMEM;
+		goto irq_err;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	}
 	priv->hs_workqueue = create_singlethread_workqueue("twl6040-hs");
 	if (priv->hs_workqueue == NULL) {
 		ret = -ENOMEM;
+<<<<<<< HEAD
 		goto hswq_err;
+=======
+		goto wq_err;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	}
 
 	INIT_DELAYED_WORK(&priv->hs_delayed_work, twl6040_pga_hs_work);
 	INIT_DELAYED_WORK(&priv->hf_delayed_work, twl6040_pga_hf_work);
 
+<<<<<<< HEAD
 	ret = twl6040_request_irq(codec->control_data, TWL6040_IRQ_PLUG,
 				  twl6040_audio_handler, 0,
 				  "twl6040_irq_plug", codec);
@@ -1592,6 +2151,8 @@ static int twl6040_probe(struct snd_soc_codec *codec)
 	/* init vio registers */
 	twl6040_init_vio_regs(codec);
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	/* power on device */
 	ret = twl6040_set_bias_level(codec, SND_SOC_BIAS_STANDBY);
 	if (ret)
@@ -1604,12 +2165,25 @@ static int twl6040_probe(struct snd_soc_codec *codec)
 	return 0;
 
 bias_err:
+<<<<<<< HEAD
 	twl6040_free_irq(codec->control_data, TWL6040_IRQ_PLUG, codec);
 plugirq_err:
 	destroy_workqueue(priv->hs_workqueue);
 hswq_err:
 	destroy_workqueue(priv->hf_workqueue);
 hfwq_err:
+=======
+	destroy_workqueue(priv->hs_workqueue);
+wq_err:
+	destroy_workqueue(priv->hf_workqueue);
+irq_err:
+	if (naudint)
+		free_irq(naudint, codec);
+gpio2_err:
+	if (gpio_is_valid(audpwron))
+		gpio_free(audpwron);
+gpio1_err:
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	destroy_workqueue(priv->workqueue);
 work_err:
 	kfree(priv);
@@ -1619,9 +2193,23 @@ work_err:
 static int twl6040_remove(struct snd_soc_codec *codec)
 {
 	struct twl6040_data *priv = snd_soc_codec_get_drvdata(codec);
+<<<<<<< HEAD
 
 	twl6040_set_bias_level(codec, SND_SOC_BIAS_OFF);
 	twl6040_free_irq(codec->control_data, TWL6040_IRQ_PLUG, codec);
+=======
+	int audpwron = priv->audpwron;
+	int naudint = priv->naudint;
+
+	twl6040_set_bias_level(codec, SND_SOC_BIAS_OFF);
+
+	if (gpio_is_valid(audpwron))
+		gpio_free(audpwron);
+
+	if (naudint)
+		free_irq(naudint, codec);
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	destroy_workqueue(priv->workqueue);
 	destroy_workqueue(priv->hf_workqueue);
 	destroy_workqueue(priv->hs_workqueue);
@@ -1645,8 +2233,13 @@ static struct snd_soc_codec_driver soc_codec_dev_twl6040 = {
 
 static int __devinit twl6040_codec_probe(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	return snd_soc_register_codec(&pdev->dev, &soc_codec_dev_twl6040,
 				      twl6040_dai, ARRAY_SIZE(twl6040_dai));
+=======
+	return snd_soc_register_codec(&pdev->dev,
+			&soc_codec_dev_twl6040, &twl6040_dai, 1);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 static int __devexit twl6040_codec_remove(struct platform_device *pdev)

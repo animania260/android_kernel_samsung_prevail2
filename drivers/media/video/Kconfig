@@ -1031,6 +1031,7 @@ config USB_S2255
 	  This driver can be compiled as a module, called s2255drv.
 
 endif # V4L_USB_DRIVERS
+<<<<<<< HEAD
 
 #
 # MSM camera configuration
@@ -1056,6 +1057,8 @@ config MSM_CAMERA_DEBUG
 
 source "drivers/media/video/msm/Kconfig"
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 endif # VIDEO_CAPTURE_DRIVERS
 
 menuconfig V4L_MEM2MEM_DRIVERS

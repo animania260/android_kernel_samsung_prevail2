@@ -720,12 +720,24 @@ __bad_area_nosemaphore(struct pt_regs *regs, unsigned long error_code,
 		if (is_errata100(regs, address))
 			return;
 
+<<<<<<< HEAD
 		if (unlikely(show_unhandled_signals))
 			show_signal_msg(regs, error_code, address, tsk);
 
 		/* Kernel addresses are always protection faults: */
 		tsk->thread.cr2		= address;
 		tsk->thread.error_code	= error_code | (address >= TASK_SIZE);
+=======
+		/* Kernel addresses are always protection faults: */
+		if (address >= TASK_SIZE)
+			error_code |= PF_PROT;
+
+		if (likely(show_unhandled_signals))
+			show_signal_msg(regs, error_code, address, tsk);
+
+		tsk->thread.cr2		= address;
+		tsk->thread.error_code	= error_code;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		tsk->thread.trap_no	= 14;
 
 		force_sig_info_fault(SIGSEGV, si_code, address, tsk, 0);

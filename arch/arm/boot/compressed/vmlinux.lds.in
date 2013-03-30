@@ -47,10 +47,13 @@ SECTIONS
   .got			: { *(.got) }
   _got_end = .;
   .got.plt		: { *(.got.plt) }
+<<<<<<< HEAD
 
   /* ensure the zImage file size is always a multiple of 64 bits */
   /* (without a dummy byte, ld just ignores the empty section) */
   .pad			: { BYTE(0); . = ALIGN(8); }
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
   _edata = .;
 
   . = BSS_START;

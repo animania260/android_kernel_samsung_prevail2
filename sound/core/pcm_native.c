@@ -5,7 +5,12 @@
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
+<<<<<<< HEAD
  *   the Free Software Foundation; only version 2 of the License.
+=======
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
  *
  *   This program is distributed in the hope that it will be useful,
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -27,8 +32,11 @@
 #include <linux/dma-mapping.h>
 #include <sound/core.h>
 #include <sound/control.h>
+<<<<<<< HEAD
 #include <sound/snd_compress_params.h>
 #include <sound/compress_offload.h>
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #include <sound/info.h>
 #include <sound/pcm.h>
 #include <sound/pcm_params.h>
@@ -369,6 +377,17 @@ static int period_to_usecs(struct snd_pcm_runtime *runtime)
 	return usecs;
 }
 
+<<<<<<< HEAD
+=======
+static void snd_pcm_set_state(struct snd_pcm_substream *substream, int state)
+{
+	snd_pcm_stream_lock_irq(substream);
+	if (substream->runtime->status->state != SNDRV_PCM_STATE_DISCONNECTED)
+		substream->runtime->status->state = state;
+	snd_pcm_stream_unlock_irq(substream);
+}
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 static int snd_pcm_hw_params(struct snd_pcm_substream *substream,
 			     struct snd_pcm_hw_params *params)
 {
@@ -452,7 +471,11 @@ static int snd_pcm_hw_params(struct snd_pcm_substream *substream,
 		runtime->boundary *= 2;
 
 	snd_pcm_timer_resolution_change(substream);
+<<<<<<< HEAD
 	runtime->status->state = SNDRV_PCM_STATE_SETUP;
+=======
+	snd_pcm_set_state(substream, SNDRV_PCM_STATE_SETUP);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	if (pm_qos_request_active(&substream->latency_pm_qos_req))
 		pm_qos_remove_request(&substream->latency_pm_qos_req);
@@ -464,7 +487,11 @@ static int snd_pcm_hw_params(struct snd_pcm_substream *substream,
 	/* hardware might be unusable from this time,
 	   so we force application to retry to set
 	   the correct hardware parameter settings */
+<<<<<<< HEAD
 	runtime->status->state = SNDRV_PCM_STATE_OPEN;
+=======
+	snd_pcm_set_state(substream, SNDRV_PCM_STATE_OPEN);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	if (substream->ops->hw_free != NULL)
 		substream->ops->hw_free(substream);
 	return err;
@@ -512,7 +539,11 @@ static int snd_pcm_hw_free(struct snd_pcm_substream *substream)
 		return -EBADFD;
 	if (substream->ops->hw_free)
 		result = substream->ops->hw_free(substream);
+<<<<<<< HEAD
 	runtime->status->state = SNDRV_PCM_STATE_OPEN;
+=======
+	snd_pcm_set_state(substream, SNDRV_PCM_STATE_OPEN);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	pm_qos_remove_request(&substream->latency_pm_qos_req);
 	return result;
 }
@@ -843,7 +874,10 @@ static int snd_pcm_pre_start(struct snd_pcm_substream *substream, int state)
 	if (runtime->status->state != SNDRV_PCM_STATE_PREPARED)
 		return -EBADFD;
 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK &&
+<<<<<<< HEAD
 	    !substream->hw_no_buffer &&
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	    !snd_pcm_playback_data(substream))
 		return -EPIPE;
 	runtime->trigger_master = substream;
@@ -1321,7 +1355,11 @@ static void snd_pcm_post_prepare(struct snd_pcm_substream *substream, int state)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	runtime->control->appl_ptr = runtime->status->hw_ptr;
+<<<<<<< HEAD
 	runtime->status->state = SNDRV_PCM_STATE_PREPARED;
+=======
+	snd_pcm_set_state(substream, SNDRV_PCM_STATE_PREPARED);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 static struct action_ops snd_pcm_action_prepare = {
@@ -1501,6 +1539,13 @@ static int snd_pcm_drain(struct snd_pcm_substream *substream,
 		down_read(&snd_pcm_link_rwsem);
 		snd_pcm_stream_lock_irq(substream);
 		remove_wait_queue(&to_check->sleep, &wait);
+<<<<<<< HEAD
+=======
+		if (card->shutdown) {
+			result = -ENODEV;
+			break;
+		}
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		if (tout == 0) {
 			if (substream->runtime->status->state == SNDRV_PCM_STATE_SUSPENDED)
 				result = -ESTRPIPE;
@@ -1521,6 +1566,7 @@ static int snd_pcm_drain(struct snd_pcm_substream *substream,
 	return result;
 }
 
+<<<<<<< HEAD
 static int snd_compressed_ioctl(struct snd_pcm_substream *substream,
 				 unsigned int cmd, void __user *arg)
 {
@@ -1534,6 +1580,8 @@ static int snd_compressed_ioctl(struct snd_pcm_substream *substream,
 	err = substream->ops->ioctl(substream, cmd, arg);
 	return err;
 }
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 /*
  * drop ioctl
  *
@@ -1634,6 +1682,10 @@ static int snd_pcm_link(struct snd_pcm_substream *substream, int fd)
  _end:
 	write_unlock_irq(&snd_pcm_link_rwlock);
 	up_write(&snd_pcm_link_rwsem);
+<<<<<<< HEAD
+=======
+	snd_card_unref(substream1->pcm->card);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	fput(file);
 	return res;
 }
@@ -2050,12 +2102,15 @@ int snd_pcm_open_substream(struct snd_pcm *pcm, int stream,
 		goto error;
 	}
 
+<<<<<<< HEAD
 	if (substream->ops == NULL) {
 		snd_printd("cannot open back end PCMs directly\n");
 		err = -ENODEV;
 		goto error;
 	}
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	if ((err = substream->ops->open(substream)) < 0)
 		goto error;
 
@@ -2117,7 +2172,14 @@ static int snd_pcm_playback_open(struct inode *inode, struct file *file)
 		return err;
 	pcm = snd_lookup_minor_data(iminor(inode),
 				    SNDRV_DEVICE_TYPE_PCM_PLAYBACK);
+<<<<<<< HEAD
 	return snd_pcm_open(file, pcm, SNDRV_PCM_STREAM_PLAYBACK);
+=======
+	err = snd_pcm_open(file, pcm, SNDRV_PCM_STREAM_PLAYBACK);
+	if (pcm)
+		snd_card_unref(pcm->card);
+	return err;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 static int snd_pcm_capture_open(struct inode *inode, struct file *file)
@@ -2128,7 +2190,14 @@ static int snd_pcm_capture_open(struct inode *inode, struct file *file)
 		return err;
 	pcm = snd_lookup_minor_data(iminor(inode),
 				    SNDRV_DEVICE_TYPE_PCM_CAPTURE);
+<<<<<<< HEAD
 	return snd_pcm_open(file, pcm, SNDRV_PCM_STREAM_CAPTURE);
+=======
+	err = snd_pcm_open(file, pcm, SNDRV_PCM_STREAM_CAPTURE);
+	if (pcm)
+		snd_card_unref(pcm->card);
+	return err;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 static int snd_pcm_open(struct file *file, struct snd_pcm *pcm, int stream)
@@ -2166,6 +2235,13 @@ static int snd_pcm_open(struct file *file, struct snd_pcm *pcm, int stream)
 		mutex_unlock(&pcm->open_mutex);
 		schedule();
 		mutex_lock(&pcm->open_mutex);
+<<<<<<< HEAD
+=======
+		if (pcm->card->shutdown) {
+			err = -ENODEV;
+			break;
+		}
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		if (signal_pending(current)) {
 			err = -ERESTARTSYS;
 			break;
@@ -2588,12 +2664,15 @@ static int snd_pcm_common_ioctl1(struct file *file,
 		snd_pcm_stream_unlock_irq(substream);
 		return res;
 	}
+<<<<<<< HEAD
 	case SNDRV_COMPRESS_GET_CAPS:
 	case SNDRV_COMPRESS_GET_CODEC_CAPS:
 	case SNDRV_COMPRESS_SET_PARAMS:
 	case SNDRV_COMPRESS_GET_PARAMS:
 	case SNDRV_COMPRESS_TSTAMP:
 		return snd_compressed_ioctl(substream, cmd, arg);
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	}
 	snd_printd("unknown ioctl = 0x%x\n", cmd);
 	return -ENOTTY;
@@ -2766,7 +2845,11 @@ static long snd_pcm_playback_ioctl(struct file *file, unsigned int cmd,
 
 	pcm_file = file->private_data;
 
+<<<<<<< HEAD
 	if ((((cmd >> 8) & 0xff) != 'A') && (((cmd >> 8) & 0xff) != 'C'))
+=======
+	if (((cmd >> 8) & 0xff) != 'A')
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		return -ENOTTY;
 
 	return snd_pcm_playback_ioctl1(file, pcm_file->substream, cmd,

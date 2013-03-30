@@ -57,7 +57,10 @@ struct usb_ep;
  *	Note that for writes (IN transfers) some data bytes may still
  *	reside in a device-side FIFO when the request is reported as
  *	complete.
+<<<<<<< HEAD
  *@udc_priv: Vendor private data in usage by the UDC.
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
  *
  * These are allocated/freed through the endpoint they're used with.  The
  * hardware's driver can add extra per-request data to the memory it returns,
@@ -93,7 +96,10 @@ struct usb_request {
 
 	int			status;
 	unsigned		actual;
+<<<<<<< HEAD
 	unsigned		udc_priv;
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 };
 
 /*-------------------------------------------------------------------------*/
@@ -113,6 +119,10 @@ struct usb_ep_ops {
 	struct usb_request *(*alloc_request) (struct usb_ep *ep,
 		gfp_t gfp_flags);
 	void (*free_request) (struct usb_ep *ep, struct usb_request *req);
+<<<<<<< HEAD
+=======
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	int (*queue) (struct usb_ep *ep, struct usb_request *req,
 		gfp_t gfp_flags);
 	int (*dequeue) (struct usb_ep *ep, struct usb_request *req);
@@ -487,7 +497,10 @@ struct usb_gadget {
 	unsigned			b_hnp_enable:1;
 	unsigned			a_hnp_support:1;
 	unsigned			a_alt_hnp_support:1;
+<<<<<<< HEAD
 	unsigned			host_request:1;
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	const char			*name;
 	struct device			dev;
 };

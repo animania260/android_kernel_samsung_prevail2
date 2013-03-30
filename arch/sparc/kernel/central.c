@@ -268,4 +268,8 @@ static int __init sunfire_init(void)
 	return 0;
 }
 
+<<<<<<< HEAD
 subsys_initcall(sunfire_init);
+=======
+fs_initcall(sunfire_init);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y

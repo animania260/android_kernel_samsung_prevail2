@@ -187,6 +187,7 @@ static inline int v8086_mode(struct pt_regs *regs)
 #endif
 }
 
+<<<<<<< HEAD
 /*
  * X86_32 CPUs don't save ss and esp if the CPU is already in kernel mode
  * when it traps.  The previous stack will be directly underneath the saved
@@ -202,6 +203,16 @@ static inline unsigned long kernel_stack_pointer(struct pt_regs *regs)
 	return regs->sp;
 #endif
 }
+=======
+#ifdef CONFIG_X86_32
+extern unsigned long kernel_stack_pointer(struct pt_regs *regs);
+#else
+static inline unsigned long kernel_stack_pointer(struct pt_regs *regs)
+{
+	return regs->sp;
+}
+#endif
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 #define GET_IP(regs) ((regs)->ip)
 #define GET_FP(regs) ((regs)->bp)

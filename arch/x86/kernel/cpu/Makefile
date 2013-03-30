@@ -15,6 +15,10 @@ CFLAGS_common.o		:= $(nostackp)
 obj-y			:= intel_cacheinfo.o scattered.o topology.o
 obj-y			+= proc.o capflags.o powerflags.o common.o
 obj-y			+= vmware.o hypervisor.o sched.o mshyperv.o
+<<<<<<< HEAD
+=======
+obj-y			+= rdrand.o
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 obj-$(CONFIG_X86_32)	+= bugs.o
 obj-$(CONFIG_X86_64)	+= bugs_64.o

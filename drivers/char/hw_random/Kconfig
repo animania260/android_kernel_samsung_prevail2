@@ -210,6 +210,7 @@ config HW_RANDOM_PICOXCELL
 	  module will be called picoxcell-rng.
 
 	  If unsure, say Y.
+<<<<<<< HEAD
 
 config HW_RANDOM_MSM
 	tristate "Qualcomm MSM Random Number Generator support"
@@ -223,3 +224,5 @@ config HW_RANDOM_MSM
 	  module will be called msm_rng.
 
 	  If unsure, say Y.
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y

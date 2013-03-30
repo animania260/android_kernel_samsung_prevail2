@@ -1957,7 +1957,17 @@ static int wm8962_readable_register(struct snd_soc_codec *codec, unsigned int re
 
 static int wm8962_reset(struct snd_soc_codec *codec)
 {
+<<<<<<< HEAD
 	return snd_soc_write(codec, WM8962_SOFTWARE_RESET, 0x6243);
+=======
+	int ret;
+
+	ret = snd_soc_write(codec, WM8962_SOFTWARE_RESET, 0x6243);
+	if (ret != 0)
+		return ret;
+
+	return snd_soc_write(codec, WM8962_PLL_SOFTWARE_RESET, 0);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 static const DECLARE_TLV_DB_SCALE(inpga_tlv, -2325, 75, 0);
@@ -2018,7 +2028,10 @@ static int wm8962_put_spk_sw(struct snd_kcontrol *kcontrol,
 			    struct snd_ctl_elem_value *ucontrol)
 {
 	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
+<<<<<<< HEAD
 	u16 *reg_cache = codec->reg_cache;
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	int ret;
 
 	/* Apply the update (if any) */
@@ -2027,6 +2040,7 @@ static int wm8962_put_spk_sw(struct snd_kcontrol *kcontrol,
 		return 0;
 
 	/* If the left PGA is enabled hit that VU bit... */
+<<<<<<< HEAD
 	if (reg_cache[WM8962_PWR_MGMT_2] & WM8962_SPKOUTL_PGA_ENA)
 		return snd_soc_write(codec, WM8962_SPKOUTL_VOLUME,
 				     reg_cache[WM8962_SPKOUTL_VOLUME]);
@@ -2037,6 +2051,21 @@ static int wm8962_put_spk_sw(struct snd_kcontrol *kcontrol,
 				     reg_cache[WM8962_SPKOUTR_VOLUME]);
 
 	return 0;
+=======
+	ret = snd_soc_read(codec, WM8962_PWR_MGMT_2);
+	if (ret & WM8962_SPKOUTL_PGA_ENA) {
+		snd_soc_write(codec, WM8962_SPKOUTL_VOLUME,
+			      snd_soc_read(codec, WM8962_SPKOUTL_VOLUME));
+		return 1;
+	}
+
+	/* ...otherwise the right.  The VU is stereo. */
+	if (ret & WM8962_SPKOUTR_PGA_ENA)
+		snd_soc_write(codec, WM8962_SPKOUTR_VOLUME,
+			      snd_soc_read(codec, WM8962_SPKOUTR_VOLUME));
+
+	return 1;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 static const char *cap_hpf_mode_text[] = {
@@ -2336,7 +2365,10 @@ static int out_pga_event(struct snd_soc_dapm_widget *w,
 			 struct snd_kcontrol *kcontrol, int event)
 {
 	struct snd_soc_codec *codec = w->codec;
+<<<<<<< HEAD
 	u16 *reg_cache = codec->reg_cache;
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	int reg;
 
 	switch (w->shift) {
@@ -2359,14 +2391,22 @@ static int out_pga_event(struct snd_soc_dapm_widget *w,
 
 	switch (event) {
 	case SND_SOC_DAPM_POST_PMU:
+<<<<<<< HEAD
 		return snd_soc_write(codec, reg, reg_cache[reg]);
+=======
+		return snd_soc_write(codec, reg, snd_soc_read(codec, reg));
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	default:
 		BUG();
 		return -EINVAL;
 	}
 }
 
+<<<<<<< HEAD
 static const char *st_text[] = { "None", "Right", "Left" };
+=======
+static const char *st_text[] = { "None", "Left", "Right" };
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 static const struct soc_enum str_enum =
 	SOC_ENUM_SINGLE(WM8962_DAC_DSP_MIXING_1, 2, 3, st_text);
@@ -2883,6 +2923,12 @@ static int wm8962_set_bias_level(struct snd_soc_codec *codec,
 		/* VMID 2*250k */
 		snd_soc_update_bits(codec, WM8962_PWR_MGMT_1,
 				    WM8962_VMID_SEL_MASK, 0x100);
+<<<<<<< HEAD
+=======
+
+		if (codec->dapm.bias_level == SND_SOC_BIAS_OFF)
+			msleep(100);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		break;
 
 	case SND_SOC_BIAS_OFF:
@@ -2968,6 +3014,7 @@ static int wm8962_hw_params(struct snd_pcm_substream *substream,
 	case SNDRV_PCM_FORMAT_S16_LE:
 		break;
 	case SNDRV_PCM_FORMAT_S20_3LE:
+<<<<<<< HEAD
 		aif0 |= 0x40;
 		break;
 	case SNDRV_PCM_FORMAT_S24_LE:
@@ -2975,6 +3022,15 @@ static int wm8962_hw_params(struct snd_pcm_substream *substream,
 		break;
 	case SNDRV_PCM_FORMAT_S32_LE:
 		aif0 |= 0xc0;
+=======
+		aif0 |= 0x4;
+		break;
+	case SNDRV_PCM_FORMAT_S24_LE:
+		aif0 |= 0x8;
+		break;
+	case SNDRV_PCM_FORMAT_S32_LE:
+		aif0 |= 0xc;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		break;
 	default:
 		return -EINVAL;
@@ -3027,9 +3083,15 @@ static int wm8962_set_dai_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 	int aif0 = 0;
 
 	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
+<<<<<<< HEAD
 	case SND_SOC_DAIFMT_DSP_A:
 		aif0 |= WM8962_LRCLK_INV;
 	case SND_SOC_DAIFMT_DSP_B:
+=======
+	case SND_SOC_DAIFMT_DSP_B:
+		aif0 |= WM8962_LRCLK_INV | 3;
+	case SND_SOC_DAIFMT_DSP_A:
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		aif0 |= 3;
 
 		switch (fmt & SND_SOC_DAIFMT_INV_MASK) {
@@ -3822,6 +3884,14 @@ static int wm8962_probe(struct snd_soc_codec *codec)
 	 */
 	snd_soc_update_bits(codec, WM8962_CLOCKING2, WM8962_SYSCLK_ENA, 0);
 
+<<<<<<< HEAD
+=======
+	/* Ensure that the oscillator and PLLs are disabled */
+	snd_soc_update_bits(codec, WM8962_PLL2,
+			    WM8962_OSC_ENA | WM8962_PLL2_ENA | WM8962_PLL3_ENA,
+			    0);
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	regulator_bulk_disable(ARRAY_SIZE(wm8962->supplies), wm8962->supplies);
 
 	if (pdata) {

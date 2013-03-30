@@ -16,6 +16,10 @@ struct pcap_subdev {
 struct pcap_platform_data {
 	unsigned int irq_base;
 	unsigned int config;
+<<<<<<< HEAD
+=======
+	int gpio;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	void (*init) (void *);	/* board specific init */
 	int num_subdevs;
 	struct pcap_subdev *subdevs;

@@ -2076,9 +2076,17 @@ static void qib_6120_config_ctxts(struct qib_devdata *dd)
 static void qib_update_6120_usrhead(struct qib_ctxtdata *rcd, u64 hd,
 				    u32 updegr, u32 egrhd, u32 npkts)
 {
+<<<<<<< HEAD
 	qib_write_ureg(rcd->dd, ur_rcvhdrhead, hd, rcd->ctxt);
 	if (updegr)
 		qib_write_ureg(rcd->dd, ur_rcvegrindexhead, egrhd, rcd->ctxt);
+=======
+	if (updegr)
+		qib_write_ureg(rcd->dd, ur_rcvegrindexhead, egrhd, rcd->ctxt);
+	mmiowb();
+	qib_write_ureg(rcd->dd, ur_rcvhdrhead, hd, rcd->ctxt);
+	mmiowb();
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 static u32 qib_6120_hdrqempty(struct qib_ctxtdata *rcd)

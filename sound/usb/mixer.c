@@ -287,11 +287,16 @@ static int get_ctl_value_v1(struct usb_mixer_elem_info *cval, int request, int v
 	unsigned char buf[2];
 	int val_len = cval->val_type >= USB_MIXER_S16 ? 2 : 1;
 	int timeout = 10;
+<<<<<<< HEAD
 	int err;
+=======
+	int idx = 0, err;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	err = snd_usb_autoresume(cval->mixer->chip);
 	if (err < 0)
 		return -EIO;
+<<<<<<< HEAD
 	while (timeout-- > 0) {
 		if (snd_usb_ctl_msg(chip->dev, usb_rcvctrlpipe(chip->dev, 0), request,
 				    USB_RECIP_INTERFACE | USB_TYPE_CLASS | USB_DIR_IN,
@@ -306,6 +311,29 @@ static int get_ctl_value_v1(struct usb_mixer_elem_info *cval, int request, int v
 	snd_printdd(KERN_ERR "cannot get ctl value: req = %#x, wValue = %#x, wIndex = %#x, type = %d\n",
 		    request, validx, snd_usb_ctrl_intf(chip) | (cval->id << 8), cval->val_type);
 	return -EINVAL;
+=======
+	down_read(&chip->shutdown_rwsem);
+	while (timeout-- > 0) {
+		if (chip->shutdown)
+			break;
+		idx = snd_usb_ctrl_intf(chip) | (cval->id << 8);
+		if (snd_usb_ctl_msg(chip->dev, usb_rcvctrlpipe(chip->dev, 0), request,
+				    USB_RECIP_INTERFACE | USB_TYPE_CLASS | USB_DIR_IN,
+				    validx, idx, buf, val_len, 100) >= val_len) {
+			*value_ret = convert_signed_value(cval, snd_usb_combine_bytes(buf, val_len));
+			err = 0;
+			goto out;
+		}
+	}
+	snd_printdd(KERN_ERR "cannot get ctl value: req = %#x, wValue = %#x, wIndex = %#x, type = %d\n",
+		    request, validx, idx, cval->val_type);
+	err = -EINVAL;
+
+ out:
+	up_read(&chip->shutdown_rwsem);
+	snd_usb_autosuspend(cval->mixer->chip);
+	return err;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 static int get_ctl_value_v2(struct usb_mixer_elem_info *cval, int request, int validx, int *value_ret)
@@ -313,7 +341,11 @@ static int get_ctl_value_v2(struct usb_mixer_elem_info *cval, int request, int v
 	struct snd_usb_audio *chip = cval->mixer->chip;
 	unsigned char buf[2 + 3*sizeof(__u16)]; /* enough space for one range */
 	unsigned char *val;
+<<<<<<< HEAD
 	int ret, size;
+=======
+	int idx = 0, ret, size;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	__u8 bRequest;
 
 	if (request == UAC_GET_CUR) {
@@ -330,16 +362,33 @@ static int get_ctl_value_v2(struct usb_mixer_elem_info *cval, int request, int v
 	if (ret)
 		goto error;
 
+<<<<<<< HEAD
 	ret = snd_usb_ctl_msg(chip->dev, usb_rcvctrlpipe(chip->dev, 0), bRequest,
 			      USB_RECIP_INTERFACE | USB_TYPE_CLASS | USB_DIR_IN,
 			      validx, snd_usb_ctrl_intf(chip) | (cval->id << 8),
 			      buf, size, 1000);
+=======
+	down_read(&chip->shutdown_rwsem);
+	if (chip->shutdown)
+		ret = -ENODEV;
+	else {
+		idx = snd_usb_ctrl_intf(chip) | (cval->id << 8);
+		ret = snd_usb_ctl_msg(chip->dev, usb_rcvctrlpipe(chip->dev, 0), bRequest,
+			      USB_RECIP_INTERFACE | USB_TYPE_CLASS | USB_DIR_IN,
+			      validx, idx, buf, size, 1000);
+	}
+	up_read(&chip->shutdown_rwsem);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	snd_usb_autosuspend(chip);
 
 	if (ret < 0) {
 error:
 		snd_printk(KERN_ERR "cannot get ctl value: req = %#x, wValue = %#x, wIndex = %#x, type = %d\n",
+<<<<<<< HEAD
 			   request, validx, snd_usb_ctrl_intf(chip) | (cval->id << 8), cval->val_type);
+=======
+			   request, validx, idx, cval->val_type);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		return ret;
 	}
 
@@ -417,7 +466,11 @@ int snd_usb_mixer_set_ctl_value(struct usb_mixer_elem_info *cval,
 {
 	struct snd_usb_audio *chip = cval->mixer->chip;
 	unsigned char buf[2];
+<<<<<<< HEAD
 	int val_len, err, timeout = 10;
+=======
+	int idx = 0, val_len, err, timeout = 10;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	if (cval->mixer->protocol == UAC_VERSION_1) {
 		val_len = cval->val_type >= USB_MIXER_S16 ? 2 : 1;
@@ -440,6 +493,7 @@ int snd_usb_mixer_set_ctl_value(struct usb_mixer_elem_info *cval,
 	err = snd_usb_autoresume(chip);
 	if (err < 0)
 		return -EIO;
+<<<<<<< HEAD
 	while (timeout-- > 0)
 		if (snd_usb_ctl_msg(chip->dev,
 				    usb_sndctrlpipe(chip->dev, 0), request,
@@ -453,6 +507,29 @@ int snd_usb_mixer_set_ctl_value(struct usb_mixer_elem_info *cval,
 	snd_printdd(KERN_ERR "cannot set ctl value: req = %#x, wValue = %#x, wIndex = %#x, type = %d, data = %#x/%#x\n",
 		    request, validx, snd_usb_ctrl_intf(chip) | (cval->id << 8), cval->val_type, buf[0], buf[1]);
 	return -EINVAL;
+=======
+	down_read(&chip->shutdown_rwsem);
+	while (timeout-- > 0) {
+		if (chip->shutdown)
+			break;
+		idx = snd_usb_ctrl_intf(chip) | (cval->id << 8);
+		if (snd_usb_ctl_msg(chip->dev,
+				    usb_sndctrlpipe(chip->dev, 0), request,
+				    USB_RECIP_INTERFACE | USB_TYPE_CLASS | USB_DIR_OUT,
+				    validx, idx, buf, val_len, 100) >= 0) {
+			err = 0;
+			goto out;
+		}
+	}
+	snd_printdd(KERN_ERR "cannot set ctl value: req = %#x, wValue = %#x, wIndex = %#x, type = %d, data = %#x/%#x\n",
+		    request, validx, idx, cval->val_type, buf[0], buf[1]);
+	err = -EINVAL;
+
+ out:
+	up_read(&chip->shutdown_rwsem);
+	snd_usb_autosuspend(chip);
+	return err;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 static int set_cur_ctl_value(struct usb_mixer_elem_info *cval, int validx, int value)
@@ -765,10 +842,67 @@ static void usb_mixer_elem_free(struct snd_kcontrol *kctl)
  * interface to ALSA control for feature/mixer units
  */
 
+<<<<<<< HEAD
 /*
  * retrieve the minimum and maximum values for the specified control
  */
 static int get_min_max(struct usb_mixer_elem_info *cval, int default_min)
+=======
+/* volume control quirks */
+static void volume_control_quirks(struct usb_mixer_elem_info *cval,
+				  struct snd_kcontrol *kctl)
+{
+	switch (cval->mixer->chip->usb_id) {
+	case USB_ID(0x0471, 0x0101):
+	case USB_ID(0x0471, 0x0104):
+	case USB_ID(0x0471, 0x0105):
+	case USB_ID(0x0672, 0x1041):
+	/* quirk for UDA1321/N101.
+	 * note that detection between firmware 2.1.1.7 (N101)
+	 * and later 2.1.1.21 is not very clear from datasheets.
+	 * I hope that the min value is -15360 for newer firmware --jk
+	 */
+		if (!strcmp(kctl->id.name, "PCM Playback Volume") &&
+		    cval->min == -15616) {
+			snd_printk(KERN_INFO
+				 "set volume quirk for UDA1321/N101 chip\n");
+			cval->max = -256;
+		}
+		break;
+
+	case USB_ID(0x046d, 0x09a4):
+		if (!strcmp(kctl->id.name, "Mic Capture Volume")) {
+			snd_printk(KERN_INFO
+				"set volume quirk for QuickCam E3500\n");
+			cval->min = 6080;
+			cval->max = 8768;
+			cval->res = 192;
+		}
+		break;
+
+	case USB_ID(0x046d, 0x0808):
+	case USB_ID(0x046d, 0x0809):
+	case USB_ID(0x046d, 0x0991):
+	/* Most audio usb devices lie about volume resolution.
+	 * Most Logitech webcams have res = 384.
+	 * Proboly there is some logitech magic behind this number --fishor
+	 */
+		if (!strcmp(kctl->id.name, "Mic Capture Volume")) {
+			snd_printk(KERN_INFO
+				"set resolution quirk: cval->res = 384\n");
+			cval->res = 384;
+		}
+		break;
+
+	}
+}
+
+/*
+ * retrieve the minimum and maximum values for the specified control
+ */
+static int get_min_max_with_quirks(struct usb_mixer_elem_info *cval,
+				   int default_min, struct snd_kcontrol *kctl)
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 {
 	/* for failsafe */
 	cval->min = default_min;
@@ -844,6 +978,12 @@ static int get_min_max(struct usb_mixer_elem_info *cval, int default_min)
 		cval->initialized = 1;
 	}
 
+<<<<<<< HEAD
+=======
+	if (kctl)
+		volume_control_quirks(cval, kctl);
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	/* USB descriptions contain the dB scale in 1/256 dB unit
 	 * while ALSA TLV contains in 1/100 dB unit
 	 */
@@ -864,6 +1004,10 @@ static int get_min_max(struct usb_mixer_elem_info *cval, int default_min)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+#define get_min_max(cval, def)	get_min_max_with_quirks(cval, def, NULL)
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 /* get a feature/mixer unit info */
 static int mixer_ctl_feature_info(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo)
@@ -881,8 +1025,22 @@ static int mixer_ctl_feature_info(struct snd_kcontrol *kcontrol, struct snd_ctl_
 		uinfo->value.integer.min = 0;
 		uinfo->value.integer.max = 1;
 	} else {
+<<<<<<< HEAD
 		if (! cval->initialized)
 			get_min_max(cval,  0);
+=======
+		if (!cval->initialized) {
+			get_min_max_with_quirks(cval, 0, kcontrol);
+			if (cval->initialized && cval->dBmin >= cval->dBmax) {
+				kcontrol->vd[0].access &=
+					~(SNDRV_CTL_ELEM_ACCESS_TLV_READ |
+					  SNDRV_CTL_ELEM_ACCESS_TLV_CALLBACK);
+				snd_ctl_notify(cval->mixer->chip->card,
+					       SNDRV_CTL_EVENT_MASK_INFO,
+					       &kcontrol->id);
+			}
+		}
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		uinfo->value.integer.min = 0;
 		uinfo->value.integer.max =
 			(cval->max - cval->min + cval->res - 1) / cval->res;
@@ -1036,9 +1194,12 @@ static void build_feature_ctl(struct mixer_build *state, void *raw_desc,
 		cval->ch_readonly = readonly_mask;
 	}
 
+<<<<<<< HEAD
 	/* get min/max values */
 	get_min_max(cval, 0);
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	/* if all channels in the mask are marked read-only, make the control
 	 * read-only. set_cur_mix_value() will check the mask again and won't
 	 * issue write commands to read-only channels. */
@@ -1060,6 +1221,12 @@ static void build_feature_ctl(struct mixer_build *state, void *raw_desc,
 		len = snd_usb_copy_string_desc(state, nameid,
 				kctl->id.name, sizeof(kctl->id.name));
 
+<<<<<<< HEAD
+=======
+	/* get min/max values */
+	get_min_max_with_quirks(cval, 0, kctl);
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	switch (control) {
 	case UAC_FU_MUTE:
 	case UAC_FU_VOLUME:
@@ -1109,6 +1276,7 @@ static void build_feature_ctl(struct mixer_build *state, void *raw_desc,
 		break;
 	}
 
+<<<<<<< HEAD
 	/* volume control quirks */
 	switch (state->chip->usb_id) {
 	case USB_ID(0x0471, 0x0101):
@@ -1154,6 +1322,8 @@ static void build_feature_ctl(struct mixer_build *state, void *raw_desc,
 
 	}
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	range = (cval->max - cval->min) / cval->res;
 	/* Are there devices with volume range more than 255? I use a bit more
 	 * to be sure. 384 is a resolution magic number found on Logitech
@@ -1199,16 +1369,34 @@ static int parse_audio_feature_unit(struct mixer_build *state, int unitid, void 
 		}
 		channels = (hdr->bLength - 7) / csize - 1;
 		bmaControls = hdr->bmaControls;
+<<<<<<< HEAD
+=======
+		if (hdr->bLength < 7 + csize) {
+			snd_printk(KERN_ERR "usbaudio: unit %u: "
+				   "invalid UAC_FEATURE_UNIT descriptor\n",
+				   unitid);
+			return -EINVAL;
+		}
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	} else {
 		struct uac2_feature_unit_descriptor *ftr = _ftr;
 		csize = 4;
 		channels = (hdr->bLength - 6) / 4 - 1;
 		bmaControls = ftr->bmaControls;
+<<<<<<< HEAD
 	}
 
 	if (hdr->bLength < 7 || !csize || hdr->bLength < 7 + csize) {
 		snd_printk(KERN_ERR "usbaudio: unit %u: invalid UAC_FEATURE_UNIT descriptor\n", unitid);
 		return -EINVAL;
+=======
+		if (hdr->bLength < 6 + csize) {
+			snd_printk(KERN_ERR "usbaudio: unit %u: "
+				   "invalid UAC_FEATURE_UNIT descriptor\n",
+				   unitid);
+			return -EINVAL;
+		}
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	}
 
 	/* parse the source unit */
@@ -1228,6 +1416,16 @@ static int parse_audio_feature_unit(struct mixer_build *state, int unitid, void 
 		/* disable non-functional volume control */
 		master_bits &= ~UAC_CONTROL_BIT(UAC_FU_VOLUME);
 		break;
+<<<<<<< HEAD
+=======
+	case USB_ID(0x1130, 0xf211):
+		snd_printk(KERN_INFO
+			   "usbmixer: volume control quirk for Tenx TP6911 Audio Headset\n");
+		/* disable non-functional volume control */
+		channels = 0;
+		break;
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	}
 	if (channels > 0)
 		first_ch_bits = snd_usb_combine_bytes(bmaControls + csize, csize);

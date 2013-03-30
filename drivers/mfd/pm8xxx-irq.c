@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2011-2012, Code Aurora Forum. All rights reserved.
+=======
+ * Copyright (c) 2011, Code Aurora Forum. All rights reserved.
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -24,6 +28,7 @@
 
 /* PMIC8xxx IRQ */
 
+<<<<<<< HEAD
 #define SSBI_REG_ADDR_IRQ_ROOT(base)		(base + 0)
 #define SSBI_REG_ADDR_IRQ_M_STATUS1(base)	(base + 1)
 #define SSBI_REG_ADDR_IRQ_M_STATUS2(base)	(base + 2)
@@ -33,6 +38,19 @@
 #define SSBI_REG_ADDR_IRQ_IT_STATUS(base)	(base + 6)
 #define SSBI_REG_ADDR_IRQ_CONFIG(base)		(base + 7)
 #define SSBI_REG_ADDR_IRQ_RT_STATUS(base)	(base + 8)
+=======
+#define	SSBI_REG_ADDR_IRQ_BASE		0x1BB
+
+#define	SSBI_REG_ADDR_IRQ_ROOT		(SSBI_REG_ADDR_IRQ_BASE + 0)
+#define	SSBI_REG_ADDR_IRQ_M_STATUS1	(SSBI_REG_ADDR_IRQ_BASE + 1)
+#define	SSBI_REG_ADDR_IRQ_M_STATUS2	(SSBI_REG_ADDR_IRQ_BASE + 2)
+#define	SSBI_REG_ADDR_IRQ_M_STATUS3	(SSBI_REG_ADDR_IRQ_BASE + 3)
+#define	SSBI_REG_ADDR_IRQ_M_STATUS4	(SSBI_REG_ADDR_IRQ_BASE + 4)
+#define	SSBI_REG_ADDR_IRQ_BLK_SEL	(SSBI_REG_ADDR_IRQ_BASE + 5)
+#define	SSBI_REG_ADDR_IRQ_IT_STATUS	(SSBI_REG_ADDR_IRQ_BASE + 6)
+#define	SSBI_REG_ADDR_IRQ_CONFIG	(SSBI_REG_ADDR_IRQ_BASE + 7)
+#define	SSBI_REG_ADDR_IRQ_RT_STATUS	(SSBI_REG_ADDR_IRQ_BASE + 8)
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 #define	PM_IRQF_LVL_SEL			0x01	/* level select */
 #define	PM_IRQF_MASK_FE			0x02	/* mask falling edge */
@@ -48,7 +66,10 @@
 struct pm_irq_chip {
 	struct device		*dev;
 	spinlock_t		pm_irq_lock;
+<<<<<<< HEAD
 	unsigned int		base_addr;
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	unsigned int		devirq;
 	unsigned int		irq_base;
 	unsigned int		num_irqs;
@@ -59,14 +80,22 @@ struct pm_irq_chip {
 
 static int pm8xxx_read_root_irq(const struct pm_irq_chip *chip, u8 *rp)
 {
+<<<<<<< HEAD
 	return pm8xxx_readb(chip->dev,
 			SSBI_REG_ADDR_IRQ_ROOT(chip->base_addr), rp);
+=======
+	return pm8xxx_readb(chip->dev, SSBI_REG_ADDR_IRQ_ROOT, rp);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 static int pm8xxx_read_master_irq(const struct pm_irq_chip *chip, u8 m, u8 *bp)
 {
 	return pm8xxx_readb(chip->dev,
+<<<<<<< HEAD
 			SSBI_REG_ADDR_IRQ_M_STATUS1(chip->base_addr) + m, bp);
+=======
+			SSBI_REG_ADDR_IRQ_M_STATUS1 + m, bp);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 static int pm8xxx_read_block_irq(struct pm_irq_chip *chip, u8 bp, u8 *ip)
@@ -74,15 +103,23 @@ static int pm8xxx_read_block_irq(struct pm_irq_chip *chip, u8 bp, u8 *ip)
 	int	rc;
 
 	spin_lock(&chip->pm_irq_lock);
+<<<<<<< HEAD
 	rc = pm8xxx_writeb(chip->dev,
 			SSBI_REG_ADDR_IRQ_BLK_SEL(chip->base_addr), bp);
+=======
+	rc = pm8xxx_writeb(chip->dev, SSBI_REG_ADDR_IRQ_BLK_SEL, bp);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	if (rc) {
 		pr_err("Failed Selecting Block %d rc=%d\n", bp, rc);
 		goto bail;
 	}
 
+<<<<<<< HEAD
 	rc = pm8xxx_readb(chip->dev,
 			SSBI_REG_ADDR_IRQ_IT_STATUS(chip->base_addr), ip);
+=======
+	rc = pm8xxx_readb(chip->dev, SSBI_REG_ADDR_IRQ_IT_STATUS, ip);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	if (rc)
 		pr_err("Failed Reading Status rc=%d\n", rc);
 bail:
@@ -90,6 +127,7 @@ bail:
 	return rc;
 }
 
+<<<<<<< HEAD
 static int pm8xxx_read_config_irq(struct pm_irq_chip *chip, u8 bp, u8 cp, u8 *r)
 {
 	int	rc;
@@ -117,20 +155,31 @@ bail:
 }
 
 static int pm8xxx_write_config_irq(struct pm_irq_chip *chip, u8 bp, u8 cp)
+=======
+static int pm8xxx_config_irq(struct pm_irq_chip *chip, u8 bp, u8 cp)
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 {
 	int	rc;
 
 	spin_lock(&chip->pm_irq_lock);
+<<<<<<< HEAD
 	rc = pm8xxx_writeb(chip->dev,
 			SSBI_REG_ADDR_IRQ_BLK_SEL(chip->base_addr), bp);
+=======
+	rc = pm8xxx_writeb(chip->dev, SSBI_REG_ADDR_IRQ_BLK_SEL, bp);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	if (rc) {
 		pr_err("Failed Selecting Block %d rc=%d\n", bp, rc);
 		goto bail;
 	}
 
 	cp |= PM_IRQF_WRITE;
+<<<<<<< HEAD
 	rc = pm8xxx_writeb(chip->dev,
 			SSBI_REG_ADDR_IRQ_CONFIG(chip->base_addr), cp);
+=======
+	rc = pm8xxx_writeb(chip->dev, SSBI_REG_ADDR_IRQ_CONFIG, cp);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	if (rc)
 		pr_err("Failed Configuring IRQ rc=%d\n", rc);
 bail:
@@ -187,16 +236,27 @@ static int pm8xxx_irq_master_handler(struct pm_irq_chip *chip, int master)
 	return ret;
 }
 
+<<<<<<< HEAD
 static irqreturn_t pm8xxx_irq_handler(int irq, void *data)
 {
 	struct pm_irq_chip *chip = data;
+=======
+static void pm8xxx_irq_handler(unsigned int irq, struct irq_desc *desc)
+{
+	struct pm_irq_chip *chip = irq_desc_get_handler_data(desc);
+	struct irq_chip *irq_chip = irq_desc_get_chip(desc);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	u8	root;
 	int	i, ret, masters = 0;
 
 	ret = pm8xxx_read_root_irq(chip, &root);
 	if (ret) {
 		pr_err("Can't read root status ret=%d\n", ret);
+<<<<<<< HEAD
 		return IRQ_HANDLED;
+=======
+		return;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	}
 
 	/* on pm8xxx series masters start from bit 1 of the root */
@@ -207,6 +267,7 @@ static irqreturn_t pm8xxx_irq_handler(int irq, void *data)
 		if (masters & (1 << i))
 			pm8xxx_irq_master_handler(chip, i);
 
+<<<<<<< HEAD
 	return IRQ_HANDLED;
 }
 
@@ -228,6 +289,9 @@ static void pm8xxx_irq_mask(struct irq_data *d)
 
 	config = chip->config[pmirq] | PM_IRQF_MASK_ALL;
 	pm8xxx_write_config_irq(chip, block, config);
+=======
+	irq_chip->irq_ack(&desc->irq_data);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 static void pm8xxx_irq_mask_ack(struct irq_data *d)
@@ -241,6 +305,7 @@ static void pm8xxx_irq_mask_ack(struct irq_data *d)
 	master = block / 8;
 	irq_bit = pmirq % 8;
 
+<<<<<<< HEAD
 	if (chip->config[pmirq] == 0) {
 		pr_warn("mask acking rouge irq=%d pmirq=%d\n", d->irq, pmirq);
 		chip->config[pmirq] = irq_bit << PM_IRQF_BITS_SHIFT;
@@ -248,6 +313,10 @@ static void pm8xxx_irq_mask_ack(struct irq_data *d)
 
 	config = chip->config[pmirq] | PM_IRQF_MASK_ALL | PM_IRQF_CLR;
 	pm8xxx_write_config_irq(chip, block, config);
+=======
+	config = chip->config[pmirq] | PM_IRQF_MASK_ALL | PM_IRQF_CLR;
+	pm8xxx_config_irq(chip, block, config);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 static void pm8xxx_irq_unmask(struct irq_data *d)
@@ -255,17 +324,25 @@ static void pm8xxx_irq_unmask(struct irq_data *d)
 	struct pm_irq_chip *chip = irq_data_get_irq_chip_data(d);
 	unsigned int pmirq = d->irq - chip->irq_base;
 	int	master, irq_bit;
+<<<<<<< HEAD
 	u8	block, config, hw_conf;
+=======
+	u8	block, config;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	block = pmirq / 8;
 	master = block / 8;
 	irq_bit = pmirq % 8;
 
 	config = chip->config[pmirq];
+<<<<<<< HEAD
 	pm8xxx_read_config_irq(chip, block, config, &hw_conf);
 	/* check if it is masked */
 	if ((hw_conf & PM_IRQF_MASK_ALL) == PM_IRQF_MASK_ALL)
 		pm8xxx_write_config_irq(chip, block, config);
+=======
+	pm8xxx_config_irq(chip, block, config);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 static int pm8xxx_irq_set_type(struct irq_data *d, unsigned int flow_type)
@@ -296,7 +373,11 @@ static int pm8xxx_irq_set_type(struct irq_data *d, unsigned int flow_type)
 	}
 
 	config = chip->config[pmirq] | PM_IRQF_CLR;
+<<<<<<< HEAD
 	return pm8xxx_write_config_irq(chip, block, config);
+=======
+	return pm8xxx_config_irq(chip, block, config);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 static int pm8xxx_irq_set_wake(struct irq_data *d, unsigned int on)
@@ -304,6 +385,7 @@ static int pm8xxx_irq_set_wake(struct irq_data *d, unsigned int on)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int pm8xxx_irq_read_line(struct irq_data *d)
 {
 	struct pm_irq_chip *chip = irq_data_get_irq_chip_data(d);
@@ -314,11 +396,18 @@ static int pm8xxx_irq_read_line(struct irq_data *d)
 static struct irq_chip pm8xxx_irq_chip = {
 	.name		= "pm8xxx",
 	.irq_mask	= pm8xxx_irq_mask,
+=======
+static struct irq_chip pm8xxx_irq_chip = {
+	.name		= "pm8xxx",
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	.irq_mask_ack	= pm8xxx_irq_mask_ack,
 	.irq_unmask	= pm8xxx_irq_unmask,
 	.irq_set_type	= pm8xxx_irq_set_type,
 	.irq_set_wake	= pm8xxx_irq_set_wake,
+<<<<<<< HEAD
 	.irq_read_line	= pm8xxx_irq_read_line,
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	.flags		= IRQCHIP_MASK_ON_SUSPEND,
 };
 
@@ -352,16 +441,24 @@ int pm8xxx_get_irq_stat(struct pm_irq_chip *chip, int irq)
 
 	spin_lock_irqsave(&chip->pm_irq_lock, flags);
 
+<<<<<<< HEAD
 	rc = pm8xxx_writeb(chip->dev,
 			SSBI_REG_ADDR_IRQ_BLK_SEL(chip->base_addr), block);
+=======
+	rc = pm8xxx_writeb(chip->dev, SSBI_REG_ADDR_IRQ_BLK_SEL, block);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	if (rc) {
 		pr_err("Failed Selecting block irq=%d pmirq=%d blk=%d rc=%d\n",
 			irq, pmirq, block, rc);
 		goto bail_out;
 	}
 
+<<<<<<< HEAD
 	rc = pm8xxx_readb(chip->dev,
 			SSBI_REG_ADDR_IRQ_RT_STATUS(chip->base_addr), &bits);
+=======
+	rc = pm8xxx_readb(chip->dev, SSBI_REG_ADDR_IRQ_RT_STATUS, &bits);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	if (rc) {
 		pr_err("Failed Configuring irq=%d pmirq=%d blk=%d rc=%d\n",
 			irq, pmirq, block, rc);
@@ -407,7 +504,10 @@ struct pm_irq_chip *  __devinit pm8xxx_irq_init(struct device *dev,
 	chip->devirq = devirq;
 	chip->irq_base = pdata->irq_base;
 	chip->num_irqs = pdata->irq_cdata.nirqs;
+<<<<<<< HEAD
 	chip->base_addr = pdata->irq_cdata.base_addr;
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	chip->num_blocks = DIV_ROUND_UP(chip->num_irqs, 8);
 	chip->num_masters = DIV_ROUND_UP(chip->num_blocks, 8);
 	spin_lock_init(&chip->pm_irq_lock);
@@ -424,6 +524,7 @@ struct pm_irq_chip *  __devinit pm8xxx_irq_init(struct device *dev,
 #endif
 	}
 
+<<<<<<< HEAD
 	if (devirq != 0) {
 		rc = request_irq(devirq, pm8xxx_irq_handler,
 				pdata->irq_trigger_flag,
@@ -435,6 +536,12 @@ struct pm_irq_chip *  __devinit pm8xxx_irq_init(struct device *dev,
 			irq_set_irq_wake(devirq, 1);
 		}
 	}
+=======
+	irq_set_irq_type(devirq, pdata->irq_trigger_flag);
+	irq_set_handler_data(devirq, chip);
+	irq_set_chained_handler(devirq, pm8xxx_irq_handler);
+	set_irq_wake(devirq, 1);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	return chip;
 }

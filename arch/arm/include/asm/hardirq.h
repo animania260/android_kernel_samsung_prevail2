@@ -5,10 +5,20 @@
 #include <linux/threads.h>
 #include <asm/irq.h>
 
+<<<<<<< HEAD
 #define NR_IPI	7
 
 typedef struct {
 	unsigned int __softirq_pending;
+=======
+#define NR_IPI	5
+
+typedef struct {
+	unsigned int __softirq_pending;
+#ifdef CONFIG_LOCAL_TIMERS
+	unsigned int local_timer_irqs;
+#endif
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #ifdef CONFIG_SMP
 	unsigned int ipi_irqs[NR_IPI];
 #endif
@@ -35,6 +45,18 @@ u64 smp_irq_stat_cpu(unsigned int cpu);
 #define HARDIRQ_BITS	8
 #endif
 
+<<<<<<< HEAD
+=======
+/*
+ * The hardirq mask has to be large enough to have space
+ * for potentially all IRQ sources in the system nesting
+ * on a single CPU:
+ */
+#if (1 << HARDIRQ_BITS) < NR_IRQS
+# error HARDIRQ_BITS is too low!
+#endif
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #define __ARCH_IRQ_EXIT_IRQS_DISABLED	1
 
 #endif /* __ASM_HARDIRQ_H */

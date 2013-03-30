@@ -23,6 +23,7 @@
  *
  */
 
+<<<<<<< HEAD
 #define DEBUG
 
 #include <linux/init.h>
@@ -37,6 +38,11 @@
 #include <linux/slab.h>
 #include <linux/pm_runtime.h>
 
+=======
+#include <linux/init.h>
+#include <linux/module.h>
+#include <linux/device.h>
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #include <sound/core.h>
 #include <sound/pcm.h>
 #include <sound/pcm_params.h>
@@ -44,6 +50,7 @@
 #include <sound/soc.h>
 
 #include <plat/dma.h>
+<<<<<<< HEAD
 #include <plat/omap_hwmod.h>
 #include "omap-mcpdm.h"
 #include "omap-pcm.h"
@@ -82,6 +89,35 @@ struct omap_mcpdm {
 	int ul_active;
 	int abe_mode;
 
+=======
+#include <plat/mcbsp.h>
+#include "mcpdm.h"
+#include "omap-pcm.h"
+
+struct omap_mcpdm_data {
+	struct omap_mcpdm_link *links;
+	int active;
+};
+
+static struct omap_mcpdm_link omap_mcpdm_links[] = {
+	/* downlink */
+	{
+		.irq_mask = MCPDM_DN_IRQ_EMPTY | MCPDM_DN_IRQ_FULL,
+		.threshold = 1,
+		.format = PDMOUTFORMAT_LJUST,
+	},
+	/* uplink */
+	{
+		.irq_mask = MCPDM_UP_IRQ_EMPTY | MCPDM_UP_IRQ_FULL,
+		.threshold = 1,
+		.format = PDMOUTFORMAT_LJUST,
+	},
+};
+
+static struct omap_mcpdm_data mcpdm_data = {
+	.links = omap_mcpdm_links,
+	.active = 0,
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 };
 
 /*
@@ -106,6 +142,7 @@ static struct omap_pcm_dma_data omap_mcpdm_dai_dma_params[] = {
 	},
 };
 
+<<<<<<< HEAD
 static inline void omap_mcpdm_write(struct omap_mcpdm *mcpdm,
 		u16 reg, u32 val)
 {
@@ -353,10 +390,20 @@ static int omap_mcpdm_dai_startup(struct snd_pcm_substream *substream,
 		mcpdm->abe_mode = 0;
 
 	mutex_unlock(&mcpdm->mutex);
+=======
+static int omap_mcpdm_dai_startup(struct snd_pcm_substream *substream,
+				  struct snd_soc_dai *dai)
+{
+	int err = 0;
+
+	if (!dai->active)
+		err = omap_mcpdm_request();
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	return err;
 }
 
+<<<<<<< HEAD
 /* work to delay McPDM shutdown */
 static void playback_work(struct work_struct *work)
 {
@@ -401,19 +448,62 @@ static void omap_mcpdm_dai_shutdown(struct snd_pcm_substream *substream,
 	}
 
 	mutex_unlock(&mcpdm->mutex);
+=======
+static void omap_mcpdm_dai_shutdown(struct snd_pcm_substream *substream,
+				    struct snd_soc_dai *dai)
+{
+	if (!dai->active)
+		omap_mcpdm_free();
+}
+
+static int omap_mcpdm_dai_trigger(struct snd_pcm_substream *substream, int cmd,
+				  struct snd_soc_dai *dai)
+{
+	struct omap_mcpdm_data *mcpdm_priv = snd_soc_dai_get_drvdata(dai);
+	int stream = substream->stream;
+	int err = 0;
+
+	switch (cmd) {
+	case SNDRV_PCM_TRIGGER_START:
+	case SNDRV_PCM_TRIGGER_RESUME:
+	case SNDRV_PCM_TRIGGER_PAUSE_RELEASE:
+		if (!mcpdm_priv->active++)
+			omap_mcpdm_start(stream);
+		break;
+
+	case SNDRV_PCM_TRIGGER_STOP:
+	case SNDRV_PCM_TRIGGER_SUSPEND:
+	case SNDRV_PCM_TRIGGER_PAUSE_PUSH:
+		if (!--mcpdm_priv->active)
+			omap_mcpdm_stop(stream);
+		break;
+	default:
+		err = -EINVAL;
+	}
+
+	return err;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 static int omap_mcpdm_dai_hw_params(struct snd_pcm_substream *substream,
 				    struct snd_pcm_hw_params *params,
 				    struct snd_soc_dai *dai)
 {
+<<<<<<< HEAD
 	struct omap_mcpdm *mcpdm = snd_soc_dai_get_drvdata(dai);
 	int stream = substream->stream;
 	int channels, link_mask = 0;
+=======
+	struct omap_mcpdm_data *mcpdm_priv = snd_soc_dai_get_drvdata(dai);
+	struct omap_mcpdm_link *mcpdm_links = mcpdm_priv->links;
+	int stream = substream->stream;
+	int channels, err, link_mask = 0;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	snd_soc_dai_set_dma_data(dai, substream,
 				 &omap_mcpdm_dai_dma_params[stream]);
 
+<<<<<<< HEAD
 	/* ABE DAIs have fixed channels and IDs > MCPDM_LEGACY_DAI_DL1 */
 	if (dai->id > MCPDM_LEGACY_DAI_DL1) {
 		mcpdm->dn_channels = PDM_DN_MASK | PDM_CMD_MASK;
@@ -421,6 +511,8 @@ static int omap_mcpdm_dai_hw_params(struct snd_pcm_substream *substream,
 		return 0;
 	}
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	channels = params_channels(params);
 	switch (channels) {
 	case 4:
@@ -443,6 +535,7 @@ static int omap_mcpdm_dai_hw_params(struct snd_pcm_substream *substream,
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	if (stream == SNDRV_PCM_STREAM_PLAYBACK)
 		/* Downlink channels */
 		mcpdm->dn_channels = (link_mask << 3) & (PDM_DN_MASK | PDM_CMD_MASK);
@@ -506,11 +599,39 @@ static void omap_mcpdm_dai_trigger(struct snd_pcm_substream *substream,
 	default:
 		break;
 	}
+=======
+	if (stream == SNDRV_PCM_STREAM_PLAYBACK) {
+		mcpdm_links[stream].channels = link_mask << 3;
+		err = omap_mcpdm_playback_open(&mcpdm_links[stream]);
+	} else {
+		mcpdm_links[stream].channels = link_mask << 0;
+		err = omap_mcpdm_capture_open(&mcpdm_links[stream]);
+	}
+
+	return err;
+}
+
+static int omap_mcpdm_dai_hw_free(struct snd_pcm_substream *substream,
+				  struct snd_soc_dai *dai)
+{
+	struct omap_mcpdm_data *mcpdm_priv = snd_soc_dai_get_drvdata(dai);
+	struct omap_mcpdm_link *mcpdm_links = mcpdm_priv->links;
+	int stream = substream->stream;
+	int err;
+
+	if (substream->stream ==  SNDRV_PCM_STREAM_PLAYBACK)
+		err = omap_mcpdm_playback_close(&mcpdm_links[stream]);
+	else
+		err = omap_mcpdm_capture_close(&mcpdm_links[stream]);
+
+	return err;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 static struct snd_soc_dai_ops omap_mcpdm_dai_ops = {
 	.startup	= omap_mcpdm_dai_startup,
 	.shutdown	= omap_mcpdm_dai_shutdown,
+<<<<<<< HEAD
 	.hw_params	= omap_mcpdm_dai_hw_params,
 	.prepare	= omap_mcpdm_prepare,
 	.trigger	= omap_mcpdm_dai_trigger,
@@ -557,12 +678,31 @@ static struct snd_soc_dai_driver omap_mcpdm_dai[] = {
 	.remove = omap_mcpdm_remove,
 	.probe_order = SND_SOC_COMP_ORDER_LATE,
 	.remove_order = SND_SOC_COMP_ORDER_EARLY,
+=======
+	.trigger	= omap_mcpdm_dai_trigger,
+	.hw_params	= omap_mcpdm_dai_hw_params,
+	.hw_free	= omap_mcpdm_dai_hw_free,
+};
+
+#define OMAP_MCPDM_RATES	(SNDRV_PCM_RATE_88200 | SNDRV_PCM_RATE_96000)
+#define OMAP_MCPDM_FORMATS	(SNDRV_PCM_FMTBIT_S32_LE)
+
+static int omap_mcpdm_dai_probe(struct snd_soc_dai *dai)
+{
+	snd_soc_dai_set_drvdata(dai, &mcpdm_data);
+	return 0;
+}
+
+static struct snd_soc_dai_driver omap_mcpdm_dai = {
+	.probe = omap_mcpdm_dai_probe,
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	.playback = {
 		.channels_min = 1,
 		.channels_max = 4,
 		.rates = OMAP_MCPDM_RATES,
 		.formats = OMAP_MCPDM_FORMATS,
 	},
+<<<<<<< HEAD
 	.ops = &omap_mcpdm_dai_ops,
 },
 {
@@ -624,6 +764,8 @@ static struct snd_soc_dai_driver omap_mcpdm_dai[] = {
 	.id	= MCPDM_ABE_DAI_UL1,
 	.probe_order = SND_SOC_COMP_ORDER_LATE,
 	.remove_order = SND_SOC_COMP_ORDER_EARLY,
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	.capture = {
 		.channels_min = 1,
 		.channels_max = 2,
@@ -631,6 +773,7 @@ static struct snd_soc_dai_driver omap_mcpdm_dai[] = {
 		.formats = OMAP_MCPDM_FORMATS,
 	},
 	.ops = &omap_mcpdm_dai_ops,
+<<<<<<< HEAD
 },
 #endif
  };
@@ -700,11 +843,26 @@ err_iomap:
 	release_mem_region(res->start, resource_size(res));
 err_res:
 	kfree(mcpdm);
+=======
+};
+
+static __devinit int asoc_mcpdm_probe(struct platform_device *pdev)
+{
+	int ret;
+
+	ret = omap_mcpdm_probe(pdev);
+	if (ret < 0)
+		return ret;
+	ret = snd_soc_register_dai(&pdev->dev, &omap_mcpdm_dai);
+	if (ret < 0)
+		omap_mcpdm_remove(pdev);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	return ret;
 }
 
 static int __devexit asoc_mcpdm_remove(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct omap_mcpdm *mcpdm = platform_get_drvdata(pdev);
 	struct resource *res;
 
@@ -723,12 +881,20 @@ static int __devexit asoc_mcpdm_remove(struct platform_device *pdev)
 	iounmap(mcpdm->io_base);
 
 	kfree(mcpdm);
+=======
+	snd_soc_unregister_dai(&pdev->dev);
+	omap_mcpdm_remove(pdev);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	return 0;
 }
 
 static struct platform_driver asoc_mcpdm_driver = {
 	.driver = {
+<<<<<<< HEAD
 			.name = "omap-mcpdm",
+=======
+			.name = "omap-mcpdm-dai",
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			.owner = THIS_MODULE,
 	},
 

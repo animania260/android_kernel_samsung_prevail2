@@ -110,7 +110,11 @@
 #endif
 
 #if defined(CONFIG_TWL4030_CODEC) || defined(CONFIG_TWL4030_CODEC_MODULE) ||\
+<<<<<<< HEAD
 	defined(CONFIG_TWL6040_CORE) || defined(CONFIG_TWL6040_CORE_MODULE)
+=======
+	defined(CONFIG_SND_SOC_TWL6040) || defined(CONFIG_SND_SOC_TWL6040_MODULE)
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #define twl_has_codec()	true
 #else
 #define twl_has_codec()	false
@@ -362,6 +366,7 @@ int twl_i2c_write(u8 mod_no, u8 *value, u8 reg, unsigned num_bytes)
 		pr_err("%s: invalid module number %d\n", DRIVER_NAME, mod_no);
 		return -EPERM;
 	}
+<<<<<<< HEAD
 	sid = twl_map[mod_no].sid;
 	twl = &twl_modules[sid];
 
@@ -369,6 +374,15 @@ int twl_i2c_write(u8 mod_no, u8 *value, u8 reg, unsigned num_bytes)
 		pr_err("%s: client %d is not initialized\n", DRIVER_NAME, sid);
 		return -EPERM;
 	}
+=======
+	if (unlikely(!inuse)) {
+		pr_err("%s: not initialized\n", DRIVER_NAME);
+		return -EPERM;
+	}
+	sid = twl_map[mod_no].sid;
+	twl = &twl_modules[sid];
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	mutex_lock(&twl->xfer_lock);
 	/*
 	 * [MSG1]: fill the register address data
@@ -419,6 +433,7 @@ int twl_i2c_read(u8 mod_no, u8 *value, u8 reg, unsigned num_bytes)
 		pr_err("%s: invalid module number %d\n", DRIVER_NAME, mod_no);
 		return -EPERM;
 	}
+<<<<<<< HEAD
 	sid = twl_map[mod_no].sid;
 	twl = &twl_modules[sid];
 
@@ -426,6 +441,15 @@ int twl_i2c_read(u8 mod_no, u8 *value, u8 reg, unsigned num_bytes)
 		pr_err("%s: client %d is not initialized\n", DRIVER_NAME, sid);
 		return -EPERM;
 	}
+=======
+	if (unlikely(!inuse)) {
+		pr_err("%s: not initialized\n", DRIVER_NAME);
+		return -EPERM;
+	}
+	sid = twl_map[mod_no].sid;
+	twl = &twl_modules[sid];
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	mutex_lock(&twl->xfer_lock);
 	/* [MSG1] fill the register address data */
 	msg = &twl->xfer_msg[0];
@@ -815,19 +839,34 @@ add_children(struct twl4030_platform_data *pdata, unsigned long features)
 			return PTR_ERR(child);
 	}
 
+<<<<<<< HEAD
 	if (twl_has_codec() && pdata->audio && twl_class_is_4030()) {
 		sub_chip_id = twl_map[TWL_MODULE_AUDIO_VOICE].sid;
 		child = add_child(sub_chip_id, "twl4030-audio",
 				pdata->audio, sizeof(*pdata->audio),
+=======
+	if (twl_has_codec() && pdata->codec && twl_class_is_4030()) {
+		sub_chip_id = twl_map[TWL_MODULE_AUDIO_VOICE].sid;
+		child = add_child(sub_chip_id, "twl4030-audio",
+				pdata->codec, sizeof(*pdata->codec),
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 				false, 0, 0);
 		if (IS_ERR(child))
 			return PTR_ERR(child);
 	}
 
+<<<<<<< HEAD
 	if (twl_has_codec() && pdata->audio && twl_class_is_6030()) {
 		sub_chip_id = twl_map[TWL_MODULE_AUDIO_VOICE].sid;
 		child = add_child(sub_chip_id, "twl6040",
 				pdata->audio, sizeof(*pdata->audio),
+=======
+	/* Phoenix codec driver is probed directly atm */
+	if (twl_has_codec() && pdata->codec && twl_class_is_6030()) {
+		sub_chip_id = twl_map[TWL_MODULE_AUDIO_VOICE].sid;
+		child = add_child(sub_chip_id, "twl6040-codec",
+				pdata->codec, sizeof(*pdata->codec),
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 				false, 0, 0);
 		if (IS_ERR(child))
 			return PTR_ERR(child);

@@ -40,12 +40,15 @@ char *op_name_from_perf_id(void)
 		return "arm/armv7";
 	case ARM_PERF_PMU_ID_CA9:
 		return "arm/armv7-ca9";
+<<<<<<< HEAD
 	case ARM_PERF_PMU_ID_SCORPION:
 		return "arm/armv7-scorpion";
 	case ARM_PERF_PMU_ID_SCORPIONMP:
 		return "arm/armv7-scorpionmp";
 	case ARM_PERF_PMU_ID_KRAIT:
 		return "arm/armv7-krait";
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	default:
 		return NULL;
 	}
@@ -122,7 +125,11 @@ int __init oprofile_arch_init(struct oprofile_operations *ops)
 	return oprofile_perf_init(ops);
 }
 
+<<<<<<< HEAD
 void __exit oprofile_arch_exit(void)
+=======
+void oprofile_arch_exit(void)
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 {
 	oprofile_perf_exit();
 }

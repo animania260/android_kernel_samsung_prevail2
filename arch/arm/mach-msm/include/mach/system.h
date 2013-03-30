@@ -17,19 +17,28 @@
 
 void arch_idle(void);
 
+<<<<<<< HEAD
 #if defined(CONFIG_MSM_NATIVE_RESTART) || defined(CONFIG_ARCH_FSM9XXX)
 void arch_reset(char mode, const char *cmd);
 #else
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 static inline void arch_reset(char mode, const char *cmd)
 {
 	for (;;) ;  /* depends on IPC w/ other core */
 }
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 /* low level hardware reset hook -- for example, hitting the
  * PSHOLD line on the PMIC to hard reset the system
  */
 extern void (*msm_hw_reset_hook)(void);
+<<<<<<< HEAD
 
 void msm_set_i2c_mux(bool gpio, int *gpio_clk, int *gpio_dat);
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y

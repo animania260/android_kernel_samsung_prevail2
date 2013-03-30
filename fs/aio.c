@@ -228,12 +228,15 @@ static void __put_ioctx(struct kioctx *ctx)
 	call_rcu(&ctx->rcu_head, ctx_rcu_free);
 }
 
+<<<<<<< HEAD
 static inline void get_ioctx(struct kioctx *kioctx)
 {
 	BUG_ON(atomic_read(&kioctx->users) <= 0);
 	atomic_inc(&kioctx->users);
 }
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 static inline int try_get_ioctx(struct kioctx *kioctx)
 {
 	return atomic_inc_not_zero(&kioctx->users);
@@ -273,7 +276,11 @@ static struct kioctx *ioctx_alloc(unsigned nr_events)
 	mm = ctx->mm = current->mm;
 	atomic_inc(&mm->mm_count);
 
+<<<<<<< HEAD
 	atomic_set(&ctx->users, 1);
+=======
+	atomic_set(&ctx->users, 2);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	spin_lock_init(&ctx->ctx_lock);
 	spin_lock_init(&ctx->ring_info.ring_lock);
 	init_waitqueue_head(&ctx->wait);
@@ -527,11 +534,24 @@ static void aio_fput_routine(struct work_struct *data)
 			fput(req->ki_filp);
 
 		/* Link the iocb into the context's free list */
+<<<<<<< HEAD
 		spin_lock_irq(&ctx->ctx_lock);
 		really_put_req(ctx, req);
 		spin_unlock_irq(&ctx->ctx_lock);
 
 		put_ioctx(ctx);
+=======
+		rcu_read_lock();
+		spin_lock_irq(&ctx->ctx_lock);
+		really_put_req(ctx, req);
+		/*
+		 * at that point ctx might've been killed, but actual
+		 * freeing is RCU'd
+		 */
+		spin_unlock_irq(&ctx->ctx_lock);
+		rcu_read_unlock();
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		spin_lock_irq(&fput_lock);
 	}
 	spin_unlock_irq(&fput_lock);
@@ -562,7 +582,10 @@ static int __aio_put_req(struct kioctx *ctx, struct kiocb *req)
 	 * this function will be executed w/out any aio kthread wakeup.
 	 */
 	if (unlikely(!fput_atomic(req->ki_filp))) {
+<<<<<<< HEAD
 		get_ioctx(ctx);
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		spin_lock(&fput_lock);
 		list_add(&req->ki_list, &fput_head);
 		spin_unlock(&fput_lock);
@@ -1256,10 +1279,17 @@ SYSCALL_DEFINE2(io_setup, unsigned, nr_events, aio_context_t __user *, ctxp)
 	ret = PTR_ERR(ioctx);
 	if (!IS_ERR(ioctx)) {
 		ret = put_user(ioctx->user_id, ctxp);
+<<<<<<< HEAD
 		if (!ret)
 			return 0;
 
 		get_ioctx(ioctx); /* io_destroy() expects us to hold a ref */
+=======
+		if (!ret) {
+			put_ioctx(ioctx);
+			return 0;
+		}
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		io_destroy(ioctx);
 	}
 
@@ -1397,6 +1427,13 @@ static ssize_t aio_setup_vectored_rw(int type, struct kiocb *kiocb, bool compat)
 	if (ret < 0)
 		goto out;
 
+<<<<<<< HEAD
+=======
+	ret = rw_verify_area(type, kiocb->ki_filp, &kiocb->ki_pos, ret);
+	if (ret < 0)
+		goto out;
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	kiocb->ki_nr_segs = kiocb->ki_nbytes;
 	kiocb->ki_cur_seg = 0;
 	/* ki_nbytes/left now reflect bytes instead of segs */
@@ -1408,11 +1445,25 @@ out:
 	return ret;
 }
 
+<<<<<<< HEAD
 static ssize_t aio_setup_single_vector(struct kiocb *kiocb)
 {
 	kiocb->ki_iovec = &kiocb->ki_inline_vec;
 	kiocb->ki_iovec->iov_base = kiocb->ki_buf;
 	kiocb->ki_iovec->iov_len = kiocb->ki_left;
+=======
+static ssize_t aio_setup_single_vector(int type, struct file * file, struct kiocb *kiocb)
+{
+	int bytes;
+
+	bytes = rw_verify_area(type, file, &kiocb->ki_pos, kiocb->ki_left);
+	if (bytes < 0)
+		return bytes;
+
+	kiocb->ki_iovec = &kiocb->ki_inline_vec;
+	kiocb->ki_iovec->iov_base = kiocb->ki_buf;
+	kiocb->ki_iovec->iov_len = bytes;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	kiocb->ki_nr_segs = 1;
 	kiocb->ki_cur_seg = 0;
 	return 0;
@@ -1437,10 +1488,14 @@ static ssize_t aio_setup_iocb(struct kiocb *kiocb, bool compat)
 		if (unlikely(!access_ok(VERIFY_WRITE, kiocb->ki_buf,
 			kiocb->ki_left)))
 			break;
+<<<<<<< HEAD
 		ret = security_file_permission(file, MAY_READ);
 		if (unlikely(ret))
 			break;
 		ret = aio_setup_single_vector(kiocb);
+=======
+		ret = aio_setup_single_vector(READ, file, kiocb);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		if (ret)
 			break;
 		ret = -EINVAL;
@@ -1455,10 +1510,14 @@ static ssize_t aio_setup_iocb(struct kiocb *kiocb, bool compat)
 		if (unlikely(!access_ok(VERIFY_READ, kiocb->ki_buf,
 			kiocb->ki_left)))
 			break;
+<<<<<<< HEAD
 		ret = security_file_permission(file, MAY_WRITE);
 		if (unlikely(ret))
 			break;
 		ret = aio_setup_single_vector(kiocb);
+=======
+		ret = aio_setup_single_vector(WRITE, file, kiocb);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		if (ret)
 			break;
 		ret = -EINVAL;
@@ -1469,9 +1528,12 @@ static ssize_t aio_setup_iocb(struct kiocb *kiocb, bool compat)
 		ret = -EBADF;
 		if (unlikely(!(file->f_mode & FMODE_READ)))
 			break;
+<<<<<<< HEAD
 		ret = security_file_permission(file, MAY_READ);
 		if (unlikely(ret))
 			break;
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		ret = aio_setup_vectored_rw(READ, kiocb, compat);
 		if (ret)
 			break;
@@ -1483,9 +1545,12 @@ static ssize_t aio_setup_iocb(struct kiocb *kiocb, bool compat)
 		ret = -EBADF;
 		if (unlikely(!(file->f_mode & FMODE_WRITE)))
 			break;
+<<<<<<< HEAD
 		ret = security_file_permission(file, MAY_WRITE);
 		if (unlikely(ret))
 			break;
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		ret = aio_setup_vectored_rw(WRITE, kiocb, compat);
 		if (ret)
 			break;

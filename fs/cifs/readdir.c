@@ -85,9 +85,18 @@ cifs_readdir_lookup(struct dentry *parent, struct qstr *name,
 
 	dentry = d_lookup(parent, name);
 	if (dentry) {
+<<<<<<< HEAD
 		/* FIXME: check for inode number changes? */
 		if (dentry->d_inode != NULL)
 			return dentry;
+=======
+		inode = dentry->d_inode;
+		/* update inode in place if i_ino didn't change */
+		if (inode && CIFS_I(inode)->uniqueid == fattr->cf_uniqueid) {
+			cifs_fattr_to_inode(inode, fattr);
+			return dentry;
+		}
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		d_drop(dentry);
 		dput(dentry);
 	}

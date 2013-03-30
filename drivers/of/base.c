@@ -596,6 +596,7 @@ struct device_node *of_find_node_by_phandle(phandle handle)
 EXPORT_SYMBOL(of_find_node_by_phandle);
 
 /**
+<<<<<<< HEAD
  * of_property_read_u32_array - Find and read an array of 32 bit integers
  * from a property.
  *
@@ -661,6 +662,8 @@ int of_property_read_string(struct device_node *np, char *propname,
 EXPORT_SYMBOL_GPL(of_property_read_string);
 
 /**
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
  * of_parse_phandle - Resolve a phandle property to a device_node pointer
  * @np: Pointer to device node holding phandle property
  * @phandle_name: Name of property holding a phandle value

@@ -53,6 +53,7 @@ static DEFINE_IDR(mmc_host_idr);
 static DEFINE_SPINLOCK(mmc_host_lock);
 
 #ifdef CONFIG_MMC_CLKGATE
+<<<<<<< HEAD
 static ssize_t clkgate_delay_show(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {
@@ -78,6 +79,8 @@ static ssize_t clkgate_delay_store(struct device *dev,
 			mmc_hostname(host), value);
 	return count;
 }
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 /*
  * Enabling clock gating will make the core call out to the host
@@ -138,7 +141,11 @@ static void mmc_host_clk_gate_delayed(struct mmc_host *host)
 static void mmc_host_clk_gate_work(struct work_struct *work)
 {
 	struct mmc_host *host = container_of(work, struct mmc_host,
+<<<<<<< HEAD
 					      clk_gate_work.work);
+=======
+					      clk_gate_work);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	mmc_host_clk_gate_delayed(host);
 }
@@ -155,8 +162,11 @@ void mmc_host_clk_hold(struct mmc_host *host)
 {
 	unsigned long flags;
 
+<<<<<<< HEAD
 	/* cancel any clock gating work scheduled by mmc_host_clk_release() */
 	cancel_delayed_work_sync(&host->clk_gate_work);
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	mutex_lock(&host->clk_gate_mutex);
 	spin_lock_irqsave(&host->clk_lock, flags);
 	if (host->clk_gated) {
@@ -206,8 +216,12 @@ void mmc_host_clk_release(struct mmc_host *host)
 	host->clk_requests--;
 	if (mmc_host_may_gate_card(host->card) &&
 	    !host->clk_requests)
+<<<<<<< HEAD
 		queue_delayed_work(system_nrt_wq, &host->clk_gate_work,
 				msecs_to_jiffies(host->clkgate_delay));
+=======
+		queue_work(system_nrt_wq, &host->clk_gate_work);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	spin_unlock_irqrestore(&host->clk_lock, flags);
 }
 
@@ -240,6 +254,7 @@ static inline void mmc_host_clk_init(struct mmc_host *host)
 	host->clk_requests = 0;
 	/* Hold MCI clock for 8 cycles by default */
 	host->clk_delay = 8;
+<<<<<<< HEAD
 	/*
 	 * Default clock gating delay is value is 200ms.
 	 * This value can be tuned by writing into sysfs entry.
@@ -247,6 +262,10 @@ static inline void mmc_host_clk_init(struct mmc_host *host)
 	host->clkgate_delay = 200;
 	host->clk_gated = false;
 	INIT_DELAYED_WORK(&host->clk_gate_work, mmc_host_clk_gate_work);
+=======
+	host->clk_gated = false;
+	INIT_WORK(&host->clk_gate_work, mmc_host_clk_gate_work);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	spin_lock_init(&host->clk_lock);
 	mutex_init(&host->clk_gate_mutex);
 }
@@ -261,7 +280,11 @@ static inline void mmc_host_clk_exit(struct mmc_host *host)
 	 * Wait for any outstanding gate and then make sure we're
 	 * ungated before exiting.
 	 */
+<<<<<<< HEAD
 	if (cancel_delayed_work_sync(&host->clk_gate_work))
+=======
+	if (cancel_work_sync(&host->clk_gate_work))
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		mmc_host_clk_gate_delayed(host);
 	if (host->clk_gated)
 		mmc_host_clk_hold(host);
@@ -269,6 +292,7 @@ static inline void mmc_host_clk_exit(struct mmc_host *host)
 	WARN_ON(host->clk_requests > 1);
 }
 
+<<<<<<< HEAD
 static inline void mmc_host_clk_sysfs_init(struct mmc_host *host)
 {
 	host->clkgate_delay_attr.show = clkgate_delay_show;
@@ -280,6 +304,8 @@ static inline void mmc_host_clk_sysfs_init(struct mmc_host *host)
 		pr_err("%s: Failed to create clkgate_delay sysfs entry\n",
 				mmc_hostname(host));
 }
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #else
 
 static inline void mmc_host_clk_init(struct mmc_host *host)
@@ -290,9 +316,12 @@ static inline void mmc_host_clk_exit(struct mmc_host *host)
 {
 }
 
+<<<<<<< HEAD
 static inline void mmc_host_clk_sysfs_init(struct mmc_host *host)
 {
 }
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #endif
 
 /**
@@ -331,8 +360,11 @@ struct mmc_host *mmc_alloc_host(int extra, struct device *dev)
 
 	spin_lock_init(&host->lock);
 	init_waitqueue_head(&host->wq);
+<<<<<<< HEAD
 	wake_lock_init(&host->detect_wake_lock, WAKE_LOCK_SUSPEND,
 		kasprintf(GFP_KERNEL, "%s_detect", mmc_hostname(host)));
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	INIT_DELAYED_WORK(&host->detect, mmc_rescan);
 	INIT_DELAYED_WORK_DEFERRABLE(&host->disable, mmc_host_deeper_disable);
 #ifdef CONFIG_PM
@@ -358,6 +390,7 @@ free:
 }
 
 EXPORT_SYMBOL(mmc_alloc_host);
+<<<<<<< HEAD
 #ifdef CONFIG_MMC_PERF_PROFILING
 static ssize_t
 show_perf(struct device *dev, struct device_attribute *attr, char *buf)
@@ -427,6 +460,8 @@ static struct attribute *dev_attrs[] = {
 static struct attribute_group dev_attr_grp = {
 	.attrs = dev_attrs,
 };
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 /**
  *	mmc_add_host - initialise host hardware
@@ -452,6 +487,7 @@ int mmc_add_host(struct mmc_host *host)
 #ifdef CONFIG_DEBUG_FS
 	mmc_add_host_debugfs(host);
 #endif
+<<<<<<< HEAD
 	mmc_host_clk_sysfs_init(host);
 
 	err = sysfs_create_group(&host->parent->kobj, &dev_attr_grp);
@@ -462,6 +498,11 @@ int mmc_add_host(struct mmc_host *host)
 	mmc_start_host(host);
 	if (!(host->pm_flags & MMC_PM_IGNORE_PM_NOTIFY))
 		register_pm_notifier(&host->pm_notify);
+=======
+
+	mmc_start_host(host);
+	register_pm_notifier(&host->pm_notify);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	return 0;
 }
@@ -478,16 +519,23 @@ EXPORT_SYMBOL(mmc_add_host);
  */
 void mmc_remove_host(struct mmc_host *host)
 {
+<<<<<<< HEAD
 	if (!(host->pm_flags & MMC_PM_IGNORE_PM_NOTIFY))
 		unregister_pm_notifier(&host->pm_notify);
 
+=======
+	unregister_pm_notifier(&host->pm_notify);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	mmc_stop_host(host);
 
 #ifdef CONFIG_DEBUG_FS
 	mmc_remove_host_debugfs(host);
 #endif
+<<<<<<< HEAD
 	sysfs_remove_group(&host->parent->kobj, &dev_attr_grp);
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	device_del(&host->class_dev);
 
@@ -509,7 +557,10 @@ void mmc_free_host(struct mmc_host *host)
 	spin_lock(&mmc_host_lock);
 	idr_remove(&mmc_host_idr, host->index);
 	spin_unlock(&mmc_host_lock);
+<<<<<<< HEAD
 	wake_lock_destroy(&host->detect_wake_lock);
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	put_device(&host->class_dev);
 }

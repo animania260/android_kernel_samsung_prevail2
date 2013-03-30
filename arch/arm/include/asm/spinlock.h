@@ -58,7 +58,10 @@ static inline void dsb_sev(void)
 #endif
 }
 
+<<<<<<< HEAD
 #ifndef CONFIG_ARM_TICKET_LOCKS
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 /*
  * ARMv6 Spin-locking.
  *
@@ -127,6 +130,7 @@ static inline void arch_spin_unlock(arch_spinlock_t *lock)
 
 	dsb_sev();
 }
+<<<<<<< HEAD
 #else
 /*
  * ARM Ticket spin-locking
@@ -252,6 +256,8 @@ static inline int arch_spin_is_contended(arch_spinlock_t *lock)
 	return ((tmp - (tmp >> TICKET_SHIFT)) & TICKET_MASK) > 1;
 }
 #endif
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 /*
  * RWLOCKS

@@ -41,6 +41,7 @@
 #include <linux/cpu.h>
 #include <linux/notifier.h>
 #include <linux/rculist.h>
+<<<<<<< HEAD
 #include <mach/msm_rtb.h>
 #include <asm/uaccess.h>
 #ifdef CONFIG_SEC_DEBUG
@@ -53,6 +54,10 @@
 #else
 #define EXTRA_BUF_SIZE 0
 #endif
+=======
+
+#include <asm/uaccess.h>
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 /*
  * Architectures can override it:
@@ -195,6 +200,7 @@ static int __init log_buf_len_setup(char *str)
 }
 early_param("log_buf_len", log_buf_len_setup);
 
+<<<<<<< HEAD
 #ifdef CONFIG_SEC_DEBUG
 #define CONFIG_PRINTK_NOCACHE
 /*
@@ -316,6 +322,8 @@ static inline void emit_sec_log_char(char c)
 
 #endif
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 void __init setup_log_buf(int early)
 {
 	unsigned long flags;
@@ -421,6 +429,7 @@ static inline void boot_delay_msec(void)
 }
 #endif
 
+<<<<<<< HEAD
 /*
  * Return the number of unread characters in the log buffer.
  */
@@ -468,6 +477,8 @@ int log_buf_copy(char *dest, int idx, int len)
 	return ret;
 }
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #ifdef CONFIG_SECURITY_DMESG_RESTRICT
 int dmesg_restrict = 1;
 #else
@@ -496,8 +507,15 @@ static int check_syslog_permissions(int type, bool from_file)
 			return 0;
 		/* For historical reasons, accept CAP_SYS_ADMIN too, with a warning */
 		if (capable(CAP_SYS_ADMIN)) {
+<<<<<<< HEAD
 			WARN_ONCE(1, "Attempt to access syslog with CAP_SYS_ADMIN "
 				 "but no CAP_SYSLOG (deprecated).\n");
+=======
+			printk_once(KERN_WARNING "%s (%d): "
+				 "Attempt to access syslog with CAP_SYS_ADMIN "
+				 "but no CAP_SYSLOG (deprecated).\n",
+				 current->comm, task_pid_nr(current));
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			return 0;
 		}
 		return -EPERM;
@@ -809,8 +827,24 @@ static void call_console_drivers(unsigned start, unsigned end)
 	start_print = start;
 	while (cur_index != end) {
 		if (msg_level < 0 && ((end - cur_index) > 2)) {
+<<<<<<< HEAD
 			/* strip log prefix */
 			cur_index += log_prefix(&LOG_BUF(cur_index), &msg_level, NULL);
+=======
+			/*
+			 * prepare buf_prefix, as a contiguous array,
+			 * to be processed by log_prefix function
+			 */
+			char buf_prefix[SYSLOG_PRI_MAX_LENGTH+1];
+			unsigned i;
+			for (i = 0; i < ((end - cur_index)) && (i < SYSLOG_PRI_MAX_LENGTH); i++) {
+				buf_prefix[i] = LOG_BUF(cur_index + i);
+			}
+			buf_prefix[i] = '\0'; /* force '\0' as last string character */
+
+			/* strip log prefix */
+			cur_index += log_prefix((const char *)&buf_prefix, &msg_level, NULL);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			start_print = cur_index;
 		}
 		while (cur_index != end) {
@@ -847,10 +881,13 @@ static void emit_log_char(char c)
 		con_start = log_end - log_buf_len;
 	if (logged_chars < log_buf_len)
 		logged_chars++;
+<<<<<<< HEAD
 
 #ifdef CONFIG_SEC_DEBUG
 	emit_sec_log_char(c);
 #endif
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 /*
@@ -919,11 +956,14 @@ asmlinkage int printk(const char *fmt, ...)
 {
 	va_list args;
 	int r;
+<<<<<<< HEAD
 #ifdef CONFIG_MSM_RTB
 	void *caller = __builtin_return_address(0);
 
 	uncached_logk_pc(LOGK_LOGBUF, caller, (void *)log_end);
 #endif
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 #ifdef CONFIG_KGDB_KDB
 	if (unlikely(kdb_trap_printk)) {
@@ -1059,7 +1099,10 @@ asmlinkage int vprintk(const char *fmt, va_list args)
 	printed_len += vscnprintf(printk_buf + printed_len,
 				  sizeof(printk_buf) - printed_len, fmt, args);
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	p = printk_buf;
 
 	/* Read log level and handle special printk prefix */
@@ -1105,18 +1148,24 @@ asmlinkage int vprintk(const char *fmt, va_list args)
 			}
 
 			if (printk_time) {
+<<<<<<< HEAD
 				/* Follow the token with the time */
 #ifdef LOCAL_CONFIG_PRINT_EXTRA_INFO
 				char tbuf[50+EXTRA_BUF_SIZE], *tp;
 #else
 				char tbuf[50], *tp;
 #endif
+=======
+				/* Add the current time stamp */
+				char tbuf[50], *tp;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 				unsigned tlen;
 				unsigned long long t;
 				unsigned long nanosec_rem;
 
 				t = cpu_clock(printk_cpu);
 				nanosec_rem = do_div(t, 1000000000);
+<<<<<<< HEAD
 #ifdef LOCAL_CONFIG_PRINT_EXTRA_INFO
 				if (console_loglevel >= 9)
 					tlen = snprintf(tbuf,
@@ -1129,6 +1178,8 @@ asmlinkage int vprintk(const char *fmt, va_list args)
 						task_pid_nr(current));
 				else
 #endif
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 				tlen = sprintf(tbuf, "[%5lu.%06lu] ",
 						(unsigned long) t,
 						nanosec_rem / 1000);
@@ -1333,6 +1384,7 @@ void resume_console(void)
 	console_unlock();
 }
 
+<<<<<<< HEAD
 static void __cpuinit console_flush(struct work_struct *work)
 {
 	console_lock();
@@ -1341,6 +1393,8 @@ static void __cpuinit console_flush(struct work_struct *work)
 
 static __cpuinitdata DECLARE_WORK(console_cpu_notify_work, console_flush);
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 /**
  * console_cpu_notify - print deferred console messages after CPU hotplug
  * @self: notifier struct
@@ -1351,9 +1405,12 @@ static __cpuinitdata DECLARE_WORK(console_cpu_notify_work, console_flush);
  * will be spooled but will not show up on the console.  This function is
  * called when a new CPU comes online (or fails to come up), and ensures
  * that any such output gets printed.
+<<<<<<< HEAD
  *
  * Special handling must be done for cases invoked from an atomic context,
  * as we can't be taking the console semaphore here.
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
  */
 static int __cpuinit console_cpu_notify(struct notifier_block *self,
 	unsigned long action, void *hcpu)
@@ -1361,16 +1418,23 @@ static int __cpuinit console_cpu_notify(struct notifier_block *self,
 	switch (action) {
 	case CPU_ONLINE:
 	case CPU_DEAD:
+<<<<<<< HEAD
+=======
+	case CPU_DYING:
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	case CPU_DOWN_FAILED:
 	case CPU_UP_CANCELED:
 		console_lock();
 		console_unlock();
+<<<<<<< HEAD
 	/* invoked with preemption disabled, so defer */
 	case CPU_DYING:
 		if (!console_trylock())
 			schedule_work(&console_cpu_notify_work);
 		else
 			console_unlock();
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	}
 	return NOTIFY_OK;
 }
@@ -1955,7 +2019,10 @@ void kmsg_dump(enum kmsg_dump_reason reason)
 		dumper->dump(dumper, reason, s1, l1, s2, l2);
 	rcu_read_unlock();
 }
+<<<<<<< HEAD
 #ifdef CONFIG_PRINTK_NOCACHE
 module_init(printk_remap_nocache);
 #endif
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #endif

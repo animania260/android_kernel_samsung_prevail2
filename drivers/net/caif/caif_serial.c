@@ -325,6 +325,12 @@ static int ldisc_open(struct tty_struct *tty)
 
 	sprintf(name, "cf%s", tty->name);
 	dev = alloc_netdev(sizeof(*ser), name, caifdev_setup);
+<<<<<<< HEAD
+=======
+	if (!dev)
+		return -ENOMEM;
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	ser = netdev_priv(dev);
 	ser->tty = tty_kref_get(tty);
 	ser->dev = dev;

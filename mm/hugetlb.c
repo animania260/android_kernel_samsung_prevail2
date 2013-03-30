@@ -460,8 +460,15 @@ static struct page *dequeue_huge_page_vma(struct hstate *h,
 	struct zonelist *zonelist;
 	struct zone *zone;
 	struct zoneref *z;
+<<<<<<< HEAD
 
 	get_mems_allowed();
+=======
+	unsigned int cpuset_mems_cookie;
+
+retry_cpuset:
+	cpuset_mems_cookie = get_mems_allowed();
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	zonelist = huge_zonelist(vma, address,
 					htlb_alloc_mask, &mpol, &nodemask);
 	/*
@@ -488,10 +495,22 @@ static struct page *dequeue_huge_page_vma(struct hstate *h,
 			}
 		}
 	}
+<<<<<<< HEAD
 err:
 	mpol_cond_put(mpol);
 	put_mems_allowed();
 	return page;
+=======
+
+	mpol_cond_put(mpol);
+	if (unlikely(!put_mems_allowed(cpuset_mems_cookie) && !page))
+		goto retry_cpuset;
+	return page;
+
+err:
+	mpol_cond_put(mpol);
+	return NULL;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 static void update_and_free_page(struct hstate *h, struct page *page)
@@ -575,6 +594,10 @@ static void prep_compound_gigantic_page(struct page *page, unsigned long order)
 	__SetPageHead(page);
 	for (i = 1; i < nr_pages; i++, p = mem_map_next(p, page, i)) {
 		__SetPageTail(p);
+<<<<<<< HEAD
+=======
+		set_page_count(p, 0);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		p->first_page = page;
 	}
 }
@@ -900,7 +923,10 @@ retry:
 	h->resv_huge_pages += delta;
 	ret = 0;
 
+<<<<<<< HEAD
 	spin_unlock(&hugetlb_lock);
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	/* Free the needed pages to the hugetlb pool */
 	list_for_each_entry_safe(page, tmp, &surplus_list, lru) {
 		if ((--needed) < 0)
@@ -914,6 +940,10 @@ retry:
 		VM_BUG_ON(page_count(page));
 		enqueue_huge_page(h, page);
 	}
+<<<<<<< HEAD
+=======
+	spin_unlock(&hugetlb_lock);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	/* Free unnecessary surplus pages to the buddy allocator */
 free:
@@ -2059,6 +2089,18 @@ static void hugetlb_vm_op_open(struct vm_area_struct *vma)
 		kref_get(&reservations->refs);
 }
 
+<<<<<<< HEAD
+=======
+static void resv_map_put(struct vm_area_struct *vma)
+{
+	struct resv_map *reservations = vma_resv_map(vma);
+
+	if (!reservations)
+		return;
+	kref_put(&reservations->refs, resv_map_release);
+}
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 static void hugetlb_vm_op_close(struct vm_area_struct *vma)
 {
 	struct hstate *h = hstate_vma(vma);
@@ -2074,7 +2116,11 @@ static void hugetlb_vm_op_close(struct vm_area_struct *vma)
 		reserve = (end - start) -
 			region_count(&reservations->regions, start, end);
 
+<<<<<<< HEAD
 		kref_put(&reservations->refs, resv_map_release);
+=======
+		resv_map_put(vma);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 		if (reserve) {
 			hugetlb_acct_memory(h, -reserve);
@@ -2284,6 +2330,25 @@ void unmap_hugepage_range(struct vm_area_struct *vma, unsigned long start,
 {
 	mutex_lock(&vma->vm_file->f_mapping->i_mmap_mutex);
 	__unmap_hugepage_range(vma, start, end, ref_page);
+<<<<<<< HEAD
+=======
+	/*
+	 * Clear this flag so that x86's huge_pmd_share page_table_shareable
+	 * test will fail on a vma being torn down, and not grab a page table
+	 * on its way out.  We're lucky that the flag has such an appropriate
+	 * name, and can in fact be safely cleared here. We could clear it
+	 * before the __unmap_hugepage_range above, but all that's necessary
+	 * is to clear it before releasing the i_mmap_mutex below.
+	 *
+	 * This works because in the contexts this is called, the VMA is
+	 * going to be destroyed. It is not vunerable to madvise(DONTNEED)
+	 * because madvise is not supported on hugetlbfs. The same applies
+	 * for direct IO. unmap_hugepage_range() is only being called just
+	 * before free_pgtables() so clearing VM_MAYSHARE will not cause
+	 * surprises later.
+	 */
+	vma->vm_flags &= ~VM_MAYSHARE;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	mutex_unlock(&vma->vm_file->f_mapping->i_mmap_mutex);
 }
 
@@ -2397,7 +2462,10 @@ retry_avoidcopy:
 		if (outside_reserve) {
 			BUG_ON(huge_pte_none(pte));
 			if (unmap_ref_private(mm, vma, old_page, address)) {
+<<<<<<< HEAD
 				BUG_ON(page_count(old_page) != 1);
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 				BUG_ON(huge_pte_none(pte));
 				spin_lock(&mm->page_table_lock);
 				goto retry_avoidcopy;
@@ -2415,6 +2483,11 @@ retry_avoidcopy:
 	 * anon_vma prepared.
 	 */
 	if (unlikely(anon_vma_prepare(vma))) {
+<<<<<<< HEAD
+=======
+		page_cache_release(new_page);
+		page_cache_release(old_page);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		/* Caller expects lock to be held */
 		spin_lock(&mm->page_table_lock);
 		return VM_FAULT_OOM;
@@ -2676,6 +2749,10 @@ int hugetlb_fault(struct mm_struct *mm, struct vm_area_struct *vma,
 	 * so no worry about deadlock.
 	 */
 	page = pte_page(entry);
+<<<<<<< HEAD
+=======
+	get_page(page);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	if (page != pagecache_page)
 		lock_page(page);
 
@@ -2707,6 +2784,10 @@ out_page_table_lock:
 	}
 	if (page != pagecache_page)
 		unlock_page(page);
+<<<<<<< HEAD
+=======
+	put_page(page);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 out_mutex:
 	mutex_unlock(&hugetlb_instantiation_mutex);
@@ -2833,9 +2914,20 @@ void hugetlb_change_protection(struct vm_area_struct *vma,
 		}
 	}
 	spin_unlock(&mm->page_table_lock);
+<<<<<<< HEAD
 	mutex_unlock(&vma->vm_file->f_mapping->i_mmap_mutex);
 
 	flush_tlb_range(vma, start, end);
+=======
+	/*
+	 * Must flush TLB before releasing i_mmap_mutex: x86's huge_pmd_unshare
+	 * may have cleared our pud entry and done put_page on the page table:
+	 * once we release i_mmap_mutex, another task can do the final put_page
+	 * and that page table be reused and filled with junk.
+	 */
+	flush_tlb_range(vma, start, end);
+	mutex_unlock(&vma->vm_file->f_mapping->i_mmap_mutex);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 int hugetlb_reserve_pages(struct inode *inode,
@@ -2873,12 +2965,25 @@ int hugetlb_reserve_pages(struct inode *inode,
 		set_vma_resv_flags(vma, HPAGE_RESV_OWNER);
 	}
 
+<<<<<<< HEAD
 	if (chg < 0)
 		return chg;
 
 	/* There must be enough filesystem quota for the mapping */
 	if (hugetlb_get_quota(inode->i_mapping, chg))
 		return -ENOSPC;
+=======
+	if (chg < 0) {
+		ret = chg;
+		goto out_err;
+	}
+
+	/* There must be enough filesystem quota for the mapping */
+	if (hugetlb_get_quota(inode->i_mapping, chg)) {
+		ret = -ENOSPC;
+		goto out_err;
+	}
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	/*
 	 * Check enough hugepages are available for the reservation.
@@ -2887,7 +2992,11 @@ int hugetlb_reserve_pages(struct inode *inode,
 	ret = hugetlb_acct_memory(h, chg);
 	if (ret < 0) {
 		hugetlb_put_quota(inode->i_mapping, chg);
+<<<<<<< HEAD
 		return ret;
+=======
+		goto out_err;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	}
 
 	/*
@@ -2904,6 +3013,13 @@ int hugetlb_reserve_pages(struct inode *inode,
 	if (!vma || vma->vm_flags & VM_MAYSHARE)
 		region_add(&inode->i_mapping->private_list, from, to);
 	return 0;
+<<<<<<< HEAD
+=======
+out_err:
+	if (vma)
+		resv_map_put(vma);
+	return ret;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 void hugetlb_unreserve_pages(struct inode *inode, long offset, long freed)

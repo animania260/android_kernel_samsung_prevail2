@@ -70,8 +70,11 @@ source "drivers/staging/rts_pstor/Kconfig"
 
 source "drivers/staging/frontier/Kconfig"
 
+<<<<<<< HEAD
 source "drivers/staging/android/Kconfig"
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 source "drivers/staging/pohmelfs/Kconfig"
 
 source "drivers/staging/phison/Kconfig"
@@ -108,8 +111,11 @@ source "drivers/staging/zram/Kconfig"
 
 source "drivers/staging/zcache/Kconfig"
 
+<<<<<<< HEAD
 source "drivers/staging/qcache/Kconfig"
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 source "drivers/staging/wlags49_h2/Kconfig"
 
 source "drivers/staging/wlags49_h25/Kconfig"
@@ -124,6 +130,11 @@ source "drivers/staging/cxt1e1/Kconfig"
 
 source "drivers/staging/xgifb/Kconfig"
 
+<<<<<<< HEAD
+=======
+source "drivers/staging/msm/Kconfig"
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 source "drivers/staging/lirc/Kconfig"
 
 source "drivers/staging/easycap/Kconfig"

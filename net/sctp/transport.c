@@ -226,6 +226,7 @@ void sctp_transport_pmtu(struct sctp_transport *transport, struct sock *sk)
 		transport->pathmtu = SCTP_DEFAULT_MAXSEGMENT;
 }
 
+<<<<<<< HEAD
 /* this is a complete rip-off from __sk_dst_check
  * the cookie is always 0 since this is how it's used in the
  * pmtu code
@@ -243,6 +244,8 @@ static struct dst_entry *sctp_transport_dst_check(struct sctp_transport *t)
 	return dst;
 }
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 void sctp_transport_update_pmtu(struct sctp_transport *t, u32 pmtu)
 {
 	struct dst_entry *dst;

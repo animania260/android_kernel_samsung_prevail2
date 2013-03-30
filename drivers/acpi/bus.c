@@ -944,8 +944,11 @@ static int __init acpi_bus_init(void)
 	status = acpi_ec_ecdt_probe();
 	/* Ignore result. Not having an ECDT is not fatal. */
 
+<<<<<<< HEAD
 	acpi_bus_osc_support();
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	status = acpi_initialize_objects(ACPI_FULL_INITIALIZATION);
 	if (ACPI_FAILURE(status)) {
 		printk(KERN_ERR PREFIX "Unable to initialize ACPI objects\n");
@@ -953,6 +956,15 @@ static int __init acpi_bus_init(void)
 	}
 
 	/*
+<<<<<<< HEAD
+=======
+	 * _OSC method may exist in module level code,
+	 * so it must be run after ACPI_FULL_INITIALIZATION
+	 */
+	acpi_bus_osc_support();
+
+	/*
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	 * _PDC control method may load dynamic SSDT tables,
 	 * and we need to install the table handler before that.
 	 */

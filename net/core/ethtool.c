@@ -1964,6 +1964,10 @@ int dev_ethtool(struct net *net, struct ifreq *ifr)
 	case ETHTOOL_GRXCSUM:
 	case ETHTOOL_GTXCSUM:
 	case ETHTOOL_GSG:
+<<<<<<< HEAD
+=======
+	case ETHTOOL_GSSET_INFO:
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	case ETHTOOL_GSTRINGS:
 	case ETHTOOL_GTSO:
 	case ETHTOOL_GPERMADDR:

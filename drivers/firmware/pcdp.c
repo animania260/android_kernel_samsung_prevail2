@@ -95,7 +95,11 @@ efi_setup_pcdp_console(char *cmdline)
 	if (efi.hcdp == EFI_INVALID_TABLE_ADDR)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	pcdp = ioremap(efi.hcdp, 4096);
+=======
+	pcdp = early_ioremap(efi.hcdp, 4096);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	printk(KERN_INFO "PCDP: v%d at 0x%lx\n", pcdp->rev, efi.hcdp);
 
 	if (strstr(cmdline, "console=hcdp")) {
@@ -131,6 +135,10 @@ efi_setup_pcdp_console(char *cmdline)
 	}
 
 out:
+<<<<<<< HEAD
 	iounmap(pcdp);
+=======
+	early_iounmap(pcdp, 4096);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	return rc;
 }

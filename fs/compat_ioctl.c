@@ -208,6 +208,11 @@ static int do_video_set_spu_palette(unsigned int fd, unsigned int cmd,
 
 	err  = get_user(palp, &up->palette);
 	err |= get_user(length, &up->length);
+<<<<<<< HEAD
+=======
+	if (err)
+		return -EFAULT;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	up_native = compat_alloc_user_space(sizeof(struct video_spu_palette));
 	err  = put_user(compat_ptr(palp), &up_native->palette);
@@ -1208,7 +1213,10 @@ COMPATIBLE_IOCTL(HCIGETDEVINFO)
 COMPATIBLE_IOCTL(HCIGETCONNLIST)
 COMPATIBLE_IOCTL(HCIGETCONNINFO)
 COMPATIBLE_IOCTL(HCIGETAUTHINFO)
+<<<<<<< HEAD
 COMPATIBLE_IOCTL(HCISETAUTHINFO)
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 COMPATIBLE_IOCTL(HCISETRAW)
 COMPATIBLE_IOCTL(HCISETSCAN)
 COMPATIBLE_IOCTL(HCISETAUTH)

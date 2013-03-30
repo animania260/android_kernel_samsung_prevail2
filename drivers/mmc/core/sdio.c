@@ -27,10 +27,13 @@
 #include "sdio_ops.h"
 #include "sdio_cis.h"
 
+<<<<<<< HEAD
 #ifdef CONFIG_MMC_EMBEDDED_SDIO
 #include <linux/mmc/sdio_ids.h>
 #endif
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 static int sdio_read_fbr(struct sdio_func *func)
 {
 	int ret;
@@ -161,7 +164,11 @@ static int sdio_enable_wide(struct mmc_card *card)
 	int ret;
 	u8 ctrl;
 
+<<<<<<< HEAD
 	if (!(card->host->caps & (MMC_CAP_4_BIT_DATA | MMC_CAP_8_BIT_DATA)))
+=======
+	if (!(card->host->caps & MMC_CAP_4_BIT_DATA))
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		return 0;
 
 	if (card->cccr.low_speed && !card->cccr.wide_bus)
@@ -171,10 +178,14 @@ static int sdio_enable_wide(struct mmc_card *card)
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	if (card->host->caps & MMC_CAP_8_BIT_DATA)
 		ctrl |= SDIO_BUS_WIDTH_8BIT;
 	else if (card->host->caps & MMC_CAP_4_BIT_DATA)
 		ctrl |= SDIO_BUS_WIDTH_4BIT;
+=======
+	ctrl |= SDIO_BUS_WIDTH_4BIT;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	ret = mmc_io_rw_direct(card, 1, 0, SDIO_CCCR_IF, ctrl, NULL);
 	if (ret)
@@ -215,7 +226,11 @@ static int sdio_disable_wide(struct mmc_card *card)
 	int ret;
 	u8 ctrl;
 
+<<<<<<< HEAD
 	if (!(card->host->caps & (MMC_CAP_4_BIT_DATA | MMC_CAP_8_BIT_DATA)))
+=======
+	if (!(card->host->caps & MMC_CAP_4_BIT_DATA))
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		return 0;
 
 	if (card->cccr.low_speed && !card->cccr.wide_bus)
@@ -225,10 +240,17 @@ static int sdio_disable_wide(struct mmc_card *card)
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	if (!(ctrl & (SDIO_BUS_WIDTH_4BIT | SDIO_BUS_WIDTH_8BIT)))
 		return 0;
 
 	ctrl &= ~(SDIO_BUS_WIDTH_4BIT | SDIO_BUS_WIDTH_8BIT);
+=======
+	if (!(ctrl & SDIO_BUS_WIDTH_4BIT))
+		return 0;
+
+	ctrl &= ~SDIO_BUS_WIDTH_4BIT;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	ctrl |= SDIO_BUS_ASYNC_INT;
 
 	ret = mmc_io_rw_direct(card, 1, 0, SDIO_CCCR_IF, ctrl, NULL);
@@ -397,11 +419,16 @@ static int mmc_sdio_init_card(struct mmc_host *host, u32 ocr,
 	/*
 	 * Call the optional HC's init_card function to handle quirks.
 	 */
+<<<<<<< HEAD
 	if (host->ops->init_card) {
 		mmc_host_clk_hold(host);
 		host->ops->init_card(host, card);
 		mmc_host_clk_release(host);
 	}
+=======
+	if (host->ops->init_card)
+		host->ops->init_card(host, card);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	/*
 	 * For native busses:  set card RCA and quit open drain mode.
@@ -459,6 +486,7 @@ static int mmc_sdio_init_card(struct mmc_host *host, u32 ocr,
 		goto finish;
 	}
 
+<<<<<<< HEAD
 #ifdef CONFIG_MMC_EMBEDDED_SDIO
 	if (host->embedded_sdio_data.cccr)
 		memcpy(&card->cccr, host->embedded_sdio_data.cccr, sizeof(struct sdio_cccr));
@@ -488,6 +516,21 @@ static int mmc_sdio_init_card(struct mmc_host *host, u32 ocr,
 #ifdef CONFIG_MMC_EMBEDDED_SDIO
 	}
 #endif
+=======
+	/*
+	 * Read the common registers.
+	 */
+	err = sdio_read_cccr(card);
+	if (err)
+		goto remove;
+
+	/*
+	 * Read the common CIS tuples.
+	 */
+	err = sdio_read_common_cis(card);
+	if (err)
+		goto remove;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	if (oldcard) {
 		int same = (card->cis.vendor == oldcard->cis.vendor &&
@@ -538,12 +581,17 @@ static int mmc_sdio_init_card(struct mmc_host *host, u32 ocr,
 	 * Switch to wider bus (if supported).
 	 */
 	err = sdio_enable_4bit_bus(card);
+<<<<<<< HEAD
 	if (err > 0) {
 		if (card->host->caps & MMC_CAP_8_BIT_DATA)
 			mmc_set_bus_width(card->host, MMC_BUS_WIDTH_8);
 		else if (card->host->caps & MMC_CAP_4_BIT_DATA)
 			mmc_set_bus_width(card->host, MMC_BUS_WIDTH_4);
 	}
+=======
+	if (err > 0)
+		mmc_set_bus_width(card->host, MMC_BUS_WIDTH_4);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	else if (err)
 		goto remove;
 
@@ -582,6 +630,7 @@ static void mmc_sdio_remove(struct mmc_host *host)
 }
 
 /*
+<<<<<<< HEAD
  * Card detection - card is alive.
  */
 static int mmc_sdio_alive(struct mmc_host *host)
@@ -590,6 +639,8 @@ static int mmc_sdio_alive(struct mmc_host *host)
 }
 
 /*
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
  * Card detection callback from host.
  */
 static void mmc_sdio_detect(struct mmc_host *host)
@@ -611,7 +662,11 @@ static void mmc_sdio_detect(struct mmc_host *host)
 	/*
 	 * Just check if our card has been removed.
 	 */
+<<<<<<< HEAD
 	err = _mmc_detect_card_removed(host);
+=======
+	err = mmc_select_card(host->card);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	mmc_release_host(host);
 
@@ -635,6 +690,10 @@ out:
 
 		mmc_claim_host(host);
 		mmc_detach_bus(host);
+<<<<<<< HEAD
+=======
+		mmc_power_off(host);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		mmc_release_host(host);
 	}
 }
@@ -696,16 +755,24 @@ static int mmc_sdio_resume(struct mmc_host *host)
 		/* We may have switched to 1-bit mode during suspend */
 		err = sdio_enable_4bit_bus(host->card);
 		if (err > 0) {
+<<<<<<< HEAD
 			if (host->caps & MMC_CAP_8_BIT_DATA)
 				mmc_set_bus_width(host, MMC_BUS_WIDTH_8);
 			else if (host->caps & MMC_CAP_4_BIT_DATA)
 				mmc_set_bus_width(host, MMC_BUS_WIDTH_4);
+=======
+			mmc_set_bus_width(host, MMC_BUS_WIDTH_4);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			err = 0;
 		}
 	}
 
 	if (!err && host->sdio_irqs)
+<<<<<<< HEAD
 		mmc_signal_sdio_irq(host);
+=======
+		wake_up_process(host->sdio_irq_thread);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	mmc_release_host(host);
 
 	/*
@@ -791,7 +858,10 @@ static const struct mmc_bus_ops mmc_sdio_ops = {
 	.suspend = mmc_sdio_suspend,
 	.resume = mmc_sdio_resume,
 	.power_restore = mmc_sdio_power_restore,
+<<<<<<< HEAD
 	.alive = mmc_sdio_alive,
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 };
 
 
@@ -868,15 +938,19 @@ int mmc_attach_sdio(struct mmc_host *host)
 	funcs = (ocr & 0x70000000) >> 28;
 	card->sdio_funcs = 0;
 
+<<<<<<< HEAD
 #ifdef CONFIG_MMC_EMBEDDED_SDIO
 	if (host->embedded_sdio_data.funcs)
 		card->sdio_funcs = funcs = host->embedded_sdio_data.num_funcs;
 #endif
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	/*
 	 * Initialize (but don't add) all present functions.
 	 */
 	for (i = 0; i < funcs; i++, card->sdio_funcs++) {
+<<<<<<< HEAD
 #ifdef CONFIG_MMC_EMBEDDED_SDIO
 		if (host->embedded_sdio_data.funcs) {
 			struct sdio_func *tmp;
@@ -898,6 +972,12 @@ int mmc_attach_sdio(struct mmc_host *host)
 #ifdef CONFIG_MMC_EMBEDDED_SDIO
 		}
 #endif
+=======
+		err = sdio_init_func(host->card, i + 1);
+		if (err)
+			goto remove;
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		/*
 		 * Enable Runtime PM for this func (if supported)
 		 */
@@ -945,6 +1025,7 @@ err:
 	return err;
 }
 
+<<<<<<< HEAD
 int sdio_reset_comm(struct mmc_card *card)
 {
 	struct mmc_host *host = card->host;
@@ -1023,3 +1104,5 @@ err:
 	return err;
 }
 EXPORT_SYMBOL(sdio_reset_comm);
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y

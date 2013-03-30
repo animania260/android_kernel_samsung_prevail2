@@ -440,6 +440,13 @@ static struct twl4030_gpio_platform_data igep_twl4030_gpio_pdata = {
 	.setup		= igep_twl_gpio_setup,
 };
 
+<<<<<<< HEAD
+=======
+static struct twl4030_usb_data igep_usb_data = {
+	.usb_mode	= T2_USB_MODE_ULPI,
+};
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 static int igep2_enable_dvi(struct omap_dss_device *dssdev)
 {
 	gpio_direction_output(IGEP2_GPIO_DVI_PUP, 1);
@@ -476,6 +483,29 @@ static struct omap_dss_board_info igep2_dss_data = {
 	.default_device	= &igep2_dvi_device,
 };
 
+<<<<<<< HEAD
+=======
+static struct regulator_consumer_supply igep2_vpll2_supplies[] = {
+	REGULATOR_SUPPLY("vdds_dsi", "omapdss"),
+	REGULATOR_SUPPLY("vdds_dsi", "omapdss_dsi1"),
+};
+
+static struct regulator_init_data igep2_vpll2 = {
+	.constraints = {
+		.name			= "VDVI",
+		.min_uV			= 1800000,
+		.max_uV			= 1800000,
+		.apply_uV		= true,
+		.valid_modes_mask	= REGULATOR_MODE_NORMAL
+					| REGULATOR_MODE_STANDBY,
+		.valid_ops_mask		= REGULATOR_CHANGE_MODE
+					| REGULATOR_CHANGE_STATUS,
+	},
+	.num_consumer_supplies	= ARRAY_SIZE(igep2_vpll2_supplies),
+	.consumer_supplies	= igep2_vpll2_supplies,
+};
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 static void __init igep2_display_init(void)
 {
 	int err = gpio_request_one(IGEP2_GPIO_DVI_PUP, GPIOF_OUT_INIT_HIGH,
@@ -495,6 +525,16 @@ static void __init igep_init_early(void)
 				  m65kxxxxam_sdrc_params);
 }
 
+<<<<<<< HEAD
+=======
+static struct twl4030_codec_audio_data igep2_audio_data;
+
+static struct twl4030_codec_data igep2_codec_data = {
+	.audio_mclk = 26000000,
+	.audio = &igep2_audio_data,
+};
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 static int igep2_keymap[] = {
 	KEY(0, 0, KEY_LEFT),
 	KEY(0, 1, KEY_RIGHT),
@@ -527,7 +567,15 @@ static struct twl4030_keypad_data igep2_keypad_pdata = {
 };
 
 static struct twl4030_platform_data igep_twldata = {
+<<<<<<< HEAD
 	/* platform_data for children goes here */
+=======
+	.irq_base	= TWL4030_IRQ_BASE,
+	.irq_end	= TWL4030_IRQ_END,
+
+	/* platform_data for children goes here */
+	.usb		= &igep_usb_data,
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	.gpio		= &igep_twl4030_gpio_pdata,
 	.vmmc1          = &igep_vmmc1,
 	.vio		= &igep_vio,
@@ -543,8 +591,11 @@ static void __init igep_i2c_init(void)
 {
 	int ret;
 
+<<<<<<< HEAD
 	omap3_pmic_get_config(&igep_twldata, TWL_COMMON_PDATA_USB, 0);
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	if (machine_is_igep0020()) {
 		/*
 		 * Bus 3 is attached to the DVI port where devices like the
@@ -555,12 +606,18 @@ static void __init igep_i2c_init(void)
 		if (ret)
 			pr_warning("IGEP2: Could not register I2C3 bus (%d)\n", ret);
 
+<<<<<<< HEAD
 		igep_twldata.keypad	= &igep2_keypad_pdata;
 		/* Get common pmic data */
 		omap3_pmic_get_config(&igep_twldata, TWL_COMMON_PDATA_AUDIO,
 				      TWL_COMMON_REGULATOR_VPLL2);
 		igep_twldata.vpll2->constraints.apply_uV = true;
 		igep_twldata.vpll2->constraints.name = "VDVI";
+=======
+		igep_twldata.codec	= &igep2_codec_data;
+		igep_twldata.keypad	= &igep2_keypad_pdata;
+		igep_twldata.vpll2	= &igep2_vpll2;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	}
 
 	omap3_pmic_init("twl4030", &igep_twldata);

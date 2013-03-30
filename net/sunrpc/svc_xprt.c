@@ -323,7 +323,10 @@ static bool svc_xprt_has_something_to_do(struct svc_xprt *xprt)
  */
 void svc_xprt_enqueue(struct svc_xprt *xprt)
 {
+<<<<<<< HEAD
 	struct svc_serv	*serv = xprt->xpt_server;
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	struct svc_pool *pool;
 	struct svc_rqst	*rqstp;
 	int cpu;
@@ -369,8 +372,11 @@ void svc_xprt_enqueue(struct svc_xprt *xprt)
 				rqstp, rqstp->rq_xprt);
 		rqstp->rq_xprt = xprt;
 		svc_xprt_get(xprt);
+<<<<<<< HEAD
 		rqstp->rq_reserved = serv->sv_max_mesg;
 		atomic_add(rqstp->rq_reserved, &xprt->xpt_reserved);
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		pool->sp_stats.threads_woken++;
 		wake_up(&rqstp->rq_wait);
 	} else {
@@ -650,8 +656,11 @@ int svc_recv(struct svc_rqst *rqstp, long timeout)
 	if (xprt) {
 		rqstp->rq_xprt = xprt;
 		svc_xprt_get(xprt);
+<<<<<<< HEAD
 		rqstp->rq_reserved = serv->sv_max_mesg;
 		atomic_add(rqstp->rq_reserved, &xprt->xpt_reserved);
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 		/* As there is a shortage of threads and this request
 		 * had to be queued, don't allow the thread to wait so
@@ -748,6 +757,11 @@ int svc_recv(struct svc_rqst *rqstp, long timeout)
 		else
 			len = xprt->xpt_ops->xpo_recvfrom(rqstp);
 		dprintk("svc: got len=%d\n", len);
+<<<<<<< HEAD
+=======
+		rqstp->rq_reserved = serv->sv_max_mesg;
+		atomic_add(rqstp->rq_reserved, &xprt->xpt_reserved);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	}
 	svc_xprt_received(xprt);
 
@@ -804,7 +818,12 @@ int svc_send(struct svc_rqst *rqstp)
 
 	/* Grab mutex to serialize outgoing data. */
 	mutex_lock(&xprt->xpt_mutex);
+<<<<<<< HEAD
 	if (test_bit(XPT_DEAD, &xprt->xpt_flags))
+=======
+	if (test_bit(XPT_DEAD, &xprt->xpt_flags)
+			|| test_bit(XPT_CLOSE, &xprt->xpt_flags))
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		len = -ENOTCONN;
 	else
 		len = xprt->xpt_ops->xpo_sendto(rqstp);
@@ -826,7 +845,10 @@ static void svc_age_temp_xprts(unsigned long closure)
 	struct svc_serv *serv = (struct svc_serv *)closure;
 	struct svc_xprt *xprt;
 	struct list_head *le, *next;
+<<<<<<< HEAD
 	LIST_HEAD(to_be_aged);
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	dprintk("svc_age_temp_xprts\n");
 
@@ -847,6 +869,7 @@ static void svc_age_temp_xprts(unsigned long closure)
 		if (atomic_read(&xprt->xpt_ref.refcount) > 1 ||
 		    test_bit(XPT_BUSY, &xprt->xpt_flags))
 			continue;
+<<<<<<< HEAD
 		svc_xprt_get(xprt);
 		list_move(le, &to_be_aged);
 		set_bit(XPT_CLOSE, &xprt->xpt_flags);
@@ -860,12 +883,22 @@ static void svc_age_temp_xprts(unsigned long closure)
 		list_del_init(le);
 		xprt = list_entry(le, struct svc_xprt, xpt_list);
 
+=======
+		list_del_init(le);
+		set_bit(XPT_CLOSE, &xprt->xpt_flags);
+		set_bit(XPT_DETACHED, &xprt->xpt_flags);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		dprintk("queuing xprt %p for closing\n", xprt);
 
 		/* a thread will dequeue and close it soon */
 		svc_xprt_enqueue(xprt);
+<<<<<<< HEAD
 		svc_xprt_put(xprt);
 	}
+=======
+	}
+	spin_unlock_bh(&serv->sv_lock);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	mod_timer(&serv->sv_temptimer, jiffies + svc_conn_age_period * HZ);
 }
@@ -901,6 +934,7 @@ void svc_delete_xprt(struct svc_xprt *xprt)
 	spin_lock_bh(&serv->sv_lock);
 	if (!test_and_set_bit(XPT_DETACHED, &xprt->xpt_flags))
 		list_del_init(&xprt->xpt_list);
+<<<<<<< HEAD
 	/*
 	 * The only time we're called while xpt_ready is still on a list
 	 * is while the list itself is about to be destroyed (in
@@ -909,6 +943,9 @@ void svc_delete_xprt(struct svc_xprt *xprt)
 	 * a freed xprt on it.
 	 */
 	list_del_init(&xprt->xpt_ready);
+=======
+	BUG_ON(!list_empty(&xprt->xpt_ready));
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	if (test_bit(XPT_TEMP, &xprt->xpt_flags))
 		serv->sv_tmpcnt--;
 	spin_unlock_bh(&serv->sv_lock);
@@ -936,6 +973,7 @@ void svc_close_xprt(struct svc_xprt *xprt)
 }
 EXPORT_SYMBOL_GPL(svc_close_xprt);
 
+<<<<<<< HEAD
 void svc_close_all(struct list_head *xprt_list)
 {
 	struct svc_xprt *xprt;
@@ -952,6 +990,50 @@ void svc_close_all(struct list_head *xprt_list)
 		set_bit(XPT_CLOSE, &xprt->xpt_flags);
 		svc_delete_xprt(xprt);
 	}
+=======
+static void svc_close_list(struct list_head *xprt_list)
+{
+	struct svc_xprt *xprt;
+
+	list_for_each_entry(xprt, xprt_list, xpt_list) {
+		set_bit(XPT_CLOSE, &xprt->xpt_flags);
+		set_bit(XPT_BUSY, &xprt->xpt_flags);
+	}
+}
+
+void svc_close_all(struct svc_serv *serv)
+{
+	struct svc_pool *pool;
+	struct svc_xprt *xprt;
+	struct svc_xprt *tmp;
+	int i;
+
+	svc_close_list(&serv->sv_tempsocks);
+	svc_close_list(&serv->sv_permsocks);
+
+	for (i = 0; i < serv->sv_nrpools; i++) {
+		pool = &serv->sv_pools[i];
+
+		spin_lock_bh(&pool->sp_lock);
+		while (!list_empty(&pool->sp_sockets)) {
+			xprt = list_first_entry(&pool->sp_sockets, struct svc_xprt, xpt_ready);
+			list_del_init(&xprt->xpt_ready);
+		}
+		spin_unlock_bh(&pool->sp_lock);
+	}
+	/*
+	 * At this point the sp_sockets lists will stay empty, since
+	 * svc_enqueue will not add new entries without taking the
+	 * sp_lock and checking XPT_BUSY.
+	 */
+	list_for_each_entry_safe(xprt, tmp, &serv->sv_tempsocks, xpt_list)
+		svc_delete_xprt(xprt);
+	list_for_each_entry_safe(xprt, tmp, &serv->sv_permsocks, xpt_list)
+		svc_delete_xprt(xprt);
+
+	BUG_ON(!list_empty(&serv->sv_permsocks));
+	BUG_ON(!list_empty(&serv->sv_tempsocks));
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 /*

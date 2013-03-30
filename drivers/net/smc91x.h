@@ -223,6 +223,7 @@ SMC_outw(u16 val, void __iomem *ioaddr, int reg)
 #define SMC_outsl(a, r, p, l)	writesl((a) + (r), p, l)
 #define SMC_IRQ_FLAGS		(-1)	/* from resource */
 
+<<<<<<< HEAD
 #elif defined(CONFIG_ARCH_MSM)
 
 #define SMC_CAN_USE_8BIT	0
@@ -237,6 +238,8 @@ SMC_outw(u16 val, void __iomem *ioaddr, int reg)
 
 #define SMC_IRQ_FLAGS		IRQF_TRIGGER_HIGH
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #elif defined(CONFIG_MN10300)
 
 /*

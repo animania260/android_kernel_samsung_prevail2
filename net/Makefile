@@ -34,11 +34,15 @@ obj-$(CONFIG_ROSE)		+= rose/
 obj-$(CONFIG_AX25)		+= ax25/
 obj-$(CONFIG_CAN)		+= can/
 obj-$(CONFIG_IRDA)		+= irda/
+<<<<<<< HEAD
 ifeq ($(CONFIG_BT_MGMT),y)
 obj-$(CONFIG_BT)		+= bluetooth_mgmt/
 else
 obj-$(CONFIG_BT)		+= bluetooth/
 endif
+=======
+obj-$(CONFIG_BT)		+= bluetooth/
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 obj-$(CONFIG_SUNRPC)		+= sunrpc/
 obj-$(CONFIG_AF_RXRPC)		+= rxrpc/
 obj-$(CONFIG_ATM)		+= atm/
@@ -72,4 +76,7 @@ obj-$(CONFIG_WIMAX)		+= wimax/
 obj-$(CONFIG_DNS_RESOLVER)	+= dns_resolver/
 obj-$(CONFIG_CEPH_LIB)		+= ceph/
 obj-$(CONFIG_BATMAN_ADV)	+= batman-adv/
+<<<<<<< HEAD
 obj-$(CONFIG_NET_ACTIVITY_STATS)		+= activity_stats.o
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y

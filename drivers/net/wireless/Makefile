@@ -58,6 +58,7 @@ obj-$(CONFIG_WL12XX_PLATFORM_DATA)	+= wl12xx/
 obj-$(CONFIG_IWM)	+= iwmc3200wifi/
 
 obj-$(CONFIG_MWIFIEX)	+= mwifiex/
+<<<<<<< HEAD
 
 obj-$(CONFIG_BCM4329)	+= bcm4329/
 obj-$(CONFIG_BCM4330)	+= bcmdhd/
@@ -65,3 +66,5 @@ obj-$(CONFIG_BCMDHD)	+= bcmdhd/
 
 obj-$(CONFIG_LIBRA_SDIOIF)	+= libra/
 obj-$(CONFIG_WCNSS_CORE)	+= wcnss/
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y

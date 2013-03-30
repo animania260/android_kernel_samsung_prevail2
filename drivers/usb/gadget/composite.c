@@ -28,11 +28,14 @@
 
 #include <linux/usb/composite.h>
 
+<<<<<<< HEAD
 #include "multi_config.h"
 /*
 #undef DBG
 #define DBG(dev, fmt, args...) printk(KERN_DEBUG "usb: "fmt, ##args)
 */
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 /*
  * The code in this file is utility code, used to build a gadget driver
@@ -42,7 +45,11 @@
  */
 
 /* big enough to hold our biggest descriptor */
+<<<<<<< HEAD
 #define USB_BUFSIZ	4096
+=======
+#define USB_BUFSIZ	1024
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 static struct usb_composite_driver *composite;
 static int (*composite_gadget_bind)(struct usb_composite_dev *cdev);
@@ -252,11 +259,15 @@ static int config_buf(struct usb_configuration *config,
 	c->bDescriptorType = type;
 	/* wTotalLength is written later */
 	c->bNumInterfaces = config->next_interface_id;
+<<<<<<< HEAD
 #ifdef CONFIG_USB_ANDROID_SAMSUNG_COMPOSITE
 	c->bConfigurationValue = get_config_number() + 1;
 #else
 	c->bConfigurationValue = config->bConfigurationValue;
 #endif
+=======
+	c->bConfigurationValue = config->bConfigurationValue;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	c->iConfiguration = config->iConfiguration;
 	c->bmAttributes = USB_CONFIG_ATT_ONE | config->bmAttributes;
 	c->bMaxPower = config->bMaxPower ? : (CONFIG_USB_GADGET_VBUS_DRAW / 2);
@@ -275,6 +286,7 @@ static int config_buf(struct usb_configuration *config,
 	list_for_each_entry(f, &config->functions, list) {
 		struct usb_descriptor_header **descriptors;
 
+<<<<<<< HEAD
 #ifdef CONFIG_USB_ANDROID_SAMSUNG_COMPOSITE
 		if (!is_available_function(f->name)) {
 			USB_DBG("skip f->%s\n", f->name);
@@ -283,6 +295,8 @@ static int config_buf(struct usb_configuration *config,
 			USB_DBG("f->%s\n", f->name);
 		}
 #endif
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		if (speed == USB_SPEED_HIGH)
 			descriptors = f->hs_descriptors;
 		else
@@ -293,6 +307,7 @@ static int config_buf(struct usb_configuration *config,
 			(const struct usb_descriptor_header **) descriptors);
 		if (status < 0)
 			return status;
+<<<<<<< HEAD
 #ifdef CONFIG_USB_ANDROID_SAMSUNG_COMPOSITE
 		if (change_conf(f, next, len, config, speed) < 0) {
 			USB_DBG_ESS("failed to change configuration\n");
@@ -305,6 +320,12 @@ static int config_buf(struct usb_configuration *config,
 #ifdef CONFIG_USB_ANDROID_SAMSUNG_COMPOSITE
 	set_interface_count(config, c);
 #endif
+=======
+		len -= status;
+		next += status;
+	}
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	len = next - buf;
 	c->wTotalLength = cpu_to_le16(len);
 	return len;
@@ -331,9 +352,12 @@ static int config_desc(struct usb_composite_dev *cdev, unsigned w_value)
 
 	/* This is a lookup by config *INDEX* */
 	w_value &= 0xff;
+<<<<<<< HEAD
 #ifdef CONFIG_USB_ANDROID_SAMSUNG_COMPOSITE
 	w_value = set_config_number(w_value);
 #endif
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	list_for_each_entry(c, &cdev->configs, list) {
 		/* ignore configs that won't work at this speed */
 		if (speed == USB_SPEED_HIGH) {
@@ -373,9 +397,12 @@ static int count_configs(struct usb_composite_dev *cdev, unsigned type)
 				continue;
 		}
 		count++;
+<<<<<<< HEAD
 #ifdef CONFIG_USB_ANDROID_SAMSUNG_COMPOSITE
 		count = count_multi_config(c, count);
 #endif
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	}
 	return count;
 }
@@ -428,12 +455,16 @@ static int set_config(struct usb_composite_dev *cdev,
 
 	if (number) {
 		list_for_each_entry(c, &cdev->configs, list) {
+<<<<<<< HEAD
 #ifdef CONFIG_USB_ANDROID_SAMSUNG_COMPOSITE
 			if (c->bConfigurationValue == number ||
 							check_config(number)) {
 #else
 			if (c->bConfigurationValue == number) {
 #endif
+=======
+			if (c->bConfigurationValue == number) {
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 				result = 0;
 				break;
 			}
@@ -512,7 +543,10 @@ static int set_config(struct usb_composite_dev *cdev,
 	power = c->bMaxPower ? (2 * c->bMaxPower) : CONFIG_USB_GADGET_VBUS_DRAW;
 done:
 	usb_gadget_vbus_draw(gadget, power);
+<<<<<<< HEAD
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	if (result >= 0 && cdev->delayed_status)
 		result = USB_GADGET_DELAYED_STATUS;
 	return result;
@@ -560,7 +594,10 @@ int usb_add_config(struct usb_composite_dev *cdev,
 
 	INIT_LIST_HEAD(&config->functions);
 	config->next_interface_id = 0;
+<<<<<<< HEAD
 	memset(config->interface, '\0', sizeof(config->interface));
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	status = bind(config);
 	if (status < 0) {
@@ -600,6 +637,7 @@ done:
 	return status;
 }
 
+<<<<<<< HEAD
 static int remove_config(struct usb_composite_dev *cdev,
 			      struct usb_configuration *config)
 {
@@ -641,6 +679,8 @@ int usb_remove_config(struct usb_composite_dev *cdev,
 	return remove_config(cdev, config);
 }
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 /*-------------------------------------------------------------------------*/
 
 /* We support strings in multiple languages ... string descriptor zero
@@ -720,6 +760,7 @@ static int get_string(struct usb_composite_dev *cdev,
 				collect_langs(sp, s->wData);
 
 			list_for_each_entry(f, &c->functions, list) {
+<<<<<<< HEAD
 #ifdef CONFIG_USB_ANDROID_SAMSUNG_COMPOSITE
 				if (!is_available_function(f->name)) {
 					USB_DBG("skip f->%s\n", f->name);
@@ -728,6 +769,8 @@ static int get_string(struct usb_composite_dev *cdev,
 					USB_DBG("f->%s\n", f->name);
 				}
 #endif
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 				sp = f->strings;
 				if (sp)
 					collect_langs(sp, s->wData);
@@ -905,10 +948,13 @@ composite_setup(struct usb_gadget *gadget, const struct usb_ctrlrequest *ctrl)
 	struct usb_function		*f = NULL;
 	u8				endp;
 
+<<<<<<< HEAD
 
 	if (w_length > USB_BUFSIZ)
 		return value;
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	/* partial re-init of the response message; the function or the
 	 * gadget might need to intercept e.g. a control-OUT completion
 	 * when we delegate to it.
@@ -931,7 +977,10 @@ composite_setup(struct usb_gadget *gadget, const struct usb_ctrlrequest *ctrl)
 				count_configs(cdev, USB_DT_DEVICE);
 			value = min(w_length, (u16) sizeof cdev->desc);
 			memcpy(req->buf, &cdev->desc, value);
+<<<<<<< HEAD
 			printk(KERN_DEBUG "usb: GET_DES\n");
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			break;
 		case USB_DT_DEVICE_QUALIFIER:
 			if (!gadget_is_dualspeed(gadget))
@@ -950,9 +999,12 @@ composite_setup(struct usb_gadget *gadget, const struct usb_ctrlrequest *ctrl)
 				value = min(w_length, (u16) value);
 			break;
 		case USB_DT_STRING:
+<<<<<<< HEAD
 #ifdef CONFIG_USB_ANDROID_SAMSUNG_COMPOSITE
 			set_string_mode(w_length);
 #endif
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			value = get_string(cdev, req->buf,
 					w_index, w_value & 0xff);
 			if (value >= 0)
@@ -976,17 +1028,24 @@ composite_setup(struct usb_gadget *gadget, const struct usb_ctrlrequest *ctrl)
 		spin_lock(&cdev->lock);
 		value = set_config(cdev, ctrl, w_value);
 		spin_unlock(&cdev->lock);
+<<<<<<< HEAD
 		printk(KERN_DEBUG "usb: SET_CON\n");
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		break;
 	case USB_REQ_GET_CONFIGURATION:
 		if (ctrl->bRequestType != USB_DIR_IN)
 			goto unknown;
 		if (cdev->config)
+<<<<<<< HEAD
 #ifdef CONFIG_USB_ANDROID_SAMSUNG_COMPOSITE
 			*(u8 *)req->buf = get_config_number() + 1;
 #else
 			*(u8 *)req->buf = cdev->config->bConfigurationValue;
 #endif
+=======
+			*(u8 *)req->buf = cdev->config->bConfigurationValue;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		else
 			*(u8 *)req->buf = 0;
 		value = min(w_length, (u16) 1);
@@ -1102,6 +1161,7 @@ static void composite_disconnect(struct usb_gadget *gadget)
 	struct usb_composite_dev	*cdev = get_gadget_data(gadget);
 	unsigned long			flags;
 
+<<<<<<< HEAD
 #ifdef CONFIG_USB_ANDROID_SAMSUNG_COMPOSITE
 	set_string_mode(0);
 #endif
@@ -1109,6 +1169,11 @@ static void composite_disconnect(struct usb_gadget *gadget)
 	 * disconnect callbacks?
 	 */
 	printk(KERN_DEBUG "usb: %s\n", __func__);
+=======
+	/* REVISIT:  should we have config and device level
+	 * disconnect callbacks?
+	 */
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	spin_lock_irqsave(&cdev->lock, flags);
 	if (cdev->config)
 		reset_config(cdev);
@@ -1145,9 +1210,34 @@ composite_unbind(struct usb_gadget *gadget)
 
 	while (!list_empty(&cdev->configs)) {
 		struct usb_configuration	*c;
+<<<<<<< HEAD
 		c = list_first_entry(&cdev->configs,
 				struct usb_configuration, list);
 		remove_config(cdev, c);
+=======
+
+		c = list_first_entry(&cdev->configs,
+				struct usb_configuration, list);
+		while (!list_empty(&c->functions)) {
+			struct usb_function		*f;
+
+			f = list_first_entry(&c->functions,
+					struct usb_function, list);
+			list_del(&f->list);
+			if (f->unbind) {
+				DBG(cdev, "unbind function '%s'/%p\n",
+						f->name, f);
+				f->unbind(c, f);
+				/* may free memory for "f" */
+			}
+		}
+		list_del(&c->list);
+		if (c->unbind) {
+			DBG(cdev, "unbind config '%s'/%p\n", c->label, c);
+			c->unbind(c);
+			/* may free memory for "c" */
+		}
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	}
 	if (composite->unbind)
 		composite->unbind(cdev);
@@ -1235,10 +1325,13 @@ static int composite_bind(struct usb_gadget *gadget)
 	if (bcdDevice)
 		cdev->desc.bcdDevice = cpu_to_le16(bcdDevice);
 
+<<<<<<< HEAD
 	printk(KERN_DEBUG "usb: %s idVendor=0x%x, idProduct=0x%x\n",
 			__func__, idVendor, idProduct);
 	printk(KERN_DEBUG "usb: %s bcdDevice=0x%x\n", __func__, bcdDevice);
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	/* string overrides */
 	if (iManufacturer || !cdev->desc.iManufacturer) {
 		if (!iManufacturer && !composite->iManufacturer &&
@@ -1254,9 +1347,12 @@ static int composite_bind(struct usb_gadget *gadget)
 			override_id(cdev, &cdev->desc.iManufacturer);
 	}
 
+<<<<<<< HEAD
 	printk(KERN_DEBUG "usb: %s composite_manufacturer=%s\n",
 			__func__, composite_manufacturer);
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	if (iProduct || (!cdev->desc.iProduct && composite->iProduct))
 		cdev->product_override =
 			override_id(cdev, &cdev->desc.iProduct);

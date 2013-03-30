@@ -205,10 +205,20 @@ static int tlb_next_batch(struct mmu_gather *tlb)
 		return 1;
 	}
 
+<<<<<<< HEAD
+=======
+	if (tlb->batch_count == MAX_GATHER_BATCH_COUNT)
+		return 0;
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	batch = (void *)__get_free_pages(GFP_NOWAIT | __GFP_NOWARN, 0);
 	if (!batch)
 		return 0;
 
+<<<<<<< HEAD
+=======
+	tlb->batch_count++;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	batch->next = NULL;
 	batch->nr   = 0;
 	batch->max  = MAX_GATHER_BATCH;
@@ -235,6 +245,10 @@ void tlb_gather_mmu(struct mmu_gather *tlb, struct mm_struct *mm, bool fullmm)
 	tlb->local.nr   = 0;
 	tlb->local.max  = ARRAY_SIZE(tlb->__pages);
 	tlb->active     = &tlb->local;
+<<<<<<< HEAD
+=======
+	tlb->batch_count = 0;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 #ifdef CONFIG_HAVE_RCU_TABLE_FREE
 	tlb->batch = NULL;
@@ -1228,6 +1242,7 @@ static inline unsigned long zap_pmd_range(struct mmu_gather *tlb,
 	do {
 		next = pmd_addr_end(addr, end);
 		if (pmd_trans_huge(*pmd)) {
+<<<<<<< HEAD
 			if (next-addr != HPAGE_PMD_SIZE) {
 				VM_BUG_ON(!rwsem_is_locked(&tlb->mm->mmap_sem));
 				split_huge_page_pmd(vma->vm_mm, pmd);
@@ -1238,6 +1253,26 @@ static inline unsigned long zap_pmd_range(struct mmu_gather *tlb,
 		if (pmd_none_or_clear_bad(pmd))
 			continue;
 		next = zap_pte_range(tlb, vma, pmd, addr, next, details);
+=======
+			if (next - addr != HPAGE_PMD_SIZE) {
+				VM_BUG_ON(!rwsem_is_locked(&tlb->mm->mmap_sem));
+				split_huge_page_pmd(vma->vm_mm, pmd);
+			} else if (zap_huge_pmd(tlb, vma, pmd))
+				goto next;
+			/* fall through */
+		}
+		/*
+		 * Here there can be other concurrent MADV_DONTNEED or
+		 * trans huge page faults running, and if the pmd is
+		 * none or trans huge it can change under us. This is
+		 * because MADV_DONTNEED holds the mmap_sem in read
+		 * mode.
+		 */
+		if (pmd_none_or_trans_huge_or_clear_bad(pmd))
+			goto next;
+		next = zap_pte_range(tlb, vma, pmd, addr, next, details);
+next:
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		cond_resched();
 	} while (pmd++, addr = next, addr != end);
 
@@ -1514,7 +1549,11 @@ split_fallthrough:
 	}
 
 	if (flags & FOLL_GET)
+<<<<<<< HEAD
 		get_page(page);
+=======
+		get_page_foll(page);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	if (flags & FOLL_TOUCH) {
 		if ((flags & FOLL_WRITE) &&
 		    !pte_dirty(pte) && !PageDirty(page))
@@ -3457,6 +3496,10 @@ int handle_mm_fault(struct mm_struct *mm, struct vm_area_struct *vma,
 	if (unlikely(is_vm_hugetlb_page(vma)))
 		return hugetlb_fault(mm, vma, address, flags);
 
+<<<<<<< HEAD
+=======
+retry:
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	pgd = pgd_offset(mm, address);
 	pud = pud_alloc(mm, pgd, address);
 	if (!pud)
@@ -3470,13 +3513,33 @@ int handle_mm_fault(struct mm_struct *mm, struct vm_area_struct *vma,
 							  pmd, flags);
 	} else {
 		pmd_t orig_pmd = *pmd;
+<<<<<<< HEAD
+=======
+		int ret;
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		barrier();
 		if (pmd_trans_huge(orig_pmd)) {
 			if (flags & FAULT_FLAG_WRITE &&
 			    !pmd_write(orig_pmd) &&
+<<<<<<< HEAD
 			    !pmd_trans_splitting(orig_pmd))
 				return do_huge_pmd_wp_page(mm, vma, address,
 							   pmd, orig_pmd);
+=======
+			    !pmd_trans_splitting(orig_pmd)) {
+				ret = do_huge_pmd_wp_page(mm, vma, address, pmd,
+							  orig_pmd);
+				/*
+				 * If COW results in an oom, the huge pmd will
+				 * have been split, so retry the fault on the
+				 * pte for a smaller charge.
+				 */
+				if (unlikely(ret & VM_FAULT_OOM))
+					goto retry;
+				return ret;
+			}
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			return 0;
 		}
 	}

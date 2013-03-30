@@ -243,11 +243,14 @@ static inline void lru_cache_add_file(struct page *page)
 	__lru_cache_add(page, LRU_INACTIVE_FILE);
 }
 
+<<<<<<< HEAD
 /* LRU Isolation modes. */
 #define ISOLATE_INACTIVE 0	/* Isolate inactive pages. */
 #define ISOLATE_ACTIVE 1	/* Isolate active pages. */
 #define ISOLATE_BOTH 2		/* Isolate both active and inactive pages. */
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 /* linux/mm/vmscan.c */
 extern unsigned long try_to_free_pages(struct zonelist *zonelist, int order,
 					gfp_t gfp_mask, nodemask_t *mask);
@@ -259,7 +262,11 @@ extern unsigned long mem_cgroup_shrink_node_zone(struct mem_cgroup *mem,
 						unsigned int swappiness,
 						struct zone *zone,
 						unsigned long *nr_scanned);
+<<<<<<< HEAD
 extern int __isolate_lru_page(struct page *page, int mode, int file);
+=======
+extern int __isolate_lru_page(struct page *page, isolate_mode_t mode, int file);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 extern unsigned long shrink_all_memory(unsigned long nr_pages);
 extern int vm_swappiness;
 extern int remove_mapping(struct address_space *mapping, struct page *page);

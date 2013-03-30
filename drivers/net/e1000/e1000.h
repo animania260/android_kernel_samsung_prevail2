@@ -150,6 +150,11 @@ struct e1000_buffer {
 	unsigned long time_stamp;
 	u16 length;
 	u16 next_to_watch;
+<<<<<<< HEAD
+=======
+	unsigned int segs;
+	unsigned int bytecount;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	u16 mapped_as_page;
 };
 

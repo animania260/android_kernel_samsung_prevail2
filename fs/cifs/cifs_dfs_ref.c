@@ -225,6 +225,11 @@ compose_mount_options_out:
 compose_mount_options_err:
 	kfree(mountdata);
 	mountdata = ERR_PTR(rc);
+<<<<<<< HEAD
+=======
+	kfree(*devname);
+	*devname = NULL;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	goto compose_mount_options_out;
 }
 

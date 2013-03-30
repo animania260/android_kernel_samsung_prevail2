@@ -673,8 +673,12 @@ static int nfs_create_rpc_client(struct nfs_client *clp,
  */
 static void nfs_destroy_server(struct nfs_server *server)
 {
+<<<<<<< HEAD
 	if (!(server->flags & NFS_MOUNT_LOCAL_FLOCK) ||
 			!(server->flags & NFS_MOUNT_LOCAL_FCNTL))
+=======
+	if (server->nlm_host)
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		nlmclnt_done(server->nlm_host);
 }
 

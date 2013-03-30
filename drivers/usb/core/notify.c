@@ -57,12 +57,15 @@ void usb_notify_remove_device(struct usb_device *udev)
 	mutex_unlock(&usbfs_mutex);
 }
 
+<<<<<<< HEAD
 void usb_notify_config_device(struct usb_device *udev)
 {
 	blocking_notifier_call_chain(&usb_notifier_list,
 			USB_DEVICE_CONFIG, udev);
 }
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 void usb_notify_add_bus(struct usb_bus *ubus)
 {
 	blocking_notifier_call_chain(&usb_notifier_list, USB_BUS_ADD, ubus);

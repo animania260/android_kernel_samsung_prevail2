@@ -575,7 +575,11 @@ EXPORT_SYMBOL(jiffies_to_timeval);
 /*
  * Convert jiffies/jiffies_64 to clock_t and back.
  */
+<<<<<<< HEAD
 clock_t jiffies_to_clock_t(long x)
+=======
+clock_t jiffies_to_clock_t(unsigned long x)
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 {
 #if (TICK_NSEC % (NSEC_PER_SEC / USER_HZ)) == 0
 # if HZ < USER_HZ

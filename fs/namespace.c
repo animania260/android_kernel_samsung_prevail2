@@ -1048,6 +1048,7 @@ static int show_mountinfo(struct seq_file *m, void *v)
 	if (err)
 		goto out;
 	seq_putc(m, ' ');
+<<<<<<< HEAD
 	seq_path_root(m, &mnt_path, &root, " \t\n\\");
 	if (root.mnt != p->root.mnt || root.dentry != p->root.dentry) {
 		/*
@@ -1057,6 +1058,14 @@ static int show_mountinfo(struct seq_file *m, void *v)
 		 */
 		return SEQ_SKIP;
 	}
+=======
+
+	/* mountpoints outside of chroot jail will give SEQ_SKIP on this */
+	err = seq_path_root(m, &mnt_path, &root, " \t\n\\");
+	if (err)
+		goto out;
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	seq_puts(m, mnt->mnt_flags & MNT_READONLY ? " ro" : " rw");
 	show_mnt_opts(m, mnt);
 
@@ -1109,6 +1118,10 @@ static int show_vfsstat(struct seq_file *m, void *v)
 
 	/* device */
 	if (mnt->mnt_sb->s_op->show_devname) {
+<<<<<<< HEAD
+=======
+		seq_puts(m, "device ");
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		err = mnt->mnt_sb->s_op->show_devname(m, mnt);
 	} else {
 		if (mnt->mnt_devname) {
@@ -1246,8 +1259,14 @@ void umount_tree(struct vfsmount *mnt, int propagate, struct list_head *kill)
 		list_del_init(&p->mnt_expire);
 		list_del_init(&p->mnt_list);
 		__touch_mnt_namespace(p->mnt_ns);
+<<<<<<< HEAD
 		p->mnt_ns = NULL;
 		__mnt_make_shortterm(p);
+=======
+		if (p->mnt_ns)
+			__mnt_make_shortterm(p);
+		p->mnt_ns = NULL;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		list_del_init(&p->mnt_child);
 		if (p->mnt_parent != p) {
 			p->mnt_parent->mnt_ghosts++;
@@ -1757,7 +1776,11 @@ static int do_loopback(struct path *path, char *old_name,
 		return err;
 	if (!old_name || !*old_name)
 		return -EINVAL;
+<<<<<<< HEAD
 	err = kern_path(old_name, LOOKUP_FOLLOW, &old_path);
+=======
+	err = kern_path(old_name, LOOKUP_FOLLOW|LOOKUP_AUTOMOUNT, &old_path);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	if (err)
 		return err;
 
@@ -2721,6 +2744,7 @@ EXPORT_SYMBOL(put_mnt_ns);
 
 struct vfsmount *kern_mount_data(struct file_system_type *type, void *data)
 {
+<<<<<<< HEAD
 	struct vfsmount *mnt;
 	mnt = vfs_kern_mount(type, MS_KERNMOUNT, type->name, data);
 	if (!IS_ERR(mnt)) {
@@ -2743,3 +2767,13 @@ void kern_unmount(struct vfsmount *mnt)
 	}
 }
 EXPORT_SYMBOL(kern_unmount);
+=======
+	return vfs_kern_mount(type, MS_KERNMOUNT, type->name, data);
+}
+EXPORT_SYMBOL_GPL(kern_mount_data);
+
+bool our_mnt(struct vfsmount *mnt)
+{
+	return check_mnt(mnt);
+}
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y

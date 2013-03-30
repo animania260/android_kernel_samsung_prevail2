@@ -16,6 +16,10 @@
 #include <linux/cache.h>
 #include <linux/profile.h>
 #include <linux/errno.h>
+<<<<<<< HEAD
+=======
+#include <linux/ftrace.h>
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #include <linux/mm.h>
 #include <linux/err.h>
 #include <linux/cpu.h>
@@ -30,8 +34,11 @@
 #include <asm/cacheflush.h>
 #include <asm/cpu.h>
 #include <asm/cputype.h>
+<<<<<<< HEAD
 #include <asm/exception.h>
 #include <asm/topology.h>
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #include <asm/mmu_context.h>
 #include <asm/pgtable.h>
 #include <asm/pgalloc.h>
@@ -40,7 +47,10 @@
 #include <asm/tlbflush.h>
 #include <asm/ptrace.h>
 #include <asm/localtimer.h>
+<<<<<<< HEAD
 #include <asm/smp_plat.h>
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 /*
  * as from 2.5, kernels no longer have an init_tasks structure
@@ -50,13 +60,19 @@
 struct secondary_data secondary_data;
 
 enum ipi_msg_type {
+<<<<<<< HEAD
 	IPI_CPU_START = 1,
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	IPI_TIMER = 2,
 	IPI_RESCHEDULE,
 	IPI_CALL_FUNC,
 	IPI_CALL_FUNC_SINGLE,
 	IPI_CPU_STOP,
+<<<<<<< HEAD
 	IPI_CPU_BACKTRACE,
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 };
 
 int __cpuinit __cpu_up(unsigned int cpu)
@@ -218,7 +234,11 @@ void __cpu_die(unsigned int cpu)
 		pr_err("CPU%u: cpu didn't die\n", cpu);
 		return;
 	}
+<<<<<<< HEAD
 	pr_debug("CPU%u: shutdown\n", cpu);
+=======
+	printk(KERN_NOTICE "CPU%u: shutdown\n", cpu);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	if (!platform_cpu_kill(cpu))
 		printk("CPU%u: unable to kill\n", cpu);
@@ -263,6 +283,7 @@ void __ref cpu_die(void)
 }
 #endif /* CONFIG_HOTPLUG_CPU */
 
+<<<<<<< HEAD
 int __cpu_logical_map[NR_CPUS];
 
 void __init smp_setup_processor_id(void)
@@ -277,6 +298,8 @@ void __init smp_setup_processor_id(void)
 	printk(KERN_INFO "Booting Linux on physical CPU %d\n", cpu);
 }
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 /*
  * Called by both boot and secondaries to move global data into
  * per-processor storage.
@@ -295,20 +318,41 @@ static void __cpuinit smp_store_cpu_info(unsigned int cpuid)
 asmlinkage void __cpuinit secondary_start_kernel(void)
 {
 	struct mm_struct *mm = &init_mm;
+<<<<<<< HEAD
 	unsigned int cpu = smp_processor_id();
 
 	pr_debug("CPU%u: Booted secondary processor\n", cpu);
+=======
+	unsigned int cpu;
+
+	/*
+	 * The identity mapping is uncached (strongly ordered), so
+	 * switch away from it before attempting any exclusive accesses.
+	 */
+	cpu_switch_mm(mm->pgd, mm);
+	enter_lazy_tlb(mm, current);
+	local_flush_tlb_all();
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	/*
 	 * All kernel threads share the same mm context; grab a
 	 * reference and switch to it.
 	 */
+<<<<<<< HEAD
 	atomic_inc(&mm->mm_count);
 	current->active_mm = mm;
 	cpumask_set_cpu(cpu, mm_cpumask(mm));
 	cpu_switch_mm(mm->pgd, mm);
 	enter_lazy_tlb(mm, current);
 	local_flush_tlb_all();
+=======
+	cpu = smp_processor_id();
+	atomic_inc(&mm->mm_count);
+	current->active_mm = mm;
+	cpumask_set_cpu(cpu, mm_cpumask(mm));
+
+	printk("CPU%u: Booted secondary processor\n", cpu);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	cpu_init();
 	preempt_disable();
@@ -417,14 +461,21 @@ void arch_send_call_function_single_ipi(int cpu)
 }
 
 static const char *ipi_types[NR_IPI] = {
+<<<<<<< HEAD
 #define S(x,s)	[x - IPI_CPU_START] = s
 	S(IPI_CPU_START, "CPU start interrupts"),
+=======
+#define S(x,s)	[x - IPI_TIMER] = s
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	S(IPI_TIMER, "Timer broadcast interrupts"),
 	S(IPI_RESCHEDULE, "Rescheduling interrupts"),
 	S(IPI_CALL_FUNC, "Function call interrupts"),
 	S(IPI_CALL_FUNC_SINGLE, "Single function call interrupts"),
 	S(IPI_CPU_STOP, "CPU stop interrupts"),
+<<<<<<< HEAD
 	S(IPI_CPU_BACKTRACE, "CPU backtrace"),
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 };
 
 void show_ipi_list(struct seq_file *p, int prec)
@@ -450,6 +501,13 @@ u64 smp_irq_stat_cpu(unsigned int cpu)
 	for (i = 0; i < NR_IPI; i++)
 		sum += __get_irq_stat(cpu, ipi_irqs[i]);
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_LOCAL_TIMERS
+	sum += __get_irq_stat(cpu, local_timer_irqs);
+#endif
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	return sum;
 }
 
@@ -461,11 +519,46 @@ static DEFINE_PER_CPU(struct clock_event_device, percpu_clockevent);
 static void ipi_timer(void)
 {
 	struct clock_event_device *evt = &__get_cpu_var(percpu_clockevent);
+<<<<<<< HEAD
 	irq_enter();
 	evt->event_handler(evt);
 	irq_exit();
 }
 
+=======
+	evt->event_handler(evt);
+}
+
+#ifdef CONFIG_LOCAL_TIMERS
+asmlinkage void __exception_irq_entry do_local_timer(struct pt_regs *regs)
+{
+	struct pt_regs *old_regs = set_irq_regs(regs);
+	int cpu = smp_processor_id();
+
+	if (local_timer_ack()) {
+		__inc_irq_stat(cpu, local_timer_irqs);
+		irq_enter();
+		ipi_timer();
+		irq_exit();
+	}
+
+	set_irq_regs(old_regs);
+}
+
+void show_local_irqs(struct seq_file *p, int prec)
+{
+	unsigned int cpu;
+
+	seq_printf(p, "%*s: ", prec, "LOC");
+
+	for_each_present_cpu(cpu)
+		seq_printf(p, "%10u ", __get_irq_stat(cpu, local_timer_irqs));
+
+	seq_printf(p, " Local timer interrupts\n");
+}
+#endif
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #ifdef CONFIG_GENERIC_CLOCKEVENTS_BROADCAST
 static void smp_timer_broadcast(const struct cpumask *mask)
 {
@@ -516,11 +609,19 @@ static void percpu_timer_stop(void)
 	unsigned int cpu = smp_processor_id();
 	struct clock_event_device *evt = &per_cpu(percpu_clockevent, cpu);
 
+<<<<<<< HEAD
 	local_timer_stop(evt);
 }
 #endif
 
 static DEFINE_RAW_SPINLOCK(stop_lock);
+=======
+	evt->set_mode(CLOCK_EVT_MODE_UNUSED, evt);
+}
+#endif
+
+static DEFINE_SPINLOCK(stop_lock);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 /*
  * ipi_cpu_stop - handle IPI from smp_send_stop()
@@ -529,10 +630,17 @@ static void ipi_cpu_stop(unsigned int cpu)
 {
 	if (system_state == SYSTEM_BOOTING ||
 	    system_state == SYSTEM_RUNNING) {
+<<<<<<< HEAD
 		raw_spin_lock(&stop_lock);
 		printk(KERN_CRIT "CPU%u: stopping\n", cpu);
 		dump_stack();
 		raw_spin_unlock(&stop_lock);
+=======
+		spin_lock(&stop_lock);
+		printk(KERN_CRIT "CPU%u: stopping\n", cpu);
+		dump_stack();
+		spin_unlock(&stop_lock);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	}
 
 	set_cpu_online(cpu, false);
@@ -544,6 +652,7 @@ static void ipi_cpu_stop(unsigned int cpu)
 		cpu_relax();
 }
 
+<<<<<<< HEAD
 static cpumask_t backtrace_mask;
 static DEFINE_RAW_SPINLOCK(backtrace_lock);
 
@@ -596,11 +705,14 @@ static void ipi_cpu_backtrace(unsigned int cpu, struct pt_regs *regs)
 	}
 }
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 /*
  * Main handler for inter-processor interrupts
  */
 asmlinkage void __exception_irq_entry do_IPI(int ipinr, struct pt_regs *regs)
 {
+<<<<<<< HEAD
 	handle_IPI(ipinr, regs);
 }
 
@@ -618,6 +730,19 @@ void handle_IPI(int ipinr, struct pt_regs *regs)
 		break;
 	case IPI_TIMER:
 		ipi_timer();
+=======
+	unsigned int cpu = smp_processor_id();
+	struct pt_regs *old_regs = set_irq_regs(regs);
+
+	if (ipinr >= IPI_TIMER && ipinr < IPI_TIMER + NR_IPI)
+		__inc_irq_stat(cpu, ipi_irqs[ipinr - IPI_TIMER]);
+
+	switch (ipinr) {
+	case IPI_TIMER:
+		irq_enter();
+		ipi_timer();
+		irq_exit();
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		break;
 
 	case IPI_RESCHEDULE:
@@ -625,6 +750,7 @@ void handle_IPI(int ipinr, struct pt_regs *regs)
 		break;
 
 	case IPI_CALL_FUNC:
+<<<<<<< HEAD
 		generic_smp_call_function_interrupt();
 		break;
 
@@ -638,6 +764,23 @@ void handle_IPI(int ipinr, struct pt_regs *regs)
 
 	case IPI_CPU_BACKTRACE:
 		ipi_cpu_backtrace(cpu, regs);
+=======
+		irq_enter();
+		generic_smp_call_function_interrupt();
+		irq_exit();
+		break;
+
+	case IPI_CALL_FUNC_SINGLE:
+		irq_enter();
+		generic_smp_call_function_single_interrupt();
+		irq_exit();
+		break;
+
+	case IPI_CPU_STOP:
+		irq_enter();
+		ipi_cpu_stop(cpu);
+		irq_exit();
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		break;
 
 	default:
@@ -650,11 +793,14 @@ void handle_IPI(int ipinr, struct pt_regs *regs)
 
 void smp_send_reschedule(int cpu)
 {
+<<<<<<< HEAD
 
 	if (unlikely(cpu_is_offline(cpu))) {
 		WARN_ON(1);
 		return;
 	}
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	smp_cross_call(cpumask_of(cpu), IPI_RESCHEDULE);
 }
 

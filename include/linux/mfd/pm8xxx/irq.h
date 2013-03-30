@@ -24,7 +24,10 @@
 struct pm8xxx_irq_core_data {
 	u32		rev;
 	int		nirqs;
+<<<<<<< HEAD
 	unsigned int	base_addr;
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 };
 
 struct pm8xxx_irq_platform_data {
@@ -32,7 +35,10 @@ struct pm8xxx_irq_platform_data {
 	struct pm8xxx_irq_core_data	irq_cdata;
 	int				devirq;
 	int				irq_trigger_flag;
+<<<<<<< HEAD
 	int				dev_id;
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 };
 
 struct pm_irq_chip;

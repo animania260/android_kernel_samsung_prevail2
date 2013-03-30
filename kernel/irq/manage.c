@@ -195,7 +195,11 @@ int irq_set_affinity(unsigned int irq, const struct cpumask *mask)
 int irq_set_affinity_hint(unsigned int irq, const struct cpumask *m)
 {
 	unsigned long flags;
+<<<<<<< HEAD
 	struct irq_desc *desc = irq_get_desc_lock(irq, &flags, IRQ_GET_DESC_CHECK_GLOBAL);
+=======
+	struct irq_desc *desc = irq_get_desc_lock(irq, &flags);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	if (!desc)
 		return -EINVAL;
@@ -356,7 +360,11 @@ void __disable_irq(struct irq_desc *desc, unsigned int irq, bool suspend)
 static int __disable_irq_nosync(unsigned int irq)
 {
 	unsigned long flags;
+<<<<<<< HEAD
 	struct irq_desc *desc = irq_get_desc_buslock(irq, &flags, IRQ_GET_DESC_CHECK_GLOBAL);
+=======
+	struct irq_desc *desc = irq_get_desc_buslock(irq, &flags);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	if (!desc)
 		return -EINVAL;
@@ -448,7 +456,11 @@ void __enable_irq(struct irq_desc *desc, unsigned int irq, bool resume)
 void enable_irq(unsigned int irq)
 {
 	unsigned long flags;
+<<<<<<< HEAD
 	struct irq_desc *desc = irq_get_desc_buslock(irq, &flags, IRQ_GET_DESC_CHECK_GLOBAL);
+=======
+	struct irq_desc *desc = irq_get_desc_buslock(irq, &flags);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	if (!desc)
 		return;
@@ -488,7 +500,11 @@ static int set_irq_wake_real(unsigned int irq, unsigned int on)
 int irq_set_irq_wake(unsigned int irq, unsigned int on)
 {
 	unsigned long flags;
+<<<<<<< HEAD
 	struct irq_desc *desc = irq_get_desc_buslock(irq, &flags, IRQ_GET_DESC_CHECK_GLOBAL);
+=======
+	struct irq_desc *desc = irq_get_desc_buslock(irq, &flags);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	int ret = 0;
 
 	if (!desc)
@@ -521,6 +537,7 @@ int irq_set_irq_wake(unsigned int irq, unsigned int on)
 }
 EXPORT_SYMBOL(irq_set_irq_wake);
 
+<<<<<<< HEAD
 /**
  *     irq_read_line - read the value on an irq line
  *     @irq: Interrupt number representing a hardware line
@@ -547,6 +564,8 @@ int irq_read_line(unsigned int irq)
 }
 EXPORT_SYMBOL_GPL(irq_read_line);
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 /*
  * Internal function that tells the architecture code whether a
  * particular irq has been exclusively allocated or is available
@@ -555,7 +574,11 @@ EXPORT_SYMBOL_GPL(irq_read_line);
 int can_request_irq(unsigned int irq, unsigned long irqflags)
 {
 	unsigned long flags;
+<<<<<<< HEAD
 	struct irq_desc *desc = irq_get_desc_lock(irq, &flags, 0);
+=======
+	struct irq_desc *desc = irq_get_desc_lock(irq, &flags);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	int canrequest = 0;
 
 	if (!desc)
@@ -646,8 +669,14 @@ static irqreturn_t irq_nested_primary_handler(int irq, void *dev_id)
 
 static int irq_wait_for_interrupt(struct irqaction *action)
 {
+<<<<<<< HEAD
 	while (!kthread_should_stop()) {
 		set_current_state(TASK_INTERRUPTIBLE);
+=======
+	set_current_state(TASK_INTERRUPTIBLE);
+
+	while (!kthread_should_stop()) {
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 		if (test_and_clear_bit(IRQTF_RUNTHREAD,
 				       &action->thread_flags)) {
@@ -655,7 +684,13 @@ static int irq_wait_for_interrupt(struct irqaction *action)
 			return 0;
 		}
 		schedule();
+<<<<<<< HEAD
 	}
+=======
+		set_current_state(TASK_INTERRUPTIBLE);
+	}
+	__set_current_state(TASK_RUNNING);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	return -1;
 }
 
@@ -721,6 +756,10 @@ static void
 irq_thread_check_affinity(struct irq_desc *desc, struct irqaction *action)
 {
 	cpumask_var_t mask;
+<<<<<<< HEAD
+=======
+	bool valid = true;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	if (!test_and_clear_bit(IRQTF_AFFINITY, &action->thread_flags))
 		return;
@@ -735,10 +774,25 @@ irq_thread_check_affinity(struct irq_desc *desc, struct irqaction *action)
 	}
 
 	raw_spin_lock_irq(&desc->lock);
+<<<<<<< HEAD
 	cpumask_copy(mask, desc->irq_data.affinity);
 	raw_spin_unlock_irq(&desc->lock);
 
 	set_cpus_allowed_ptr(current, mask);
+=======
+	/*
+	 * This code is triggered unconditionally. Check the affinity
+	 * mask pointer. For CPU_MASK_OFFSTACK=n this is optimized out.
+	 */
+	if (desc->irq_data.affinity)
+		cpumask_copy(mask, desc->irq_data.affinity);
+	else
+		valid = false;
+	raw_spin_unlock_irq(&desc->lock);
+
+	if (valid)
+		set_cpus_allowed_ptr(current, mask);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	free_cpumask_var(mask);
 }
 #else
@@ -793,7 +847,11 @@ static int irq_thread(void *data)
 			struct irqaction *action);
 	int wake;
 
+<<<<<<< HEAD
 	if (force_irqthreads & test_bit(IRQTF_FORCED_THREAD,
+=======
+	if (force_irqthreads && test_bit(IRQTF_FORCED_THREAD,
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 					&action->thread_flags))
 		handler_fn = irq_forced_thread_fn;
 	else
@@ -909,6 +967,7 @@ __setup_irq(unsigned int irq, struct irq_desc *desc, struct irqaction *new)
 
 	if (desc->irq_data.chip == &no_irq_chip)
 		return -ENOSYS;
+<<<<<<< HEAD
 	if (!try_module_get(desc->owner))
 		return -ENODEV;
 	/*
@@ -927,6 +986,8 @@ __setup_irq(unsigned int irq, struct irq_desc *desc, struct irqaction *new)
 		 */
 		rand_initialize_irq(irq);
 	}
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	/*
 	 * Check whether the interrupt nests into another interrupt
@@ -934,10 +995,15 @@ __setup_irq(unsigned int irq, struct irq_desc *desc, struct irqaction *new)
 	 */
 	nested = irq_settings_is_nested_thread(desc);
 	if (nested) {
+<<<<<<< HEAD
 		if (!new->thread_fn) {
 			ret = -EINVAL;
 			goto out_mput;
 		}
+=======
+		if (!new->thread_fn)
+			return -EINVAL;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		/*
 		 * Replace the primary handler which was provided from
 		 * the driver for non nested interrupt handling by the
@@ -959,10 +1025,15 @@ __setup_irq(unsigned int irq, struct irq_desc *desc, struct irqaction *new)
 
 		t = kthread_create(irq_thread, new, "irq/%d-%s", irq,
 				   new->name);
+<<<<<<< HEAD
 		if (IS_ERR(t)) {
 			ret = PTR_ERR(t);
 			goto out_mput;
 		}
+=======
+		if (IS_ERR(t))
+			return PTR_ERR(t);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		/*
 		 * We keep the reference to the task struct even if
 		 * the thread dies to avoid that the interrupt code
@@ -970,6 +1041,19 @@ __setup_irq(unsigned int irq, struct irq_desc *desc, struct irqaction *new)
 		 */
 		get_task_struct(t);
 		new->thread = t;
+<<<<<<< HEAD
+=======
+		/*
+		 * Tell the thread to set its affinity. This is
+		 * important for shared interrupt handlers as we do
+		 * not invoke setup_affinity() for the secondary
+		 * handlers as everything is already set up. Even for
+		 * interrupts marked with IRQF_NO_BALANCE this is
+		 * correct as we want the thread to move to the cpu(s)
+		 * on which the requesting code placed the interrupt.
+		 */
+		set_bit(IRQTF_AFFINITY, &new->thread_flags);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	}
 
 	if (!alloc_cpumask_var(&mask, GFP_KERNEL)) {
@@ -1005,6 +1089,14 @@ __setup_irq(unsigned int irq, struct irq_desc *desc, struct irqaction *new)
 
 		/* add new interrupt at end of irq queue */
 		do {
+<<<<<<< HEAD
+=======
+			/*
+			 * Or all existing action->thread_mask bits,
+			 * so we can find the next zero bit for this
+			 * new action.
+			 */
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			thread_mask |= old->thread_mask;
 			old_ptr = &old->next;
 			old = *old_ptr;
@@ -1013,6 +1105,7 @@ __setup_irq(unsigned int irq, struct irq_desc *desc, struct irqaction *new)
 	}
 
 	/*
+<<<<<<< HEAD
 	 * Setup the thread mask for this irqaction. Unlikely to have
 	 * 32 resp 64 irqs sharing one line, but who knows.
 	 */
@@ -1021,6 +1114,43 @@ __setup_irq(unsigned int irq, struct irq_desc *desc, struct irqaction *new)
 		goto out_mask;
 	}
 	new->thread_mask = 1 << ffz(thread_mask);
+=======
+	 * Setup the thread mask for this irqaction for ONESHOT. For
+	 * !ONESHOT irqs the thread mask is 0 so we can avoid a
+	 * conditional in irq_wake_thread().
+	 */
+	if (new->flags & IRQF_ONESHOT) {
+		/*
+		 * Unlikely to have 32 resp 64 irqs sharing one line,
+		 * but who knows.
+		 */
+		if (thread_mask == ~0UL) {
+			ret = -EBUSY;
+			goto out_mask;
+		}
+		/*
+		 * The thread_mask for the action is or'ed to
+		 * desc->thread_active to indicate that the
+		 * IRQF_ONESHOT thread handler has been woken, but not
+		 * yet finished. The bit is cleared when a thread
+		 * completes. When all threads of a shared interrupt
+		 * line have completed desc->threads_active becomes
+		 * zero and the interrupt line is unmasked. See
+		 * handle.c:irq_wake_thread() for further information.
+		 *
+		 * If no thread is woken by primary (hard irq context)
+		 * interrupt handlers, then desc->threads_active is
+		 * also checked for zero to unmask the irq line in the
+		 * affected hard irq flow handlers
+		 * (handle_[fasteoi|level]_irq).
+		 *
+		 * The new action gets the first zero bit of
+		 * thread_mask assigned. See the loop above which or's
+		 * all existing action->thread_mask bits.
+		 */
+		new->thread_mask = 1 << ffz(thread_mask);
+	}
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	if (!shared) {
 		init_waitqueue_head(&desc->wait_for_threads);
@@ -1047,7 +1177,11 @@ __setup_irq(unsigned int irq, struct irq_desc *desc, struct irqaction *new)
 			desc->istate |= IRQS_ONESHOT;
 
 		if (irq_settings_can_autoenable(desc))
+<<<<<<< HEAD
 			irq_startup(desc);
+=======
+			irq_startup(desc, true);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		else
 			/* Undo nested disables: */
 			desc->depth = 1;
@@ -1127,8 +1261,11 @@ out_thread:
 			kthread_stop(t);
 		put_task_struct(t);
 	}
+<<<<<<< HEAD
 out_mput:
 	module_put(desc->owner);
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	return ret;
 }
 
@@ -1144,8 +1281,11 @@ int setup_irq(unsigned int irq, struct irqaction *act)
 	int retval;
 	struct irq_desc *desc = irq_to_desc(irq);
 
+<<<<<<< HEAD
 	if (WARN_ON(irq_settings_is_per_cpu_devid(desc)))
 		return -EINVAL;
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	chip_bus_lock(desc);
 	retval = __setup_irq(irq, desc, act);
 	chip_bus_sync_unlock(desc);
@@ -1154,7 +1294,11 @@ int setup_irq(unsigned int irq, struct irqaction *act)
 }
 EXPORT_SYMBOL_GPL(setup_irq);
 
+<<<<<<< HEAD
 /*
+=======
+ /*
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
  * Internal function to unregister an irqaction - used to free
  * regular and special interrupts that are part of the architecture.
  */
@@ -1201,6 +1345,7 @@ static struct irqaction *__free_irq(unsigned int irq, void *dev_id)
 #endif
 
 	/* If this was the last handler, shut down the IRQ line: */
+<<<<<<< HEAD
 	if (!desc->action) {
 		irq_shutdown(desc);
 
@@ -1211,6 +1356,11 @@ static struct irqaction *__free_irq(unsigned int irq, void *dev_id)
 			desc->irq_data.chip->irq_mask_ack(&desc->irq_data);
 	}
 
+=======
+	if (!desc->action)
+		irq_shutdown(desc);
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #ifdef CONFIG_SMP
 	/* make sure affinity_hint is cleaned up */
 	if (WARN_ON_ONCE(desc->affinity_hint))
@@ -1246,7 +1396,10 @@ static struct irqaction *__free_irq(unsigned int irq, void *dev_id)
 		put_task_struct(action->thread);
 	}
 
+<<<<<<< HEAD
 	module_put(desc->owner);
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	return action;
 }
 
@@ -1259,10 +1412,14 @@ static struct irqaction *__free_irq(unsigned int irq, void *dev_id)
  */
 void remove_irq(unsigned int irq, struct irqaction *act)
 {
+<<<<<<< HEAD
 	struct irq_desc *desc = irq_to_desc(irq);
 
 	if (desc && !WARN_ON(irq_settings_is_per_cpu_devid(desc)))
 	    __free_irq(irq, act->dev_id);
+=======
+	__free_irq(irq, act->dev_id);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 EXPORT_SYMBOL_GPL(remove_irq);
 
@@ -1284,7 +1441,11 @@ void free_irq(unsigned int irq, void *dev_id)
 {
 	struct irq_desc *desc = irq_to_desc(irq);
 
+<<<<<<< HEAD
 	if (!desc || WARN_ON(irq_settings_is_per_cpu_devid(desc)))
+=======
+	if (!desc)
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		return;
 
 #ifdef CONFIG_SMP
@@ -1337,7 +1498,10 @@ EXPORT_SYMBOL(free_irq);
  *	Flags:
  *
  *	IRQF_SHARED		Interrupt is shared
+<<<<<<< HEAD
  *	IRQF_SAMPLE_RANDOM	The interrupt can be used for entropy
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
  *	IRQF_TRIGGER_*		Specify active edge(s) or level
  *
  */
@@ -1362,8 +1526,12 @@ int request_threaded_irq(unsigned int irq, irq_handler_t handler,
 	if (!desc)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	if (!irq_settings_can_request(desc) ||
 	    WARN_ON(irq_settings_is_per_cpu_devid(desc)))
+=======
+	if (!irq_settings_can_request(desc))
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		return -EINVAL;
 
 	if (!handler) {
@@ -1448,6 +1616,7 @@ int request_any_context_irq(unsigned int irq, irq_handler_t handler,
 	return !ret ? IRQC_IS_HARDIRQ : ret;
 }
 EXPORT_SYMBOL_GPL(request_any_context_irq);
+<<<<<<< HEAD
 
 void irq_set_pending(unsigned int irq)
 {
@@ -1652,3 +1821,5 @@ int request_percpu_irq(unsigned int irq, irq_handler_t handler,
 
 	return retval;
 }
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y

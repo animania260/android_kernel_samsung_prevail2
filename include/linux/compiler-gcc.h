@@ -50,6 +50,14 @@
 # define inline		inline		__attribute__((always_inline))
 # define __inline__	__inline__	__attribute__((always_inline))
 # define __inline	__inline	__attribute__((always_inline))
+<<<<<<< HEAD
+=======
+#else
+/* A lot of inline functions can cause havoc with function tracing */
+# define inline		inline		notrace
+# define __inline__	__inline__	notrace
+# define __inline	__inline	notrace
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #endif
 
 #define __deprecated			__attribute__((deprecated))

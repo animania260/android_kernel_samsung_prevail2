@@ -590,6 +590,12 @@ config SYSVIPC_COMPAT
 	depends on COMPAT && SYSVIPC
 	default y
 
+<<<<<<< HEAD
+=======
+config KEYS_COMPAT
+	def_bool y if COMPAT && KEYS
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 endmenu
 
 source "net/Kconfig"

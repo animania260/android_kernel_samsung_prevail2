@@ -646,9 +646,15 @@ static ssize_t show_infos(struct device *dev,
 	 * The significance of others is yet to be found.
 	 * If we don't find the method, we assume the device are present.
 	 */
+<<<<<<< HEAD
 	rv = acpi_evaluate_integer(asus->handle, "HRWS", NULL, &temp);
 	if (!ACPI_FAILURE(rv))
 		len += sprintf(page + len, "HRWS value         : %#x\n",
+=======
+	rv = acpi_evaluate_integer(asus->handle, "HWRS", NULL, &temp);
+	if (!ACPI_FAILURE(rv))
+		len += sprintf(page + len, "HWRS value         : %#x\n",
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 			       (uint) temp);
 	/*
 	 * Another value for userspace: the ASYM method returns 0x02 for
@@ -1340,9 +1346,15 @@ static int asus_laptop_get_info(struct asus_laptop *asus)
 	 * The significance of others is yet to be found.
 	 */
 	status =
+<<<<<<< HEAD
 	    acpi_evaluate_integer(asus->handle, "HRWS", NULL, &hwrs_result);
 	if (!ACPI_FAILURE(status))
 		pr_notice("  HRWS returned %x", (int)hwrs_result);
+=======
+	    acpi_evaluate_integer(asus->handle, "HWRS", NULL, &hwrs_result);
+	if (!ACPI_FAILURE(status))
+		pr_notice("  HWRS returned %x", (int)hwrs_result);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	if (!acpi_check_handle(asus->handle, METHOD_WL_STATUS, NULL))
 		asus->have_rsts = true;

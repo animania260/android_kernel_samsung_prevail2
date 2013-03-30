@@ -192,10 +192,13 @@ source "fs/hfsplus/Kconfig"
 source "fs/befs/Kconfig"
 source "fs/bfs/Kconfig"
 source "fs/efs/Kconfig"
+<<<<<<< HEAD
 
 # Patched by YAFFS
 source "fs/yaffs2/Kconfig"
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 source "fs/jffs2/Kconfig"
 # UBIFS File system configuration
 source "fs/ubifs/Kconfig"

@@ -435,6 +435,10 @@ acpi_get_table_with_size(char *signature,
 
 	return (AE_NOT_FOUND);
 }
+<<<<<<< HEAD
+=======
+ACPI_EXPORT_SYMBOL(acpi_get_table_with_size)
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 acpi_status
 acpi_get_table(char *signature,

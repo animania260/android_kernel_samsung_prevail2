@@ -1537,6 +1537,11 @@ process_flags(struct event *event, struct print_arg *arg, char **tok)
 	field = malloc_or_die(sizeof(*field));
 
 	type = process_arg(event, field, &token);
+<<<<<<< HEAD
+=======
+	while (type == EVENT_OP)
+		type = process_op(event, field, &token);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	if (test_type_token(type, token, EVENT_DELIM, ","))
 		goto out_free;
 

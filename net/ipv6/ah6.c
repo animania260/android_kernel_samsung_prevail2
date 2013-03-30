@@ -324,8 +324,11 @@ static void ah6_output_done(struct crypto_async_request *base, int err)
 #endif
 	}
 
+<<<<<<< HEAD
 	err = ah->nexthdr;
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	kfree(AH_SKB_CB(skb)->tmp);
 	xfrm_output_resume(skb, err);
 }
@@ -466,12 +469,20 @@ static void ah6_input_done(struct crypto_async_request *base, int err)
 	if (err)
 		goto out;
 
+<<<<<<< HEAD
+=======
+	err = ah->nexthdr;
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	skb->network_header += ah_hlen;
 	memcpy(skb_network_header(skb), work_iph, hdr_len);
 	__skb_pull(skb, ah_hlen + hdr_len);
 	skb_set_transport_header(skb, -hdr_len);
+<<<<<<< HEAD
 
 	err = ah->nexthdr;
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 out:
 	kfree(AH_SKB_CB(skb)->tmp);
 	xfrm_input_resume(skb, err);
@@ -583,8 +594,11 @@ static int ah6_input(struct xfrm_state *x, struct sk_buff *skb)
 		if (err == -EINPROGRESS)
 			goto out;
 
+<<<<<<< HEAD
 		if (err == -EBUSY)
 			err = NET_XMIT_DROP;
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		goto out_free;
 	}
 

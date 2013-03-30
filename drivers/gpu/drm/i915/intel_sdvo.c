@@ -724,6 +724,10 @@ static void intel_sdvo_get_dtd_from_mode(struct intel_sdvo_dtd *dtd,
 	uint16_t width, height;
 	uint16_t h_blank_len, h_sync_len, v_blank_len, v_sync_len;
 	uint16_t h_sync_offset, v_sync_offset;
+<<<<<<< HEAD
+=======
+	int mode_clock;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	width = mode->crtc_hdisplay;
 	height = mode->crtc_vdisplay;
@@ -738,7 +742,15 @@ static void intel_sdvo_get_dtd_from_mode(struct intel_sdvo_dtd *dtd,
 	h_sync_offset = mode->crtc_hsync_start - mode->crtc_hblank_start;
 	v_sync_offset = mode->crtc_vsync_start - mode->crtc_vblank_start;
 
+<<<<<<< HEAD
 	dtd->part1.clock = mode->clock / 10;
+=======
+	mode_clock = mode->clock;
+	mode_clock /= intel_mode_get_pixel_multiplier(mode) ?: 1;
+	mode_clock /= 10;
+	dtd->part1.clock = mode_clock;
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	dtd->part1.h_active = width & 0xff;
 	dtd->part1.h_blank = h_blank_len & 0xff;
 	dtd->part1.h_high = (((width >> 8) & 0xf) << 4) |
@@ -757,10 +769,19 @@ static void intel_sdvo_get_dtd_from_mode(struct intel_sdvo_dtd *dtd,
 		((v_sync_len & 0x30) >> 4);
 
 	dtd->part2.dtd_flags = 0x18;
+<<<<<<< HEAD
 	if (mode->flags & DRM_MODE_FLAG_PHSYNC)
 		dtd->part2.dtd_flags |= 0x2;
 	if (mode->flags & DRM_MODE_FLAG_PVSYNC)
 		dtd->part2.dtd_flags |= 0x4;
+=======
+	if (mode->flags & DRM_MODE_FLAG_INTERLACE)
+		dtd->part2.dtd_flags |= DTD_FLAG_INTERLACE;
+	if (mode->flags & DRM_MODE_FLAG_PHSYNC)
+		dtd->part2.dtd_flags |= DTD_FLAG_HSYNC_POSITIVE;
+	if (mode->flags & DRM_MODE_FLAG_PVSYNC)
+		dtd->part2.dtd_flags |= DTD_FLAG_VSYNC_POSITIVE;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	dtd->part2.sdvo_flags = 0;
 	dtd->part2.v_sync_off_high = v_sync_offset & 0xc0;
@@ -794,9 +815,17 @@ static void intel_sdvo_get_mode_from_dtd(struct drm_display_mode * mode,
 	mode->clock = dtd->part1.clock * 10;
 
 	mode->flags &= ~(DRM_MODE_FLAG_PHSYNC | DRM_MODE_FLAG_PVSYNC);
+<<<<<<< HEAD
 	if (dtd->part2.dtd_flags & 0x2)
 		mode->flags |= DRM_MODE_FLAG_PHSYNC;
 	if (dtd->part2.dtd_flags & 0x4)
+=======
+	if (dtd->part2.dtd_flags & DTD_FLAG_INTERLACE)
+		mode->flags |= DRM_MODE_FLAG_INTERLACE;
+	if (dtd->part2.dtd_flags & DTD_FLAG_HSYNC_POSITIVE)
+		mode->flags |= DRM_MODE_FLAG_PHSYNC;
+	if (dtd->part2.dtd_flags & DTD_FLAG_VSYNC_POSITIVE)
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		mode->flags |= DRM_MODE_FLAG_PVSYNC;
 }
 
@@ -852,6 +881,7 @@ static void intel_sdvo_dump_hdmi_buf(struct intel_sdvo *intel_sdvo)
 }
 #endif
 
+<<<<<<< HEAD
 static bool intel_sdvo_set_avi_infoframe(struct intel_sdvo *intel_sdvo)
 {
 	struct dip_infoframe avi_if = {
@@ -865,18 +895,49 @@ static bool intel_sdvo_set_avi_infoframe(struct intel_sdvo *intel_sdvo)
 	unsigned i;
 
 	intel_dip_infoframe_csum(&avi_if);
+=======
+static bool intel_sdvo_write_infoframe(struct intel_sdvo *intel_sdvo,
+				       unsigned if_index, uint8_t tx_rate,
+				       uint8_t *data, unsigned length)
+{
+	uint8_t set_buf_index[2] = { if_index, 0 };
+	uint8_t hbuf_size, tmp[8];
+	int i;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	if (!intel_sdvo_set_value(intel_sdvo,
 				  SDVO_CMD_SET_HBUF_INDEX,
 				  set_buf_index, 2))
 		return false;
 
+<<<<<<< HEAD
 	for (i = 0; i < sizeof(avi_if); i += 8) {
 		if (!intel_sdvo_set_value(intel_sdvo,
 					  SDVO_CMD_SET_HBUF_DATA,
 					  data, 8))
 			return false;
 		data++;
+=======
+	if (!intel_sdvo_get_value(intel_sdvo, SDVO_CMD_GET_HBUF_INFO,
+				  &hbuf_size, 1))
+		return false;
+
+	/* Buffer size is 0 based, hooray! */
+	hbuf_size++;
+
+	DRM_DEBUG_KMS("writing sdvo hbuf: %i, hbuf_size %i, hbuf_size: %i\n",
+		      if_index, length, hbuf_size);
+
+	for (i = 0; i < hbuf_size; i += 8) {
+		memset(tmp, 0, 8);
+		if (i < length)
+			memcpy(tmp, data + i, min_t(unsigned, 8, length - i));
+
+		if (!intel_sdvo_set_value(intel_sdvo,
+					  SDVO_CMD_SET_HBUF_DATA,
+					  tmp, 8))
+			return false;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	}
 
 	return intel_sdvo_set_value(intel_sdvo,
@@ -884,6 +945,31 @@ static bool intel_sdvo_set_avi_infoframe(struct intel_sdvo *intel_sdvo)
 				    &tx_rate, 1);
 }
 
+<<<<<<< HEAD
+=======
+static bool intel_sdvo_set_avi_infoframe(struct intel_sdvo *intel_sdvo)
+{
+	struct dip_infoframe avi_if = {
+		.type = DIP_TYPE_AVI,
+		.ver = DIP_VERSION_AVI,
+		.len = DIP_LEN_AVI,
+	};
+	uint8_t sdvo_data[4 + sizeof(avi_if.body.avi)];
+
+	intel_dip_infoframe_csum(&avi_if);
+
+	/* sdvo spec says that the ecc is handled by the hw, and it looks like
+	 * we must not send the ecc field, either. */
+	memcpy(sdvo_data, &avi_if, 3);
+	sdvo_data[3] = avi_if.checksum;
+	memcpy(&sdvo_data[4], &avi_if.body, sizeof(avi_if.body.avi));
+
+	return intel_sdvo_write_infoframe(intel_sdvo, SDVO_HBUF_INDEX_AVI_IF,
+					  SDVO_HBUF_TX_VSYNC,
+					  sdvo_data, sizeof(sdvo_data));
+}
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 static bool intel_sdvo_set_tv_format(struct intel_sdvo *intel_sdvo)
 {
 	struct intel_sdvo_tv_format format;
@@ -990,7 +1076,11 @@ static void intel_sdvo_mode_set(struct drm_encoder *encoder,
 	struct intel_sdvo *intel_sdvo = to_intel_sdvo(encoder);
 	u32 sdvox;
 	struct intel_sdvo_in_out_map in_out;
+<<<<<<< HEAD
 	struct intel_sdvo_dtd input_dtd;
+=======
+	struct intel_sdvo_dtd input_dtd, output_dtd;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	int pixel_multiplier = intel_mode_get_pixel_multiplier(adjusted_mode);
 	int rate;
 
@@ -1015,6 +1105,7 @@ static void intel_sdvo_mode_set(struct drm_encoder *encoder,
 					  intel_sdvo->attached_output))
 		return;
 
+<<<<<<< HEAD
 	/* We have tried to get input timing in mode_fixup, and filled into
 	 * adjusted_mode.
 	 */
@@ -1029,6 +1120,15 @@ static void intel_sdvo_mode_set(struct drm_encoder *encoder,
 		intel_sdvo_get_dtd_from_mode(&input_dtd, adjusted_mode);
 		(void) intel_sdvo_set_output_timing(intel_sdvo, &input_dtd);
 	}
+=======
+	/* lvds has a special fixed output timing. */
+	if (intel_sdvo->is_lvds)
+		intel_sdvo_get_dtd_from_mode(&output_dtd,
+					     intel_sdvo->sdvo_lvds_fixed_mode);
+	else
+		intel_sdvo_get_dtd_from_mode(&output_dtd, mode);
+	(void) intel_sdvo_set_output_timing(intel_sdvo, &output_dtd);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	/* Set the input timing to the screen. Assume always input 0. */
 	if (!intel_sdvo_set_target_input(intel_sdvo))
@@ -1046,6 +1146,13 @@ static void intel_sdvo_mode_set(struct drm_encoder *encoder,
 	    !intel_sdvo_set_tv_format(intel_sdvo))
 		return;
 
+<<<<<<< HEAD
+=======
+	/* We have tried to get input timing in mode_fixup, and filled into
+	 * adjusted_mode.
+	 */
+	intel_sdvo_get_dtd_from_mode(&input_dtd, adjusted_mode);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	(void) intel_sdvo_set_input_timing(intel_sdvo, &input_dtd);
 
 	switch (pixel_multiplier) {
@@ -1059,15 +1166,24 @@ static void intel_sdvo_mode_set(struct drm_encoder *encoder,
 
 	/* Set the SDVO control regs. */
 	if (INTEL_INFO(dev)->gen >= 4) {
+<<<<<<< HEAD
 		sdvox = 0;
+=======
+		/* The real mode polarity is set by the SDVO commands, using
+		 * struct intel_sdvo_dtd. */
+		sdvox = SDVO_VSYNC_ACTIVE_HIGH | SDVO_HSYNC_ACTIVE_HIGH;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		if (intel_sdvo->is_hdmi)
 			sdvox |= intel_sdvo->color_range;
 		if (INTEL_INFO(dev)->gen < 5)
 			sdvox |= SDVO_BORDER_ENABLE;
+<<<<<<< HEAD
 		if (adjusted_mode->flags & DRM_MODE_FLAG_PVSYNC)
 			sdvox |= SDVO_VSYNC_ACTIVE_HIGH;
 		if (adjusted_mode->flags & DRM_MODE_FLAG_PHSYNC)
 			sdvox |= SDVO_HSYNC_ACTIVE_HIGH;
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	} else {
 		sdvox = I915_READ(intel_sdvo->sdvo_reg);
 		switch (intel_sdvo->sdvo_reg) {

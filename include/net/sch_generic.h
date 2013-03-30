@@ -219,9 +219,25 @@ struct tcf_proto {
 
 struct qdisc_skb_cb {
 	unsigned int		pkt_len;
+<<<<<<< HEAD
 	long			data[];
 };
 
+=======
+	u16			bond_queue_mapping;
+	u16			_pad;
+	unsigned char		data[20];
+};
+
+static inline void qdisc_cb_private_validate(const struct sk_buff *skb, int sz)
+{
+	struct qdisc_skb_cb *qcb;
+
+	BUILD_BUG_ON(sizeof(skb->cb) < offsetof(struct qdisc_skb_cb, data) + sz);
+	BUILD_BUG_ON(sizeof(qcb->data) < sz);
+}
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 static inline int qdisc_qlen(struct Qdisc *q)
 {
 	return q->q.qlen;

@@ -13,7 +13,10 @@
  */
 #include <linux/errno.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/amba/bus.h>
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #include <linux/device.h>
 #include <linux/dma-mapping.h>
 #include <linux/slab.h>
@@ -23,6 +26,7 @@
 #include <linux/of_platform.h>
 #include <linux/platform_device.h>
 
+<<<<<<< HEAD
 const struct of_device_id of_default_bus_match_table[] = {
 	{ .compatible = "simple-bus", },
 #ifdef CONFIG_ARM_AMBA
@@ -31,6 +35,8 @@ const struct of_device_id of_default_bus_match_table[] = {
 	{} /* Empty terminated list */
 };
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 static int of_dev_node_match(struct device *dev, void *data)
 {
 	return dev->of_node == data;
@@ -177,20 +183,32 @@ struct platform_device *of_device_alloc(struct device_node *np,
 EXPORT_SYMBOL(of_device_alloc);
 
 /**
+<<<<<<< HEAD
  * of_platform_device_create_pdata - Alloc, initialize and register an of_device
  * @np: pointer to node to create device for
  * @bus_id: name to assign device
  * @platform_data: pointer to populate platform_data pointer with
+=======
+ * of_platform_device_create - Alloc, initialize and register an of_device
+ * @np: pointer to node to create device for
+ * @bus_id: name to assign device
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
  * @parent: Linux device model parent device.
  *
  * Returns pointer to created platform device, or NULL if a device was not
  * registered.  Unavailable devices will not get registered.
  */
+<<<<<<< HEAD
 struct platform_device *of_platform_device_create_pdata(
 					struct device_node *np,
 					const char *bus_id,
 					void *platform_data,
 					struct device *parent)
+=======
+struct platform_device *of_platform_device_create(struct device_node *np,
+					    const char *bus_id,
+					    struct device *parent)
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 {
 	struct platform_device *dev;
 
@@ -206,7 +224,10 @@ struct platform_device *of_platform_device_create_pdata(
 #endif
 	dev->dev.coherent_dma_mask = DMA_BIT_MASK(32);
 	dev->dev.bus = &platform_bus_type;
+<<<<<<< HEAD
 	dev->dev.platform_data = platform_data;
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	/* We do not fill the DMA ops for platform devices by default.
 	 * This is currently the responsibility of the platform code
@@ -220,6 +241,7 @@ struct platform_device *of_platform_device_create_pdata(
 
 	return dev;
 }
+<<<<<<< HEAD
 
 /**
  * of_platform_device_create - Alloc, initialize and register an of_device
@@ -325,6 +347,10 @@ static const struct of_dev_auxdata *of_dev_lookup(const struct of_dev_auxdata *l
 	return NULL;
 }
 
+=======
+EXPORT_SYMBOL(of_platform_device_create);
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 /**
  * of_platform_bus_create() - Create a device for a node and its children.
  * @bus: device node of the bus to instantiate
@@ -337,6 +363,7 @@ static const struct of_dev_auxdata *of_dev_lookup(const struct of_dev_auxdata *l
  */
 static int of_platform_bus_create(struct device_node *bus,
 				  const struct of_device_id *matches,
+<<<<<<< HEAD
 				  const struct of_dev_auxdata *lookup,
 				  struct device *parent, bool strict)
 {
@@ -366,12 +393,25 @@ static int of_platform_bus_create(struct device_node *bus,
 	}
 
 	dev = of_platform_device_create_pdata(bus, bus_id, platform_data, parent);
+=======
+				  struct device *parent)
+{
+	struct device_node *child;
+	struct platform_device *dev;
+	int rc = 0;
+
+	dev = of_platform_device_create(bus, NULL, parent);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	if (!dev || !of_match_node(matches, bus))
 		return 0;
 
 	for_each_child_of_node(bus, child) {
 		pr_debug("   create child: %s\n", child->full_name);
+<<<<<<< HEAD
 		rc = of_platform_bus_create(child, matches, lookup, &dev->dev, strict);
+=======
+		rc = of_platform_bus_create(child, matches, &dev->dev);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		if (rc) {
 			of_node_put(child);
 			break;
@@ -405,11 +445,19 @@ int of_platform_bus_probe(struct device_node *root,
 
 	/* Do a self check of bus type, if there's a match, create children */
 	if (of_match_node(matches, root)) {
+<<<<<<< HEAD
 		rc = of_platform_bus_create(root, matches, NULL, parent, false);
 	} else for_each_child_of_node(root, child) {
 		if (!of_match_node(matches, child))
 			continue;
 		rc = of_platform_bus_create(child, matches, NULL, parent, false);
+=======
+		rc = of_platform_bus_create(root, matches, parent);
+	} else for_each_child_of_node(root, child) {
+		if (!of_match_node(matches, child))
+			continue;
+		rc = of_platform_bus_create(child, matches, parent);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 		if (rc)
 			break;
 	}
@@ -418,6 +466,7 @@ int of_platform_bus_probe(struct device_node *root,
 	return rc;
 }
 EXPORT_SYMBOL(of_platform_bus_probe);
+<<<<<<< HEAD
 
 /**
  * of_platform_populate() - Populate platform_devices from device tree data
@@ -458,4 +507,6 @@ int of_platform_populate(struct device_node *root,
 	of_node_put(root);
 	return rc;
 }
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #endif /* !CONFIG_SPARC */

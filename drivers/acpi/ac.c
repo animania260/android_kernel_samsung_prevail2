@@ -292,7 +292,13 @@ static int acpi_ac_add(struct acpi_device *device)
 	ac->charger.properties = ac_props;
 	ac->charger.num_properties = ARRAY_SIZE(ac_props);
 	ac->charger.get_property = get_ac_property;
+<<<<<<< HEAD
 	power_supply_register(&ac->device->dev, &ac->charger);
+=======
+	result = power_supply_register(&ac->device->dev, &ac->charger);
+	if (result)
+		goto end;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	printk(KERN_INFO PREFIX "%s [%s] (%s)\n",
 	       acpi_device_name(device), acpi_device_bid(device),

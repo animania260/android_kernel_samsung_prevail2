@@ -30,6 +30,16 @@ extern struct fs_struct init_fs;
 #define INIT_THREADGROUP_FORK_LOCK(sig)
 #endif
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_CPUSETS
+#define INIT_CPUSET_SEQ							\
+	.mems_allowed_seq = SEQCNT_ZERO,
+#else
+#define INIT_CPUSET_SEQ
+#endif
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 #define INIT_SIGNALS(sig) {						\
 	.nr_threads	= 1,						\
 	.wait_chldexit	= __WAIT_QUEUE_HEAD_INITIALIZER(sig.wait_chldexit),\
@@ -117,8 +127,22 @@ extern struct group_info init_groups;
 
 extern struct cred init_cred;
 
+<<<<<<< HEAD
 #ifdef CONFIG_PERF_EVENTS
 # define INIT_PERF_EVENTS(tsk)					\
+=======
+extern struct task_group root_task_group;
+
+#ifdef CONFIG_CGROUP_SCHED
+# define INIT_CGROUP_SCHED(tsk)						\
+	.sched_task_group = &root_task_group,
+#else
+# define INIT_CGROUP_SCHED(tsk)
+#endif
+
+#ifdef CONFIG_PERF_EVENTS
+# define INIT_PERF_EVENTS(tsk)						\
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	.perf_event_mutex = 						\
 		 __MUTEX_INITIALIZER(tsk.perf_event_mutex),		\
 	.perf_event_list = LIST_HEAD_INIT(tsk.perf_event_list),
@@ -153,6 +177,10 @@ extern struct cred init_cred;
 	},								\
 	.tasks		= LIST_HEAD_INIT(tsk.tasks),			\
 	INIT_PUSHABLE_TASKS(tsk)					\
+<<<<<<< HEAD
+=======
+	INIT_CGROUP_SCHED(tsk)						\
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	.ptraced	= LIST_HEAD_INIT(tsk.ptraced),			\
 	.ptrace_entry	= LIST_HEAD_INIT(tsk.ptrace_entry),		\
 	.real_parent	= &tsk,						\
@@ -193,6 +221,10 @@ extern struct cred init_cred;
 	INIT_FTRACE_GRAPH						\
 	INIT_TRACE_RECURSION						\
 	INIT_TASK_RCU_PREEMPT(tsk)					\
+<<<<<<< HEAD
+=======
+	INIT_CPUSET_SEQ							\
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 
 

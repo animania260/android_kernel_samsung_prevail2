@@ -135,8 +135,16 @@ int drm_open(struct inode *inode, struct file *filp)
 	retcode = drm_open_helper(inode, filp, dev);
 	if (!retcode) {
 		atomic_inc(&dev->counts[_DRM_STAT_OPENS]);
+<<<<<<< HEAD
 		if (!dev->open_count++)
 			retcode = drm_setup(dev);
+=======
+		if (!dev->open_count++) {
+			retcode = drm_setup(dev);
+			if (retcode)
+				dev->open_count--;
+		}
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	}
 	if (!retcode) {
 		mutex_lock(&dev->struct_mutex);
@@ -486,6 +494,14 @@ int drm_release(struct inode *inode, struct file *filp)
 		  (long)old_encode_dev(file_priv->minor->device),
 		  dev->open_count);
 
+<<<<<<< HEAD
+=======
+	/* Release any auth tokens that might point to this file_priv,
+	   (do that under the drm_global_mutex) */
+	if (file_priv->magic)
+		(void) drm_remove_magic(file_priv->master, file_priv->magic);
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	/* if the master has gone away we can't do anything with the lock */
 	if (file_priv->minor->master)
 		drm_master_release(dev, filp);

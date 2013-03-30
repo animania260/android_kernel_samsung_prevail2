@@ -28,7 +28,11 @@
  */
 static const struct address_space_operations swap_aops = {
 	.writepage	= swap_writepage,
+<<<<<<< HEAD
 	.set_page_dirty	= __set_page_dirty_nobuffers,
+=======
+	.set_page_dirty	= __set_page_dirty_no_writeback,
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	.migratepage	= migrate_page,
 };
 

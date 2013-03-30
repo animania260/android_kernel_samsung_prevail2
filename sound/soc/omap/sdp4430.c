@@ -1,8 +1,12 @@
 /*
  * sdp4430.c  --  SoC audio for TI OMAP4430 SDP
  *
+<<<<<<< HEAD
  * Author: Misael Lopez Cruz <misael.lopez@ti.com>
  *         Liam Girdwood <lrg@ti.com>
+=======
+ * Author: Misael Lopez Cruz <x0052729@ti.com>
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -22,6 +26,7 @@
 
 #include <linux/clk.h>
 #include <linux/platform_device.h>
+<<<<<<< HEAD
 #include <linux/i2c.h>
 #include <linux/mfd/twl6040.h>
 
@@ -32,11 +37,18 @@
 #include <sound/soc-dapm.h>
 #include <sound/jack.h>
 #include <sound/soc-dsp.h>
+=======
+#include <sound/core.h>
+#include <sound/pcm.h>
+#include <sound/soc.h>
+#include <sound/jack.h>
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 #include <asm/mach-types.h>
 #include <plat/hardware.h>
 #include <plat/mux.h>
 
+<<<<<<< HEAD
 #include "omap-mcpdm.h"
 #include "omap-abe.h"
 #include "omap-pcm.h"
@@ -69,14 +81,28 @@ static int sdp4430_tps6130x_configure(void)
 }
 
 static int sdp4430_mcpdm_hw_params(struct snd_pcm_substream *substream,
+=======
+#include "mcpdm.h"
+#include "omap-pcm.h"
+#include "../codecs/twl6040.h"
+
+static int twl6040_power_mode;
+
+static int sdp4430_hw_params(struct snd_pcm_substream *substream,
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	struct snd_pcm_hw_params *params)
 {
 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
 	struct snd_soc_dai *codec_dai = rtd->codec_dai;
+<<<<<<< HEAD
 	struct snd_soc_pcm_runtime *modem_rtd;
 	struct snd_pcm_substream *modem_substream[2];
 	struct snd_soc_dsp_params *dsp_params;
 	int clk_id, freq, ret, stream = substream->stream;
+=======
+	int clk_id, freq;
+	int ret;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	if (twl6040_power_mode) {
 		clk_id = TWL6040_SYSCLK_SEL_HPPLL;
@@ -93,6 +119,7 @@ static int sdp4430_mcpdm_hw_params(struct snd_pcm_substream *substream,
 		printk(KERN_ERR "can't set codec system clock\n");
 		return ret;
 	}
+<<<<<<< HEAD
 	list_for_each_entry(dsp_params, &rtd->dsp[stream].fe_clients, list_fe) {
 
 		if (dsp_params->fe->cpu_dai->id != ABE_FRONTEND_DAI_MODEM)
@@ -231,6 +258,15 @@ static int dmic_be_hw_params_fixup(struct snd_soc_pcm_runtime *rtd,
 	return 0;
 }
 
+=======
+	return ret;
+}
+
+static struct snd_soc_ops sdp4430_ops = {
+	.hw_params = sdp4430_hw_params,
+};
+
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 /* Headset jack */
 static struct snd_soc_jack hs_jack;
 
@@ -283,9 +319,12 @@ static const struct snd_soc_dapm_widget sdp4430_twl6040_dapm_widgets[] = {
 	SND_SOC_DAPM_HP("Headset Stereophone", NULL),
 	SND_SOC_DAPM_SPK("Earphone Spk", NULL),
 	SND_SOC_DAPM_INPUT("Aux/FM Stereo In"),
+<<<<<<< HEAD
 	SND_SOC_DAPM_MIC("Digital Mic 0", NULL),
 	SND_SOC_DAPM_MIC("Digital Mic 1", NULL),
 	SND_SOC_DAPM_MIC("Digital Mic 2", NULL),
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 };
 
 static const struct snd_soc_dapm_route audio_map[] = {
@@ -312,6 +351,7 @@ static const struct snd_soc_dapm_route audio_map[] = {
 	/* Aux/FM Stereo In: AFML, AFMR */
 	{"AFML", NULL, "Aux/FM Stereo In"},
 	{"AFMR", NULL, "Aux/FM Stereo In"},
+<<<<<<< HEAD
 
 	/* Digital Mics: DMic0, DMic1, DMic2 with bias */
 	{"DMIC0", NULL, "Digital Mic1 Bias"},
@@ -322,6 +362,8 @@ static const struct snd_soc_dapm_route audio_map[] = {
 
 	{"DMIC2", NULL, "Digital Mic1 Bias"},
 	{"Digital Mic1 Bias", NULL, "Digital Mic 2"},
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 };
 
 static int sdp4430_twl6040_init(struct snd_soc_pcm_runtime *rtd)
@@ -353,6 +395,7 @@ static int sdp4430_twl6040_init(struct snd_soc_pcm_runtime *rtd)
 	snd_soc_dapm_enable_pin(dapm, "Headset Mic");
 	snd_soc_dapm_enable_pin(dapm, "Headset Stereophone");
 
+<<<<<<< HEAD
 	/* allow audio paths from the audio modem to run during suspend */
 	snd_soc_dapm_ignore_suspend(dapm, "Ext Mic");
 	snd_soc_dapm_ignore_suspend(dapm, "Ext Spk");
@@ -364,6 +407,8 @@ static int sdp4430_twl6040_init(struct snd_soc_pcm_runtime *rtd)
 	snd_soc_dapm_ignore_suspend(dapm, "Digital Mic 1");
 	snd_soc_dapm_ignore_suspend(dapm, "Digital Mic 2");
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	ret = snd_soc_dapm_sync(dapm);
 	if (ret)
 		return ret;
@@ -382,6 +427,7 @@ static int sdp4430_twl6040_init(struct snd_soc_pcm_runtime *rtd)
 	else
 		snd_soc_jack_report(&hs_jack, SND_JACK_HEADSET, SND_JACK_HEADSET);
 
+<<<<<<< HEAD
 	/* wait 500 ms before switching of HS power */
 	rtd->pmdown_time = 500;
 
@@ -823,10 +869,26 @@ static struct snd_soc_dai_link sdp4430_dai[] = {
 		.be_hw_params_fixup = dmic_be_hw_params_fixup,
 		.be_id = OMAP_ABE_DAI_DMIC2,
 	},
+=======
+	return ret;
+}
+
+/* Digital audio interface glue - connects codec <--> CPU */
+static struct snd_soc_dai_link sdp4430_dai = {
+	.name = "TWL6040",
+	.stream_name = "TWL6040",
+	.cpu_dai_name ="omap-mcpdm-dai",
+	.codec_dai_name = "twl6040-hifi",
+	.platform_name = "omap-pcm-audio",
+	.codec_name = "twl6040-codec",
+	.init = sdp4430_twl6040_init,
+	.ops = &sdp4430_ops,
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 };
 
 /* Audio machine driver */
 static struct snd_soc_card snd_soc_sdp4430 = {
+<<<<<<< HEAD
 	.driver_name = "OMAP4",
 	.long_name = "TI OMAP4 Board",
 	.dai_link = sdp4430_dai,
@@ -835,11 +897,20 @@ static struct snd_soc_card snd_soc_sdp4430 = {
 
 static struct platform_device *sdp4430_snd_device;
 static struct i2c_adapter *adapter;
+=======
+	.name = "SDP4430",
+	.dai_link = &sdp4430_dai,
+	.num_links = 1,
+};
+
+static struct platform_device *sdp4430_snd_device;
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 static int __init sdp4430_soc_init(void)
 {
 	int ret;
 
+<<<<<<< HEAD
 	if (!machine_is_omap_4430sdp() && !machine_is_omap4_panda()) {
 		pr_debug("Not SDP4430 or PandaBoard!\n");
 		return -ENODEV;
@@ -849,6 +920,11 @@ static int __init sdp4430_soc_init(void)
 		snd_soc_sdp4430.name = "SDP4430";
 	else if (machine_is_omap4_panda())
 		snd_soc_sdp4430.name = "Panda";
+=======
+	if (!machine_is_omap_4430sdp())
+		return -ENODEV;
+	printk(KERN_INFO "SDP4430 SoC init\n");
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	sdp4430_snd_device = platform_device_alloc("soc-audio", -1);
 	if (!sdp4430_snd_device) {
@@ -856,13 +932,17 @@ static int __init sdp4430_soc_init(void)
 		return -ENOMEM;
 	}
 
+<<<<<<< HEAD
 	ret = snd_soc_register_dais(&sdp4430_snd_device->dev, dai, ARRAY_SIZE(dai));
 	if (ret < 0)
 		goto err_dai;
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	platform_set_drvdata(sdp4430_snd_device, &snd_soc_sdp4430);
 
 	ret = platform_device_add(sdp4430_snd_device);
 	if (ret)
+<<<<<<< HEAD
 		goto err_dev;
 
 	adapter = i2c_get_adapter(1);
@@ -892,6 +972,17 @@ err_adap:
 err_dev:
 	snd_soc_unregister_dais(&sdp4430_snd_device->dev, ARRAY_SIZE(dai));
 err_dai:
+=======
+		goto err;
+
+	/* Codec starts in HP mode */
+	twl6040_power_mode = 1;
+
+	return 0;
+
+err:
+	printk(KERN_ERR "Unable to add platform device\n");
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	platform_device_put(sdp4430_snd_device);
 	return ret;
 }
@@ -900,9 +991,12 @@ module_init(sdp4430_soc_init);
 static void __exit sdp4430_soc_exit(void)
 {
 	platform_device_unregister(sdp4430_snd_device);
+<<<<<<< HEAD
 	snd_soc_unregister_dais(&sdp4430_snd_device->dev, ARRAY_SIZE(dai));
 	i2c_unregister_device(tps6130x_client);
 	i2c_put_adapter(adapter);
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 }
 module_exit(sdp4430_soc_exit);
 

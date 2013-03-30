@@ -132,6 +132,10 @@ static void xenvif_up(struct xenvif *vif)
 static void xenvif_down(struct xenvif *vif)
 {
 	disable_irq(vif->irq);
+<<<<<<< HEAD
+=======
+	del_timer_sync(&vif->credit_timeout);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	xen_netbk_deschedule_xenvif(vif);
 	xen_netbk_remove_xenvif(vif);
 }
@@ -327,12 +331,20 @@ int xenvif_connect(struct xenvif *vif, unsigned long tx_ring_ref,
 	xenvif_get(vif);
 
 	rtnl_lock();
+<<<<<<< HEAD
 	if (netif_running(vif->dev))
 		xenvif_up(vif);
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	if (!vif->can_sg && vif->dev->mtu > ETH_DATA_LEN)
 		dev_set_mtu(vif->dev, ETH_DATA_LEN);
 	netdev_update_features(vif->dev);
 	netif_carrier_on(vif->dev);
+<<<<<<< HEAD
+=======
+	if (netif_running(vif->dev))
+		xenvif_up(vif);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	rtnl_unlock();
 
 	return 0;
@@ -342,6 +354,7 @@ err:
 	return err;
 }
 
+<<<<<<< HEAD
 void xenvif_disconnect(struct xenvif *vif)
 {
 	struct net_device *dev = vif->dev;
@@ -353,12 +366,33 @@ void xenvif_disconnect(struct xenvif *vif)
 		rtnl_unlock();
 		xenvif_put(vif);
 	}
+=======
+void xenvif_carrier_off(struct xenvif *vif)
+{
+	struct net_device *dev = vif->dev;
+
+	rtnl_lock();
+	netif_carrier_off(dev); /* discard queued packets */
+	if (netif_running(dev))
+		xenvif_down(vif);
+	rtnl_unlock();
+	xenvif_put(vif);
+}
+
+void xenvif_disconnect(struct xenvif *vif)
+{
+	if (netif_carrier_ok(vif->dev))
+		xenvif_carrier_off(vif);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 
 	atomic_dec(&vif->refcnt);
 	wait_event(vif->waiting_to_free, atomic_read(&vif->refcnt) == 0);
 
+<<<<<<< HEAD
 	del_timer_sync(&vif->credit_timeout);
 
+=======
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	if (vif->irq)
 		unbind_from_irqhandler(vif->irq, vif);
 

@@ -461,7 +461,11 @@ static int waveform_ai_cancel(struct comedi_device *dev,
 			      struct comedi_subdevice *s)
 {
 	devpriv->timer_running = 0;
+<<<<<<< HEAD
 	del_timer(&devpriv->timer);
+=======
+	del_timer_sync(&devpriv->timer);
+>>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 	return 0;
 }
 

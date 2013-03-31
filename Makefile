@@ -1,10 +1,6 @@
 VERSION = 3
 PATCHLEVEL = 0
-<<<<<<< HEAD
-SUBLEVEL = 8
-=======
 SUBLEVEL = 70
->>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 EXTRAVERSION =
 NAME = Sneaky Weasel
 
@@ -344,11 +340,7 @@ include $(srctree)/scripts/Kbuild.include
 
 AS		= $(CROSS_COMPILE)as
 LD		= $(CROSS_COMPILE)ld
-<<<<<<< HEAD
-REAL_CC		= $(CROSS_COMPILE)gcc
-=======
 CC		= $(CROSS_COMPILE)gcc
->>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
 CPP		= $(CC) -E
 AR		= $(CROSS_COMPILE)ar
 NM		= $(CROSS_COMPILE)nm
@@ -362,20 +354,13 @@ DEPMOD		= /sbin/depmod
 KALLSYMS	= scripts/kallsyms
 PERL		= perl
 CHECK		= sparse
-
-<<<<<<< HEAD
-# Use the wrapper for the compiler.  This wrapper scans for new
-# warnings and causes the build to stop upon encountering them.
-CC		= $(srctree)/scripts/gcc-wrapper.py $(REAL_CC)
-
-=======
->>>>>>> msm-linux-3.0.y/korg/linux-3.0.y
+ARM_FLAGS       = -marm -march=armv7-a -mtune=cortex-a8 -mfpu=neon -mfloat-abi=softfp
 CHECKFLAGS     := -D__linux__ -Dlinux -D__STDC__ -Dunix -D__unix__ \
 		  -Wbitwise -Wno-return-void $(CF)
-CFLAGS_MODULE   =
+CFLAGS_MODULE   =  -DMODULE -mtune=cortex-a8 -march=armv7-a -mfpu=neon
 AFLAGS_MODULE   =
 LDFLAGS_MODULE  =
-CFLAGS_KERNEL	=
+CFLAGS_KERNEL	= -mtune=cortex-a8 -march=armv7-a -mfpu=neon
 AFLAGS_KERNEL	=
 CFLAGS_GCOV	= -fprofile-arcs -ftest-coverage
 

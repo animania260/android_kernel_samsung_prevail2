@@ -15,6 +15,7 @@
 #include <linux/cpu.h>
 #include <linux/sysfs.h>
 #include <linux/cpufreq.h>
+#include <linux/module.h>
 #include <linux/jiffies.h>
 #include <linux/percpu.h>
 #include <linux/kobject.h>
@@ -60,9 +61,8 @@ static int cpufreq_stats_update(unsigned int cpu)
 	spin_lock(&cpufreq_stats_lock);
 	stat = per_cpu(cpufreq_stats_table, cpu);
 	if (stat->time_in_state)
-		stat->time_in_state[stat->last_index] =
-			cputime64_add(stat->time_in_state[stat->last_index],
-				      cputime_sub(cur_time, stat->last_time));
+		stat->time_in_state[stat->last_index] +=
+			cur_time - stat->last_time;
 	stat->last_time = cur_time;
 	spin_unlock(&cpufreq_stats_lock);
 	return 0;
@@ -390,18 +390,21 @@ static int __init cpufreq_stats_init(void)
 	if (ret)
 		return ret;
 
+	register_hotcpu_notifier(&cpufreq_stat_cpu_notifier);
+	for_each_online_cpu(cpu)
+		cpufreq_update_policy(cpu);
+
 	ret = cpufreq_register_notifier(&notifier_trans_block,
 				CPUFREQ_TRANSITION_NOTIFIER);
 	if (ret) {
 		cpufreq_unregister_notifier(&notifier_policy_block,
 				CPUFREQ_POLICY_NOTIFIER);
+		unregister_hotcpu_notifier(&cpufreq_stat_cpu_notifier);
+		for_each_online_cpu(cpu)
+			cpufreq_stats_free_table(cpu);
 		return ret;
 	}
 
-	register_hotcpu_notifier(&cpufreq_stat_cpu_notifier);
-	for_each_online_cpu(cpu) {
-		cpufreq_update_policy(cpu);
-	}
 	return 0;
 }
 static void __exit cpufreq_stats_exit(void)

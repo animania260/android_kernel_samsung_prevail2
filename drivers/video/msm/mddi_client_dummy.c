@@ -15,6 +15,10 @@
  * GNU General Public License for more details.
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/slab.h>
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/platform_device.h>

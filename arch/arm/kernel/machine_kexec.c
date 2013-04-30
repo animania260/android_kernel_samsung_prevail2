@@ -86,7 +86,10 @@ void machine_kexec(struct kimage *image)
 	unsigned long reboot_code_buffer_phys;
 	void *reboot_code_buffer;
 
+<<<<<<< HEAD
 	arch_kexec();
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	page_list = image->head & PAGE_MASK;
 
@@ -121,5 +124,9 @@ void machine_kexec(struct kimage *image)
 	cpu_proc_fin();
 	outer_inv_all();
 	flush_cache_all();
+<<<<<<< HEAD
 	__virt_to_phys(cpu_reset)(reboot_code_buffer_phys);
+=======
+	cpu_reset(reboot_code_buffer_phys);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }

@@ -12,7 +12,11 @@
 
 #include <linux/module.h>
 #include <linux/device.h>
+<<<<<<< HEAD
 #include <scsi/scsi_scan.h>
+=======
+#include "scsi_priv.h"
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 static int __init wait_scan_init(void)
 {

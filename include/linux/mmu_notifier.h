@@ -4,6 +4,10 @@
 #include <linux/list.h>
 #include <linux/spinlock.h>
 #include <linux/mm_types.h>
+<<<<<<< HEAD
+=======
+#include <linux/srcu.h>
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 struct mmu_notifier;
 struct mmu_notifier_ops;

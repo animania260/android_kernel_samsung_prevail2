@@ -393,7 +393,10 @@ static int __init acpi_pci_init(void)
 
 	if (acpi_gbl_FADT.boot_flags & ACPI_FADT_NO_ASPM) {
 		printk(KERN_INFO"ACPI FADT declares the system doesn't support PCIe ASPM, so disable it\n");
+<<<<<<< HEAD
 		pcie_clear_aspm();
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		pcie_no_aspm();
 	}
 

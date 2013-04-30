@@ -8812,7 +8812,11 @@ static int __devinit ipr_probe_ioa(struct pci_dev *pdev,
 	uproc = readl(ioa_cfg->regs.sense_uproc_interrupt_reg32);
 	if ((mask & IPR_PCII_HRRQ_UPDATED) == 0 || (uproc & IPR_UPROCI_RESET_ALERT))
 		ioa_cfg->needs_hard_reset = 1;
+<<<<<<< HEAD
 	if (interrupts & IPR_PCII_ERROR_INTERRUPTS)
+=======
+	if ((interrupts & IPR_PCII_ERROR_INTERRUPTS) || reset_devices)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		ioa_cfg->needs_hard_reset = 1;
 	if (interrupts & IPR_PCII_IOA_UNIT_CHECKED)
 		ioa_cfg->ioa_unit_checked = 1;

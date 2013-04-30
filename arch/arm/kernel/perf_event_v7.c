@@ -17,6 +17,7 @@
  */
 
 #ifdef CONFIG_CPU_V7
+<<<<<<< HEAD
 /*
  * Common ARMv7 event types
  *
@@ -24,16 +25,28 @@
  * but the encodings are considered to be `reserved' in the case that
  * they are not available.
  */
+=======
+/* Common ARMv7 event types */
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 enum armv7_perf_types {
 	ARMV7_PERFCTR_PMNC_SW_INCR		= 0x00,
 	ARMV7_PERFCTR_IFETCH_MISS		= 0x01,
 	ARMV7_PERFCTR_ITLB_MISS			= 0x02,
+<<<<<<< HEAD
 	ARMV7_PERFCTR_DCACHE_REFILL		= 0x03,	/* L1 */
 	ARMV7_PERFCTR_DCACHE_ACCESS		= 0x04,	/* L1 */
 	ARMV7_PERFCTR_DTLB_REFILL		= 0x05,
 	ARMV7_PERFCTR_DREAD			= 0x06,
 	ARMV7_PERFCTR_DWRITE			= 0x07,
 	ARMV7_PERFCTR_INSTR_EXECUTED		= 0x08,
+=======
+	ARMV7_PERFCTR_DCACHE_REFILL		= 0x03,
+	ARMV7_PERFCTR_DCACHE_ACCESS		= 0x04,
+	ARMV7_PERFCTR_DTLB_REFILL		= 0x05,
+	ARMV7_PERFCTR_DREAD			= 0x06,
+	ARMV7_PERFCTR_DWRITE			= 0x07,
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	ARMV7_PERFCTR_EXC_TAKEN			= 0x09,
 	ARMV7_PERFCTR_EXC_EXECUTED		= 0x0A,
 	ARMV7_PERFCTR_CID_WRITE			= 0x0B,
@@ -45,6 +58,7 @@ enum armv7_perf_types {
 	 */
 	ARMV7_PERFCTR_PC_WRITE			= 0x0C,
 	ARMV7_PERFCTR_PC_IMM_BRANCH		= 0x0D,
+<<<<<<< HEAD
 	ARMV7_PERFCTR_PC_PROC_RETURN		= 0x0E,
 	ARMV7_PERFCTR_UNALIGNED_ACCESS		= 0x0F,
 
@@ -63,12 +77,26 @@ enum armv7_perf_types {
 	ARMV7_PERFCTR_INSTR_SPEC		= 0x1B,
 	ARMV7_PERFCTR_TTBR_WRITE		= 0x1C,
 	ARMV7_PERFCTR_BUS_CYCLES		= 0x1D,
+=======
+	ARMV7_PERFCTR_UNALIGNED_ACCESS		= 0x0F,
+	ARMV7_PERFCTR_PC_BRANCH_MIS_PRED	= 0x10,
+	ARMV7_PERFCTR_CLOCK_CYCLES		= 0x11,
+
+	ARMV7_PERFCTR_PC_BRANCH_MIS_USED	= 0x12,
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	ARMV7_PERFCTR_CPU_CYCLES		= 0xFF
 };
 
 /* ARMv7 Cortex-A8 specific event types */
 enum armv7_a8_perf_types {
+<<<<<<< HEAD
+=======
+	ARMV7_PERFCTR_INSTR_EXECUTED		= 0x08,
+
+	ARMV7_PERFCTR_PC_PROC_RETURN		= 0x0E,
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	ARMV7_PERFCTR_WRITE_BUFFER_FULL		= 0x40,
 	ARMV7_PERFCTR_L2_STORE_MERGED		= 0x41,
 	ARMV7_PERFCTR_L2_STORE_BUFF		= 0x42,
@@ -153,6 +181,7 @@ enum armv7_a9_perf_types {
 	ARMV7_PERFCTR_PLE_RQST_PROG		= 0xA5
 };
 
+<<<<<<< HEAD
 /* ARMv7 Cortex-A5 specific event types */
 enum armv7_a5_perf_types {
 	ARMV7_PERFCTR_IRQ_TAKEN			= 0x86,
@@ -186,6 +215,8 @@ enum armv7_a15_perf_types {
 	ARMV7_PERFCTR_SPEC_PC_WRITE		= 0x76,
 };
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 /*
  * Cortex-A8 HW events mapping
  *
@@ -203,7 +234,11 @@ static const unsigned armv7_a8_perf_map[PERF_COUNT_HW_MAX] = {
 	[PERF_COUNT_HW_BUS_CYCLES]	    = ARMV7_PERFCTR_CLOCK_CYCLES,
 };
 
+<<<<<<< HEAD
 static unsigned armv7_a8_perf_cache_map[PERF_COUNT_HW_CACHE_MAX]
+=======
+static const unsigned armv7_a8_perf_cache_map[PERF_COUNT_HW_CACHE_MAX]
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 					  [PERF_COUNT_HW_CACHE_OP_MAX]
 					  [PERF_COUNT_HW_CACHE_RESULT_MAX] = {
 	[C(L1D)] = {
@@ -255,6 +290,14 @@ static unsigned armv7_a8_perf_cache_map[PERF_COUNT_HW_CACHE_MAX]
 		},
 	},
 	[C(DTLB)] = {
+<<<<<<< HEAD
+=======
+		/*
+		 * Only ITLB misses and DTLB refills are supported.
+		 * If users want the DTLB refills misses a raw counter
+		 * must be used.
+		 */
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		[C(OP_READ)] = {
 			[C(RESULT_ACCESS)]	= CACHE_OP_UNSUPPORTED,
 			[C(RESULT_MISS)]	= ARMV7_PERFCTR_DTLB_REFILL,
@@ -314,7 +357,11 @@ static const unsigned armv7_a9_perf_map[PERF_COUNT_HW_MAX] = {
 	[PERF_COUNT_HW_BUS_CYCLES]	    = ARMV7_PERFCTR_CLOCK_CYCLES,
 };
 
+<<<<<<< HEAD
 static  unsigned armv7_a9_perf_cache_map[PERF_COUNT_HW_CACHE_MAX]
+=======
+static const unsigned armv7_a9_perf_cache_map[PERF_COUNT_HW_CACHE_MAX]
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 					  [PERF_COUNT_HW_CACHE_OP_MAX]
 					  [PERF_COUNT_HW_CACHE_RESULT_MAX] = {
 	[C(L1D)] = {
@@ -366,6 +413,7 @@ static  unsigned armv7_a9_perf_cache_map[PERF_COUNT_HW_CACHE_MAX]
 		},
 	},
 	[C(DTLB)] = {
+<<<<<<< HEAD
 		[C(OP_READ)] = {
 			[C(RESULT_ACCESS)]	= CACHE_OP_UNSUPPORTED,
 			[C(RESULT_MISS)]	= ARMV7_PERFCTR_DTLB_REFILL,
@@ -482,6 +530,13 @@ static unsigned armv7_a5_perf_cache_map[PERF_COUNT_HW_CACHE_MAX]
 		},
 	},
 	[C(DTLB)] = {
+=======
+		/*
+		 * Only ITLB misses and DTLB refills are supported.
+		 * If users want the DTLB refills misses a raw counter
+		 * must be used.
+		 */
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		[C(OP_READ)] = {
 			[C(RESULT_ACCESS)]	= CACHE_OP_UNSUPPORTED,
 			[C(RESULT_MISS)]	= ARMV7_PERFCTR_DTLB_REFILL,
@@ -511,6 +566,7 @@ static unsigned armv7_a5_perf_cache_map[PERF_COUNT_HW_CACHE_MAX]
 	},
 	[C(BPU)] = {
 		[C(OP_READ)] = {
+<<<<<<< HEAD
 			[C(RESULT_ACCESS)]	= ARMV7_PERFCTR_PC_BRANCH_PRED,
 			[C(RESULT_MISS)]
 					= ARMV7_PERFCTR_PC_BRANCH_MIS_PRED,
@@ -632,11 +688,18 @@ static unsigned armv7_a15_perf_cache_map[PERF_COUNT_HW_CACHE_MAX]
 	[C(BPU)] = {
 		[C(OP_READ)] = {
 			[C(RESULT_ACCESS)]	= ARMV7_PERFCTR_PC_BRANCH_PRED,
+=======
+			[C(RESULT_ACCESS)]	= ARMV7_PERFCTR_PC_WRITE,
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			[C(RESULT_MISS)]
 					= ARMV7_PERFCTR_PC_BRANCH_MIS_PRED,
 		},
 		[C(OP_WRITE)] = {
+<<<<<<< HEAD
 			[C(RESULT_ACCESS)]	= ARMV7_PERFCTR_PC_BRANCH_PRED,
+=======
+			[C(RESULT_ACCESS)]	= ARMV7_PERFCTR_PC_WRITE,
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			[C(RESULT_MISS)]
 					= ARMV7_PERFCTR_PC_BRANCH_MIS_PRED,
 		},
@@ -715,8 +778,12 @@ enum armv7_counters {
 /*
  * EVTSEL: Event selection reg
  */
+<<<<<<< HEAD
 #define	ARMV7_EVTYPE_EVENT	0xff		/* Mask for writable bits */
 #define ARMV7_EVTYPE_MASK	0xc00000ff
+=======
+#define	ARMV7_EVTSEL_MASK	0xff		/* Mask for writable bits */
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 /*
  * SELECT: Counter selection reg
@@ -731,6 +798,7 @@ enum armv7_counters {
 #define	ARMV7_FLAG_MASK		0xffffffff	/* Mask for writable bits */
 #define	ARMV7_OVERFLOWED_MASK	ARMV7_FLAG_MASK
 
+<<<<<<< HEAD
 /*
  * Event filters for PMUv2
  */
@@ -768,6 +836,8 @@ int armv7pmu_set_event_filter(struct hw_perf_event *event,
 	return 0;
 }
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 static inline unsigned long armv7_pmnc_read(void)
 {
 	u32 val;
@@ -853,8 +923,12 @@ static inline void armv7pmu_write_counter(int idx, u32 value)
 static inline void armv7_pmnc_write_evtsel(unsigned int idx, u32 val)
 {
 	if (armv7_pmnc_select_counter(idx) == idx) {
+<<<<<<< HEAD
 		val &= ARMV7_EVTYPE_MASK;
 
+=======
+		val &= ARMV7_EVTSEL_MASK;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		asm volatile("mcr p15, 0, %0, c9, c13, 1" : : "r" (val));
 	}
 }
@@ -1015,7 +1089,11 @@ static void armv7pmu_enable_event(struct hw_perf_event *hwc, int idx)
 	 * Set event (if destined for PMNx counters)
 	 * We don't need to set the event if it's a cycle count
 	 */
+<<<<<<< HEAD
 	if (armpmu->set_event_filter || idx != ARMV7_CYCLE_COUNTER)
+=======
+	if (idx != ARMV7_CYCLE_COUNTER)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		armv7_pmnc_write_evtsel(idx, hwc->config_base);
 
 	/*
@@ -1140,11 +1218,17 @@ static int armv7pmu_get_event_idx(struct cpu_hw_events *cpuc,
 				  struct hw_perf_event *event)
 {
 	int idx;
+<<<<<<< HEAD
 	unsigned long evtype = event->config_base & ARMV7_EVTYPE_EVENT;
 
 
 	/* Always place a cycle counter into the cycle counter. */
 	if (evtype == ARMV7_PERFCTR_CPU_CYCLES) {
+=======
+
+	/* Always place a cycle counter into the cycle counter. */
+	if (event->config_base == ARMV7_PERFCTR_CPU_CYCLES) {
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		if (test_and_set_bit(ARMV7_CYCLE_COUNTER, cpuc->used_mask))
 			return -EAGAIN;
 
@@ -1178,8 +1262,11 @@ static void armv7pmu_reset(void *info)
 
 static struct arm_pmu armv7pmu = {
 	.handle_irq		= armv7pmu_handle_irq,
+<<<<<<< HEAD
 	.request_pmu_irq	= armpmu_generic_request_irq,
 	.free_pmu_irq		= armpmu_generic_free_irq,
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	.enable			= armv7pmu_enable_event,
 	.disable		= armv7pmu_disable_event,
 	.read_counter		= armv7pmu_read_counter,
@@ -1222,6 +1309,7 @@ static const struct arm_pmu *__init armv7_a9_pmu_init(void)
 	armv7pmu.num_events	= armv7_read_num_pmnc_events();
 	return &armv7pmu;
 }
+<<<<<<< HEAD
 
 static const struct arm_pmu *__init armv7_a5_pmu_init(void)
 {
@@ -1242,6 +1330,8 @@ static const struct arm_pmu *__init armv7_a15_pmu_init(void)
 	armv7pmu.num_events	= armv7_read_num_pmnc_events();
 	return &armv7pmu;
 }
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #else
 static const struct arm_pmu *__init armv7_a8_pmu_init(void)
 {
@@ -1252,6 +1342,7 @@ static const struct arm_pmu *__init armv7_a9_pmu_init(void)
 {
 	return NULL;
 }
+<<<<<<< HEAD
 
 static const struct arm_pmu *__init armv7_a5_pmu_init(void)
 {
@@ -1262,4 +1353,6 @@ static const struct arm_pmu *__init armv7_a15_pmu_init(void)
 {
 	return NULL;
 }
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #endif	/* CONFIG_CPU_V7 */

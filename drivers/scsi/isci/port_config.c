@@ -678,7 +678,11 @@ static void apc_agent_timeout(unsigned long data)
 	configure_phy_mask = ~port_agent->phy_configured_mask & port_agent->phy_ready_mask;
 
 	if (!configure_phy_mask)
+<<<<<<< HEAD
 		return;
+=======
+		goto done;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	for (index = 0; index < SCI_MAX_PHYS; index++) {
 		if ((configure_phy_mask & (1 << index)) == 0)

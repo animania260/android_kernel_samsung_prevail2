@@ -431,6 +431,7 @@ EXPORT_SYMBOL(dma_free_coherent);
 void ___dma_single_cpu_to_dev(const void *kaddr, size_t size,
 	enum dma_data_direction dir)
 {
+<<<<<<< HEAD
 #ifdef CONFIG_OUTER_CACHE
 	unsigned long paddr;
 
@@ -440,13 +441,24 @@ void ___dma_single_cpu_to_dev(const void *kaddr, size_t size,
 	dmac_map_area(kaddr, size, dir);
 
 #ifdef CONFIG_OUTER_CACHE
+=======
+	unsigned long paddr;
+
+	BUG_ON(!virt_addr_valid(kaddr) || !virt_addr_valid(kaddr + size - 1));
+
+	dmac_map_area(kaddr, size, dir);
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	paddr = __pa(kaddr);
 	if (dir == DMA_FROM_DEVICE) {
 		outer_inv_range(paddr, paddr + size);
 	} else {
 		outer_clean_range(paddr, paddr + size);
 	}
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	/* FIXME: non-speculating: flush on bidirectional mappings? */
 }
 EXPORT_SYMBOL(___dma_single_cpu_to_dev);
@@ -454,7 +466,10 @@ EXPORT_SYMBOL(___dma_single_cpu_to_dev);
 void ___dma_single_dev_to_cpu(const void *kaddr, size_t size,
 	enum dma_data_direction dir)
 {
+<<<<<<< HEAD
 #ifdef CONFIG_OUTER_CACHE
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	BUG_ON(!virt_addr_valid(kaddr) || !virt_addr_valid(kaddr + size - 1));
 
 	/* FIXME: non-speculating: not required */
@@ -463,7 +478,11 @@ void ___dma_single_dev_to_cpu(const void *kaddr, size_t size,
 		unsigned long paddr = __pa(kaddr);
 		outer_inv_range(paddr, paddr + size);
 	}
+<<<<<<< HEAD
 #endif
+=======
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	dmac_unmap_area(kaddr, size, dir);
 }
 EXPORT_SYMBOL(___dma_single_dev_to_cpu);
@@ -472,17 +491,30 @@ static void dma_cache_maint_page(struct page *page, unsigned long offset,
 	size_t size, enum dma_data_direction dir,
 	void (*op)(const void *, size_t, int))
 {
+<<<<<<< HEAD
+=======
+	unsigned long pfn;
+	size_t left = size;
+
+	pfn = page_to_pfn(page) + offset / PAGE_SIZE;
+	offset %= PAGE_SIZE;
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	/*
 	 * A single sg entry may refer to multiple physically contiguous
 	 * pages.  But we still need to process highmem pages individually.
 	 * If highmem is not configured then the bulk of this loop gets
 	 * optimized out.
 	 */
+<<<<<<< HEAD
 	size_t left = size;
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	do {
 		size_t len = left;
 		void *vaddr;
 
+<<<<<<< HEAD
 		if (PageHighMem(page)) {
 			if (len + offset > PAGE_SIZE) {
 				if (offset >= PAGE_SIZE) {
@@ -491,6 +523,13 @@ static void dma_cache_maint_page(struct page *page, unsigned long offset,
 				}
 				len = PAGE_SIZE - offset;
 			}
+=======
+		page = pfn_to_page(pfn);
+
+		if (PageHighMem(page)) {
+			if (len + offset > PAGE_SIZE)
+				len = PAGE_SIZE - offset;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			vaddr = kmap_high_get(page);
 			if (vaddr) {
 				vaddr += offset;
@@ -507,7 +546,11 @@ static void dma_cache_maint_page(struct page *page, unsigned long offset,
 			op(vaddr, len, dir);
 		}
 		offset = 0;
+<<<<<<< HEAD
 		page++;
+=======
+		pfn++;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		left -= len;
 	} while (left);
 }

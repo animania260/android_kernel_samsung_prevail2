@@ -246,6 +246,10 @@ extern int sysctl_tcp_max_ssthresh;
 extern int sysctl_tcp_cookie_size;
 extern int sysctl_tcp_thin_linear_timeouts;
 extern int sysctl_tcp_thin_dupack;
+<<<<<<< HEAD
+=======
+extern int sysctl_tcp_challenge_ack_limit;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 extern atomic_long_t tcp_memory_allocated;
 extern struct percpu_counter tcp_sockets_allocated;
@@ -1404,8 +1408,11 @@ extern struct sk_buff **tcp4_gro_receive(struct sk_buff **head,
 extern int tcp_gro_complete(struct sk_buff *skb);
 extern int tcp4_gro_complete(struct sk_buff *skb);
 
+<<<<<<< HEAD
 extern int tcp_nuke_addr(struct net *net, struct sockaddr *addr);
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #ifdef CONFIG_PROC_FS
 extern int tcp4_proc_init(void);
 extern void tcp4_proc_exit(void);

@@ -18,7 +18,12 @@
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
+<<<<<<< HEAD
  * the Free Software Foundation; only version 2 of the License.
+=======
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -363,11 +368,17 @@ static struct snd_pcm_ops atmel_pcm_ops = {
 \*--------------------------------------------------------------------------*/
 static u64 atmel_pcm_dmamask = 0xffffffff;
 
+<<<<<<< HEAD
 static int atmel_pcm_new(struct snd_soc_pcm_runtime *rtd)
 {
 	struct snd_card *card = rtd->card->snd_card;
 	struct snd_soc_dai *dai = rtd->cpu_dai;
 	struct snd_pcm *pcm = rtd->pcm;
+=======
+static int atmel_pcm_new(struct snd_card *card,
+	struct snd_soc_dai *dai, struct snd_pcm *pcm)
+{
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	int ret = 0;
 
 	if (!card->dev->dma_mask)
@@ -508,4 +519,8 @@ module_exit(snd_atmel_pcm_exit);
 
 MODULE_AUTHOR("Sedji Gaouaou <sedji.gaouaou@atmel.com>");
 MODULE_DESCRIPTION("Atmel PCM module");
+<<<<<<< HEAD
 MODULE_LICENSE("GPL v2");
+=======
+MODULE_LICENSE("GPL");
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y

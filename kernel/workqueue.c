@@ -43,9 +43,12 @@
 #include <linux/idr.h>
 
 #include "workqueue_sched.h"
+<<<<<<< HEAD
 #if CONFIG_SEC_DEBUG
 #include <mach/sec_debug.h>
 #endif
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 enum {
 	/* global_cwq flags */
@@ -255,11 +258,19 @@ struct workqueue_struct *system_long_wq __read_mostly;
 struct workqueue_struct *system_nrt_wq __read_mostly;
 struct workqueue_struct *system_unbound_wq __read_mostly;
 struct workqueue_struct *system_freezable_wq __read_mostly;
+<<<<<<< HEAD
+=======
+struct workqueue_struct *system_nrt_freezable_wq __read_mostly;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 EXPORT_SYMBOL_GPL(system_wq);
 EXPORT_SYMBOL_GPL(system_long_wq);
 EXPORT_SYMBOL_GPL(system_nrt_wq);
 EXPORT_SYMBOL_GPL(system_unbound_wq);
 EXPORT_SYMBOL_GPL(system_freezable_wq);
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(system_nrt_freezable_wq);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 #define CREATE_TRACE_POINTS
 #include <trace/events/workqueue.h>
@@ -1146,8 +1157,13 @@ int queue_delayed_work_on(int cpu, struct workqueue_struct *wq,
 	if (!test_and_set_bit(WORK_STRUCT_PENDING_BIT, work_data_bits(work))) {
 		unsigned int lcpu;
 
+<<<<<<< HEAD
 		BUG_ON(timer_pending(timer));
 		BUG_ON(!list_empty(&work->entry));
+=======
+		WARN_ON_ONCE(timer_pending(timer));
+		WARN_ON_ONCE(!list_empty(&work->entry));
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 		timer_stats_timer_set_start_info(&dwork->timer);
 
@@ -1215,8 +1231,18 @@ static void worker_enter_idle(struct worker *worker)
 	} else
 		wake_up_all(&gcwq->trustee_wait);
 
+<<<<<<< HEAD
 	/* sanity check nr_running */
 	WARN_ON_ONCE(gcwq->nr_workers == gcwq->nr_idle &&
+=======
+	/*
+	 * Sanity check nr_running.  Because trustee releases gcwq->lock
+	 * between setting %WORKER_ROGUE and zapping nr_running, the
+	 * warning may trigger spuriously.  Check iff trustee is idle.
+	 */
+	WARN_ON_ONCE(gcwq->trustee_state == TRUSTEE_DONE &&
+		     gcwq->nr_workers == gcwq->nr_idle &&
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		     atomic_read(get_gcwq_nr_running(gcwq->cpu)));
 }
 
@@ -1864,6 +1890,7 @@ __acquires(&gcwq->lock)
 
 	spin_unlock_irq(&gcwq->lock);
 
+<<<<<<< HEAD
 	work_clear_pending(work);
 	lock_map_acquire_read(&cwq->wq->lockdep_map);
 	lock_map_acquire(&lockdep_map);
@@ -1871,6 +1898,14 @@ __acquires(&gcwq->lock)
 #ifdef CONFIG_SEC_DEBUG
 	secdbg_sched_msg("@%pS", f);
 #endif
+=======
+	smp_wmb();	/* paired with test_and_set_bit(PENDING) */
+	work_clear_pending(work);
+
+	lock_map_acquire_read(&cwq->wq->lockdep_map);
+	lock_map_acquire(&lockdep_map);
+	trace_workqueue_execute_start(work);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	f(work);
 	/*
 	 * While we must be careful to not use "work" after this, the trace
@@ -2041,8 +2076,15 @@ static int rescuer_thread(void *__wq)
 repeat:
 	set_current_state(TASK_INTERRUPTIBLE);
 
+<<<<<<< HEAD
 	if (kthread_should_stop())
 		return 0;
+=======
+	if (kthread_should_stop()) {
+		__set_current_state(TASK_RUNNING);
+		return 0;
+	}
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	/*
 	 * See whether any cpu is asking for help.  Unbounded
@@ -3411,14 +3453,27 @@ static int __cpuinit trustee_thread(void *__gcwq)
 
 	for_each_busy_worker(worker, i, pos, gcwq) {
 		struct work_struct *rebind_work = &worker->rebind_work;
+<<<<<<< HEAD
+=======
+		unsigned long worker_flags = worker->flags;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 		/*
 		 * Rebind_work may race with future cpu hotplug
 		 * operations.  Use a separate flag to mark that
+<<<<<<< HEAD
 		 * rebinding is scheduled.
 		 */
 		worker->flags |= WORKER_REBIND;
 		worker->flags &= ~WORKER_ROGUE;
+=======
+		 * rebinding is scheduled.  The morphing should
+		 * be atomic.
+		 */
+		worker_flags |= WORKER_REBIND;
+		worker_flags &= ~WORKER_ROGUE;
+		ACCESS_ONCE(worker->flags) = worker_flags;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 		/* queue rebind_work, wq doesn't matter, use the default one */
 		if (test_and_set_bit(WORK_STRUCT_PENDING_BIT,
@@ -3560,21 +3615,71 @@ static int __devinit workqueue_cpu_callback(struct notifier_block *nfb,
 	return notifier_from_errno(0);
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_SMP
 
 struct work_for_cpu {
 	struct completion completion;
+=======
+/*
+ * Workqueues should be brought up before normal priority CPU notifiers.
+ * This will be registered high priority CPU notifier.
+ */
+static int __devinit workqueue_cpu_up_callback(struct notifier_block *nfb,
+					       unsigned long action,
+					       void *hcpu)
+{
+	switch (action & ~CPU_TASKS_FROZEN) {
+	case CPU_UP_PREPARE:
+	case CPU_UP_CANCELED:
+	case CPU_DOWN_FAILED:
+	case CPU_ONLINE:
+		return workqueue_cpu_callback(nfb, action, hcpu);
+	}
+	return NOTIFY_OK;
+}
+
+/*
+ * Workqueues should be brought down after normal priority CPU notifiers.
+ * This will be registered as low priority CPU notifier.
+ */
+static int __devinit workqueue_cpu_down_callback(struct notifier_block *nfb,
+						 unsigned long action,
+						 void *hcpu)
+{
+	switch (action & ~CPU_TASKS_FROZEN) {
+	case CPU_DOWN_PREPARE:
+	case CPU_DYING:
+	case CPU_POST_DEAD:
+		return workqueue_cpu_callback(nfb, action, hcpu);
+	}
+	return NOTIFY_OK;
+}
+
+#ifdef CONFIG_SMP
+
+struct work_for_cpu {
+	struct work_struct work;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	long (*fn)(void *);
 	void *arg;
 	long ret;
 };
 
+<<<<<<< HEAD
 static int do_work_for_cpu(void *_wfc)
 {
 	struct work_for_cpu *wfc = _wfc;
 	wfc->ret = wfc->fn(wfc->arg);
 	complete(&wfc->completion);
 	return 0;
+=======
+static void work_for_cpu_fn(struct work_struct *work)
+{
+	struct work_for_cpu *wfc = container_of(work, struct work_for_cpu, work);
+
+	wfc->ret = wfc->fn(wfc->arg);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 /**
@@ -3589,6 +3694,7 @@ static int do_work_for_cpu(void *_wfc)
  */
 long work_on_cpu(unsigned int cpu, long (*fn)(void *), void *arg)
 {
+<<<<<<< HEAD
 	struct task_struct *sub_thread;
 	struct work_for_cpu wfc = {
 		.completion = COMPLETION_INITIALIZER_ONSTACK(wfc.completion),
@@ -3602,6 +3708,13 @@ long work_on_cpu(unsigned int cpu, long (*fn)(void *), void *arg)
 	kthread_bind(sub_thread, cpu);
 	wake_up_process(sub_thread);
 	wait_for_completion(&wfc.completion);
+=======
+	struct work_for_cpu wfc = { .fn = fn, .arg = arg };
+
+	INIT_WORK_ONSTACK(&wfc.work, work_for_cpu_fn);
+	schedule_work_on(cpu, &wfc.work);
+	flush_work(&wfc.work);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	return wfc.ret;
 }
 EXPORT_SYMBOL_GPL(work_on_cpu);
@@ -3753,7 +3866,12 @@ static int __init init_workqueues(void)
 	unsigned int cpu;
 	int i;
 
+<<<<<<< HEAD
 	cpu_notifier(workqueue_cpu_callback, CPU_PRI_WORKQUEUE);
+=======
+	cpu_notifier(workqueue_cpu_up_callback, CPU_PRI_WORKQUEUE_UP);
+	cpu_notifier(workqueue_cpu_down_callback, CPU_PRI_WORKQUEUE_DOWN);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	/* initialize gcwqs */
 	for_each_gcwq_cpu(cpu) {
@@ -3802,8 +3920,16 @@ static int __init init_workqueues(void)
 					    WQ_UNBOUND_MAX_ACTIVE);
 	system_freezable_wq = alloc_workqueue("events_freezable",
 					      WQ_FREEZABLE, 0);
+<<<<<<< HEAD
 	BUG_ON(!system_wq || !system_long_wq || !system_nrt_wq ||
 	       !system_unbound_wq || !system_freezable_wq);
+=======
+	system_nrt_freezable_wq = alloc_workqueue("events_nrt_freezable",
+			WQ_NON_REENTRANT | WQ_FREEZABLE, 0);
+	BUG_ON(!system_wq || !system_long_wq || !system_nrt_wq ||
+	       !system_unbound_wq || !system_freezable_wq ||
+		!system_nrt_freezable_wq);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	return 0;
 }
 early_initcall(init_workqueues);

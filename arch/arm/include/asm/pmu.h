@@ -16,7 +16,10 @@
 
 enum arm_pmu_type {
 	ARM_PMU_DEVICE_CPU	= 0,
+<<<<<<< HEAD
 	ARM_PMU_DEVICE_L2	= 1,
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	ARM_NUM_PMU_DEVICES,
 };
 

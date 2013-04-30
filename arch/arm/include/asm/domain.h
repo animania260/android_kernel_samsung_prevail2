@@ -2,7 +2,10 @@
  *  arch/arm/include/asm/domain.h
  *
  *  Copyright (C) 1999 Russell King.
+<<<<<<< HEAD
  *  Copyright (c) 2009, Code Aurora Forum. All rights reserved.
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -28,6 +31,7 @@
  *
  * 36-bit addressing and supersections are only available on
  * CPUs based on ARMv6+ or the Intel XSC3 core.
+<<<<<<< HEAD
  *
  * We cannot use domain 0 for the kernel on QSD8x50 since the kernel domain
  * is set to manager mode when set_fs(KERNEL_DS) is called. Setting domain 0
@@ -35,6 +39,10 @@
  * invalid fault status and/or tlb corruption (CONFIG_VERIFY_PERMISSION_FAULT).
  */
 #if !defined(CONFIG_IO_36) && !defined(CONFIG_VERIFY_PERMISSION_FAULT)
+=======
+ */
+#ifndef CONFIG_IO_36
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #define DOMAIN_KERNEL	0
 #define DOMAIN_TABLE	0
 #define DOMAIN_USER	1
@@ -62,6 +70,7 @@
 #ifndef __ASSEMBLY__
 
 #ifdef CONFIG_CPU_USE_DOMAINS
+<<<<<<< HEAD
 #ifdef CONFIG_EMULATE_DOMAIN_MANAGER_V7
 void emulate_domain_manager_set(u32 domain);
 int emulate_domain_manager_data_abort(u32 dfsr, u32 dfar);
@@ -73,6 +82,8 @@ void emulate_domain_manager_switch_mm(
 
 #define set_domain(x) emulate_domain_manager_set(x)
 #else
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #define set_domain(x)					\
 	do {						\
 	__asm__ __volatile__(				\
@@ -80,7 +91,10 @@ void emulate_domain_manager_switch_mm(
 	  : : "r" (x));					\
 	isb();						\
 	} while (0)
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 #define modify_domain(dom,type)					\
 	do {							\

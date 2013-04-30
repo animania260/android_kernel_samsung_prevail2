@@ -16,25 +16,36 @@
 #include <linux/io.h>
 #include <linux/slab.h>
 #include <linux/memblock.h>
+<<<<<<< HEAD
 #include <linux/err.h>
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 #include <mach/hardware.h>
 #include <asm/mach-types.h>
 #include <asm/mach/map.h>
 
+<<<<<<< HEAD
 #include <plat/omap_hwmod.h>
 #include <plat/omap_device.h>
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #include <plat/tc.h>
 #include <plat/board.h>
 #include <plat/mmc.h>
 #include <mach/gpio.h>
 #include <plat/menelaus.h>
 #include <plat/mcbsp.h>
+<<<<<<< HEAD
 #include <plat/mcpdm.h>
 #include <plat/omap44xx.h>
 
 #include <sound/omap-abe-dsp.h>
 
+=======
+#include <plat/omap44xx.h>
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 /*-------------------------------------------------------------------------*/
 
 #if defined(CONFIG_OMAP_MCBSP) || defined(CONFIG_OMAP_MCBSP_MODULE)
@@ -80,6 +91,7 @@ void omap_mcbsp_register_board_cfg(struct resource *res, int res_count,
 
 /*-------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 #if defined(CONFIG_SND_OMAP_SOC_DMIC) || \
     defined(CONFIG_SND_OMAP_SOC_DMIC_MODULE)
 
@@ -123,10 +135,36 @@ static struct omap_device_pm_latency omap_mcpdm_latency[] = {
 		.activate_func = omap_device_enable_hwmods,
 		.flags = OMAP_DEVICE_LATENCY_AUTO_ADJUST,
 	},
+=======
+#if defined(CONFIG_SND_OMAP_SOC_MCPDM) || \
+		defined(CONFIG_SND_OMAP_SOC_MCPDM_MODULE)
+
+static struct resource mcpdm_resources[] = {
+	{
+		.name		= "mcpdm_mem",
+		.start		= OMAP44XX_MCPDM_BASE,
+		.end		= OMAP44XX_MCPDM_BASE + SZ_4K,
+		.flags		= IORESOURCE_MEM,
+	},
+	{
+		.name		= "mcpdm_irq",
+		.start		= OMAP44XX_IRQ_MCPDM,
+		.end		= OMAP44XX_IRQ_MCPDM,
+		.flags		= IORESOURCE_IRQ,
+	},
+};
+
+static struct platform_device omap_mcpdm_device = {
+	.name		= "omap-mcpdm",
+	.id		= -1,
+	.num_resources	= ARRAY_SIZE(mcpdm_resources),
+	.resource	= mcpdm_resources,
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 };
 
 static void omap_init_mcpdm(void)
 {
+<<<<<<< HEAD
 	struct omap_hwmod *oh;
 	struct omap_device *od;
 	struct omap_mcpdm_platform_data *pdata;
@@ -149,6 +187,9 @@ static void omap_init_mcpdm(void)
 				ARRAY_SIZE(omap_mcpdm_latency), 0);
 	if (IS_ERR(od))
 		printk(KERN_ERR "Could not build omap_device for omap-mcpdm-dai\n");
+=======
+	(void) platform_device_register(&omap_mcpdm_device);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 #else
 static inline void omap_init_mcpdm(void) {}
@@ -206,6 +247,7 @@ fail:
 
 /*-------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 #if defined(CONFIG_SND_OMAP_SOC_ABE_DSP) || \
 	defined(CONFIG_SND_OMAP_SOC_ABE_DSP_MODULE)
 
@@ -255,6 +297,8 @@ static inline void omap_init_aess(void) {}
 
 /*-------------------------------------------------------------------------*/
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #if defined(CONFIG_HW_RANDOM_OMAP) || defined(CONFIG_HW_RANDOM_OMAP_MODULE)
 
 #ifdef CONFIG_ARCH_OMAP2
@@ -286,6 +330,11 @@ static void omap_init_rng(void)
 static inline void omap_init_rng(void) {}
 #endif
 
+<<<<<<< HEAD
+=======
+/*-------------------------------------------------------------------------*/
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 /* Numbering for the SPI-capable controllers when used for SPI:
  * spi		= 1
  * uwire	= 2
@@ -385,9 +434,13 @@ static int __init omap_init_devices(void)
 	 * in alphabetical order so they're easier to sort through.
 	 */
 	omap_init_rng();
+<<<<<<< HEAD
 	omap_init_dmic();
 	omap_init_mcpdm();
 	omap_init_aess();
+=======
+	omap_init_mcpdm();
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	omap_init_uwire();
 	return 0;
 }

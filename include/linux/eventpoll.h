@@ -61,6 +61,10 @@ struct file;
 static inline void eventpoll_init_file(struct file *file)
 {
 	INIT_LIST_HEAD(&file->f_ep_links);
+<<<<<<< HEAD
+=======
+	INIT_LIST_HEAD(&file->f_tfile_llink);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 

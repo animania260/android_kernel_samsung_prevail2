@@ -35,8 +35,13 @@
 
 /* the following macro is used when enabling interrupts */
 #if defined(MACH_ATARI_ONLY)
+<<<<<<< HEAD
 	/* block out HSYNC on the atari */
 #define ALLOWINT	(~0x400)
+=======
+	/* block out HSYNC = ipl 2 on the atari */
+#define ALLOWINT	(~0x500)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #define	MAX_NOINT_IPL	3
 #else
 	/* portable version */

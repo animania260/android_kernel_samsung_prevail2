@@ -22,7 +22,12 @@ struct clock_event_device;
 
 extern void __iomem *twd_base;
 
+<<<<<<< HEAD
 void twd_timer_setup(struct clock_event_device *);
 void twd_timer_stop(struct clock_event_device *);
+=======
+int twd_timer_ack(void);
+void twd_timer_setup(struct clock_event_device *);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 #endif

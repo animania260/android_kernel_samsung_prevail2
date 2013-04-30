@@ -27,7 +27,11 @@
 #define from_address	(0xffff8000)
 #define to_address	(0xffffc000)
 
+<<<<<<< HEAD
 static DEFINE_RAW_SPINLOCK(v6_lock);
+=======
+static DEFINE_SPINLOCK(v6_lock);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 /*
  * Copy the user page.  No aliasing to deal with so we can just
@@ -89,7 +93,11 @@ static void v6_copy_user_highpage_aliasing(struct page *to,
 	 * Now copy the page using the same cache colour as the
 	 * pages ultimate destination.
 	 */
+<<<<<<< HEAD
 	raw_spin_lock(&v6_lock);
+=======
+	spin_lock(&v6_lock);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	set_pte_ext(TOP_PTE(from_address) + offset, pfn_pte(page_to_pfn(from), PAGE_KERNEL), 0);
 	set_pte_ext(TOP_PTE(to_address) + offset, pfn_pte(page_to_pfn(to), PAGE_KERNEL), 0);
@@ -102,7 +110,11 @@ static void v6_copy_user_highpage_aliasing(struct page *to,
 
 	copy_page((void *)kto, (void *)kfrom);
 
+<<<<<<< HEAD
 	raw_spin_unlock(&v6_lock);
+=======
+	spin_unlock(&v6_lock);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 /*
@@ -122,13 +134,21 @@ static void v6_clear_user_highpage_aliasing(struct page *page, unsigned long vad
 	 * Now clear the page using the same cache colour as
 	 * the pages ultimate destination.
 	 */
+<<<<<<< HEAD
 	raw_spin_lock(&v6_lock);
+=======
+	spin_lock(&v6_lock);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	set_pte_ext(TOP_PTE(to_address) + offset, pfn_pte(page_to_pfn(page), PAGE_KERNEL), 0);
 	flush_tlb_kernel_page(to);
 	clear_page((void *)to);
 
+<<<<<<< HEAD
 	raw_spin_unlock(&v6_lock);
+=======
+	spin_unlock(&v6_lock);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 struct cpu_user_fns v6_user_fns __initdata = {

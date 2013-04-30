@@ -98,22 +98,38 @@ xfs_fs_encode_fh(
 	switch (fileid_type) {
 	case FILEID_INO32_GEN_PARENT:
 		spin_lock(&dentry->d_lock);
+<<<<<<< HEAD
 		fid->i32.parent_ino = dentry->d_parent->d_inode->i_ino;
+=======
+		fid->i32.parent_ino = XFS_I(dentry->d_parent->d_inode)->i_ino;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		fid->i32.parent_gen = dentry->d_parent->d_inode->i_generation;
 		spin_unlock(&dentry->d_lock);
 		/*FALLTHRU*/
 	case FILEID_INO32_GEN:
+<<<<<<< HEAD
 		fid->i32.ino = inode->i_ino;
+=======
+		fid->i32.ino = XFS_I(inode)->i_ino;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		fid->i32.gen = inode->i_generation;
 		break;
 	case FILEID_INO32_GEN_PARENT | XFS_FILEID_TYPE_64FLAG:
 		spin_lock(&dentry->d_lock);
+<<<<<<< HEAD
 		fid64->parent_ino = dentry->d_parent->d_inode->i_ino;
+=======
+		fid64->parent_ino = XFS_I(dentry->d_parent->d_inode)->i_ino;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		fid64->parent_gen = dentry->d_parent->d_inode->i_generation;
 		spin_unlock(&dentry->d_lock);
 		/*FALLTHRU*/
 	case FILEID_INO32_GEN | XFS_FILEID_TYPE_64FLAG:
+<<<<<<< HEAD
 		fid64->ino = inode->i_ino;
+=======
+		fid64->ino = XFS_I(inode)->i_ino;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		fid64->gen = inode->i_generation;
 		break;
 	}
@@ -195,6 +211,12 @@ xfs_fs_fh_to_parent(struct super_block *sb, struct fid *fid,
 	struct xfs_fid64	*fid64 = (struct xfs_fid64 *)fid;
 	struct inode		*inode = NULL;
 
+<<<<<<< HEAD
+=======
+	if (fh_len < xfs_fileid_length(fileid_type))
+		return NULL;
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	switch (fileid_type) {
 	case FILEID_INO32_GEN_PARENT:
 		inode = xfs_nfs_get_inode(sb, fid->i32.parent_ino,

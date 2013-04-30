@@ -433,7 +433,11 @@ local_flush_tlb_page(struct vm_area_struct *vma, unsigned long uaddr)
 	if (tlb_flag(TLB_V6_I_PAGE))
 		asm("mcr p15, 0, %0, c8, c5, 1" : : "r" (uaddr) : "cc");
 	if (tlb_flag(TLB_V7_UIS_PAGE))
+<<<<<<< HEAD
 #if defined(CONFIG_ARM_ERRATA_720789) || defined(CONFIG_ARCH_MSM8X60)
+=======
+#ifdef CONFIG_ARM_ERRATA_720789
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		asm("mcr p15, 0, %0, c8, c3, 3" : : "r" (uaddr & PAGE_MASK) : "cc");
 #else
 		asm("mcr p15, 0, %0, c8, c3, 1" : : "r" (uaddr) : "cc");
@@ -480,11 +484,15 @@ static inline void local_flush_tlb_kernel_page(unsigned long kaddr)
 	if (tlb_flag(TLB_V6_I_PAGE))
 		asm("mcr p15, 0, %0, c8, c5, 1" : : "r" (kaddr) : "cc");
 	if (tlb_flag(TLB_V7_UIS_PAGE))
+<<<<<<< HEAD
 #ifdef CONFIG_ARCH_MSM8X60
 		asm("mcr p15, 0, %0, c8, c3, 3" : : "r" (kaddr) : "cc");
 #else
 		asm("mcr p15, 0, %0, c8, c3, 1" : : "r" (kaddr) : "cc");
 #endif
+=======
+		asm("mcr p15, 0, %0, c8, c3, 1" : : "r" (kaddr) : "cc");
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	if (tlb_flag(TLB_BTB)) {
 		/* flush the branch target cache */

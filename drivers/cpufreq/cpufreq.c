@@ -41,11 +41,15 @@ static struct cpufreq_driver *cpufreq_driver;
 static DEFINE_PER_CPU(struct cpufreq_policy *, cpufreq_cpu_data);
 #ifdef CONFIG_HOTPLUG_CPU
 /* This one keeps track of the previously set governor of a removed CPU */
+<<<<<<< HEAD
 struct cpufreq_cpu_save_data {
 	char gov[CPUFREQ_NAME_LEN];
 	unsigned int max, min;
 };
 static DEFINE_PER_CPU(struct cpufreq_cpu_save_data, cpufreq_policy_save);
+=======
+static DEFINE_PER_CPU(char[CPUFREQ_NAME_LEN], cpufreq_cpu_governor);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #endif
 static DEFINE_SPINLOCK(cpufreq_driver_lock);
 
@@ -72,7 +76,11 @@ static DEFINE_PER_CPU(int, cpufreq_policy_cpu);
 static DEFINE_PER_CPU(struct rw_semaphore, cpu_policy_rwsem);
 
 #define lock_policy_rwsem(mode, cpu)					\
+<<<<<<< HEAD
 int lock_policy_rwsem_##mode						\
+=======
+static int lock_policy_rwsem_##mode					\
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 (int cpu)								\
 {									\
 	int policy_cpu = per_cpu(cpufreq_policy_cpu, cpu);		\
@@ -97,7 +105,11 @@ static void unlock_policy_rwsem_read(int cpu)
 	up_read(&per_cpu(cpu_policy_rwsem, policy_cpu));
 }
 
+<<<<<<< HEAD
 void unlock_policy_rwsem_write(int cpu)
+=======
+static void unlock_policy_rwsem_write(int cpu)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 {
 	int policy_cpu = per_cpu(cpufreq_policy_cpu, cpu);
 	BUG_ON(policy_cpu == -1);
@@ -397,6 +409,7 @@ static ssize_t store_##file_name					\
 }
 
 store_one(scaling_min_freq, min);
+<<<<<<< HEAD
 #ifdef CONFIG_SEC_DVFS
 static ssize_t store_scaling_max_freq
 (struct cpufreq_policy *policy, const char *buf, size_t count)
@@ -420,6 +433,9 @@ static ssize_t store_scaling_max_freq
 #else
 store_one(scaling_max_freq, max);
 #endif
+=======
+store_one(scaling_max_freq, max);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 /**
  * show_cpuinfo_cur_freq - current CPU frequency as detected by hardware
@@ -594,6 +610,7 @@ static ssize_t show_bios_limit(struct cpufreq_policy *policy, char *buf)
 	return sprintf(buf, "%u\n", policy->cpuinfo.max_freq);
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_CPU_VOLTAGE_TABLE
 
 extern ssize_t acpuclk_get_vdd_levels_str(char *buf);
@@ -656,6 +673,8 @@ static ssize_t store_vdd_levels(struct kobject *a, struct attribute *b, const ch
 
 #endif	/* CONFIG_CPU_VOLTAGE_TABLE */
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 cpufreq_freq_attr_ro_perm(cpuinfo_cur_freq, 0400);
 cpufreq_freq_attr_ro(cpuinfo_min_freq);
 cpufreq_freq_attr_ro(cpuinfo_max_freq);
@@ -671,10 +690,13 @@ cpufreq_freq_attr_rw(scaling_max_freq);
 cpufreq_freq_attr_rw(scaling_governor);
 cpufreq_freq_attr_rw(scaling_setspeed);
 
+<<<<<<< HEAD
 #ifdef CONFIG_CPU_VOLTAGE_TABLE
 define_one_global_rw(vdd_levels);
 #endif
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 static struct attribute *default_attrs[] = {
 	&cpuinfo_min_freq.attr,
 	&cpuinfo_max_freq.attr,
@@ -690,6 +712,7 @@ static struct attribute *default_attrs[] = {
 	NULL
 };
 
+<<<<<<< HEAD
 #ifdef CONFIG_CPU_VOLTAGE_TABLE
 static struct attribute *vddtbl_attrs[] = {
 	&vdd_levels.attr,
@@ -702,6 +725,8 @@ static struct attribute_group vddtbl_attr_group = {
 };
 #endif	/* CONFIG_CPU_VOLTAGE_TABLE */
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 struct kobject *cpufreq_global_kobject;
 EXPORT_SYMBOL(cpufreq_global_kobject);
 
@@ -792,12 +817,17 @@ static int cpufreq_add_dev_policy(unsigned int cpu,
 #ifdef CONFIG_HOTPLUG_CPU
 	struct cpufreq_governor *gov;
 
+<<<<<<< HEAD
 	gov = __find_governor(per_cpu(cpufreq_policy_save, cpu).gov);
+=======
+	gov = __find_governor(per_cpu(cpufreq_cpu_governor, cpu));
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	if (gov) {
 		policy->governor = gov;
 		pr_debug("Restoring governor %s for cpu %d\n",
 		       policy->governor->name, cpu);
 	}
+<<<<<<< HEAD
 	if (per_cpu(cpufreq_policy_save, cpu).min) {
 		policy->min = per_cpu(cpufreq_policy_save, cpu).min;
 		policy->user_policy.min = policy->min;
@@ -808,6 +838,8 @@ static int cpufreq_add_dev_policy(unsigned int cpu,
 	}
 	pr_debug("Restoring CPU%d min %d and max %d\n",
 		cpu, policy->min, policy->max);
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #endif
 
 	for_each_cpu(j, policy->cpus) {
@@ -1157,12 +1189,17 @@ static int __cpufreq_remove_dev(struct sys_device *sys_dev)
 #ifdef CONFIG_SMP
 
 #ifdef CONFIG_HOTPLUG_CPU
+<<<<<<< HEAD
 	strncpy(per_cpu(cpufreq_policy_save, cpu).gov, data->governor->name,
 			CPUFREQ_NAME_LEN);
 	per_cpu(cpufreq_policy_save, cpu).min = data->min;
 	per_cpu(cpufreq_policy_save, cpu).max = data->max;
 	pr_debug("Saving CPU%d policy min %d and max %d\n",
 			cpu, data->min, data->max);
+=======
+	strncpy(per_cpu(cpufreq_cpu_governor, cpu), data->governor->name,
+			CPUFREQ_NAME_LEN);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #endif
 
 	/* if we have other CPUs still registered, we need to unlink them,
@@ -1186,12 +1223,17 @@ static int __cpufreq_remove_dev(struct sys_device *sys_dev)
 				continue;
 			pr_debug("removing link for cpu %u\n", j);
 #ifdef CONFIG_HOTPLUG_CPU
+<<<<<<< HEAD
 			strncpy(per_cpu(cpufreq_policy_save, j).gov,
 				data->governor->name, CPUFREQ_NAME_LEN);
 			per_cpu(cpufreq_policy_save, j).min = data->min;
 			per_cpu(cpufreq_policy_save, j).max = data->max;
 			pr_debug("Saving CPU%d policy min %d and max %d\n",
 					j, data->min, data->max);
+=======
+			strncpy(per_cpu(cpufreq_cpu_governor, j),
+				data->governor->name, CPUFREQ_NAME_LEN);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #endif
 			cpu_sys_dev = get_cpu_sysdev(j);
 			kobj = &cpu_sys_dev->kobj;
@@ -1677,11 +1719,16 @@ void cpufreq_unregister_governor(struct cpufreq_governor *governor)
 	for_each_present_cpu(cpu) {
 		if (cpu_online(cpu))
 			continue;
+<<<<<<< HEAD
 		if (!strcmp(per_cpu(cpufreq_policy_save, cpu).gov,
 					governor->name))
 			strcpy(per_cpu(cpufreq_policy_save, cpu).gov, "\0");
 		per_cpu(cpufreq_policy_save, cpu).min = 0;
 		per_cpu(cpufreq_policy_save, cpu).max = 0;
+=======
+		if (!strcmp(per_cpu(cpufreq_cpu_governor, cpu), governor->name))
+			strcpy(per_cpu(cpufreq_cpu_governor, cpu), "\0");
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	}
 #endif
 
@@ -1878,6 +1925,7 @@ static int __cpuinit cpufreq_cpu_callback(struct notifier_block *nfb,
 		case CPU_ONLINE:
 		case CPU_ONLINE_FROZEN:
 			cpufreq_add_dev(sys_dev);
+<<<<<<< HEAD
 #ifdef CONFIG_SEC_DVFS
 			if (cpu == NON_BOOT_CPU) {
 #ifndef CONFIG_SEC_DVFS_UNI
@@ -1903,6 +1951,8 @@ static int __cpuinit cpufreq_cpu_callback(struct notifier_block *nfb,
 #endif
 			}
 #endif
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			break;
 		case CPU_DOWN_PREPARE:
 		case CPU_DOWN_PREPARE_FROZEN:
@@ -2042,10 +2092,13 @@ static int __init cpufreq_core_init(void)
 	BUG_ON(!cpufreq_global_kobject);
 	register_syscore_ops(&cpufreq_syscore_ops);
 
+<<<<<<< HEAD
 #ifdef CONFIG_CPU_VOLTAGE_TABLE
 	rc = sysfs_create_group(cpufreq_global_kobject, &vddtbl_attr_group);
 #endif	/* CONFIG_CPU_VOLTAGE_TABLE */
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	return 0;
 }
 core_initcall(cpufreq_core_init);

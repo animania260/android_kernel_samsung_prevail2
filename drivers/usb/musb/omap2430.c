@@ -295,7 +295,12 @@ static int musb_otg_notifications(struct notifier_block *nb,
 
 static int omap2430_musb_init(struct musb *musb)
 {
+<<<<<<< HEAD
 	u32 l, status = 0;
+=======
+	u32 l;
+	int status = 0;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	struct device *dev = musb->controller;
 	struct musb_hdrc_platform_data *plat = dev->platform_data;
 	struct omap_musb_board_data *data = plat->board_data;
@@ -312,7 +317,11 @@ static int omap2430_musb_init(struct musb *musb)
 
 	status = pm_runtime_get_sync(dev);
 	if (status < 0) {
+<<<<<<< HEAD
 		dev_err(dev, "pm_runtime_get_sync FAILED");
+=======
+		dev_err(dev, "pm_runtime_get_sync FAILED %d\n", status);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		goto err1;
 	}
 
@@ -464,14 +473,22 @@ static int __init omap2430_probe(struct platform_device *pdev)
 		goto err2;
 	}
 
+<<<<<<< HEAD
+=======
+	pm_runtime_enable(&pdev->dev);
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	ret = platform_device_add(musb);
 	if (ret) {
 		dev_err(&pdev->dev, "failed to register musb device\n");
 		goto err2;
 	}
 
+<<<<<<< HEAD
 	pm_runtime_enable(&pdev->dev);
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	return 0;
 
 err2:

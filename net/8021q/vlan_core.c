@@ -106,7 +106,10 @@ static struct sk_buff *vlan_reorder_header(struct sk_buff *skb)
 		return NULL;
 	memmove(skb->data - ETH_HLEN, skb->data - VLAN_ETH_HLEN, 2 * ETH_ALEN);
 	skb->mac_header += VLAN_HLEN;
+<<<<<<< HEAD
 	skb_reset_mac_len(skb);
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	return skb;
 }
 
@@ -173,6 +176,11 @@ struct sk_buff *vlan_untag(struct sk_buff *skb)
 
 	skb_reset_network_header(skb);
 	skb_reset_transport_header(skb);
+<<<<<<< HEAD
+=======
+	skb_reset_mac_len(skb);
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	return skb;
 
 err_free:

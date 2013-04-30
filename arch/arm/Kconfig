@@ -24,7 +24,11 @@ config ARM
 	select HAVE_PERF_EVENTS
 	select PERF_USE_VMALLOC
 	select HAVE_REGS_AND_STACK_ACCESS_API
+<<<<<<< HEAD
 	#select HAVE_HW_BREAKPOINT if (PERF_EVENTS && (CPU_V6 || CPU_V6K || CPU_V7))
+=======
+	select HAVE_HW_BREAKPOINT if (PERF_EVENTS && (CPU_V6 || CPU_V6K || CPU_V7))
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	select HAVE_C_RECORDMCOUNT
 	select HAVE_GENERIC_HARDIRQS
 	select HAVE_SPARSE_IRQ
@@ -62,11 +66,19 @@ config GENERIC_CLOCKEVENTS
 config GENERIC_CLOCKEVENTS_BROADCAST
 	bool
 	depends on GENERIC_CLOCKEVENTS
+<<<<<<< HEAD
 	default y if SMP && !LOCAL_TIMERS
 
 config KTIME_SCALAR
 	bool
 	default n
+=======
+	default y if SMP
+
+config KTIME_SCALAR
+	bool
+	default y
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 config HAVE_TCM
 	bool
@@ -131,6 +143,7 @@ config GENERIC_IRQ_PROBE
 
 config GENERIC_LOCKBREAK
 	bool
+<<<<<<< HEAD
 	default y if !ARM_TICKET_LOCKS
 	depends on SMP && PREEMPT
 
@@ -143,6 +156,11 @@ config ARM_TICKET_LOCKS
 	default y if ARCH_MSM_SCORPIONMP || ARCH_MSM_KRAITMP
 	depends on SMP
 
+=======
+	default y
+	depends on SMP && PREEMPT
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 config RWSEM_GENERIC_SPINLOCK
 	bool
 	default y
@@ -222,10 +240,13 @@ config ARM_PATCH_PHYS_VIRT_16BIT
 	  to allow physical memory down to a theoretical minimum of 64K
 	  boundaries.
 
+<<<<<<< HEAD
 config GENERIC_BUG
 	def_bool y
 	depends on BUG
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 source "init/Kconfig"
 
 source "kernel/Kconfig.freezer"
@@ -640,11 +661,14 @@ config ARCH_MSM
 	select GENERIC_CLOCKEVENTS
 	select ARCH_REQUIRE_GPIOLIB
 	select CLKDEV_LOOKUP
+<<<<<<< HEAD
 	select ARCH_HAS_CPUFREQ
 	select GENERIC_GPIO
 	select GENERIC_TIME
 	select GENERIC_ALLOCATOR
 	select HAVE_SCHED_CLOCK
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	help
 	  Support for Qualcomm MSM/QSD based systems.  This runs on the
 	  apps processor of the MSM/QSD and depends on a shared memory
@@ -1051,6 +1075,7 @@ config ARM_TIMER_SP804
 
 source arch/arm/mm/Kconfig
 
+<<<<<<< HEAD
 config RESERVE_FIRST_PAGE
 	bool
 	default n
@@ -1060,6 +1085,8 @@ config RESERVE_FIRST_PAGE
 	  boot operations. Reserve this page so that it is
 	  not allocated by the kernel.
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 config IWMMXT
 	bool "Enable iWMMXt support"
 	depends on CPU_XSCALE || CPU_XSC3 || CPU_MOHAWK || CPU_PJ4
@@ -1206,7 +1233,11 @@ config ARM_ERRATA_743622
 	depends on CPU_V7
 	help
 	  This option enables the workaround for the 743622 Cortex-A9
+<<<<<<< HEAD
 	  (r2p0..r2p2) erratum. Under very rare conditions, a faulty
+=======
+	  (r2p*) erratum. Under very rare conditions, a faulty
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	  optimisation in the Cortex-A9 Store Buffer may lead to data
 	  corruption. This workaround sets a specific bit in the diagnostic
 	  register of the Cortex-A9 which disables the Store Buffer
@@ -1261,6 +1292,7 @@ config ARM_ERRATA_754327
 	  This workaround defines cpu_relax() as smp_mb(), preventing correctly
 	  written polling loops from denying visibility of updates to memory.
 
+<<<<<<< HEAD
 config PL310_ERRATA_727915
 	bool "Background Clean & Invalidate by Way operation can cause data corruption"
 	depends on CACHE_L2X0
@@ -1283,6 +1315,43 @@ config KSAPI
           counter statistics. It can monitor the counter statistics for
           Scorpion processor supported hardware performance counters on a per
           thread basis or AXI counters on an overall system basis.
+=======
+config ARM_ERRATA_764369
+	bool "ARM errata: Data cache line maintenance operation by MVA may not succeed"
+	depends on CPU_V7 && SMP
+	help
+	  This option enables the workaround for erratum 764369
+	  affecting Cortex-A9 MPCore with two or more processors (all
+	  current revisions). Under certain timing circumstances, a data
+	  cache line maintenance operation by MVA targeting an Inner
+	  Shareable memory region may fail to proceed up to either the
+	  Point of Coherency or to the Point of Unification of the
+	  system. This workaround adds a DSB instruction before the
+	  relevant cache maintenance functions and sets a specific bit
+	  in the diagnostic control register of the SCU.
+
+config PL310_ERRATA_769419
+	bool "PL310 errata: no automatic Store Buffer drain"
+	depends on CACHE_L2X0
+	help
+	  On revisions of the PL310 prior to r3p2, the Store Buffer does
+	  not automatically drain. This can cause normal, non-cacheable
+	  writes to be retained when the memory system is idle, leading
+	  to suboptimal I/O performance for drivers using coherent DMA.
+	  This option adds a write barrier to the cpu_idle loop so that,
+	  on systems with an outer cache, the store buffer is drained
+	  explicitly.
+
+config ARM_ERRATA_775420
+       bool "ARM errata: A data cache maintenance operation which aborts, might lead to deadlock"
+       depends on CPU_V7
+       help
+	 This option enables the workaround for the 775420 Cortex-A9 (r2p2,
+	 r2p6,r2p8,r2p10,r3p0) erratum. In case a date cache maintenance
+	 operation aborts with MMU exception, it might cause the processor
+	 to deadlock. This workaround puts DSB before executing ISB if
+	 an abort may occur on cache maintenance.
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 endmenu
 
@@ -1348,6 +1417,7 @@ source "drivers/pci/Kconfig"
 
 source "drivers/pcmcia/Kconfig"
 
+<<<<<<< HEAD
 config ARM_ERRATA_764369
 	bool "ARM errata: Data cache line maintenance operation by MVA may not succeed"
 	depends on CPU_V7 && SMP
@@ -1362,6 +1432,8 @@ config ARM_ERRATA_764369
 	  relevant cache maintenance functions and sets a specific bit
 	  in the diagnostic control register of the SCU.
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 endmenu
 
 menu "Kernel Features"
@@ -1375,9 +1447,15 @@ config SMP
 	depends on REALVIEW_EB_ARM11MP || REALVIEW_EB_A9MP || \
 		 MACH_REALVIEW_PB11MP || MACH_REALVIEW_PBX || ARCH_OMAP4 || \
 		 ARCH_EXYNOS4 || ARCH_TEGRA || ARCH_U8500 || ARCH_VEXPRESS_CA9X4 || \
+<<<<<<< HEAD
 		 MSM_SMP || ARCH_SHMOBILE
 	select USE_GENERIC_SMP_HELPERS
 	select HAVE_ARM_SCU
+=======
+		 ARCH_MSM_SCORPIONMP || ARCH_SHMOBILE
+	select USE_GENERIC_SMP_HELPERS
+	select HAVE_ARM_SCU if !ARCH_MSM_SCORPIONMP
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	help
 	  This enables support for systems with more than one CPU. If you have
 	  a system with only one CPU, like most personal computers, say N. If
@@ -1414,12 +1492,15 @@ config HAVE_ARM_SCU
 	help
 	  This option enables support for the ARM system coherency unit
 
+<<<<<<< HEAD
 config ARM_ARCH_TIMER
 	bool "Architected timer support"
 	select TICK_ONESHOT
 	help
 	  This option enables support for the ARM architected timer
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 config HAVE_ARM_TWD
 	bool
 	depends on SMP
@@ -1465,11 +1546,17 @@ config HOTPLUG_CPU
 
 config LOCAL_TIMERS
 	bool "Use local timer interrupts"
+<<<<<<< HEAD
 	depends on SMP && (REALVIEW_EB_ARM11MP || MACH_REALVIEW_PB11MP || \
 		REALVIEW_EB_A9MP || MACH_REALVIEW_PBX || ARCH_OMAP4 || ARCH_U8500 || \
 		MSM_SMP)
 	default y
 	select HAVE_ARM_TWD if (!MSM_SMP && !EXYNOS4_MCT)
+=======
+	depends on SMP
+	default y
+	select HAVE_ARM_TWD if (!ARCH_MSM_SCORPIONMP && !EXYNOS4_MCT)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	help
 	  Enable support for local timers on SMP platforms, rather then the
 	  legacy IPI broadcast method.  Local timers allows the system
@@ -1609,6 +1696,7 @@ config HW_PERF_EVENTS
 	  Enable hardware performance counter support for perf events. If
 	  disabled, perf events will use software events only.
 
+<<<<<<< HEAD
 config VMALLOC_RESERVE
 	hex "Reserved vmalloc space"
 	default 0x08000000
@@ -1647,6 +1735,10 @@ config HOLES_IN_ZONE
 	def_bool n
 	depends on SPARSEMEM
 
+=======
+source "mm/Kconfig"
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 config FORCE_MAX_ZONEORDER
 	int "Maximum zone order" if ARCH_SHMOBILE
 	range 11 64 if ARCH_SHMOBILE
@@ -1779,6 +1871,7 @@ config DEPRECATED_PARAM_STRUCT
 	  This was deprecated in 2001 and announced to live on for 5 years.
 	  Some old boot loaders still use this way.
 
+<<<<<<< HEAD
 config ARM_FLUSH_CONSOLE_ON_RESTART
 	bool "Force flush the console on restart"
 	help
@@ -1799,6 +1892,8 @@ config CP_ACCESS
 
 	  If unsure, say N.
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 endmenu
 
 menu "Boot options"
@@ -1807,7 +1902,10 @@ config USE_OF
 	bool "Flattened Device Tree support"
 	select OF
 	select OF_EARLY_FLATTREE
+<<<<<<< HEAD
 	select IRQ_DOMAIN
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	help
 	  Include support for flattened device tree machine descriptions.
 
@@ -1856,6 +1954,7 @@ config ZBOOT_ROM_MMCIF
 	  which in turn loads the rest the kernel image to RAM using the
 	  MMCIF hardware block.
 
+<<<<<<< HEAD
 config ARM_APPENDED_DTB
 	bool "Use appended device tree blob to zImage (EXPERIMENTAL)"
 	depends on OF && !ZBOOT_ROM && EXPERIMENTAL
@@ -1888,6 +1987,8 @@ config ARM_ATAG_DTB_COMPAT
 	  bootloaders, this option allows zImage to extract the information
 	  from the ATAG list and store it at run time into the appended DTB.
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 config CMDLINE
 	string "Default kernel command string"
 	default ""
@@ -2010,6 +2111,10 @@ source "drivers/cpufreq/Kconfig"
 config CPU_FREQ_IMX
 	tristate "CPUfreq driver for i.MX CPUs"
 	depends on ARCH_MXC && CPU_FREQ
+<<<<<<< HEAD
+=======
+	select CPU_FREQ_TABLE
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	help
 	  This enables the CPUfreq driver for i.MX CPUs.
 
@@ -2092,6 +2197,7 @@ source "drivers/cpuidle/Kconfig"
 
 endmenu
 
+<<<<<<< HEAD
 config CPU_FREQ_MSM
         bool
         depends on CPU_FREQ && ARCH_MSM
@@ -2100,6 +2206,8 @@ config CPU_FREQ_MSM
           This enables the CPUFreq driver for Qualcomm CPUs.
           If in doubt, say Y.
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 menu "Floating point emulation"
 
 comment "At least one emulation must be selected"
@@ -2189,7 +2297,11 @@ menu "Power management options"
 source "kernel/power/Kconfig"
 
 config ARCH_SUSPEND_POSSIBLE
+<<<<<<< HEAD
 	depends on !ARCH_S5P64X0 && !ARCH_S5PC100 && !ARCH_FSM9XXX
+=======
+	depends on !ARCH_S5P64X0 && !ARCH_S5PC100
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	depends on CPU_ARM920T || CPU_ARM926T || CPU_SA1100 || \
 		CPU_V6 || CPU_V6K || CPU_V7 || CPU_XSC3 || CPU_XSCALE
 	def_bool y

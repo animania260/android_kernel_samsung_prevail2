@@ -159,6 +159,10 @@ static struct ath_buf *ath_beacon_generate(struct ieee80211_hw *hw,
 				 skb->len, DMA_TO_DEVICE);
 		dev_kfree_skb_any(skb);
 		bf->bf_buf_addr = 0;
+<<<<<<< HEAD
+=======
+		bf->bf_mpdu = NULL;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	}
 
 	/* Get a new beacon from mac80211 */

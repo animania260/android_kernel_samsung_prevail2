@@ -798,6 +798,10 @@ pref_skip_coa:
 		if (val < 0 || val > 255)
 			goto e_inval;
 		np->min_hopcount = val;
+<<<<<<< HEAD
+=======
+		retv = 0;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		break;
 	case IPV6_DONTFRAG:
 		np->dontfrag = valbool;

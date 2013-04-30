@@ -37,6 +37,10 @@
 #define CSADRCFG1	(SMEMC_VIRT + 0x84)  /* Address Configuration Register for CS1 */
 #define CSADRCFG2	(SMEMC_VIRT + 0x88)  /* Address Configuration Register for CS2 */
 #define CSADRCFG3	(SMEMC_VIRT + 0x8C)  /* Address Configuration Register for CS3 */
+<<<<<<< HEAD
+=======
+#define CSMSADRCFG	(SMEMC_VIRT + 0xA0)  /* Chip Select Configuration Register */
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 /*
  * More handy macros for PCMCIA

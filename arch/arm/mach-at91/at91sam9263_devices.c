@@ -534,7 +534,11 @@ static struct i2c_gpio_platform_data pdata = {
 
 static struct platform_device at91sam9263_twi_device = {
 	.name			= "i2c-gpio",
+<<<<<<< HEAD
 	.id			= -1,
+=======
+	.id			= 0,
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	.dev.platform_data	= &pdata,
 };
 

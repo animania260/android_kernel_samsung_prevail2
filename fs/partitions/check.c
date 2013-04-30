@@ -366,6 +366,7 @@ static void part_release(struct device *dev)
 	kfree(p);
 }
 
+<<<<<<< HEAD
 static int part_uevent(struct device *dev, struct kobj_uevent_env *env)
 {
 	struct hd_struct *part = dev_to_part(dev);
@@ -376,11 +377,16 @@ static int part_uevent(struct device *dev, struct kobj_uevent_env *env)
 	return 0;
 }
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 struct device_type part_type = {
 	.name		= "partition",
 	.groups		= part_attr_groups,
 	.release	= part_release,
+<<<<<<< HEAD
 	.uevent		= part_uevent,
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 };
 
 static void delete_partition_rcu_cb(struct rcu_head *head)
@@ -550,6 +556,7 @@ static bool disk_unlock_native_capacity(struct gendisk *disk)
 	}
 }
 
+<<<<<<< HEAD
 int rescan_partitions(struct gendisk *disk, struct block_device *bdev)
 {
 	struct parsed_partitions *state = NULL;
@@ -561,6 +568,13 @@ rescan:
 		kfree(state);
 		state = NULL;
 	}
+=======
+static int drop_partitions(struct gendisk *disk, struct block_device *bdev)
+{
+	struct disk_part_iter piter;
+	struct hd_struct *part;
+	int res;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	if (bdev->bd_part_count)
 		return -EBUSY;
@@ -573,6 +587,27 @@ rescan:
 		delete_partition(disk, part->partno);
 	disk_part_iter_exit(&piter);
 
+<<<<<<< HEAD
+=======
+	return 0;
+}
+
+int rescan_partitions(struct gendisk *disk, struct block_device *bdev)
+{
+	struct parsed_partitions *state = NULL;
+	struct hd_struct *part;
+	int p, highest, res;
+rescan:
+	if (state && !IS_ERR(state)) {
+		kfree(state);
+		state = NULL;
+	}
+
+	res = drop_partitions(disk, bdev);
+	if (res)
+		return res;
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	if (disk->fops->revalidate_disk)
 		disk->fops->revalidate_disk(disk);
 	check_disk_size_change(disk, bdev);
@@ -676,6 +711,29 @@ rescan:
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+int invalidate_partitions(struct gendisk *disk, struct block_device *bdev)
+{
+	int res;
+
+	if (!bdev->bd_invalidated)
+		return 0;
+
+	res = drop_partitions(disk, bdev);
+	if (res)
+		return res;
+
+	set_capacity(disk, 0);
+	check_disk_size_change(disk, bdev);
+	bdev->bd_invalidated = 0;
+	/* tell userspace that the media / partition table may have changed */
+	kobject_uevent(&disk_to_dev(disk)->kobj, KOBJ_CHANGE);
+
+	return 0;
+}
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 unsigned char *read_dev_sector(struct block_device *bdev, sector_t n, Sector *p)
 {
 	struct address_space *mapping = bdev->bd_inode->i_mapping;

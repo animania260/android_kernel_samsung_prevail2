@@ -290,7 +290,12 @@ int tcp_is_cwnd_limited(const struct sock *sk, u32 in_flight)
 	left = tp->snd_cwnd - in_flight;
 	if (sk_can_gso(sk) &&
 	    left * sysctl_tcp_tso_win_divisor < tp->snd_cwnd &&
+<<<<<<< HEAD
 	    left * tp->mss_cache < sk->sk_gso_max_size)
+=======
+	    left * tp->mss_cache < sk->sk_gso_max_size &&
+	    left < sk->sk_gso_max_segs)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		return 1;
 	return left <= tcp_max_burst(tp);
 }

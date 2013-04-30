@@ -244,6 +244,10 @@ static int __devinit cb710_probe(struct pci_dev *pdev,
 	if (err)
 		return err;
 
+<<<<<<< HEAD
+=======
+	spin_lock_init(&chip->irq_lock);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	chip->pdev = pdev;
 	chip->iobase = pcim_iomap_table(pdev)[0];
 

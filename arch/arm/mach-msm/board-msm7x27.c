@@ -1,6 +1,10 @@
 /*
  * Copyright (C) 2007 Google, Inc.
+<<<<<<< HEAD
  * Copyright (c) 2008-2012, Code Aurora Forum. All rights reserved.
+=======
+ * Copyright (c) 2008-2009, Code Aurora Forum. All rights reserved.
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
  * Author: Brian Swetland <swetland@google.com>
  *
  * This software is licensed under the terms of the GNU General Public
@@ -15,16 +19,24 @@
  */
 
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/gpio.h>
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #include <linux/init.h>
 #include <linux/platform_device.h>
 #include <linux/input.h>
 #include <linux/io.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
 #include <linux/bootmem.h>
 #include <linux/power_supply.h>
 
 #include <mach/msm_memtypes.h>
+=======
+#include <linux/power_supply.h>
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #include <mach/hardware.h>
 #include <asm/mach-types.h>
 #include <asm/mach/arch.h>
@@ -35,6 +47,7 @@
 #include <asm/hardware/cache-l2x0.h>
 #endif
 
+<<<<<<< HEAD
 #include <asm/mach/mmc.h>
 #include <mach/vreg.h>
 #include <mach/mpp.h>
@@ -1333,6 +1346,49 @@ static void __init msm_fb_add_devices(void)
 	msm_fb_register_device("lcdc", &lcdc_pdata);
 }
 
+=======
+#include <mach/vreg.h>
+#include <mach/mpp.h>
+#include <mach/gpio.h>
+#include <mach/board.h>
+#include <mach/msm_iomap.h>
+
+#include <linux/mtd/nand.h>
+#include <linux/mtd/partitions.h>
+
+#include "devices.h"
+#include "socinfo.h"
+#include "clock.h"
+
+static struct resource smc91x_resources[] = {
+	[0] = {
+		.start	= 0x9C004300,
+		.end	= 0x9C0043ff,
+		.flags	= IORESOURCE_MEM,
+	},
+	[1] = {
+		.start	= MSM_GPIO_TO_INT(132),
+		.end	= MSM_GPIO_TO_INT(132),
+		.flags	= IORESOURCE_IRQ,
+	},
+};
+
+static struct platform_device smc91x_device = {
+	.name		= "smc91x",
+	.id		= 0,
+	.num_resources	= ARRAY_SIZE(smc91x_resources),
+	.resource	= smc91x_resources,
+};
+
+static struct platform_device *devices[] __initdata = {
+	&msm_device_uart3,
+	&msm_device_smd,
+	&msm_device_dmov,
+	&msm_device_nand,
+	&smc91x_device,
+};
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 extern struct sys_timer msm_timer;
 
 static void __init msm7x2x_init_irq(void)
@@ -1340,6 +1396,7 @@ static void __init msm7x2x_init_irq(void)
 	msm_init_irq();
 }
 
+<<<<<<< HEAD
 void msm_serial_debug_init(unsigned int base, int irq,
 			   struct device *clk_device, int signal_irq);
 
@@ -1738,21 +1795,36 @@ static void __init msm7x2x_init(void)
 #endif
 
 #if defined(CONFIG_SMC91X)
+=======
+static void __init msm7x2x_init(void)
+{
+	if (socinfo_init() < 0)
+		BUG();
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	if (machine_is_msm7x25_ffa() || machine_is_msm7x27_ffa()) {
 		smc91x_resources[0].start = 0x98000300;
 		smc91x_resources[0].end = 0x980003ff;
 		smc91x_resources[1].start = MSM_GPIO_TO_INT(85);
 		smc91x_resources[1].end = MSM_GPIO_TO_INT(85);
 		if (gpio_tlmm_config(GPIO_CFG(85, 0,
+<<<<<<< HEAD
 					      GPIO_CFG_INPUT,
 					      GPIO_CFG_PULL_DOWN,
 					      GPIO_CFG_2MA),
 				     GPIO_CFG_ENABLE)) {
+=======
+					      GPIO_INPUT,
+					      GPIO_PULL_DOWN,
+					      GPIO_2MA),
+				     GPIO_ENABLE)) {
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			printk(KERN_ERR
 			       "%s: Err: Config GPIO-85 INT\n",
 				__func__);
 		}
 	}
+<<<<<<< HEAD
 #endif
 	acpuclk_init(&acpuclk_7x27_soc_data);
 
@@ -1936,19 +2008,37 @@ static void __init msm7x27_reserve(void)
 static void __init msm7x27_init_early(void)
 {
 	msm_msm7x2x_allocate_memory_regions();
+=======
+
+	platform_add_devices(devices, ARRAY_SIZE(devices));
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 static void __init msm7x2x_map_io(void)
 {
 	msm_map_common_io();
+<<<<<<< HEAD
 
 	if (socinfo_init() < 0)
 		BUG();
+=======
+	/* Technically dependent on the SoC but using machine_is
+	 * macros since socinfo is not available this early and there
+	 * are plans to restructure the code which will eliminate the
+	 * need for socinfo.
+	 */
+	if (machine_is_msm7x27_surf() || machine_is_msm7x27_ffa())
+		msm_clock_init(msm_clocks_7x27, msm_num_clocks_7x27);
+
+	if (machine_is_msm7x25_surf() || machine_is_msm7x25_ffa())
+		msm_clock_init(msm_clocks_7x25, msm_num_clocks_7x25);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 #ifdef CONFIG_CACHE_L2X0
 	if (machine_is_msm7x27_surf() || machine_is_msm7x27_ffa()) {
 		/* 7x27 has 256KB L2 cache:
 			64Kb/Way and 4-Way Associativity;
+<<<<<<< HEAD
 			evmon/parity/share disabled. */
 		if ((SOCINFO_VERSION_MAJOR(socinfo_get_version()) > 1)
 			|| ((SOCINFO_VERSION_MAJOR(socinfo_get_version()) == 1)
@@ -1958,6 +2048,11 @@ static void __init msm7x2x_map_io(void)
 		else
 			/* R/W latency: 3 cycles; */
 			l2x0_init(MSM_L2CC_BASE, 0x00068012, 0xfe000000);
+=======
+			R/W latency: 3 cycles;
+			evmon/parity/share disabled. */
+		l2x0_init(MSM_L2CC_BASE, 0x00068012, 0xfe000000);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	}
 #endif
 }
@@ -1965,43 +2060,67 @@ static void __init msm7x2x_map_io(void)
 MACHINE_START(MSM7X27_SURF, "QCT MSM7x27 SURF")
 	.boot_params	= PLAT_PHYS_OFFSET + 0x100,
 	.map_io		= msm7x2x_map_io,
+<<<<<<< HEAD
 	.reserve	= msm7x27_reserve,
 	.init_irq	= msm7x2x_init_irq,
 	.init_machine	= msm7x2x_init,
 	.timer		= &msm_timer,
         .init_early     = msm7x27_init_early,
 	.handle_irq     = vic_handle_irq,
+=======
+	.init_irq	= msm7x2x_init_irq,
+	.init_machine	= msm7x2x_init,
+	.timer		= &msm_timer,
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 MACHINE_END
 
 MACHINE_START(MSM7X27_FFA, "QCT MSM7x27 FFA")
 	.boot_params	= PLAT_PHYS_OFFSET + 0x100,
 	.map_io		= msm7x2x_map_io,
+<<<<<<< HEAD
 	.reserve	= msm7x27_reserve,
 	.init_irq	= msm7x2x_init_irq,
 	.init_machine	= msm7x2x_init,
 	.timer		= &msm_timer,
         .init_early     = msm7x27_init_early,
 	.handle_irq     = vic_handle_irq,
+=======
+	.init_irq	= msm7x2x_init_irq,
+	.init_machine	= msm7x2x_init,
+	.timer		= &msm_timer,
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 MACHINE_END
 
 MACHINE_START(MSM7X25_SURF, "QCT MSM7x25 SURF")
 	.boot_params	= PLAT_PHYS_OFFSET + 0x100,
 	.map_io		= msm7x2x_map_io,
+<<<<<<< HEAD
 	.reserve	= msm7x27_reserve,
 	.init_irq	= msm7x2x_init_irq,
 	.init_machine	= msm7x2x_init,
 	.timer		= &msm_timer,
         .init_early     = msm7x27_init_early,
 	.handle_irq     = vic_handle_irq,
+=======
+	.init_irq	= msm7x2x_init_irq,
+	.init_machine	= msm7x2x_init,
+	.timer		= &msm_timer,
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 MACHINE_END
 
 MACHINE_START(MSM7X25_FFA, "QCT MSM7x25 FFA")
 	.boot_params	= PLAT_PHYS_OFFSET + 0x100,
 	.map_io		= msm7x2x_map_io,
+<<<<<<< HEAD
 	.reserve	= msm7x27_reserve,
 	.init_irq	= msm7x2x_init_irq,
 	.init_machine	= msm7x2x_init,
 	.timer		= &msm_timer,
         .init_early     = msm7x27_init_early,
 	.handle_irq     = vic_handle_irq,
+=======
+	.init_irq	= msm7x2x_init_irq,
+	.init_machine	= msm7x2x_init,
+	.timer		= &msm_timer,
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 MACHINE_END

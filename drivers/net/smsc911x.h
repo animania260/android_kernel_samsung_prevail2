@@ -236,7 +236,11 @@
 #define PMT_CTRL_PME_EN_		0x00000002
 #define PMT_CTRL_READY_			0x00000001
 
+<<<<<<< HEAD
 #define SMSC_GPIO_CFG			0x88
+=======
+#define GPIO_CFG			0x88
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #define GPIO_CFG_LED3_EN_		0x40000000
 #define GPIO_CFG_LED2_EN_		0x20000000
 #define GPIO_CFG_LED1_EN_		0x10000000

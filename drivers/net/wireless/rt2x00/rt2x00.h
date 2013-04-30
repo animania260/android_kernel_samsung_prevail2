@@ -922,6 +922,10 @@ struct rt2x00_dev {
 	 * Powersaving work
 	 */
 	struct delayed_work autowakeup_work;
+<<<<<<< HEAD
+=======
+	struct work_struct sleep_work;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	/*
 	 * Data queue arrays for RX, TX, Beacon and ATIM.

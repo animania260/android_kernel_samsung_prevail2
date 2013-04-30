@@ -1,6 +1,10 @@
 VERSION = 3
 PATCHLEVEL = 0
+<<<<<<< HEAD
 SUBLEVEL = 72
+=======
+SUBLEVEL = 75
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 EXTRAVERSION =
 NAME = Sneaky Weasel
 
@@ -192,10 +196,15 @@ SUBARCH := $(shell uname -m | sed -e s/i.86/i386/ -e s/sun4u/sparc64/ \
 # Default value for CROSS_COMPILE is not to prefix executables
 # Note: Some architectures assign CROSS_COMPILE in their arch/*/Makefile
 export KBUILD_BUILDHOST := $(SUBARCH)
+<<<<<<< HEAD
 #ARCH		?= $(SUBARCH)
 #CROSS_COMPILE	?= $(CONFIG_CROSS_COMPILE:"%"=%)
 ARCH		?= arm
 CROSS_COMPILE	?= /home/belialdev/linaro-2013-04_4.8.1/bin/arm-cortex_a8-linux-gnueabi-
+=======
+ARCH		?= $(SUBARCH)
+CROSS_COMPILE	?= $(CONFIG_CROSS_COMPILE:"%"=%)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 # Architecture as present in compile.h
 UTS_MACHINE 	:= $(ARCH)
@@ -332,7 +341,11 @@ include $(srctree)/scripts/Kbuild.include
 
 AS		= $(CROSS_COMPILE)as
 LD		= $(CROSS_COMPILE)ld
+<<<<<<< HEAD
 REAL_CC		= $(CROSS_COMPILE)gcc
+=======
+CC		= $(CROSS_COMPILE)gcc
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 CPP		= $(CC) -E
 AR		= $(CROSS_COMPILE)ar
 NM		= $(CROSS_COMPILE)nm
@@ -347,10 +360,13 @@ KALLSYMS	= scripts/kallsyms
 PERL		= perl
 CHECK		= sparse
 
+<<<<<<< HEAD
 # Use the wrapper for the compiler.  This wrapper scans for new
 # warnings and causes the build to stop upon encountering them.
 CC		= $(srctree)/scripts/gcc-wrapper.py $(REAL_CC)
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 CHECKFLAGS     := -D__linux__ -Dlinux -D__STDC__ -Dunix -D__unix__ \
 		  -Wbitwise -Wno-return-void $(CF)
 CFLAGS_MODULE   =
@@ -374,10 +390,14 @@ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -fno-strict-aliasing -fno-common \
 		   -Werror-implicit-function-declaration \
 		   -Wno-format-security \
+<<<<<<< HEAD
 		   -fno-delete-null-pointer-checks \
 		   -march=armv7-a -mtune=cortex-a8 -mfpu=neon \
            -ffast-math -fsingle-precision-constant \
            -fgcse-lm -fgcse-sm -fsched-spec-load -fforce-addr
+=======
+		   -fno-delete-null-pointer-checks
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 KBUILD_AFLAGS_KERNEL :=
 KBUILD_CFLAGS_KERNEL :=
 KBUILD_AFLAGS   := -D__ASSEMBLY__
@@ -572,9 +592,12 @@ KBUILD_CFLAGS	+= -Os
 else
 KBUILD_CFLAGS	+= -O2
 endif
+<<<<<<< HEAD
 ifdef CONFIG_CC_OPTIMIZE_MORE
 KBUILD_CFLAGS += -O3 -fmodulo-sched -fmodulo-sched-allow-regmoves -fno-tree-vectorize
 endif
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 include $(srctree)/arch/$(SRCARCH)/Makefile
 

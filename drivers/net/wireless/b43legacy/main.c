@@ -3843,6 +3843,11 @@ static void b43legacy_remove(struct ssb_device *dev)
 	cancel_work_sync(&wldev->restart_work);
 
 	B43legacy_WARN_ON(!wl);
+<<<<<<< HEAD
+=======
+	if (!wldev->fw.ucode)
+		return;			/* NULL if fw never loaded */
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	if (wl->current_dev == wldev)
 		ieee80211_unregister_hw(wl->hw);
 

@@ -610,10 +610,17 @@ EXPORT_SYMBOL(tcf_exts_dump_stats);
 
 static int __init tc_filter_init(void)
 {
+<<<<<<< HEAD
 	rtnl_register(PF_UNSPEC, RTM_NEWTFILTER, tc_ctl_tfilter, NULL);
 	rtnl_register(PF_UNSPEC, RTM_DELTFILTER, tc_ctl_tfilter, NULL);
 	rtnl_register(PF_UNSPEC, RTM_GETTFILTER, tc_ctl_tfilter,
 						 tc_dump_tfilter);
+=======
+	rtnl_register(PF_UNSPEC, RTM_NEWTFILTER, tc_ctl_tfilter, NULL, NULL);
+	rtnl_register(PF_UNSPEC, RTM_DELTFILTER, tc_ctl_tfilter, NULL, NULL);
+	rtnl_register(PF_UNSPEC, RTM_GETTFILTER, tc_ctl_tfilter,
+		      tc_dump_tfilter, NULL);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	return 0;
 }

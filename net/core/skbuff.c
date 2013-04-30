@@ -2985,6 +2985,11 @@ static void sock_rmem_free(struct sk_buff *skb)
  */
 int sock_queue_err_skb(struct sock *sk, struct sk_buff *skb)
 {
+<<<<<<< HEAD
+=======
+	int len = skb->len;
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	if (atomic_read(&sk->sk_rmem_alloc) + skb->truesize >=
 	    (unsigned)sk->sk_rcvbuf)
 		return -ENOMEM;
@@ -2999,7 +3004,11 @@ int sock_queue_err_skb(struct sock *sk, struct sk_buff *skb)
 
 	skb_queue_tail(&sk->sk_error_queue, skb);
 	if (!sock_flag(sk, SOCK_DEAD))
+<<<<<<< HEAD
 		sk->sk_data_ready(sk, skb->len);
+=======
+		sk->sk_data_ready(sk, len);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	return 0;
 }
 EXPORT_SYMBOL(sock_queue_err_skb);

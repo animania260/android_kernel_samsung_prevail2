@@ -38,12 +38,15 @@ static inline const char *memblock_type_name(struct memblock_type *type)
 		return "unknown";
 }
 
+<<<<<<< HEAD
 /* adjust *@size so that (@base + *@size) doesn't overflow, return new size */
 static inline phys_addr_t memblock_cap_size(phys_addr_t base, phys_addr_t *size)
 {
 	return *size = min(*size, (phys_addr_t)ULLONG_MAX - base);
 }
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 /*
  * Address comparison utilities
  */
@@ -282,7 +285,11 @@ extern int __init_memblock __weak memblock_memory_can_coalesce(phys_addr_t addr1
 static long __init_memblock memblock_add_region(struct memblock_type *type,
 						phys_addr_t base, phys_addr_t size)
 {
+<<<<<<< HEAD
 	phys_addr_t end = base + memblock_cap_size(base, &size);
+=======
+	phys_addr_t end = base + size;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	int i, slot = -1;
 
 	/* First try and coalesce this MEMBLOCK with others */
@@ -418,7 +425,11 @@ long __init_memblock memblock_add(phys_addr_t base, phys_addr_t size)
 static long __init_memblock __memblock_remove(struct memblock_type *type,
 					      phys_addr_t base, phys_addr_t size)
 {
+<<<<<<< HEAD
 	phys_addr_t end = base + memblock_cap_size(base, &size);
+=======
+	phys_addr_t end = base + size;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	int i;
 
 	/* Walk through the array for collisions */
@@ -711,18 +722,28 @@ int __init_memblock memblock_is_memory(phys_addr_t addr)
 int __init_memblock memblock_is_region_memory(phys_addr_t base, phys_addr_t size)
 {
 	int idx = memblock_search(&memblock.memory, base);
+<<<<<<< HEAD
 	phys_addr_t end = base + memblock_cap_size(base, &size);
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	if (idx == -1)
 		return 0;
 	return memblock.memory.regions[idx].base <= base &&
 		(memblock.memory.regions[idx].base +
+<<<<<<< HEAD
 		 memblock.memory.regions[idx].size) >= end;
+=======
+		 memblock.memory.regions[idx].size) >= (base + size);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 int __init_memblock memblock_is_region_reserved(phys_addr_t base, phys_addr_t size)
 {
+<<<<<<< HEAD
 	memblock_cap_size(base, &size);
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	return memblock_overlaps_region(&memblock.reserved, base, size) >= 0;
 }
 

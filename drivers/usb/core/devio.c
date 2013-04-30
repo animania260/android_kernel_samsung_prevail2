@@ -292,6 +292,7 @@ static struct async *async_getcompleted(struct dev_state *ps)
 static struct async *async_getpending(struct dev_state *ps,
 					     void __user *userurb)
 {
+<<<<<<< HEAD
 	unsigned long flags;
 	struct async *as;
 
@@ -303,6 +304,16 @@ static struct async *async_getpending(struct dev_state *ps,
 			return as;
 		}
 	spin_unlock_irqrestore(&ps->lock, flags);
+=======
+	struct async *as;
+
+	list_for_each_entry(as, &ps->async_pending, asynclist)
+		if (as->userurb == userurb) {
+			list_del_init(&as->asynclist);
+			return as;
+		}
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	return NULL;
 }
 
@@ -357,6 +368,10 @@ static void cancel_bulk_urbs(struct dev_state *ps, unsigned bulk_addr)
 __releases(ps->lock)
 __acquires(ps->lock)
 {
+<<<<<<< HEAD
+=======
+	struct urb *urb;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	struct async *as;
 
 	/* Mark all the pending URBs that match bulk_addr, up to but not
@@ -379,8 +394,16 @@ __acquires(ps->lock)
 	list_for_each_entry(as, &ps->async_pending, asynclist) {
 		if (as->bulk_status == AS_UNLINK) {
 			as->bulk_status = 0;		/* Only once */
+<<<<<<< HEAD
 			spin_unlock(&ps->lock);		/* Allow completions */
 			usb_unlink_urb(as->urb);
+=======
+			urb = as->urb;
+			usb_get_urb(urb);
+			spin_unlock(&ps->lock);		/* Allow completions */
+			usb_unlink_urb(urb);
+			usb_put_urb(urb);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			spin_lock(&ps->lock);
 			goto rescan;
 		}
@@ -407,7 +430,11 @@ static void async_completed(struct urb *urb)
 		sinfo.si_errno = as->status;
 		sinfo.si_code = SI_ASYNCIO;
 		sinfo.si_addr = as->userurb;
+<<<<<<< HEAD
 		pid = as->pid;
+=======
+		pid = get_pid(as->pid);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		uid = as->uid;
 		euid = as->euid;
 		secid = as->secid;
@@ -422,15 +449,27 @@ static void async_completed(struct urb *urb)
 		cancel_bulk_urbs(ps, as->bulk_addr);
 	spin_unlock(&ps->lock);
 
+<<<<<<< HEAD
 	if (signr)
 		kill_pid_info_as_uid(sinfo.si_signo, &sinfo, pid, uid,
 				      euid, secid);
+=======
+	if (signr) {
+		kill_pid_info_as_uid(sinfo.si_signo, &sinfo, pid, uid,
+				      euid, secid);
+		put_pid(pid);
+	}
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	wake_up(&ps->wait);
 }
 
 static void destroy_async(struct dev_state *ps, struct list_head *list)
 {
+<<<<<<< HEAD
+=======
+	struct urb *urb;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	struct async *as;
 	unsigned long flags;
 
@@ -438,10 +477,20 @@ static void destroy_async(struct dev_state *ps, struct list_head *list)
 	while (!list_empty(list)) {
 		as = list_entry(list->next, struct async, asynclist);
 		list_del_init(&as->asynclist);
+<<<<<<< HEAD
 
 		/* drop the spinlock so the completion handler can run */
 		spin_unlock_irqrestore(&ps->lock, flags);
 		usb_kill_urb(as->urb);
+=======
+		urb = as->urb;
+		usb_get_urb(urb);
+
+		/* drop the spinlock so the completion handler can run */
+		spin_unlock_irqrestore(&ps->lock, flags);
+		usb_kill_urb(urb);
+		usb_put_urb(urb);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		spin_lock_irqsave(&ps->lock, flags);
 	}
 	spin_unlock_irqrestore(&ps->lock, flags);
@@ -607,9 +656,16 @@ static int findintfep(struct usb_device *dev, unsigned int ep)
 }
 
 static int check_ctrlrecip(struct dev_state *ps, unsigned int requesttype,
+<<<<<<< HEAD
 			   unsigned int index)
 {
 	int ret = 0;
+=======
+			   unsigned int request, unsigned int index)
+{
+	int ret = 0;
+	struct usb_host_interface *alt_setting;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	if (ps->dev->state != USB_STATE_UNAUTHENTICATED
 	 && ps->dev->state != USB_STATE_ADDRESS
@@ -618,6 +674,22 @@ static int check_ctrlrecip(struct dev_state *ps, unsigned int requesttype,
 	if (USB_TYPE_VENDOR == (USB_TYPE_MASK & requesttype))
 		return 0;
 
+<<<<<<< HEAD
+=======
+	/*
+	 * check for the special corner case 'get_device_id' in the printer
+	 * class specification, where wIndex is (interface << 8 | altsetting)
+	 * instead of just interface
+	 */
+	if (requesttype == 0xa1 && request == 0) {
+		alt_setting = usb_find_alt_setting(ps->dev->actconfig,
+						   index >> 8, index & 0xff);
+		if (alt_setting
+		 && alt_setting->desc.bInterfaceClass == USB_CLASS_PRINTER)
+			index >>= 8;
+	}
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	index &= 0xff;
 	switch (requesttype & USB_RECIP_MASK) {
 	case USB_RECIP_ENDPOINT:
@@ -770,7 +842,12 @@ static int proc_control(struct dev_state *ps, void __user *arg)
 
 	if (copy_from_user(&ctrl, arg, sizeof(ctrl)))
 		return -EFAULT;
+<<<<<<< HEAD
 	ret = check_ctrlrecip(ps, ctrl.bRequestType, ctrl.wIndex);
+=======
+	ret = check_ctrlrecip(ps, ctrl.bRequestType, ctrl.bRequest,
+			      ctrl.wIndex);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	if (ret)
 		return ret;
 	wLength = ctrl.wLength;		/* To suppress 64k PAGE_SIZE warning */
@@ -1100,7 +1177,11 @@ static int proc_do_submiturb(struct dev_state *ps, struct usbdevfs_urb *uurb,
 			kfree(dr);
 			return -EINVAL;
 		}
+<<<<<<< HEAD
 		ret = check_ctrlrecip(ps, dr->bRequestType,
+=======
+		ret = check_ctrlrecip(ps, dr->bRequestType, dr->bRequest,
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 				      le16_to_cpup(&dr->wIndex));
 		if (ret) {
 			kfree(dr);
@@ -1335,12 +1416,33 @@ static int proc_submiturb(struct dev_state *ps, void __user *arg)
 
 static int proc_unlinkurb(struct dev_state *ps, void __user *arg)
 {
+<<<<<<< HEAD
 	struct async *as;
 
 	as = async_getpending(ps, arg);
 	if (!as)
 		return -EINVAL;
 	usb_kill_urb(as->urb);
+=======
+	struct urb *urb;
+	struct async *as;
+	unsigned long flags;
+
+	spin_lock_irqsave(&ps->lock, flags);
+	as = async_getpending(ps, arg);
+	if (!as) {
+		spin_unlock_irqrestore(&ps->lock, flags);
+		return -EINVAL;
+	}
+
+	urb = as->urb;
+	usb_get_urb(urb);
+	spin_unlock_irqrestore(&ps->lock, flags);
+
+	usb_kill_urb(urb);
+	usb_put_urb(urb);
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	return 0;
 }
 
@@ -1523,10 +1625,21 @@ static int processcompl_compat(struct async *as, void __user * __user *arg)
 	void __user *addr = as->userurb;
 	unsigned int i;
 
+<<<<<<< HEAD
 	if (as->userbuffer && urb->actual_length)
 		if (copy_to_user(as->userbuffer, urb->transfer_buffer,
 				 urb->actual_length))
 			return -EFAULT;
+=======
+	if (as->userbuffer && urb->actual_length) {
+		if (urb->number_of_packets > 0)		/* Isochronous */
+			i = urb->transfer_buffer_length;
+		else					/* Non-Isoc */
+			i = urb->actual_length;
+		if (copy_to_user(as->userbuffer, urb->transfer_buffer, i))
+			return -EFAULT;
+	}
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	if (put_user(as->status, &userurb->status))
 		return -EFAULT;
 	if (put_user(urb->actual_length, &userurb->actual_length))

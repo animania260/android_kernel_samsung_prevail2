@@ -35,10 +35,13 @@ struct compact_control {
 	unsigned long migrate_pfn;	/* isolate_migratepages search base */
 	bool sync;			/* Synchronous migration */
 
+<<<<<<< HEAD
 	/* Account for isolated anon and file pages */
 	unsigned long nr_anon;
 	unsigned long nr_file;
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	unsigned int order;		/* order a direct compactor needs */
 	int migratetype;		/* MOVABLE, RECLAIMABLE etc */
 	struct zone *zone;
@@ -223,6 +226,7 @@ static void isolate_freepages(struct zone *zone,
 static void acct_isolated(struct zone *zone, struct compact_control *cc)
 {
 	struct page *page;
+<<<<<<< HEAD
 	unsigned int count[NR_LRU_LISTS] = { 0, };
 
 	list_for_each_entry(page, &cc->migratepages, lru) {
@@ -234,6 +238,15 @@ static void acct_isolated(struct zone *zone, struct compact_control *cc)
 	cc->nr_file = count[LRU_ACTIVE_FILE] + count[LRU_INACTIVE_FILE];
 	__mod_zone_page_state(zone, NR_ISOLATED_ANON, cc->nr_anon);
 	__mod_zone_page_state(zone, NR_ISOLATED_FILE, cc->nr_file);
+=======
+	unsigned int count[2] = { 0, };
+
+	list_for_each_entry(page, &cc->migratepages, lru)
+		count[!!page_is_file_cache(page)]++;
+
+	__mod_zone_page_state(zone, NR_ISOLATED_ANON, count[0]);
+	__mod_zone_page_state(zone, NR_ISOLATED_FILE, count[1]);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 /* Similar to reclaim, but different enough that they don't share logic */
@@ -269,6 +282,10 @@ static isolate_migrate_t isolate_migratepages(struct zone *zone,
 	unsigned long last_pageblock_nr = 0, pageblock_nr;
 	unsigned long nr_scanned = 0, nr_isolated = 0;
 	struct list_head *migratelist = &cc->migratepages;
+<<<<<<< HEAD
+=======
+	isolate_mode_t mode = ISOLATE_ACTIVE|ISOLATE_INACTIVE;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	/* Do not scan outside zone boundaries */
 	low_pfn = max(cc->migrate_pfn, zone->zone_start_pfn);
@@ -320,12 +337,42 @@ static isolate_migrate_t isolate_migratepages(struct zone *zone,
 		} else if (!locked)
 			spin_lock_irq(&zone->lru_lock);
 
+<<<<<<< HEAD
+=======
+		/*
+		 * migrate_pfn does not necessarily start aligned to a
+		 * pageblock. Ensure that pfn_valid is called when moving
+		 * into a new MAX_ORDER_NR_PAGES range in case of large
+		 * memory holes within the zone
+		 */
+		if ((low_pfn & (MAX_ORDER_NR_PAGES - 1)) == 0) {
+			if (!pfn_valid(low_pfn)) {
+				low_pfn += MAX_ORDER_NR_PAGES - 1;
+				continue;
+			}
+		}
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		if (!pfn_valid_within(low_pfn))
 			continue;
 		nr_scanned++;
 
+<<<<<<< HEAD
 		/* Get the page and skip if free */
 		page = pfn_to_page(low_pfn);
+=======
+		/*
+		 * Get the page and ensure the page is within the same zone.
+		 * See the comment in isolate_freepages about overlapping
+		 * nodes. It is deliberate that the new zone lock is not taken
+		 * as memory compaction should not move pages between nodes.
+		 */
+		page = pfn_to_page(low_pfn);
+		if (page_zone(page) != zone)
+			continue;
+
+		/* Skip if free */
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		if (PageBuddy(page))
 			continue;
 
@@ -356,8 +403,16 @@ static isolate_migrate_t isolate_migratepages(struct zone *zone,
 			continue;
 		}
 
+<<<<<<< HEAD
 		/* Try isolate the page */
 		if (__isolate_lru_page(page, ISOLATE_BOTH, 0) != 0)
+=======
+		if (!cc->sync)
+			mode |= ISOLATE_ASYNC_MIGRATE;
+
+		/* Try isolate the page */
+		if (__isolate_lru_page(page, mode, 0) != 0)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			continue;
 
 		VM_BUG_ON(PageTransCompound(page));
@@ -559,7 +614,11 @@ static int compact_zone(struct zone *zone, struct compact_control *cc)
 		nr_migrate = cc->nr_migratepages;
 		err = migrate_pages(&cc->migratepages, compaction_alloc,
 				(unsigned long)cc, false,
+<<<<<<< HEAD
 				cc->sync);
+=======
+				cc->sync ? MIGRATE_SYNC_LIGHT : MIGRATE_ASYNC);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		update_nr_listpages(cc);
 		nr_remaining = cc->nr_migratepages;
 
@@ -574,8 +633,16 @@ static int compact_zone(struct zone *zone, struct compact_control *cc)
 		if (err) {
 			putback_lru_pages(&cc->migratepages);
 			cc->nr_migratepages = 0;
+<<<<<<< HEAD
 		}
 
+=======
+			if (err == -ENOMEM) {
+				ret = COMPACT_PARTIAL;
+				goto out;
+			}
+		}
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	}
 
 out:
@@ -693,14 +760,21 @@ static int compact_node(int nid)
 }
 
 /* Compact all nodes in the system */
+<<<<<<< HEAD
 static int compact_nodes(void)
+=======
+static void compact_nodes(void)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 {
 	int nid;
 
 	for_each_online_node(nid)
 		compact_node(nid);
+<<<<<<< HEAD
 
 	return COMPACT_COMPLETE;
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 /* The written value is actually unused, all memory is compacted */
@@ -711,7 +785,11 @@ int sysctl_compaction_handler(struct ctl_table *table, int write,
 			void __user *buffer, size_t *length, loff_t *ppos)
 {
 	if (write)
+<<<<<<< HEAD
 		return compact_nodes();
+=======
+		compact_nodes();
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	return 0;
 }

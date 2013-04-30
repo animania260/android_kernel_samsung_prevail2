@@ -2340,6 +2340,10 @@ static void ivb_manual_fdi_link_train(struct drm_crtc *crtc)
 	temp |= FDI_LINK_TRAIN_PATTERN_1_IVB;
 	temp &= ~FDI_LINK_TRAIN_VOL_EMP_MASK;
 	temp |= FDI_LINK_TRAIN_400MV_0DB_SNB_B;
+<<<<<<< HEAD
+=======
+	temp |= FDI_COMPOSITE_SYNC;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	I915_WRITE(reg, temp | FDI_TX_ENABLE);
 
 	reg = FDI_RX_CTL(pipe);
@@ -2347,6 +2351,10 @@ static void ivb_manual_fdi_link_train(struct drm_crtc *crtc)
 	temp &= ~FDI_LINK_TRAIN_AUTO;
 	temp &= ~FDI_LINK_TRAIN_PATTERN_MASK_CPT;
 	temp |= FDI_LINK_TRAIN_PATTERN_1_CPT;
+<<<<<<< HEAD
+=======
+	temp |= FDI_COMPOSITE_SYNC;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	I915_WRITE(reg, temp | FDI_RX_ENABLE);
 
 	POSTING_READ(reg);
@@ -2694,7 +2702,15 @@ static void ironlake_crtc_enable(struct drm_crtc *crtc)
 		 * as some pre-programmed values are broken,
 		 * e.g. x201.
 		 */
+<<<<<<< HEAD
 		I915_WRITE(PF_CTL(pipe), PF_ENABLE | PF_FILTER_MED_3x3);
+=======
+		if (IS_IVYBRIDGE(dev))
+			I915_WRITE(PF_CTL(pipe), PF_ENABLE | PF_FILTER_MED_3x3 |
+						 PF_PIPE_SEL_IVB(pipe));
+		else
+			I915_WRITE(PF_CTL(pipe), PF_ENABLE | PF_FILTER_MED_3x3);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		I915_WRITE(PF_WIN_POS(pipe), dev_priv->pch_pf_pos);
 		I915_WRITE(PF_WIN_SZ(pipe), dev_priv->pch_pf_size);
 	}
@@ -2892,6 +2908,10 @@ static void i9xx_crtc_disable(struct drm_crtc *crtc)
 	struct intel_crtc *intel_crtc = to_intel_crtc(crtc);
 	int pipe = intel_crtc->pipe;
 	int plane = intel_crtc->plane;
+<<<<<<< HEAD
+=======
+	u32 pctl;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	if (!intel_crtc->active)
 		return;
@@ -2908,6 +2928,16 @@ static void i9xx_crtc_disable(struct drm_crtc *crtc)
 
 	intel_disable_plane(dev_priv, plane, pipe);
 	intel_disable_pipe(dev_priv, pipe);
+<<<<<<< HEAD
+=======
+
+	/* Disable pannel fitter if it is on this pipe. */
+	pctl = I915_READ(PFIT_CONTROL);
+	if ((pctl & PFIT_ENABLE) &&
+	    ((pctl & PFIT_PIPE_MASK) >> PFIT_PIPE_SHIFT) == pipe)
+		I915_WRITE(PFIT_CONTROL, 0);
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	intel_disable_pll(dev_priv, pipe);
 
 	intel_crtc->active = false;
@@ -4970,7 +5000,11 @@ static int ironlake_crtc_mode_set(struct drm_crtc *crtc,
 	} else if (is_sdvo && is_tv)
 		factor = 20;
 
+<<<<<<< HEAD
 	if (clock.m1 < factor * clock.n)
+=======
+	if (clock.m < factor * clock.n)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		fp |= FP_CB_TUNE;
 
 	dpll = 0;
@@ -5263,7 +5297,11 @@ void intel_crtc_load_lut(struct drm_crtc *crtc)
 	int i;
 
 	/* The clocks have to be on to load the palette. */
+<<<<<<< HEAD
 	if (!crtc->enabled)
+=======
+	if (!crtc->enabled || !intel_crtc->active)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		return;
 
 	/* use legacy palette for Ironlake */
@@ -5334,6 +5372,34 @@ static void i9xx_update_cursor(struct drm_crtc *crtc, u32 base)
 	I915_WRITE(CURBASE(pipe), base);
 }
 
+<<<<<<< HEAD
+=======
+static void ivb_update_cursor(struct drm_crtc *crtc, u32 base)
+{
+	struct drm_device *dev = crtc->dev;
+	struct drm_i915_private *dev_priv = dev->dev_private;
+	struct intel_crtc *intel_crtc = to_intel_crtc(crtc);
+	int pipe = intel_crtc->pipe;
+	bool visible = base != 0;
+
+	if (intel_crtc->cursor_visible != visible) {
+		uint32_t cntl = I915_READ(CURCNTR_IVB(pipe));
+		if (base) {
+			cntl &= ~CURSOR_MODE;
+			cntl |= CURSOR_MODE_64_ARGB_AX | MCURSOR_GAMMA_ENABLE;
+		} else {
+			cntl &= ~(CURSOR_MODE | MCURSOR_GAMMA_ENABLE);
+			cntl |= CURSOR_MODE_DISABLE;
+		}
+		I915_WRITE(CURCNTR_IVB(pipe), cntl);
+
+		intel_crtc->cursor_visible = visible;
+	}
+	/* and commit changes on next vblank */
+	I915_WRITE(CURBASE_IVB(pipe), base);
+}
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 /* If no-part of the cursor is visible on the framebuffer, then the GPU may hang... */
 static void intel_crtc_update_cursor(struct drm_crtc *crtc,
 				     bool on)
@@ -5381,11 +5447,24 @@ static void intel_crtc_update_cursor(struct drm_crtc *crtc,
 	if (!visible && !intel_crtc->cursor_visible)
 		return;
 
+<<<<<<< HEAD
 	I915_WRITE(CURPOS(pipe), pos);
 	if (IS_845G(dev) || IS_I865G(dev))
 		i845_update_cursor(crtc, base);
 	else
 		i9xx_update_cursor(crtc, base);
+=======
+	if (IS_IVYBRIDGE(dev)) {
+		I915_WRITE(CURPOS_IVB(pipe), pos);
+		ivb_update_cursor(crtc, base);
+	} else {
+		I915_WRITE(CURPOS(pipe), pos);
+		if (IS_845G(dev) || IS_I865G(dev))
+			i845_update_cursor(crtc, base);
+		else
+			i9xx_update_cursor(crtc, base);
+	}
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	if (visible)
 		intel_mark_busy(dev, to_intel_framebuffer(crtc->fb)->obj);
@@ -6463,8 +6542,13 @@ static int intel_crtc_page_flip(struct drm_crtc *crtc,
 {
 	struct drm_device *dev = crtc->dev;
 	struct drm_i915_private *dev_priv = dev->dev_private;
+<<<<<<< HEAD
 	struct intel_framebuffer *intel_fb;
 	struct drm_i915_gem_object *obj;
+=======
+	struct drm_framebuffer *old_fb = crtc->fb;
+	struct drm_i915_gem_object *obj = to_intel_framebuffer(fb)->obj;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	struct intel_crtc *intel_crtc = to_intel_crtc(crtc);
 	struct intel_unpin_work *work;
 	unsigned long flags;
@@ -6476,15 +6560,29 @@ static int intel_crtc_page_flip(struct drm_crtc *crtc,
 
 	work->event = event;
 	work->dev = crtc->dev;
+<<<<<<< HEAD
 	intel_fb = to_intel_framebuffer(crtc->fb);
 	work->old_fb_obj = intel_fb->obj;
 	INIT_WORK(&work->work, intel_unpin_work_fn);
 
+=======
+	work->old_fb_obj = to_intel_framebuffer(old_fb)->obj;
+	INIT_WORK(&work->work, intel_unpin_work_fn);
+
+	ret = drm_vblank_get(dev, intel_crtc->pipe);
+	if (ret)
+		goto free_work;
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	/* We borrow the event spin lock for protecting unpin_work */
 	spin_lock_irqsave(&dev->event_lock, flags);
 	if (intel_crtc->unpin_work) {
 		spin_unlock_irqrestore(&dev->event_lock, flags);
 		kfree(work);
+<<<<<<< HEAD
+=======
+		drm_vblank_put(dev, intel_crtc->pipe);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 		DRM_DEBUG_DRIVER("flip queue: crtc already busy\n");
 		return -EBUSY;
@@ -6492,9 +6590,12 @@ static int intel_crtc_page_flip(struct drm_crtc *crtc,
 	intel_crtc->unpin_work = work;
 	spin_unlock_irqrestore(&dev->event_lock, flags);
 
+<<<<<<< HEAD
 	intel_fb = to_intel_framebuffer(fb);
 	obj = intel_fb->obj;
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	mutex_lock(&dev->struct_mutex);
 
 	/* Reference the objects for the scheduled work. */
@@ -6503,10 +6604,13 @@ static int intel_crtc_page_flip(struct drm_crtc *crtc,
 
 	crtc->fb = fb;
 
+<<<<<<< HEAD
 	ret = drm_vblank_get(dev, intel_crtc->pipe);
 	if (ret)
 		goto cleanup_objs;
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	work->pending_flip_obj = obj;
 
 	work->enable_stall_check = true;
@@ -6528,7 +6632,11 @@ static int intel_crtc_page_flip(struct drm_crtc *crtc,
 
 cleanup_pending:
 	atomic_sub(1 << intel_crtc->plane, &work->old_fb_obj->pending_flip);
+<<<<<<< HEAD
 cleanup_objs:
+=======
+	crtc->fb = old_fb;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	drm_gem_object_unreference(&work->old_fb_obj->base);
 	drm_gem_object_unreference(&obj->base);
 	mutex_unlock(&dev->struct_mutex);
@@ -6537,6 +6645,11 @@ cleanup_objs:
 	intel_crtc->unpin_work = NULL;
 	spin_unlock_irqrestore(&dev->event_lock, flags);
 
+<<<<<<< HEAD
+=======
+	drm_vblank_put(dev, intel_crtc->pipe);
+free_work:
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	kfree(work);
 
 	return ret;
@@ -6547,6 +6660,16 @@ static void intel_sanitize_modesetting(struct drm_device *dev,
 {
 	struct drm_i915_private *dev_priv = dev->dev_private;
 	u32 reg, val;
+<<<<<<< HEAD
+=======
+	int i;
+
+	/* Clear any frame start delays used for debugging left by the BIOS */
+	for_each_pipe(i) {
+		reg = PIPECONF(i);
+		I915_WRITE(reg, I915_READ(reg) & ~PIPECONF_FRAME_START_DELAY_MASK);
+	}
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	if (HAS_PCH_SPLIT(dev))
 		return;
@@ -7369,10 +7492,34 @@ static void gen6_init_clock_gating(struct drm_device *dev)
 		   I915_READ(ILK_DISPLAY_CHICKEN2) |
 		   ILK_ELPIN_409_SELECT);
 
+<<<<<<< HEAD
+=======
+	/* WaDisableHiZPlanesWhenMSAAEnabled */
+	I915_WRITE(_3D_CHICKEN,
+		   _MASKED_BIT_ENABLE(_3D_CHICKEN_HIZ_PLANE_DISABLE_MSAA_4X_SNB));
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	I915_WRITE(WM3_LP_ILK, 0);
 	I915_WRITE(WM2_LP_ILK, 0);
 	I915_WRITE(WM1_LP_ILK, 0);
 
+<<<<<<< HEAD
+=======
+	/* According to the BSpec vol1g, bit 12 (RCPBUNIT) clock
+	 * gating disable must be set.  Failure to set it results in
+	 * flickering pixels due to Z write ordering failures after
+	 * some amount of runtime in the Mesa "fire" demo, and Unigine
+	 * Sanctuary and Tropics, and apparently anything else with
+	 * alpha test or pixel discard.
+	 *
+	 * According to the spec, bit 11 (RCCUNIT) must also be set,
+	 * but we didn't debug actual testcases to find it out.
+	 */
+	I915_WRITE(GEN6_UCGCTL2,
+		   GEN6_RCPBUNIT_CLOCK_GATE_DISABLE |
+		   GEN6_RCCUNIT_CLOCK_GATE_DISABLE);
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	/*
 	 * According to the spec the following bits should be
 	 * set in order to enable memory self-refresh and fbc:
@@ -7399,6 +7546,21 @@ static void gen6_init_clock_gating(struct drm_device *dev)
 			   DISPPLANE_TRICKLE_FEED_DISABLE);
 }
 
+<<<<<<< HEAD
+=======
+static void gen7_setup_fixed_func_scheduler(struct drm_i915_private *dev_priv)
+{
+	uint32_t reg = I915_READ(GEN7_FF_THREAD_MODE);
+
+	reg &= ~GEN7_FF_SCHED_MASK;
+	reg |= GEN7_FF_TS_SCHED_HW;
+	reg |= GEN7_FF_VS_SCHED_HW;
+	reg |= GEN7_FF_DS_SCHED_HW;
+
+	I915_WRITE(GEN7_FF_THREAD_MODE, reg);
+}
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 static void ivybridge_init_clock_gating(struct drm_device *dev)
 {
 	struct drm_i915_private *dev_priv = dev->dev_private;
@@ -7411,8 +7573,33 @@ static void ivybridge_init_clock_gating(struct drm_device *dev)
 	I915_WRITE(WM2_LP_ILK, 0);
 	I915_WRITE(WM1_LP_ILK, 0);
 
+<<<<<<< HEAD
 	I915_WRITE(ILK_DSPCLK_GATE, IVB_VRHUNIT_CLK_GATE);
 
+=======
+	/* According to the spec, bit 13 (RCZUNIT) must be set on IVB.
+	 * This implements the WaDisableRCZUnitClockGating workaround.
+	 */
+	I915_WRITE(GEN6_UCGCTL2, GEN6_RCZUNIT_CLOCK_GATE_DISABLE);
+
+	I915_WRITE(ILK_DSPCLK_GATE, IVB_VRHUNIT_CLK_GATE);
+
+	/* Apply the WaDisableRHWOOptimizationForRenderHang workaround. */
+	I915_WRITE(GEN7_COMMON_SLICE_CHICKEN1,
+		   GEN7_CSC1_RHWO_OPT_DISABLE_IN_RCC);
+
+	/* WaApplyL3ControlAndL3ChickenMode requires those two on Ivy Bridge */
+	I915_WRITE(GEN7_L3CNTLREG1,
+			GEN7_WA_FOR_GEN7_L3_CONTROL);
+	I915_WRITE(GEN7_L3_CHICKEN_MODE_REGISTER,
+			GEN7_WA_L3_CHICKEN_MODE);
+
+	/* This is required by WaCatErrorRejectionIssue */
+	I915_WRITE(GEN7_SQ_CHICKEN_MBCUNIT_CONFIG,
+			I915_READ(GEN7_SQ_CHICKEN_MBCUNIT_CONFIG) |
+			GEN7_SQ_CHICKEN_MBCUNIT_SQINTMOB);
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	for_each_pipe(pipe)
 		I915_WRITE(DSPCNTR(pipe),
 			   I915_READ(DSPCNTR(pipe)) |
@@ -7499,6 +7686,10 @@ static void ibx_init_clock_gating(struct drm_device *dev)
 static void cpt_init_clock_gating(struct drm_device *dev)
 {
 	struct drm_i915_private *dev_priv = dev->dev_private;
+<<<<<<< HEAD
+=======
+	int pipe;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	/*
 	 * On Ibex Peak and Cougar Point, we need to disable clock
@@ -7508,6 +7699,12 @@ static void cpt_init_clock_gating(struct drm_device *dev)
 	I915_WRITE(SOUTH_DSPCLK_GATE_D, PCH_DPLSUNIT_CLOCK_GATE_DISABLE);
 	I915_WRITE(SOUTH_CHICKEN2, I915_READ(SOUTH_CHICKEN2) |
 		   DPLS_EDP_PPS_FIX_DIS);
+<<<<<<< HEAD
+=======
+	/* Without this, mode sets may fail silently on FDI */
+	for_each_pipe(pipe)
+		I915_WRITE(TRANS_CHICKEN2(pipe), TRANS_AUTOTRAIN_GEN_STALL_DIS);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 static void ironlake_teardown_rc6(struct drm_device *dev)
@@ -7525,6 +7722,11 @@ static void ironlake_teardown_rc6(struct drm_device *dev)
 		drm_gem_object_unreference(&dev_priv->pwrctx->base);
 		dev_priv->pwrctx = NULL;
 	}
+<<<<<<< HEAD
+=======
+
+	gen7_setup_fixed_func_scheduler(dev_priv);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 static void ironlake_disable_rc6(struct drm_device *dev)
@@ -7943,7 +8145,11 @@ void intel_modeset_init(struct drm_device *dev)
 		intel_init_emon(dev);
 	}
 
+<<<<<<< HEAD
 	if (IS_GEN6(dev))
+=======
+	if (IS_GEN6(dev) || IS_GEN7(dev))
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		gen6_enable_rps(dev_priv);
 
 	INIT_WORK(&dev_priv->idle_work, intel_idle_update);
@@ -7985,7 +8191,11 @@ void intel_modeset_cleanup(struct drm_device *dev)
 
 	if (IS_IRONLAKE_M(dev))
 		ironlake_disable_drps(dev);
+<<<<<<< HEAD
 	if (IS_GEN6(dev))
+=======
+	if (IS_GEN6(dev) || IS_GEN7(dev))
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		gen6_disable_rps(dev);
 
 	if (IS_IRONLAKE_M(dev))

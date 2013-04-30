@@ -13,6 +13,10 @@
 #define KMSG_COMPONENT "dasd"
 
 #include <linux/interrupt.h>
+<<<<<<< HEAD
+=======
+#include <linux/compat.h>
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #include <linux/major.h>
 #include <linux/fs.h>
 #include <linux/blkpg.h>

@@ -115,7 +115,11 @@ int kernel_execve(const char *filename,
 		  "Ir" (THREAD_START_SP - sizeof(regs)),
 		  "r" (&regs),
 		  "Ir" (sizeof(regs))
+<<<<<<< HEAD
 		: "r0", "r1", "r2", "r3", "ip", "lr", "memory");
+=======
+		: "r0", "r1", "r2", "r3", "r8", "r9", "ip", "lr", "memory");
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
  out:
 	return ret;

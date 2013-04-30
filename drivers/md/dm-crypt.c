@@ -18,6 +18,10 @@
 #include <linux/crypto.h>
 #include <linux/workqueue.h>
 #include <linux/backing-dev.h>
+<<<<<<< HEAD
+=======
+#include <linux/percpu.h>
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #include <asm/atomic.h>
 #include <linux/scatterlist.h>
 #include <asm/page.h>
@@ -43,8 +47,12 @@ struct convert_context {
 	unsigned int idx_in;
 	unsigned int idx_out;
 	sector_t sector;
+<<<<<<< HEAD
 	atomic_t cc_pending;
 	struct ablkcipher_request *req;
+=======
+	atomic_t pending;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 };
 
 /*
@@ -57,7 +65,11 @@ struct dm_crypt_io {
 
 	struct convert_context ctx;
 
+<<<<<<< HEAD
 	atomic_t io_pending;
+=======
+	atomic_t pending;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	int error;
 	sector_t sector;
 	struct dm_crypt_io *base_io;
@@ -106,7 +118,22 @@ struct iv_lmk_private {
 enum flags { DM_CRYPT_SUSPENDED, DM_CRYPT_KEY_VALID };
 
 /*
+<<<<<<< HEAD
  * The fields in here must be read only after initialization,
+=======
+ * Duplicated per-CPU state for cipher.
+ */
+struct crypt_cpu {
+	struct ablkcipher_request *req;
+	/* ESSIV: struct crypto_cipher *essiv_tfm */
+	void *iv_private;
+	struct crypto_ablkcipher *tfms[0];
+};
+
+/*
+ * The fields in here must be read only after initialization,
+ * changing state should be in crypt_cpu.
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
  */
 struct crypt_config {
 	struct dm_dev *dev;
@@ -136,9 +163,17 @@ struct crypt_config {
 	sector_t iv_offset;
 	unsigned int iv_size;
 
+<<<<<<< HEAD
 	/* ESSIV: struct crypto_cipher *essiv_tfm */
 	void *iv_private;
 	struct crypto_ablkcipher **tfms;
+=======
+	/*
+	 * Duplicated per cpu state. Access through
+	 * per_cpu_ptr() only.
+	 */
+	struct crypt_cpu __percpu *cpu;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	unsigned tfms_count;
 
 	/*
@@ -164,7 +199,10 @@ struct crypt_config {
 
 #define MIN_IOS        16
 #define MIN_POOL_PAGES 32
+<<<<<<< HEAD
 #define MIN_BIO_PAGES  8
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 static struct kmem_cache *_crypt_io_pool;
 
@@ -172,12 +210,24 @@ static void clone_init(struct dm_crypt_io *, struct bio *);
 static void kcryptd_queue_crypt(struct dm_crypt_io *io);
 static u8 *iv_of_dmreq(struct crypt_config *cc, struct dm_crypt_request *dmreq);
 
+<<<<<<< HEAD
+=======
+static struct crypt_cpu *this_crypt_config(struct crypt_config *cc)
+{
+	return this_cpu_ptr(cc->cpu);
+}
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 /*
  * Use this to access cipher attributes that are the same for each CPU.
  */
 static struct crypto_ablkcipher *any_tfm(struct crypt_config *cc)
 {
+<<<<<<< HEAD
 	return cc->tfms[0];
+=======
+	return __this_cpu_ptr(cc->cpu)->tfms[0];
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 /*
@@ -242,7 +292,11 @@ static int crypt_iv_essiv_init(struct crypt_config *cc)
 	struct hash_desc desc;
 	struct scatterlist sg;
 	struct crypto_cipher *essiv_tfm;
+<<<<<<< HEAD
 	int err;
+=======
+	int err, cpu;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	sg_init_one(&sg, cc->key, cc->key_size);
 	desc.tfm = essiv->hash_tfm;
@@ -252,12 +306,23 @@ static int crypt_iv_essiv_init(struct crypt_config *cc)
 	if (err)
 		return err;
 
+<<<<<<< HEAD
 	essiv_tfm = cc->iv_private;
 
 	err = crypto_cipher_setkey(essiv_tfm, essiv->salt,
 			    crypto_hash_digestsize(essiv->hash_tfm));
 	if (err)
 		return err;
+=======
+	for_each_possible_cpu(cpu) {
+		essiv_tfm = per_cpu_ptr(cc->cpu, cpu)->iv_private,
+
+		err = crypto_cipher_setkey(essiv_tfm, essiv->salt,
+				    crypto_hash_digestsize(essiv->hash_tfm));
+		if (err)
+			return err;
+	}
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	return 0;
 }
@@ -268,6 +333,7 @@ static int crypt_iv_essiv_wipe(struct crypt_config *cc)
 	struct iv_essiv_private *essiv = &cc->iv_gen_private.essiv;
 	unsigned salt_size = crypto_hash_digestsize(essiv->hash_tfm);
 	struct crypto_cipher *essiv_tfm;
+<<<<<<< HEAD
 	int r, err = 0;
 
 	memset(essiv->salt, 0, salt_size);
@@ -276,6 +342,18 @@ static int crypt_iv_essiv_wipe(struct crypt_config *cc)
 	r = crypto_cipher_setkey(essiv_tfm, essiv->salt, salt_size);
 	if (r)
 		err = r;
+=======
+	int cpu, r, err = 0;
+
+	memset(essiv->salt, 0, salt_size);
+
+	for_each_possible_cpu(cpu) {
+		essiv_tfm = per_cpu_ptr(cc->cpu, cpu)->iv_private;
+		r = crypto_cipher_setkey(essiv_tfm, essiv->salt, salt_size);
+		if (r)
+			err = r;
+	}
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	return err;
 }
@@ -315,6 +393,11 @@ static struct crypto_cipher *setup_essiv_cpu(struct crypt_config *cc,
 
 static void crypt_iv_essiv_dtr(struct crypt_config *cc)
 {
+<<<<<<< HEAD
+=======
+	int cpu;
+	struct crypt_cpu *cpu_cc;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	struct crypto_cipher *essiv_tfm;
 	struct iv_essiv_private *essiv = &cc->iv_gen_private.essiv;
 
@@ -324,6 +407,7 @@ static void crypt_iv_essiv_dtr(struct crypt_config *cc)
 	kzfree(essiv->salt);
 	essiv->salt = NULL;
 
+<<<<<<< HEAD
 	essiv_tfm = cc->iv_private;
 
 	if (essiv_tfm)
@@ -331,6 +415,17 @@ static void crypt_iv_essiv_dtr(struct crypt_config *cc)
 
 	cc->iv_private = NULL;
 
+=======
+	for_each_possible_cpu(cpu) {
+		cpu_cc = per_cpu_ptr(cc->cpu, cpu);
+		essiv_tfm = cpu_cc->iv_private;
+
+		if (essiv_tfm)
+			crypto_free_cipher(essiv_tfm);
+
+		cpu_cc->iv_private = NULL;
+	}
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 static int crypt_iv_essiv_ctr(struct crypt_config *cc, struct dm_target *ti,
@@ -339,7 +434,11 @@ static int crypt_iv_essiv_ctr(struct crypt_config *cc, struct dm_target *ti,
 	struct crypto_cipher *essiv_tfm = NULL;
 	struct crypto_hash *hash_tfm = NULL;
 	u8 *salt = NULL;
+<<<<<<< HEAD
 	int err;
+=======
+	int err, cpu;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	if (!opts) {
 		ti->error = "Digest algorithm missing for ESSIV mode";
@@ -364,6 +463,7 @@ static int crypt_iv_essiv_ctr(struct crypt_config *cc, struct dm_target *ti,
 	cc->iv_gen_private.essiv.salt = salt;
 	cc->iv_gen_private.essiv.hash_tfm = hash_tfm;
 
+<<<<<<< HEAD
 	essiv_tfm = setup_essiv_cpu(cc, ti, salt,
 				crypto_hash_digestsize(hash_tfm));
 	if (IS_ERR(essiv_tfm)) {
@@ -371,6 +471,17 @@ static int crypt_iv_essiv_ctr(struct crypt_config *cc, struct dm_target *ti,
 		return PTR_ERR(essiv_tfm);
 	}
 	cc->iv_private = essiv_tfm;
+=======
+	for_each_possible_cpu(cpu) {
+		essiv_tfm = setup_essiv_cpu(cc, ti, salt,
+					crypto_hash_digestsize(hash_tfm));
+		if (IS_ERR(essiv_tfm)) {
+			crypt_iv_essiv_dtr(cc);
+			return PTR_ERR(essiv_tfm);
+		}
+		per_cpu_ptr(cc->cpu, cpu)->iv_private = essiv_tfm;
+	}
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	return 0;
 
@@ -384,8 +495,12 @@ bad:
 static int crypt_iv_essiv_gen(struct crypt_config *cc, u8 *iv,
 			      struct dm_crypt_request *dmreq)
 {
+<<<<<<< HEAD
 
 	struct crypto_cipher *essiv_tfm = cc->iv_private;
+=======
+	struct crypto_cipher *essiv_tfm = this_crypt_config(cc)->iv_private;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	memset(iv, 0, cc->iv_size);
 	*(u64 *)iv = cpu_to_le64(dmreq->iv_sector);
@@ -723,6 +838,7 @@ static void kcryptd_async_done(struct crypto_async_request *async_req,
 static void crypt_alloc_req(struct crypt_config *cc,
 			    struct convert_context *ctx)
 {
+<<<<<<< HEAD
 	unsigned key_index = ctx->sector & (cc->tfms_count - 1);
 
 	if (!ctx->req)
@@ -732,6 +848,18 @@ static void crypt_alloc_req(struct crypt_config *cc,
 	ablkcipher_request_set_callback(ctx->req,
 	    CRYPTO_TFM_REQ_MAY_BACKLOG | CRYPTO_TFM_REQ_MAY_SLEEP,
 	    kcryptd_async_done, dmreq_of_req(cc, ctx->req));
+=======
+	struct crypt_cpu *this_cc = this_crypt_config(cc);
+	unsigned key_index = ctx->sector & (cc->tfms_count - 1);
+
+	if (!this_cc->req)
+		this_cc->req = mempool_alloc(cc->req_pool, GFP_NOIO);
+
+	ablkcipher_request_set_tfm(this_cc->req, this_cc->tfms[key_index]);
+	ablkcipher_request_set_callback(this_cc->req,
+	    CRYPTO_TFM_REQ_MAY_BACKLOG | CRYPTO_TFM_REQ_MAY_SLEEP,
+	    kcryptd_async_done, dmreq_of_req(cc, this_cc->req));
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 /*
@@ -740,18 +868,31 @@ static void crypt_alloc_req(struct crypt_config *cc,
 static int crypt_convert(struct crypt_config *cc,
 			 struct convert_context *ctx)
 {
+<<<<<<< HEAD
 	int r;
 
 	atomic_set(&ctx->cc_pending, 1);
+=======
+	struct crypt_cpu *this_cc = this_crypt_config(cc);
+	int r;
+
+	atomic_set(&ctx->pending, 1);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	while(ctx->idx_in < ctx->bio_in->bi_vcnt &&
 	      ctx->idx_out < ctx->bio_out->bi_vcnt) {
 
 		crypt_alloc_req(cc, ctx);
 
+<<<<<<< HEAD
 		atomic_inc(&ctx->cc_pending);
 
 		r = crypt_convert_block(cc, ctx, ctx->req);
+=======
+		atomic_inc(&ctx->pending);
+
+		r = crypt_convert_block(cc, ctx, this_cc->req);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 		switch (r) {
 		/* async */
@@ -760,20 +901,32 @@ static int crypt_convert(struct crypt_config *cc,
 			INIT_COMPLETION(ctx->restart);
 			/* fall through*/
 		case -EINPROGRESS:
+<<<<<<< HEAD
 			ctx->req = NULL;
+=======
+			this_cc->req = NULL;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			ctx->sector++;
 			continue;
 
 		/* sync */
 		case 0:
+<<<<<<< HEAD
 			atomic_dec(&ctx->cc_pending);
+=======
+			atomic_dec(&ctx->pending);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			ctx->sector++;
 			cond_resched();
 			continue;
 
 		/* error */
 		default:
+<<<<<<< HEAD
 			atomic_dec(&ctx->cc_pending);
+=======
+			atomic_dec(&ctx->pending);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			return r;
 		}
 	}
@@ -820,9 +973,15 @@ static struct bio *crypt_alloc_buffer(struct dm_crypt_io *io, unsigned size,
 		}
 
 		/*
+<<<<<<< HEAD
 		 * if additional pages cannot be allocated without waiting,
 		 * return a partially allocated bio, the caller will then try
 		 * to allocate additional bios while submitting this partial bio
+=======
+		 * If additional pages cannot be allocated without waiting,
+		 * return a partially-allocated bio.  The caller will then try
+		 * to allocate more bios while submitting this partial bio.
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		 */
 		gfp_mask = (gfp_mask | __GFP_NOWARN) & ~__GFP_WAIT;
 
@@ -869,15 +1028,23 @@ static struct dm_crypt_io *crypt_io_alloc(struct dm_target *ti,
 	io->sector = sector;
 	io->error = 0;
 	io->base_io = NULL;
+<<<<<<< HEAD
 	io->ctx.req = NULL;
 	atomic_set(&io->io_pending, 0);
+=======
+	atomic_set(&io->pending, 0);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	return io;
 }
 
 static void crypt_inc_pending(struct dm_crypt_io *io)
 {
+<<<<<<< HEAD
 	atomic_inc(&io->io_pending);
+=======
+	atomic_inc(&io->pending);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 /*
@@ -892,11 +1059,17 @@ static void crypt_dec_pending(struct dm_crypt_io *io)
 	struct dm_crypt_io *base_io = io->base_io;
 	int error = io->error;
 
+<<<<<<< HEAD
 	if (!atomic_dec_and_test(&io->io_pending))
 		return;
 
 	if (io->ctx.req)
 		mempool_free(io->ctx.req, cc->req_pool);
+=======
+	if (!atomic_dec_and_test(&io->pending))
+		return;
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	mempool_free(io, cc->io_pool);
 
 	if (likely(!base_io))
@@ -1078,10 +1251,19 @@ static void kcryptd_crypt_write_convert(struct dm_crypt_io *io)
 		sector += bio_sectors(clone);
 
 		crypt_inc_pending(io);
+<<<<<<< HEAD
 		r = crypt_convert(cc, &io->ctx);
 		if (r < 0)
 			io->error = -EIO;
 		crypt_finished = atomic_dec_and_test(&io->ctx.cc_pending);
+=======
+
+		r = crypt_convert(cc, &io->ctx);
+		if (r < 0)
+			io->error = -EIO;
+
+		crypt_finished = atomic_dec_and_test(&io->ctx.pending);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 		/* Encryption was already finished, submit io now */
 		if (crypt_finished) {
@@ -1152,11 +1334,18 @@ static void kcryptd_crypt_read_convert(struct dm_crypt_io *io)
 			   io->sector);
 
 	r = crypt_convert(cc, &io->ctx);
+<<<<<<< HEAD
 
 	if (r < 0)
 		io->error = -EIO;
 
 	if (atomic_dec_and_test(&io->ctx.cc_pending))
+=======
+	if (r < 0)
+		io->error = -EIO;
+
+	if (atomic_dec_and_test(&io->ctx.pending))
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		kcryptd_crypt_read_done(io);
 
 	crypt_dec_pending(io);
@@ -1183,7 +1372,11 @@ static void kcryptd_async_done(struct crypto_async_request *async_req,
 
 	mempool_free(req_of_dmreq(cc, dmreq), cc->req_pool);
 
+<<<<<<< HEAD
 	if (!atomic_dec_and_test(&ctx->cc_pending))
+=======
+	if (!atomic_dec_and_test(&ctx->pending))
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		return;
 
 	if (bio_data_dir(io->base_bio) == READ)
@@ -1251,6 +1444,7 @@ static void crypt_encode_key(char *hex, u8 *key, unsigned int size)
 	}
 }
 
+<<<<<<< HEAD
 static void crypt_free_tfms(struct crypt_config *cc)
 {
 	unsigned i;
@@ -1280,6 +1474,31 @@ static int crypt_alloc_tfms(struct crypt_config *cc, char *ciphermode)
 		if (IS_ERR(cc->tfms[i])) {
 			err = PTR_ERR(cc->tfms[i]);
 			crypt_free_tfms(cc);
+=======
+static void crypt_free_tfms(struct crypt_config *cc, int cpu)
+{
+	struct crypt_cpu *cpu_cc = per_cpu_ptr(cc->cpu, cpu);
+	unsigned i;
+
+	for (i = 0; i < cc->tfms_count; i++)
+		if (cpu_cc->tfms[i] && !IS_ERR(cpu_cc->tfms[i])) {
+			crypto_free_ablkcipher(cpu_cc->tfms[i]);
+			cpu_cc->tfms[i] = NULL;
+		}
+}
+
+static int crypt_alloc_tfms(struct crypt_config *cc, int cpu, char *ciphermode)
+{
+	struct crypt_cpu *cpu_cc = per_cpu_ptr(cc->cpu, cpu);
+	unsigned i;
+	int err;
+
+	for (i = 0; i < cc->tfms_count; i++) {
+		cpu_cc->tfms[i] = crypto_alloc_ablkcipher(ciphermode, 0, 0);
+		if (IS_ERR(cpu_cc->tfms[i])) {
+			err = PTR_ERR(cpu_cc->tfms[i]);
+			crypt_free_tfms(cc, cpu);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			return err;
 		}
 	}
@@ -1290,6 +1509,7 @@ static int crypt_alloc_tfms(struct crypt_config *cc, char *ciphermode)
 static int crypt_setkey_allcpus(struct crypt_config *cc)
 {
 	unsigned subkey_size = cc->key_size >> ilog2(cc->tfms_count);
+<<<<<<< HEAD
 	int err = 0, i, r;
 
 	for (i = 0; i < cc->tfms_count; i++) {
@@ -1298,6 +1518,17 @@ static int crypt_setkey_allcpus(struct crypt_config *cc)
 					     subkey_size);
 		if (r)
 			err = r;
+=======
+	int cpu, err = 0, i, r;
+
+	for_each_possible_cpu(cpu) {
+		for (i = 0; i < cc->tfms_count; i++) {
+			r = crypto_ablkcipher_setkey(per_cpu_ptr(cc->cpu, cpu)->tfms[i],
+						     cc->key + (i * subkey_size), subkey_size);
+			if (r)
+				err = r;
+		}
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	}
 
 	return err;
@@ -1341,6 +1572,11 @@ static int crypt_wipe_key(struct crypt_config *cc)
 static void crypt_dtr(struct dm_target *ti)
 {
 	struct crypt_config *cc = ti->private;
+<<<<<<< HEAD
+=======
+	struct crypt_cpu *cpu_cc;
+	int cpu;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	ti->private = NULL;
 
@@ -1352,7 +1588,17 @@ static void crypt_dtr(struct dm_target *ti)
 	if (cc->crypt_queue)
 		destroy_workqueue(cc->crypt_queue);
 
+<<<<<<< HEAD
 	crypt_free_tfms(cc);
+=======
+	if (cc->cpu)
+		for_each_possible_cpu(cpu) {
+			cpu_cc = per_cpu_ptr(cc->cpu, cpu);
+			if (cpu_cc->req)
+				mempool_free(cpu_cc->req, cc->req_pool);
+			crypt_free_tfms(cc, cpu);
+		}
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	if (cc->bs)
 		bioset_free(cc->bs);
@@ -1370,6 +1616,12 @@ static void crypt_dtr(struct dm_target *ti)
 	if (cc->dev)
 		dm_put_device(ti, cc->dev);
 
+<<<<<<< HEAD
+=======
+	if (cc->cpu)
+		free_percpu(cc->cpu);
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	kzfree(cc->cipher);
 	kzfree(cc->cipher_string);
 
@@ -1383,7 +1635,11 @@ static int crypt_ctr_cipher(struct dm_target *ti,
 	struct crypt_config *cc = ti->private;
 	char *tmp, *cipher, *chainmode, *ivmode, *ivopts, *keycount;
 	char *cipher_api = NULL;
+<<<<<<< HEAD
 	int ret = -EINVAL;
+=======
+	int cpu, ret = -EINVAL;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	/* Convert to crypto api definition? */
 	if (strchr(cipher_in, '(')) {
@@ -1423,6 +1679,17 @@ static int crypt_ctr_cipher(struct dm_target *ti,
 	if (tmp)
 		DMWARN("Ignoring unexpected additional cipher options");
 
+<<<<<<< HEAD
+=======
+	cc->cpu = __alloc_percpu(sizeof(*(cc->cpu)) +
+				 cc->tfms_count * sizeof(*(cc->cpu->tfms)),
+				 __alignof__(struct crypt_cpu));
+	if (!cc->cpu) {
+		ti->error = "Cannot allocate per cpu state";
+		goto bad_mem;
+	}
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	/*
 	 * For compatibility with the original dm-crypt mapping format, if
 	 * only the cipher name is supplied, use cbc-plain.
@@ -1449,10 +1716,19 @@ static int crypt_ctr_cipher(struct dm_target *ti,
 	}
 
 	/* Allocate cipher */
+<<<<<<< HEAD
 	ret = crypt_alloc_tfms(cc, cipher_api);
 	if (ret < 0) {
 		ti->error = "Error allocating crypto tfm";
 		goto bad;
+=======
+	for_each_possible_cpu(cpu) {
+		ret = crypt_alloc_tfms(cc, cpu, cipher_api);
+		if (ret < 0) {
+			ti->error = "Error allocating crypto tfm";
+			goto bad;
+		}
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	}
 
 	/* Initialize and set key */

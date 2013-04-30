@@ -58,7 +58,11 @@
 typedef struct tagSKeyItem
 {
     BOOL        bKeyValid;
+<<<<<<< HEAD
     unsigned long       uKeyLength;
+=======
+	u32 uKeyLength;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
     BYTE        abyKey[MAX_KEY_LEN];
     QWORD       KeyRSC;
     DWORD       dwTSC47_16;
@@ -107,7 +111,11 @@ BOOL KeybSetKey(
     PSKeyManagement pTable,
     PBYTE           pbyBSSID,
     DWORD           dwKeyIndex,
+<<<<<<< HEAD
     unsigned long           uKeyLength,
+=======
+	u32 uKeyLength,
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
     PQWORD          pKeyRSC,
     PBYTE           pbyKey,
     BYTE            byKeyDecMode
@@ -146,7 +154,11 @@ BOOL KeybSetDefaultKey(
     void *pDeviceHandler,
     PSKeyManagement pTable,
     DWORD           dwKeyIndex,
+<<<<<<< HEAD
     unsigned long           uKeyLength,
+=======
+	u32 uKeyLength,
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
     PQWORD          pKeyRSC,
     PBYTE           pbyKey,
     BYTE            byKeyDecMode
@@ -156,7 +168,11 @@ BOOL KeybSetAllGroupKey(
     void *pDeviceHandler,
     PSKeyManagement pTable,
     DWORD           dwKeyIndex,
+<<<<<<< HEAD
     unsigned long           uKeyLength,
+=======
+	u32 uKeyLength,
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
     PQWORD          pKeyRSC,
     PBYTE           pbyKey,
     BYTE            byKeyDecMode

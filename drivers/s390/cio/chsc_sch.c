@@ -8,6 +8,10 @@
  */
 
 #include <linux/slab.h>
+<<<<<<< HEAD
+=======
+#include <linux/compat.h>
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #include <linux/device.h>
 #include <linux/module.h>
 #include <linux/uaccess.h>

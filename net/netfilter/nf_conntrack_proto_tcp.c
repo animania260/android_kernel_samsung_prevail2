@@ -159,11 +159,16 @@ static const u8 tcp_conntracks[2][6][TCP_CONNTRACK_MAX] = {
  *	sCL -> sSS
  */
 /* 	     sNO, sSS, sSR, sES, sFW, sCW, sLA, sTW, sCL, sS2	*/
+<<<<<<< HEAD
 /*synack*/ { sIV, sIV, sIG, sIG, sIG, sIG, sIG, sIG, sIG, sSR },
+=======
+/*synack*/ { sIV, sIV, sSR, sIV, sIV, sIV, sIV, sIV, sIV, sSR },
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 /*
  *	sNO -> sIV	Too late and no reason to do anything
  *	sSS -> sIV	Client can't send SYN and then SYN/ACK
  *	sS2 -> sSR	SYN/ACK sent to SYN2 in simultaneous open
+<<<<<<< HEAD
  *	sSR -> sIG
  *	sES -> sIG	Error: SYNs in window outside the SYN_SENT state
  *			are errors. Receiver will reply with RST
@@ -174,6 +179,15 @@ static const u8 tcp_conntracks[2][6][TCP_CONNTRACK_MAX] = {
  *	sLA -> sIG
  *	sTW -> sIG
  *	sCL -> sIG
+=======
+ *	sSR -> sSR	Late retransmitted SYN/ACK in simultaneous open
+ *	sES -> sIV	Invalid SYN/ACK packets sent by the client
+ *	sFW -> sIV
+ *	sCW -> sIV
+ *	sLA -> sIV
+ *	sTW -> sIV
+ *	sCL -> sIV
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
  */
 /* 	     sNO, sSS, sSR, sES, sFW, sCW, sLA, sTW, sCL, sS2	*/
 /*fin*/    { sIV, sIV, sFW, sFW, sLA, sLA, sLA, sTW, sCL, sIV },
@@ -628,6 +642,7 @@ static bool tcp_in_window(const struct nf_conn *ct,
 		ack = sack = receiver->td_end;
 	}
 
+<<<<<<< HEAD
 	if (seq == end
 	    && (!tcph->rst
 		|| (seq == 0 && state->state == TCP_CONNTRACK_SYN_SENT)))
@@ -637,6 +652,11 @@ static bool tcp_in_window(const struct nf_conn *ct,
 		 * However RST segments are always validated by their
 		 * SEQ number, except when seq == 0 (reset sent answering
 		 * SYN.
+=======
+	if (tcph->rst && seq == 0 && state->state == TCP_CONNTRACK_SYN_SENT)
+		/*
+		 * RST sent answering SYN.
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		 */
 		seq = end = sender->td_end;
 

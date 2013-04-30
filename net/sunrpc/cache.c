@@ -828,6 +828,11 @@ static ssize_t cache_do_downcall(char *kaddr, const char __user *buf,
 {
 	ssize_t ret;
 
+<<<<<<< HEAD
+=======
+	if (count == 0)
+		return -EINVAL;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	if (copy_from_user(kaddr, buf, count))
 		return -EFAULT;
 	kaddr[count] = '\0';
@@ -1402,11 +1407,19 @@ static ssize_t read_flush(struct file *file, char __user *buf,
 			  size_t count, loff_t *ppos,
 			  struct cache_detail *cd)
 {
+<<<<<<< HEAD
 	char tbuf[20];
 	unsigned long p = *ppos;
 	size_t len;
 
 	sprintf(tbuf, "%lu\n", convert_to_wallclock(cd->flush_time));
+=======
+	char tbuf[22];
+	unsigned long p = *ppos;
+	size_t len;
+
+	snprintf(tbuf, sizeof(tbuf), "%lu\n", convert_to_wallclock(cd->flush_time));
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	len = strlen(tbuf);
 	if (p >= len)
 		return 0;

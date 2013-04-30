@@ -36,7 +36,11 @@
 #ifndef _DRM_H_
 #define _DRM_H_
 
+<<<<<<< HEAD
 #if defined(__KERNEL__) || defined(_LINUX) || defined(__linux__)
+=======
+#if defined(__linux__)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 #include <linux/types.h>
 #include <asm/ioctl.h>

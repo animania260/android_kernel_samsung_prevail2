@@ -34,8 +34,11 @@ source "drivers/firewire/Kconfig"
 
 source "drivers/message/i2o/Kconfig"
 
+<<<<<<< HEAD
 source "drivers/motor/Kconfig"
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 source "drivers/macintosh/Kconfig"
 
 source "drivers/net/Kconfig"
@@ -54,8 +57,11 @@ source "drivers/i2c/Kconfig"
 
 source "drivers/spi/Kconfig"
 
+<<<<<<< HEAD
 source "drivers/slimbus/Kconfig"
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 source "drivers/pps/Kconfig"
 
 source "drivers/ptp/Kconfig"
@@ -100,8 +106,11 @@ source "drivers/leds/Kconfig"
 
 source "drivers/nfc/Kconfig"
 
+<<<<<<< HEAD
 source "drivers/switch/Kconfig"
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 source "drivers/accessibility/Kconfig"
 
 source "drivers/infiniband/Kconfig"
@@ -132,7 +141,10 @@ source "drivers/hwspinlock/Kconfig"
 
 source "drivers/clocksource/Kconfig"
 
+<<<<<<< HEAD
 source "drivers/sensors/Kconfig"
 
 source "drivers/interceptor/Kconfig"
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 endmenu

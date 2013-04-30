@@ -358,6 +358,10 @@ typedef enum {
  */
 struct acpi_object_extra {
 	ACPI_OBJECT_COMMON_HEADER struct acpi_namespace_node *method_REG;	/* _REG method for this region (if any) */
+<<<<<<< HEAD
+=======
+	struct acpi_namespace_node *scope_node;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	void *region_context;	/* Region-specific data */
 	u8 *aml_start;
 	u32 aml_length;

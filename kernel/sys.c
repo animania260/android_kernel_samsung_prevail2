@@ -320,7 +320,10 @@ void kernel_restart_prepare(char *cmd)
 	system_state = SYSTEM_RESTART;
 	usermodehelper_disable();
 	device_shutdown();
+<<<<<<< HEAD
 	syscore_shutdown();
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 /**
@@ -334,6 +337,11 @@ void kernel_restart_prepare(char *cmd)
 void kernel_restart(char *cmd)
 {
 	kernel_restart_prepare(cmd);
+<<<<<<< HEAD
+=======
+	disable_nonboot_cpus();
+	syscore_shutdown();
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	if (!cmd)
 		printk(KERN_EMERG "Restarting system.\n");
 	else
@@ -359,6 +367,10 @@ static void kernel_shutdown_prepare(enum system_states state)
 void kernel_halt(void)
 {
 	kernel_shutdown_prepare(SYSTEM_HALT);
+<<<<<<< HEAD
+=======
+	disable_nonboot_cpus();
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	syscore_shutdown();
 	printk(KERN_EMERG "System halted.\n");
 	kmsg_dump(KMSG_DUMP_HALT);
@@ -1132,6 +1144,7 @@ DECLARE_RWSEM(uts_sem);
  * Work around broken programs that cannot handle "Linux 3.0".
  * Instead we map 3.x to 2.6.40+x, so e.g. 3.0 would be 2.6.40
  */
+<<<<<<< HEAD
 static int override_release(char __user *release, int len)
 {
 	int ret = 0;
@@ -1141,6 +1154,18 @@ static int override_release(char __user *release, int len)
 		char *rest = UTS_RELEASE;
 		int ndots = 0;
 		unsigned v;
+=======
+static int override_release(char __user *release, size_t len)
+{
+	int ret = 0;
+
+	if (current->personality & UNAME26) {
+		const char *rest = UTS_RELEASE;
+		char buf[65] = { 0 };
+		int ndots = 0;
+		unsigned v;
+		size_t copy;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 		while (*rest) {
 			if (*rest == '.' && ++ndots >= 3)
@@ -1150,8 +1175,14 @@ static int override_release(char __user *release, int len)
 			rest++;
 		}
 		v = ((LINUX_VERSION_CODE >> 8) & 0xff) + 40;
+<<<<<<< HEAD
 		snprintf(buf, len, "2.6.%u%s", v, rest);
 		ret = copy_to_user(release, buf, len);
+=======
+		copy = clamp_t(size_t, len, 1, sizeof(buf));
+		copy = scnprintf(buf, copy, "2.6.%u%s", v, rest);
+		ret = copy_to_user(release, buf, copy + 1);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	}
 	return ret;
 }

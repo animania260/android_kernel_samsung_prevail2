@@ -193,8 +193,12 @@ static inline struct tty_struct *file_tty(struct file *file)
 	return ((struct tty_file_private *)file->private_data)->tty;
 }
 
+<<<<<<< HEAD
 /* Associate a new file with the tty structure */
 int tty_add_file(struct tty_struct *tty, struct file *file)
+=======
+int tty_alloc_file(struct file *file)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 {
 	struct tty_file_private *priv;
 
@@ -202,15 +206,47 @@ int tty_add_file(struct tty_struct *tty, struct file *file)
 	if (!priv)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	priv->tty = tty;
 	priv->file = file;
 	file->private_data = priv;
+=======
+	file->private_data = priv;
+
+	return 0;
+}
+
+/* Associate a new file with the tty structure */
+void tty_add_file(struct tty_struct *tty, struct file *file)
+{
+	struct tty_file_private *priv = file->private_data;
+
+	priv->tty = tty;
+	priv->file = file;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	spin_lock(&tty_files_lock);
 	list_add(&priv->list, &tty->tty_files);
 	spin_unlock(&tty_files_lock);
+<<<<<<< HEAD
 
 	return 0;
+=======
+}
+
+/**
+ * tty_free_file - free file->private_data
+ *
+ * This shall be used only for fail path handling when tty_add_file was not
+ * called yet.
+ */
+void tty_free_file(struct file *file)
+{
+	struct tty_file_private *priv = file->private_data;
+
+	file->private_data = NULL;
+	kfree(priv);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 /* Delete file from its tty */
@@ -221,8 +257,12 @@ void tty_del_file(struct file *file)
 	spin_lock(&tty_files_lock);
 	list_del(&priv->list);
 	spin_unlock(&tty_files_lock);
+<<<<<<< HEAD
 	file->private_data = NULL;
 	kfree(priv);
+=======
+	tty_free_file(file);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 
@@ -1811,6 +1851,13 @@ static int tty_open(struct inode *inode, struct file *filp)
 	nonseekable_open(inode, filp);
 
 retry_open:
+<<<<<<< HEAD
+=======
+	retval = tty_alloc_file(filp);
+	if (retval)
+		return -ENOMEM;
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	noctty = filp->f_flags & O_NOCTTY;
 	index  = -1;
 	retval = 0;
@@ -1823,6 +1870,10 @@ retry_open:
 		if (!tty) {
 			tty_unlock();
 			mutex_unlock(&tty_mutex);
+<<<<<<< HEAD
+=======
+			tty_free_file(filp);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			return -ENXIO;
 		}
 		driver = tty_driver_kref_get(tty->driver);
@@ -1855,6 +1906,10 @@ retry_open:
 		}
 		tty_unlock();
 		mutex_unlock(&tty_mutex);
+<<<<<<< HEAD
+=======
+		tty_free_file(filp);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		return -ENODEV;
 	}
 
@@ -1862,6 +1917,10 @@ retry_open:
 	if (!driver) {
 		tty_unlock();
 		mutex_unlock(&tty_mutex);
+<<<<<<< HEAD
+=======
+		tty_free_file(filp);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		return -ENODEV;
 	}
 got_driver:
@@ -1872,6 +1931,11 @@ got_driver:
 		if (IS_ERR(tty)) {
 			tty_unlock();
 			mutex_unlock(&tty_mutex);
+<<<<<<< HEAD
+=======
+			tty_driver_kref_put(driver);
+			tty_free_file(filp);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			return PTR_ERR(tty);
 		}
 	}
@@ -1887,6 +1951,7 @@ got_driver:
 	tty_driver_kref_put(driver);
 	if (IS_ERR(tty)) {
 		tty_unlock();
+<<<<<<< HEAD
 		return PTR_ERR(tty);
 	}
 
@@ -1896,6 +1961,13 @@ got_driver:
 		tty_release(inode, filp);
 		return retval;
 	}
+=======
+		tty_free_file(filp);
+		return PTR_ERR(tty);
+	}
+
+	tty_add_file(tty, filp);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	check_tty_count(tty, "tty_open");
 	if (tty->driver->type == TTY_DRIVER_TYPE_PTY &&
@@ -2514,11 +2586,16 @@ static int tty_tiocmset(struct tty_struct *tty, unsigned int cmd,
 		clear = ~val;
 		break;
 	}
+<<<<<<< HEAD
 
 	set &= TIOCM_DTR|TIOCM_RTS|TIOCM_OUT1|TIOCM_OUT2|TIOCM_LOOP|TIOCM_CD|
 		TIOCM_RI|TIOCM_DSR|TIOCM_CTS;
 	clear &= TIOCM_DTR|TIOCM_RTS|TIOCM_OUT1|TIOCM_OUT2|TIOCM_LOOP|TIOCM_CD|
 		TIOCM_RI|TIOCM_DSR|TIOCM_CTS;
+=======
+	set &= TIOCM_DTR|TIOCM_RTS|TIOCM_OUT1|TIOCM_OUT2|TIOCM_LOOP;
+	clear &= TIOCM_DTR|TIOCM_RTS|TIOCM_OUT1|TIOCM_OUT2|TIOCM_LOOP;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	return tty->ops->tiocmset(tty, set, clear);
 }
 

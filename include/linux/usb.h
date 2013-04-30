@@ -321,8 +321,11 @@ struct usb_bus {
 	u8 otg_port;			/* 0, or number of OTG/HNP port */
 	unsigned is_b_host:1;		/* true during some HNP roleswitches */
 	unsigned b_hnp_enable:1;	/* OTG: did A-Host enable HNP? */
+<<<<<<< HEAD
 	unsigned hnp_support:1;		/* OTG: HNP is supported on OTG port */
 	struct delayed_work hnp_polling;/* OTG: HNP polling work */
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	unsigned sg_tablesize;		/* 0 or largest number of sg list entries */
 
 	int devnum_next;		/* Next open device number in
@@ -364,6 +367,7 @@ struct usb_bus {
  * limit. Because the arrays need to add a bit for hub status data, we
  * do 31, so plus one evens out to four bytes.
  */
+<<<<<<< HEAD
 
 #if defined(CONFIG_USB_PEHCI_HCD) || defined(CONFIG_USB_PEHCI_HCD_MODULE)
 #define USB_OTG_SUSPEND		0x1
@@ -374,6 +378,8 @@ struct usb_bus {
 #define USB_OTG_WAKEUP_ALL	0x20
 #endif
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #define USB_MAXCHILDREN		(31)
 
 struct usb_tt;
@@ -487,6 +493,7 @@ struct usb_device {
 	struct dentry *usbfs_dentry;
 #endif
 
+<<<<<<< HEAD
 #if defined(CONFIG_USB_PEHCI_HCD) || defined(CONFIG_USB_PEHCI_HCD_MODULE)
 	/*otg add ons */
 	u8 otgdevice;				/*device is otg type */
@@ -499,6 +506,8 @@ struct usb_device {
 	void *hcd_priv;
 	void (*hcd_suspend) (void *hcd_priv);
 #endif
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	int maxchild;
 	struct usb_device *children[USB_MAXCHILDREN];
 
@@ -781,6 +790,30 @@ static inline int usb_make_path(struct usb_device *dev, char *buf, size_t size)
 	.bInterfaceSubClass = (sc), \
 	.bInterfaceProtocol = (pr)
 
+<<<<<<< HEAD
+=======
+/**
+ * USB_VENDOR_AND_INTERFACE_INFO - describe a specific usb vendor with a class of usb interfaces
+ * @vend: the 16 bit USB Vendor ID
+ * @cl: bInterfaceClass value
+ * @sc: bInterfaceSubClass value
+ * @pr: bInterfaceProtocol value
+ *
+ * This macro is used to create a struct usb_device_id that matches a
+ * specific vendor with a specific class of interfaces.
+ *
+ * This is especially useful when explicitly matching devices that have
+ * vendor specific bDeviceClass values, but standards-compliant interfaces.
+ */
+#define USB_VENDOR_AND_INTERFACE_INFO(vend, cl, sc, pr) \
+	.match_flags = USB_DEVICE_ID_MATCH_INT_INFO \
+		| USB_DEVICE_ID_MATCH_VENDOR, \
+	.idVendor = (vend), \
+	.bInterfaceClass = (cl), \
+	.bInterfaceSubClass = (sc), \
+	.bInterfaceProtocol = (pr)
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 /* ----------------------------------------------------------------------- */
 
 /* Stuff for dynamic usb ids */
@@ -1226,6 +1259,10 @@ struct urb {
 	void *transfer_buffer;		/* (in) associated data buffer */
 	dma_addr_t transfer_dma;	/* (in) dma addr for transfer_buffer */
 	struct scatterlist *sg;		/* (in) scatter gather buffer list */
+<<<<<<< HEAD
+=======
+	int num_mapped_sgs;		/* (internal) mapped sg entries */
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	int num_sgs;			/* (in) number of entries in the sg list */
 	u32 transfer_buffer_length;	/* (in) data buffer length */
 	u32 actual_length;		/* (return) actual transfer length */
@@ -1608,6 +1645,7 @@ usb_maxpacket(struct usb_device *udev, int pipe, int is_out)
 #define USB_DEVICE_REMOVE	0x0002
 #define USB_BUS_ADD		0x0003
 #define USB_BUS_REMOVE		0x0004
+<<<<<<< HEAD
 #define USB_DEVICE_CONFIG	0x0005
 
 #ifdef CONFIG_USB
@@ -1617,6 +1655,10 @@ extern void usb_unregister_notify(struct notifier_block *nb);
 static inline void usb_register_notify(struct notifier_block *nb) {}
 static inline void usb_unregister_notify(struct notifier_block *nb) {}
 #endif
+=======
+extern void usb_register_notify(struct notifier_block *nb);
+extern void usb_unregister_notify(struct notifier_block *nb);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 #ifdef DEBUG
 #define dbg(format, arg...)						\

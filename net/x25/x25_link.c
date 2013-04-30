@@ -90,6 +90,12 @@ void x25_link_control(struct sk_buff *skb, struct x25_neigh *nb,
 			break;
 
 		case X25_DIAGNOSTIC:
+<<<<<<< HEAD
+=======
+			if (!pskb_may_pull(skb, X25_STD_MIN_LEN + 4))
+				break;
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			printk(KERN_WARNING "x25: diagnostic #%d - "
 			       "%02X %02X %02X\n",
 			       skb->data[3], skb->data[4],

@@ -27,6 +27,7 @@
 		.macro	writeb, ch, rb
 		mcr	p14, 0, \ch, c0, c5, 0
 		.endm
+<<<<<<< HEAD
 #elif defined(CONFIG_CPU_V7)
 		.macro	loadsp, rb, tmp
 		.endm
@@ -35,6 +36,8 @@ wait:		mrc	p14, 0, pc, c0, c1, 0
 		bcs	wait
 		mcr	p14, 0, \ch, c0, c5, 0
 		.endm
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #elif defined(CONFIG_CPU_XSCALE)
 		.macro	loadsp, rb, tmp
 		.endm
@@ -224,6 +227,7 @@ restart:	adr	r0, LC0
 		mov	r10, r6
 #endif
 
+<<<<<<< HEAD
 		mov	r5, #0			@ init dtb size to 0
 #ifdef CONFIG_ARM_APPENDED_DTB
 /*
@@ -321,6 +325,8 @@ restart:	adr	r0, LC0
 dtb_check_done:
 #endif
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 /*
  * Check to see if we will overwrite ourselves.
  *   r4  = final kernel address
@@ -328,14 +334,24 @@ dtb_check_done:
  *   r10 = end of this image, including  bss/stack/malloc space if non XIP
  * We basically want:
  *   r4 - 16k page directory >= r10 -> OK
+<<<<<<< HEAD
  *   r4 + image length <= address of wont_overwrite -> OK
+=======
+ *   r4 + image length <= current position (pc) -> OK
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
  */
 		add	r10, r10, #16384
 		cmp	r4, r10
 		bhs	wont_overwrite
 		add	r10, r4, r9
+<<<<<<< HEAD
 		adr	r9, wont_overwrite
 		cmp	r10, r9
+=======
+   ARM(		cmp	r10, pc		)
+ THUMB(		mov	lr, pc		)
+ THUMB(		cmp	r10, lr		)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		bls	wont_overwrite
 
 /*
@@ -389,16 +405,24 @@ wont_overwrite:
  *   r2  = BSS start
  *   r3  = BSS end
  *   r4  = kernel execution address
+<<<<<<< HEAD
  *   r5  = appended dtb size (0 if not present)
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
  *   r7  = architecture ID
  *   r8  = atags pointer
  *   r11 = GOT start
  *   r12 = GOT end
  *   sp  = stack pointer
  */
+<<<<<<< HEAD
 		orrs	r1, r0, r5
 		beq	not_relocated
 
+=======
+		teq	r0, #0
+		beq	not_relocated
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		add	r11, r11, r0
 		add	r12, r12, r0
 
@@ -413,6 +437,7 @@ wont_overwrite:
 
 		/*
 		 * Relocate all entries in the GOT table.
+<<<<<<< HEAD
 		 * Bump bss entries to _edata + dtb size
 		 */
 1:		ldr	r1, [r11, #0]		@ relocate entries in the GOT
@@ -428,6 +453,14 @@ wont_overwrite:
 		add	r2, r2, r5
 		add	r3, r3, r5
 
+=======
+		 */
+1:		ldr	r1, [r11, #0]		@ relocate entries in the GOT
+		add	r1, r1, r0		@ table.  This fixes up the
+		str	r1, [r11], #4		@ C references.
+		cmp	r11, r12
+		blo	1b
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #else
 
 		/*
@@ -654,6 +687,10 @@ __armv7_mmu_cache_on:
 		mcrne	p15, 0, r0, c8, c7, 0	@ flush I,D TLBs
 #endif
 		mrc	p15, 0, r0, c1, c0, 0	@ read control reg
+<<<<<<< HEAD
+=======
+		bic	r0, r0, #1 << 28	@ clear SCTLR.TRE
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		orr	r0, r0, #0x5000		@ I-cache enable, RR cache replacement
 		orr	r0, r0, #0x003c		@ write buffer
 #ifdef CONFIG_MMU
@@ -771,8 +808,11 @@ proc_types:
 @		b	__arm6_mmu_cache_off
 @		b	__armv3_mmu_cache_flush
 
+<<<<<<< HEAD
 #if !defined(CONFIG_CPU_V7)
 		/* This collides with some V7 IDs, preventing correct detection */
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		.word	0x00000000		@ old ARM ID
 		.word	0x0000f000
 		mov	pc, lr
@@ -781,7 +821,10 @@ proc_types:
  THUMB(		nop				)
 		mov	pc, lr
  THUMB(		nop				)
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 		.word	0x41007000		@ ARM7/710
 		.word	0xfff8fe00

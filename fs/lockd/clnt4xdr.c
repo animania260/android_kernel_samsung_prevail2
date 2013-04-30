@@ -241,7 +241,11 @@ static int decode_nlm4_stat(struct xdr_stream *xdr, __be32 *stat)
 	p = xdr_inline_decode(xdr, 4);
 	if (unlikely(p == NULL))
 		goto out_overflow;
+<<<<<<< HEAD
 	if (unlikely(*p > nlm4_failed))
+=======
+	if (unlikely(ntohl(*p) > ntohl(nlm4_failed)))
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		goto out_bad_xdr;
 	*stat = *p;
 	return 0;

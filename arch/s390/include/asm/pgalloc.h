@@ -22,10 +22,14 @@ void crst_table_free(struct mm_struct *, unsigned long *);
 
 unsigned long *page_table_alloc(struct mm_struct *);
 void page_table_free(struct mm_struct *, unsigned long *);
+<<<<<<< HEAD
 #ifdef CONFIG_HAVE_RCU_TABLE_FREE
 void page_table_free_rcu(struct mmu_gather *, unsigned long *);
 void __tlb_remove_table(void *_table);
 #endif
+=======
+void page_table_free_rcu(struct mmu_gather *, unsigned long *);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 static inline void clear_table(unsigned long *s, unsigned long val, size_t n)
 {

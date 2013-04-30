@@ -932,7 +932,10 @@ int rds_sendmsg(struct kiocb *iocb, struct socket *sock, struct msghdr *msg,
 	/* Mirror Linux UDP mirror of BSD error message compatibility */
 	/* XXX: Perhaps MSG_MORE someday */
 	if (msg->msg_flags & ~(MSG_DONTWAIT | MSG_CMSG_COMPAT)) {
+<<<<<<< HEAD
 		printk(KERN_INFO "msg_flags 0x%08X\n", msg->msg_flags);
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		ret = -EOPNOTSUPP;
 		goto out;
 	}
@@ -1122,7 +1125,11 @@ rds_send_pong(struct rds_connection *conn, __be16 dport)
 	rds_stats_inc(s_send_pong);
 
 	if (!test_bit(RDS_LL_SEND_FULL, &conn->c_flags))
+<<<<<<< HEAD
 		rds_send_xmit(conn);
+=======
+		queue_delayed_work(rds_wq, &conn->c_send_w, 0);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	rds_message_put(rm);
 	return 0;

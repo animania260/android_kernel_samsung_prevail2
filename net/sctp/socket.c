@@ -1160,8 +1160,19 @@ out_free:
 	SCTP_DEBUG_PRINTK("About to exit __sctp_connect() free asoc: %p"
 			  " kaddrs: %p err: %d\n",
 			  asoc, kaddrs, err);
+<<<<<<< HEAD
 	if (asoc)
 		sctp_association_free(asoc);
+=======
+	if (asoc) {
+		/* sctp_primitive_ASSOCIATE may have added this association
+		 * To the hash table, try to unhash it, just in case, its a noop
+		 * if it wasn't hashed so we're safe
+		 */
+		sctp_unhash_established(asoc);
+		sctp_association_free(asoc);
+	}
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	return err;
 }
 
@@ -1831,8 +1842,13 @@ SCTP_STATIC int sctp_sendmsg(struct kiocb *iocb, struct sock *sk,
 
 	/* Break the message into multiple chunks of maximum size. */
 	datamsg = sctp_datamsg_from_user(asoc, sinfo, msg, msg_len);
+<<<<<<< HEAD
 	if (!datamsg) {
 		err = -ENOMEM;
+=======
+	if (IS_ERR(datamsg)) {
+		err = PTR_ERR(datamsg);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		goto out_free;
 	}
 
@@ -1871,8 +1887,15 @@ SCTP_STATIC int sctp_sendmsg(struct kiocb *iocb, struct sock *sk,
 	goto out_unlock;
 
 out_free:
+<<<<<<< HEAD
 	if (new_asoc)
 		sctp_association_free(asoc);
+=======
+	if (new_asoc) {
+		sctp_unhash_established(asoc);
+		sctp_association_free(asoc);
+	}
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 out_unlock:
 	sctp_release_sock(sk);
 
@@ -2129,8 +2152,11 @@ static int sctp_setsockopt_autoclose(struct sock *sk, char __user *optval,
 		return -EINVAL;
 	if (copy_from_user(&sp->autoclose, optval, optlen))
 		return -EFAULT;
+<<<<<<< HEAD
 	/* make sure it won't exceed MAX_SCHEDULE_TIMEOUT */
 	sp->autoclose = min_t(long, sp->autoclose, MAX_SCHEDULE_TIMEOUT / HZ);
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	return 0;
 }
@@ -3298,7 +3324,11 @@ static int sctp_setsockopt_auth_key(struct sock *sk,
 
 	ret = sctp_auth_set_key(sctp_sk(sk)->ep, asoc, authkey);
 out:
+<<<<<<< HEAD
 	kfree(authkey);
+=======
+	kzfree(authkey);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	return ret;
 }
 
@@ -4011,9 +4041,16 @@ static int sctp_getsockopt_disable_fragments(struct sock *sk, int len,
 static int sctp_getsockopt_events(struct sock *sk, int len, char __user *optval,
 				  int __user *optlen)
 {
+<<<<<<< HEAD
 	if (len < sizeof(struct sctp_event_subscribe))
 		return -EINVAL;
 	len = sizeof(struct sctp_event_subscribe);
+=======
+	if (len <= 0)
+		return -EINVAL;
+	if (len > sizeof(struct sctp_event_subscribe))
+		len = sizeof(struct sctp_event_subscribe);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	if (put_user(len, optlen))
 		return -EFAULT;
 	if (copy_to_user(optval, &sctp_sk(sk)->subscribe, len))

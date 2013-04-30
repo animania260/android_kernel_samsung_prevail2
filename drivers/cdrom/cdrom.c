@@ -2114,11 +2114,14 @@ static int cdrom_read_cdda_old(struct cdrom_device_info *cdi, __u8 __user *ubuf,
 	if (!nr)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	if (!access_ok(VERIFY_WRITE, ubuf, nframes * CD_FRAMESIZE_RAW)) {
 		ret = -EFAULT;
 		goto out;
 	}
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	cgc.data_direction = CGC_DATA_READ;
 	while (nframes > 0) {
 		if (nr > nframes)
@@ -2127,7 +2130,11 @@ static int cdrom_read_cdda_old(struct cdrom_device_info *cdi, __u8 __user *ubuf,
 		ret = cdrom_read_block(cdi, &cgc, lba, nr, 1, CD_FRAMESIZE_RAW);
 		if (ret)
 			break;
+<<<<<<< HEAD
 		if (__copy_to_user(ubuf, cgc.buffer, CD_FRAMESIZE_RAW * nr)) {
+=======
+		if (copy_to_user(ubuf, cgc.buffer, CD_FRAMESIZE_RAW * nr)) {
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			ret = -EFAULT;
 			break;
 		}
@@ -2135,7 +2142,10 @@ static int cdrom_read_cdda_old(struct cdrom_device_info *cdi, __u8 __user *ubuf,
 		nframes -= nr;
 		lba += nr;
 	}
+<<<<<<< HEAD
 out:
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	kfree(cgc.buffer);
 	return ret;
 }
@@ -2741,12 +2751,19 @@ int cdrom_ioctl(struct cdrom_device_info *cdi, struct block_device *bdev,
 {
 	void __user *argp = (void __user *)arg;
 	int ret;
+<<<<<<< HEAD
 	struct gendisk *disk = bdev->bd_disk;
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	/*
 	 * Try the generic SCSI command ioctl's first.
 	 */
+<<<<<<< HEAD
 	ret = scsi_cmd_ioctl(disk->queue, disk, mode, cmd, argp);
+=======
+	ret = scsi_cmd_blk_ioctl(bdev, mode, cmd, argp);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	if (ret != -ENOTTY)
 		return ret;
 

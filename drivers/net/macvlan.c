@@ -239,7 +239,11 @@ static int macvlan_queue_xmit(struct sk_buff *skb, struct net_device *dev)
 		dest = macvlan_hash_lookup(port, eth->h_dest);
 		if (dest && dest->mode == MACVLAN_MODE_BRIDGE) {
 			/* send to lowerdev first for its network taps */
+<<<<<<< HEAD
 			vlan->forward(vlan->lowerdev, skb);
+=======
+			dev_forward_skb(vlan->lowerdev, skb);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 			return NET_XMIT_SUCCESS;
 		}
@@ -247,7 +251,11 @@ static int macvlan_queue_xmit(struct sk_buff *skb, struct net_device *dev)
 
 xmit_world:
 	skb->ip_summed = ip_summed;
+<<<<<<< HEAD
 	skb_set_dev(skb, vlan->lowerdev);
+=======
+	skb->dev = vlan->lowerdev;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	return dev_queue_xmit(skb);
 }
 

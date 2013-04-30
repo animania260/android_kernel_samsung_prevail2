@@ -204,7 +204,11 @@ struct dip_infoframe {
 			uint16_t bottom_bar_start;
 			uint16_t left_bar_end;
 			uint16_t right_bar_start;
+<<<<<<< HEAD
 		} avi;
+=======
+		} __attribute__ ((packed)) avi;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		uint8_t payload[27];
 	} __attribute__ ((packed)) body;
 } __attribute__((packed));
@@ -330,7 +334,11 @@ extern int intel_framebuffer_init(struct drm_device *dev,
 				  struct drm_i915_gem_object *obj);
 extern int intel_fbdev_init(struct drm_device *dev);
 extern void intel_fbdev_fini(struct drm_device *dev);
+<<<<<<< HEAD
 
+=======
+extern void intel_fbdev_set_suspend(struct drm_device *dev, int state);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 extern void intel_prepare_page_flip(struct drm_device *dev, int plane);
 extern void intel_finish_page_flip(struct drm_device *dev, int pipe);
 extern void intel_finish_page_flip_plane(struct drm_device *dev, int plane);

@@ -71,6 +71,10 @@ struct gfn_to_hva_cache {
 	u64 generation;
 	gpa_t gpa;
 	unsigned long hva;
+<<<<<<< HEAD
+=======
+	unsigned long len;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	struct kvm_memory_slot *memslot;
 };
 

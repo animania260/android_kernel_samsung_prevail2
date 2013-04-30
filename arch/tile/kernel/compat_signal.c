@@ -406,12 +406,18 @@ int compat_setup_rt_frame(int sig, struct k_sigaction *ka, siginfo_t *info,
 	 * Set up registers for signal handler.
 	 * Registers that we don't modify keep the value they had from
 	 * user-space at the time we took the signal.
+<<<<<<< HEAD
+=======
+	 * We always pass siginfo and mcontext, regardless of SA_SIGINFO,
+	 * since some things rely on this (e.g. glibc's debug/segfault.c).
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	 */
 	regs->pc = ptr_to_compat_reg(ka->sa.sa_handler);
 	regs->ex1 = PL_ICS_EX1(USER_PL, 1); /* set crit sec in handler */
 	regs->sp = ptr_to_compat_reg(frame);
 	regs->lr = restorer;
 	regs->regs[0] = (unsigned long) usig;
+<<<<<<< HEAD
 
 	if (ka->sa.sa_flags & SA_SIGINFO) {
 		/* Need extra arguments, so mark to restore caller-saves. */
@@ -419,6 +425,11 @@ int compat_setup_rt_frame(int sig, struct k_sigaction *ka, siginfo_t *info,
 		regs->regs[2] = ptr_to_compat_reg(&frame->uc);
 		regs->flags |= PT_FLAGS_CALLER_SAVES;
 	}
+=======
+	regs->regs[1] = ptr_to_compat_reg(&frame->info);
+	regs->regs[2] = ptr_to_compat_reg(&frame->uc);
+	regs->flags |= PT_FLAGS_CALLER_SAVES;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	/*
 	 * Notify any tracer that was single-stepping it.

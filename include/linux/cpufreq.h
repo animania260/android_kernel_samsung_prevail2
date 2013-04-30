@@ -24,10 +24,13 @@
 
 #define CPUFREQ_NAME_LEN 16
 
+<<<<<<< HEAD
 #ifdef CONFIG_CPU_FREQ_GOV_BADASS_GPU_CONTROL
 /* Badass gpu state detection */
 extern bool gpu_busy_state;
 #endif
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 /*********************************************************************
  *                     CPUFREQ NOTIFIER INTERFACE                    *
@@ -203,8 +206,11 @@ extern int __cpufreq_driver_getavg(struct cpufreq_policy *policy,
 int cpufreq_register_governor(struct cpufreq_governor *governor);
 void cpufreq_unregister_governor(struct cpufreq_governor *governor);
 
+<<<<<<< HEAD
 int lock_policy_rwsem_write(int cpu);
 void unlock_policy_rwsem_write(int cpu);
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 /*********************************************************************
  *                      CPUFREQ DRIVER INTERFACE                     *
@@ -337,6 +343,7 @@ static inline unsigned int cpufreq_quick_get(unsigned int cpu)
 }
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_SEC_DVFS
 enum {
 	BOOT_CPU = 0,
@@ -377,6 +384,8 @@ unsigned int get_max_lock(void);
 void set_min_lock(int freq);
 void set_max_lock(int freq);
 #endif
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 /*********************************************************************
  *                       CPUFREQ DEFAULT GOVERNOR                    *
@@ -404,6 +413,7 @@ extern struct cpufreq_governor cpufreq_gov_ondemand;
 #elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_CONSERVATIVE)
 extern struct cpufreq_governor cpufreq_gov_conservative;
 #define CPUFREQ_DEFAULT_GOVERNOR	(&cpufreq_gov_conservative)
+<<<<<<< HEAD
 #elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_LAGFREE)
 extern struct cpufreq_governor cpufreq_gov_lagfree;
 #define CPUFREQ_DEFAULT_GOVERNOR        (&cpufreq_gov_lagfree)
@@ -416,6 +426,8 @@ extern struct cpufreq_governor cpufreq_gov_lazy;
 #elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_BADASS)
 extern struct cpufreq_governor cpufreq_gov_badass;
 #define CPUFREQ_DEFAULT_GOVERNOR	(&cpufreq_gov_badass)
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #endif
 
 

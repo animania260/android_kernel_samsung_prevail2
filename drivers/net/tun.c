@@ -417,6 +417,11 @@ static netdev_tx_t tun_net_xmit(struct sk_buff *skb, struct net_device *dev)
 	 * for indefinite time. */
 	skb_orphan(skb);
 
+<<<<<<< HEAD
+=======
+	nf_reset(skb);
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	/* Enqueue packet */
 	skb_queue_tail(&tun->socket.sk->sk_receive_queue, skb);
 
@@ -1239,6 +1244,7 @@ static long __tun_chr_ioctl(struct file *file, unsigned int cmd,
 	int vnet_hdr_sz;
 	int ret;
 
+<<<<<<< HEAD
 #ifdef CONFIG_ANDROID_PARANOID_NETWORK
 	if (cmd != TUNGETIFF && !capable(CAP_NET_ADMIN)) {
 		return -EPERM;
@@ -1249,6 +1255,14 @@ static long __tun_chr_ioctl(struct file *file, unsigned int cmd,
 		if (copy_from_user(&ifr, argp, ifreq_len))
 			return -EFAULT;
 
+=======
+	if (cmd == TUNSETIFF || _IOC_TYPE(cmd) == 0x89) {
+		if (copy_from_user(&ifr, argp, ifreq_len))
+			return -EFAULT;
+	} else {
+		memset(&ifr, 0, sizeof(ifr));
+	}
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	if (cmd == TUNGETFEATURES) {
 		/* Currently this just means: "what IFF flags are valid?".
 		 * This is needed because we never checked for invalid flags on

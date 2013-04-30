@@ -2,7 +2,10 @@
  *  linux/drivers/mmc/host/msmsdcc.h - QCT MSM7K SDC Controller
  *
  *  Copyright (C) 2008 Google, All Rights Reserved.
+<<<<<<< HEAD
  *  Copyright (c) 2009-2011, Code Aurora Forum. All rights reserved.
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -14,6 +17,7 @@
 #ifndef _MSM_SDCC_H
 #define _MSM_SDCC_H
 
+<<<<<<< HEAD
 #include <linux/types.h>
 
 #include <linux/ioport.h>
@@ -32,6 +36,12 @@
 #include <asm/sizes.h>
 #include <asm/mach/mmc.h>
 #include <mach/dma.h>
+=======
+#define MSMSDCC_CRCI_SDC1	6
+#define MSMSDCC_CRCI_SDC2	7
+#define MSMSDCC_CRCI_SDC3	12
+#define MSMSDCC_CRCI_SDC4	13
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 #define MMCIPOWER		0x000
 #define MCI_PWR_OFF		0x00
@@ -42,6 +52,7 @@
 #define MMCICLOCK		0x004
 #define MCI_CLK_ENABLE		(1 << 8)
 #define MCI_CLK_PWRSAVE		(1 << 9)
+<<<<<<< HEAD
 #define MCI_CLK_WIDEBUS_1	(0 << 10)
 #define MCI_CLK_WIDEBUS_4	(2 << 10)
 #define MCI_CLK_WIDEBUS_8	(3 << 10)
@@ -49,6 +60,12 @@
 #define MCI_CLK_INVERTOUT	(1 << 13)
 #define MCI_CLK_SELECTIN	(1 << 15)
 #define IO_PAD_PWR_SWITCH	(1 << 21)
+=======
+#define MCI_CLK_WIDEBUS		(1 << 10)
+#define MCI_CLK_FLOWENA		(1 << 12)
+#define MCI_CLK_INVERTOUT	(1 << 13)
+#define MCI_CLK_SELECTIN	(1 << 14)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 #define MMCIARGUMENT		0x008
 #define MMCICOMMAND		0x00c
@@ -62,7 +79,10 @@
 #define MCI_CSPM_MCIABORT	(1 << 13)
 #define MCI_CSPM_CCSENABLE	(1 << 14)
 #define MCI_CSPM_CCSDISABLE	(1 << 15)
+<<<<<<< HEAD
 #define MCI_CSPM_AUTO_CMD19	(1 << 16)
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 
 #define MMCIRESPCMD		0x010
@@ -78,8 +98,11 @@
 #define MCI_DPSM_DIRECTION	(1 << 1)
 #define MCI_DPSM_MODE		(1 << 2)
 #define MCI_DPSM_DMAENABLE	(1 << 3)
+<<<<<<< HEAD
 #define MCI_AUTO_PROG_DONE	(1 << 19)
 #define MCI_RX_DATA_PEND	(1 << 20)
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 #define MMCIDATACNT		0x030
 #define MMCISTATUS		0x034
@@ -107,9 +130,14 @@
 #define MCI_SDIOINTR		(1 << 22)
 #define MCI_PROGDONE		(1 << 23)
 #define MCI_ATACMDCOMPL		(1 << 24)
+<<<<<<< HEAD
 #define MCI_SDIOINTROPE		(1 << 25)
 #define MCI_CCSTIMEOUT		(1 << 26)
 #define MCI_AUTOCMD19TIMEOUT	(1 << 30)
+=======
+#define MCI_SDIOINTOPER		(1 << 25)
+#define MCI_CCSTIMEOUT		(1 << 26)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 #define MMCICLEAR		0x038
 #define MCI_CMDCRCFAILCLR	(1 << 0)
@@ -121,6 +149,7 @@
 #define MCI_CMDRESPENDCLR	(1 << 6)
 #define MCI_CMDSENTCLR		(1 << 7)
 #define MCI_DATAENDCLR		(1 << 8)
+<<<<<<< HEAD
 #define MCI_STARTBITERRCLR	(1 << 9)
 #define MCI_DATABLOCKENDCLR	(1 << 10)
 
@@ -138,6 +167,10 @@
 	MCI_SDIOINTROPECLR|MCI_PROGDONECLR|MCI_ATACMDCOMPLCLR|	\
 	MCI_CCSTIMEOUTCLR)
 
+=======
+#define MCI_DATABLOCKENDCLR	(1 << 10)
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #define MMCIMASK0		0x03c
 #define MCI_CMDCRCFAILMASK	(1 << 0)
 #define MCI_DATACRCFAILMASK	(1 << 1)
@@ -165,6 +198,7 @@
 #define MCI_ATACMDCOMPLMASK	(1 << 24)
 #define MCI_SDIOINTOPERMASK	(1 << 25)
 #define MCI_CCSTIMEOUTMASK	(1 << 26)
+<<<<<<< HEAD
 #define MCI_AUTOCMD19TIMEOUTMASK (1 << 30)
 
 #define MMCIMASK1		0x040
@@ -200,6 +234,19 @@
 	MCI_RXFIFOEMPTYMASK | MCI_TXFIFOEMPTYMASK | MCI_RXFIFOFULLMASK |\
 	MCI_TXFIFOFULLMASK | MCI_RXFIFOHALFFULLMASK |			\
 	MCI_TXFIFOHALFEMPTYMASK | MCI_RXACTIVEMASK | MCI_TXACTIVEMASK)
+=======
+
+#define MMCIMASK1		0x040
+#define MMCIFIFOCNT		0x044
+#define MCICCSTIMER		0x058
+
+#define MMCIFIFO		0x080 /* to 0x0bc */
+
+#define MCI_IRQENABLE	\
+	(MCI_CMDCRCFAILMASK|MCI_DATACRCFAILMASK|MCI_CMDTIMEOUTMASK|	\
+	MCI_DATATIMEOUTMASK|MCI_TXUNDERRUNMASK|MCI_RXOVERRUNMASK|	\
+	MCI_CMDRESPENDMASK|MCI_CMDSENTMASK|MCI_DATAENDMASK|MCI_PROGDONEMASK)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 /*
  * The size of the FIFO in bytes.
@@ -208,6 +255,7 @@
 
 #define MCI_FIFOHALFSIZE (MCI_FIFOSIZE / 2)
 
+<<<<<<< HEAD
 #define NR_SG		128
 
 #define MSM_MMC_IDLE_TIMEOUT	5000 /* msecs */
@@ -254,11 +302,18 @@ extern struct class *sec_class;	/* Sysfs about SD Card Detection */
 #define MMC_MAX_DMA_BOX_LENGTH (MMC_MAX_DMA_ROWS * MCI_FIFOSIZE)
 #define MMC_MAX_DMA_CMDS (MAX_NR_SG_DMA_PIO * (MMC_MAX_REQ_SIZE / \
 		MMC_MAX_DMA_BOX_LENGTH))
+=======
+#define NR_SG		32
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 struct clk;
 
 struct msmsdcc_nc_dmadata {
+<<<<<<< HEAD
 	dmov_box	cmd[MMC_MAX_DMA_CMDS];
+=======
+	dmov_box	cmd[NR_SG];
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	uint32_t	cmdptr;
 };
 
@@ -275,18 +330,31 @@ struct msmsdcc_dma_data {
 	int				num_ents;
 
 	int				channel;
+<<<<<<< HEAD
 	int				crci;
 	struct msmsdcc_host		*host;
 	int				busy; /* Set if DM is busy */
 	unsigned int 			result;
+=======
+	struct msmsdcc_host		*host;
+	int				busy; /* Set if DM is busy */
+	int				active;
+	unsigned int			result;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	struct msm_dmov_errdata		err;
 };
 
 struct msmsdcc_pio_data {
+<<<<<<< HEAD
 	struct sg_mapping_iter		sg_miter;
 	char				bounce_buf[4];
 	/* valid bytes in bounce_buf */
 	int				bounce_buf_len;
+=======
+	struct scatterlist	*sg;
+	unsigned int		sg_len;
+	unsigned int		sg_off;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 };
 
 struct msmsdcc_curr_req {
@@ -297,6 +365,7 @@ struct msmsdcc_curr_req {
 	unsigned int		xfer_remain;	/* Bytes remaining to send */
 	unsigned int		data_xfered;	/* Bytes acked by BLKEND irq */
 	int			got_dataend;
+<<<<<<< HEAD
 	int			wait_for_auto_prog_done;
 	int			got_auto_prog_done;
 	int			user_pages;
@@ -347,14 +416,39 @@ struct msmsdcc_host {
 	void __iomem		*bam_base;
 
 	int			pdev_id;
+=======
+	int			user_pages;
+};
+
+struct msmsdcc_stats {
+	unsigned int reqs;
+	unsigned int cmds;
+	unsigned int cmdpoll_hits;
+	unsigned int cmdpoll_misses;
+};
+
+struct msmsdcc_host {
+	struct resource		*cmd_irqres;
+	struct resource		*pio_irqres;
+	struct resource		*memres;
+	struct resource		*dmares;
+	void __iomem		*base;
+	int			pdev_id;
+	unsigned int		stat_irq;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	struct msmsdcc_curr_req	curr;
 
 	struct mmc_host		*mmc;
 	struct clk		*clk;		/* main MMC bus clock */
 	struct clk		*pclk;		/* SDCC peripheral bus clock */
+<<<<<<< HEAD
 	struct clk		*dfab_pclk;	/* Daytona Fabric SDCC clock */
 	unsigned int		clks_on;	/* set if clocks are enabled */
+=======
+	unsigned int		clks_on;	/* set if clocks are enabled */
+	struct timer_list	busclk_timer;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	unsigned int		eject;		/* eject state */
 
@@ -362,6 +456,7 @@ struct msmsdcc_host {
 
 	unsigned int		clk_rate;	/* Current clock rate */
 	unsigned int		pclk_rate;
+<<<<<<< HEAD
 	unsigned int		ddr_doubled_clk_rate;
 
 	u32			pwr;
@@ -385,11 +480,28 @@ struct msmsdcc_host {
 
 	unsigned int prog_enable;
 
+=======
+
+	u32			pwr;
+	u32			saved_irq0mask;	/* MMCIMASK0 reg value */
+	struct msm_mmc_platform_data *plat;
+
+	struct timer_list	timer;
+	unsigned int		oldstat;
+
+	struct msmsdcc_dma_data	dma;
+	struct msmsdcc_pio_data	pio;
+	int			cmdpoll;
+	struct msmsdcc_stats	stats;
+
+	struct tasklet_struct	dma_tlet;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	/* Command parameters */
 	unsigned int		cmd_timeout;
 	unsigned int		cmd_pio_irqmask;
 	unsigned int		cmd_datactrl;
 	struct mmc_command	*cmd_cmd;
+<<<<<<< HEAD
 	u32					cmd_c;
 
 	unsigned int	mci_irqenable;
@@ -437,5 +549,13 @@ static inline int msmsdcc_lpm_disable(struct mmc_host *mmc)
 	return ret;
 }
 #endif
+=======
+	u32			cmd_c;
+	bool			gpio_config_status;
+
+	bool prog_scan;
+	bool prog_enable;
+};
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 #endif

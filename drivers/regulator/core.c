@@ -24,6 +24,7 @@
 #include <linux/mutex.h>
 #include <linux/suspend.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
 #include <linux/debugfs.h>
 #include <linux/seq_file.h>
 #include <linux/uaccess.h>
@@ -31,6 +32,11 @@
 #include <linux/regulator/driver.h>
 #include <linux/regulator/machine.h>
 #include <linux/proc_fs.h>
+=======
+#include <linux/regulator/consumer.h>
+#include <linux/regulator/driver.h>
+#include <linux/regulator/machine.h>
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 #define CREATE_TRACE_POINTS
 #include <trace/events/regulator.h>
@@ -51,7 +57,10 @@ static LIST_HEAD(regulator_list);
 static LIST_HEAD(regulator_map_list);
 static bool has_full_constraints;
 static bool board_wants_dummy_regulator;
+<<<<<<< HEAD
 static int suppress_info_printing;
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 #ifdef CONFIG_DEBUG_FS
 static struct dentry *debugfs_root;
@@ -80,7 +89,10 @@ struct regulator {
 	int uA_load;
 	int min_uV;
 	int max_uV;
+<<<<<<< HEAD
 	int enabled;
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	char *supply_name;
 	struct device_attribute dev_attr;
 	struct regulator_dev *rdev;
@@ -144,6 +156,7 @@ static int regulator_check_voltage(struct regulator_dev *rdev,
 		return -EPERM;
 	}
 
+<<<<<<< HEAD
 	/* check if requested voltage range actually overlaps the constraints */
 	if (*max_uV < rdev->constraints->min_uV ||
 	    *min_uV > rdev->constraints->max_uV) {
@@ -153,6 +166,8 @@ static int regulator_check_voltage(struct regulator_dev *rdev,
 		return -EINVAL;
 	}
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	if (*max_uV > rdev->constraints->max_uV)
 		*max_uV = rdev->constraints->max_uV;
 	if (*min_uV < rdev->constraints->min_uV)
@@ -602,6 +617,7 @@ static struct class regulator_class = {
 	.dev_attrs = regulator_dev_attrs,
 };
 
+<<<<<<< HEAD
 static int regulator_check_voltage_update(struct regulator_dev *rdev)
 {
 	if (!rdev->constraints)
@@ -676,13 +692,19 @@ static int update_voltage_prev(struct regulator_dev *rdev)
 	return ret;
 }
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 /* Calculate the new optimum regulator operating mode based on the new total
  * consumer load. All locks held by caller */
 static void drms_uA_update(struct regulator_dev *rdev)
 {
 	struct regulator *sibling;
 	int current_uA = 0, output_uV, input_uV, err;
+<<<<<<< HEAD
 	unsigned int regulator_curr_mode, mode;
+=======
+	unsigned int mode;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	err = regulator_check_drms(rdev);
 	if (err < 0 || !rdev->desc->ops->get_optimum_mode ||
@@ -715,6 +737,7 @@ static void drms_uA_update(struct regulator_dev *rdev)
 
 	/* check the new mode is allowed */
 	err = regulator_mode_constrain(rdev, &mode);
+<<<<<<< HEAD
 	/* return if the same mode is requested */
 	if (rdev->desc->ops->get_mode) {
 		regulator_curr_mode = rdev->desc->ops->get_mode(rdev);
@@ -723,6 +746,8 @@ static void drms_uA_update(struct regulator_dev *rdev)
 	} else
 		return;
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	if (err == 0)
 		rdev->desc->ops->set_mode(rdev, mode);
 }
@@ -1011,8 +1036,12 @@ static int set_machine_constraints(struct regulator_dev *rdev,
 		}
 	}
 
+<<<<<<< HEAD
 	if (!suppress_info_printing)
 		print_constraints(rdev);
+=======
+	print_constraints(rdev);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 out:
 	return ret;
 }
@@ -1487,6 +1516,7 @@ int regulator_enable(struct regulator *regulator)
 	int ret = 0;
 
 	mutex_lock(&rdev->mutex);
+<<<<<<< HEAD
 
 	if (!regulator_check_voltage_update(rdev)) {
 		if (regulator->min_uV < rdev->constraints->min_uV ||
@@ -1514,6 +1544,9 @@ int regulator_enable(struct regulator *regulator)
 	regulator->enabled++;
 
 out:
+=======
+	ret = _regulator_enable(rdev);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	mutex_unlock(&rdev->mutex);
 	return ret;
 }
@@ -1587,6 +1620,7 @@ int regulator_disable(struct regulator *regulator)
 
 	mutex_lock(&rdev->mutex);
 	ret = _regulator_disable(rdev, &supply_rdev);
+<<<<<<< HEAD
 	if (ret)
 		goto out;
 
@@ -1596,6 +1630,8 @@ int regulator_disable(struct regulator *regulator)
 		update_voltage_prev(rdev);
 
 out:
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	mutex_unlock(&rdev->mutex);
 
 	/* decrease our supplies ref count and disable if required */
@@ -1903,6 +1939,7 @@ int regulator_set_voltage(struct regulator *regulator, int min_uV, int max_uV)
 	ret = regulator_check_voltage(rdev, &min_uV, &max_uV);
 	if (ret < 0)
 		goto out;
+<<<<<<< HEAD
 
 	if (regulator->enabled) {
 		ret = update_voltage(regulator, min_uV, max_uV);
@@ -1913,6 +1950,17 @@ int regulator_set_voltage(struct regulator *regulator, int min_uV, int max_uV)
 	regulator->min_uV = min_uV;
 	regulator->max_uV = max_uV;
 
+=======
+	regulator->min_uV = min_uV;
+	regulator->max_uV = max_uV;
+
+	ret = regulator_check_consumers(rdev, &min_uV, &max_uV);
+	if (ret < 0)
+		goto out;
+
+	ret = _regulator_do_set_voltage(rdev, min_uV, max_uV);
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 out:
 	mutex_unlock(&rdev->mutex);
 	return ret;
@@ -2193,6 +2241,7 @@ out:
 	return ret;
 }
 
+<<<<<<< HEAD
 static unsigned int __regulator_get_mode(struct regulator_dev *rdev)
 {
 	int ret;
@@ -2208,6 +2257,8 @@ out:
 	return ret;
 }
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 /**
  * regulator_get_mode - get regulator operating mode
  * @regulator: regulator source
@@ -2449,6 +2500,7 @@ err:
 EXPORT_SYMBOL_GPL(regulator_bulk_enable);
 
 /**
+<<<<<<< HEAD
  * regulator_bulk_set_voltage - set voltage for multiple regulator consumers
  *
  * @num_consumers: Number of consumers
@@ -2485,6 +2537,8 @@ err:
 EXPORT_SYMBOL_GPL(regulator_bulk_set_voltage);
 
 /**
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
  * regulator_bulk_disable - disable multiple regulator consumers
  *
  * @num_consumers: Number of consumers
@@ -2699,6 +2753,7 @@ static int add_regulator_attributes(struct regulator_dev *rdev)
 	return status;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_DEBUG_FS
 
 #define MAX_DEBUG_BUF_LEN 50
@@ -2999,17 +3054,27 @@ static void rdev_init_debugfs(struct regulator_dev *rdev)
 		goto error;
 	}
 
+=======
+static void rdev_init_debugfs(struct regulator_dev *rdev)
+{
+#ifdef CONFIG_DEBUG_FS
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	rdev->debugfs = debugfs_create_dir(rdev_get_name(rdev), debugfs_root);
 	if (IS_ERR(rdev->debugfs) || !rdev->debugfs) {
 		rdev_warn(rdev, "Failed to create debugfs directory\n");
 		rdev->debugfs = NULL;
+<<<<<<< HEAD
 		goto error;
+=======
+		return;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	}
 
 	debugfs_create_u32("use_count", 0444, rdev->debugfs,
 			   &rdev->use_count);
 	debugfs_create_u32("open_count", 0444, rdev->debugfs,
 			   &rdev->open_count);
+<<<<<<< HEAD
 	debugfs_create_file("consumers", 0444, rdev->debugfs, rdev,
 			    &reg_consumers_fops);
 
@@ -3100,6 +3165,10 @@ static inline void rdev_init_debugfs(struct regulator_dev *rdev)
 	return;
 }
 #endif
+=======
+#endif
+}
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 /**
  * regulator_register - register regulator
@@ -3233,9 +3302,15 @@ struct regulator_dev *regulator_register(struct regulator_desc *regulator_desc,
 
 	list_add(&rdev->list, &regulator_list);
 
+<<<<<<< HEAD
 out:
 	mutex_unlock(&regulator_list_mutex);
 	rdev_init_debugfs(rdev);
+=======
+	rdev_init_debugfs(rdev);
+out:
+	mutex_unlock(&regulator_list_mutex);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	return rdev;
 
 unset_supplies:
@@ -3389,6 +3464,7 @@ void regulator_use_dummy_regulator(void)
 EXPORT_SYMBOL_GPL(regulator_use_dummy_regulator);
 
 /**
+<<<<<<< HEAD
  * regulator_suppress_info_printing - disable printing of info messages
  *
  * The regulator framework calls print_constraints() when a regulator is
@@ -3405,6 +3481,8 @@ void regulator_suppress_info_printing(void)
 EXPORT_SYMBOL_GPL(regulator_suppress_info_printing);
 
 /**
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
  * rdev_get_drvdata - get rdev regulator driver data
  * @rdev: regulator
  *
@@ -3485,6 +3563,7 @@ static int __init regulator_init(void)
 /* init early to allow our consumers to complete system booting */
 core_initcall(regulator_init);
 
+<<<<<<< HEAD
 static int regulator_stats_show(struct seq_file *m, void *unused)
 {
 	struct regulator_dev *rdev;
@@ -3519,6 +3598,8 @@ static const struct file_operations regulator_stats_fops = {
 	.release = single_release,
 };
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 static int __init regulator_init_complete(void)
 {
 	struct regulator_dev *rdev;
@@ -3556,8 +3637,12 @@ static int __init regulator_init_complete(void)
 		if (has_full_constraints) {
 			/* We log since this may kill the system if it
 			 * goes wrong. */
+<<<<<<< HEAD
 			if (!suppress_info_printing)
 				rdev_info(rdev, "disabling\n");
+=======
+			rdev_info(rdev, "disabling\n");
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			ret = ops->disable(rdev);
 			if (ret != 0) {
 				rdev_err(rdev, "couldn't disable: %d\n", ret);
@@ -3568,9 +3653,13 @@ static int __init regulator_init_complete(void)
 			 * so warn even if we aren't going to do
 			 * anything here.
 			 */
+<<<<<<< HEAD
 			if (!suppress_info_printing)
 				rdev_warn(rdev, "incomplete constraints, "
 						"leaving on\n");
+=======
+			rdev_warn(rdev, "incomplete constraints, leaving on\n");
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		}
 
 unlock:
@@ -3578,7 +3667,10 @@ unlock:
 	}
 
 	mutex_unlock(&regulator_list_mutex);
+<<<<<<< HEAD
 	proc_create("regulator", S_IRUGO, NULL, &regulator_stats_fops);
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	return 0;
 }

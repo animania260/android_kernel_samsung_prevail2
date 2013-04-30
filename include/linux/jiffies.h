@@ -303,7 +303,11 @@ extern void jiffies_to_timespec(const unsigned long jiffies,
 extern unsigned long timeval_to_jiffies(const struct timeval *value);
 extern void jiffies_to_timeval(const unsigned long jiffies,
 			       struct timeval *value);
+<<<<<<< HEAD
 extern clock_t jiffies_to_clock_t(long x);
+=======
+extern clock_t jiffies_to_clock_t(unsigned long x);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 extern unsigned long clock_t_to_jiffies(unsigned long x);
 extern u64 jiffies_64_to_clock_t(u64 x);
 extern u64 nsec_to_clock_t(u64 x);

@@ -975,7 +975,11 @@ static int cpu_cmd(void)
 		/* print cpus waiting or in xmon */
 		printf("cpus stopped:");
 		count = 0;
+<<<<<<< HEAD
 		for (cpu = 0; cpu < NR_CPUS; ++cpu) {
+=======
+		for_each_possible_cpu(cpu) {
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			if (cpumask_test_cpu(cpu, &cpus_in_xmon)) {
 				if (count == 0)
 					printf(" %x", cpu);

@@ -688,7 +688,11 @@ static int max8997_set_voltage_buck(struct regulator_dev *rdev,
 		}
 
 		new_val++;
+<<<<<<< HEAD
 	} while (desc->min + desc->step + new_val <= desc->max);
+=======
+	} while (desc->min + desc->step * new_val <= desc->max);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	new_idx = tmp_idx;
 	new_val = tmp_val;

@@ -247,12 +247,24 @@ static void death_by_event(unsigned long ul_conntrack)
 {
 	struct nf_conn *ct = (void *)ul_conntrack;
 	struct net *net = nf_ct_net(ct);
+<<<<<<< HEAD
 
 	if (nf_conntrack_event(IPCT_DESTROY, ct) < 0) {
 		/* bad luck, let's retry again */
 		ct->timeout.expires = jiffies +
 			(random32() % net->ct.sysctl_events_retry_timeout);
 		add_timer(&ct->timeout);
+=======
+	struct nf_conntrack_ecache *ecache = nf_ct_ecache_find(ct);
+
+	BUG_ON(ecache == NULL);
+
+	if (nf_conntrack_event(IPCT_DESTROY, ct) < 0) {
+		/* bad luck, let's retry again */
+		ecache->timeout.expires = jiffies +
+			(random32() % net->ct.sysctl_events_retry_timeout);
+		add_timer(&ecache->timeout);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		return;
 	}
 	/* we've got the event delivered, now it's dying */
@@ -266,6 +278,12 @@ static void death_by_event(unsigned long ul_conntrack)
 void nf_ct_insert_dying_list(struct nf_conn *ct)
 {
 	struct net *net = nf_ct_net(ct);
+<<<<<<< HEAD
+=======
+	struct nf_conntrack_ecache *ecache = nf_ct_ecache_find(ct);
+
+	BUG_ON(ecache == NULL);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	/* add this conntrack to the dying list */
 	spin_lock_bh(&nf_conntrack_lock);
@@ -273,10 +291,17 @@ void nf_ct_insert_dying_list(struct nf_conn *ct)
 			     &net->ct.dying);
 	spin_unlock_bh(&nf_conntrack_lock);
 	/* set a new timer to retry event delivery */
+<<<<<<< HEAD
 	setup_timer(&ct->timeout, death_by_event, (unsigned long)ct);
 	ct->timeout.expires = jiffies +
 		(random32() % net->ct.sysctl_events_retry_timeout);
 	add_timer(&ct->timeout);
+=======
+	setup_timer(&ecache->timeout, death_by_event, (unsigned long)ct);
+	ecache->timeout.expires = jiffies +
+		(random32() % net->ct.sysctl_events_retry_timeout);
+	add_timer(&ecache->timeout);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 EXPORT_SYMBOL_GPL(nf_ct_insert_dying_list);
 

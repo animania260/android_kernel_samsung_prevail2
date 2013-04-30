@@ -151,7 +151,13 @@ int radeon_crtc_cursor_set(struct drm_crtc *crtc,
 			   uint32_t height)
 {
 	struct radeon_crtc *radeon_crtc = to_radeon_crtc(crtc);
+<<<<<<< HEAD
 	struct drm_gem_object *obj;
+=======
+	struct radeon_device *rdev = crtc->dev->dev_private;
+	struct drm_gem_object *obj;
+	struct radeon_bo *robj;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	uint64_t gpu_addr;
 	int ret;
 
@@ -173,7 +179,19 @@ int radeon_crtc_cursor_set(struct drm_crtc *crtc,
 		return -ENOENT;
 	}
 
+<<<<<<< HEAD
 	ret = radeon_gem_object_pin(obj, RADEON_GEM_DOMAIN_VRAM, &gpu_addr);
+=======
+	robj = gem_to_radeon_bo(obj);
+	ret = radeon_bo_reserve(robj, false);
+	if (unlikely(ret != 0))
+		goto fail;
+	/* Only 27 bit offset for legacy cursor */
+	ret = radeon_bo_pin_restricted(robj, RADEON_GEM_DOMAIN_VRAM,
+				       ASIC_IS_AVIVO(rdev) ? 0 : 1 << 27,
+				       &gpu_addr);
+	radeon_bo_unreserve(robj);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	if (ret)
 		goto fail;
 
@@ -181,7 +199,10 @@ int radeon_crtc_cursor_set(struct drm_crtc *crtc,
 	radeon_crtc->cursor_height = height;
 
 	radeon_lock_cursor(crtc, true);
+<<<<<<< HEAD
 	/* XXX only 27 bit offset for legacy cursor */
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	radeon_set_cursor(crtc, obj, gpu_addr);
 	radeon_show_cursor(crtc);
 	radeon_lock_cursor(crtc, false);
@@ -248,8 +269,19 @@ int radeon_crtc_cursor_move(struct drm_crtc *crtc,
 				if (!(cursor_end & 0x7f))
 					w--;
 			}
+<<<<<<< HEAD
 			if (w <= 0)
 				w = 1;
+=======
+			if (w <= 0) {
+				w = 1;
+				cursor_end = x - xorigin + w;
+				if (!(cursor_end & 0x7f)) {
+					x--;
+					WARN_ON_ONCE(x < 0);
+				}
+			}
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		}
 	}
 

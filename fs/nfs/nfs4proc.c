@@ -94,6 +94,11 @@ static int nfs4_map_errors(int err)
 	case -NFS4ERR_BADOWNER:
 	case -NFS4ERR_BADNAME:
 		return -EINVAL;
+<<<<<<< HEAD
+=======
+	case -NFS4ERR_SHARE_DENIED:
+		return -EACCES;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	default:
 		dprintk("%s could not handle NFSv4 error %d\n",
 				__func__, -err);
@@ -254,15 +259,37 @@ static int nfs4_handle_exception(struct nfs_server *server, int errorcode, struc
 {
 	struct nfs_client *clp = server->nfs_client;
 	struct nfs4_state *state = exception->state;
+<<<<<<< HEAD
+=======
+	struct inode *inode = exception->inode;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	int ret = errorcode;
 
 	exception->retry = 0;
 	switch(errorcode) {
 		case 0:
 			return 0;
+<<<<<<< HEAD
 		case -NFS4ERR_ADMIN_REVOKED:
 		case -NFS4ERR_BAD_STATEID:
 		case -NFS4ERR_OPENMODE:
+=======
+		case -NFS4ERR_OPENMODE:
+			if (nfs_have_delegation(inode, FMODE_READ)) {
+				nfs_inode_return_delegation(inode);
+				exception->retry = 1;
+				return 0;
+			}
+			if (state == NULL)
+				break;
+			nfs4_schedule_stateid_recovery(server, state);
+			goto wait_on_recovery;
+		case -NFS4ERR_DELEG_REVOKED:
+		case -NFS4ERR_ADMIN_REVOKED:
+		case -NFS4ERR_BAD_STATEID:
+			if (state != NULL)
+				nfs_remove_bad_delegation(state->inode);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			if (state == NULL)
 				break;
 			nfs4_schedule_stateid_recovery(server, state);
@@ -285,8 +312,12 @@ static int nfs4_handle_exception(struct nfs_server *server, int errorcode, struc
 			dprintk("%s ERROR: %d Reset session\n", __func__,
 				errorcode);
 			nfs4_schedule_session_recovery(clp->cl_session);
+<<<<<<< HEAD
 			exception->retry = 1;
 			break;
+=======
+			goto wait_on_recovery;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #endif /* defined(CONFIG_NFS_V4_1) */
 		case -NFS4ERR_FILE_OPEN:
 			if (exception->timeout > HZ) {
@@ -1305,8 +1336,16 @@ int nfs4_open_delegation_recall(struct nfs_open_context *ctx, struct nfs4_state 
 				 * The show must go on: exit, but mark the
 				 * stateid as needing recovery.
 				 */
+<<<<<<< HEAD
 			case -NFS4ERR_ADMIN_REVOKED:
 			case -NFS4ERR_BAD_STATEID:
+=======
+			case -NFS4ERR_DELEG_REVOKED:
+			case -NFS4ERR_ADMIN_REVOKED:
+			case -NFS4ERR_BAD_STATEID:
+				nfs_inode_find_state_and_recover(state->inode,
+						stateid);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 				nfs4_schedule_stateid_recovery(server, state);
 			case -EKEYEXPIRED:
 				/*
@@ -1755,6 +1794,10 @@ static int _nfs4_do_open(struct inode *dir, struct path *path, fmode_t fmode, in
 			nfs_setattr_update_inode(state->inode, sattr);
 		nfs_post_op_update_inode(state->inode, opendata->o_res.f_attr);
 	}
+<<<<<<< HEAD
+=======
+	nfs_revalidate_inode(server, state->inode);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	nfs4_opendata_put(opendata);
 	nfs4_put_state_owner(sp);
 	*res = state;
@@ -1862,7 +1905,14 @@ static int nfs4_do_setattr(struct inode *inode, struct rpc_cred *cred,
 			   struct nfs4_state *state)
 {
 	struct nfs_server *server = NFS_SERVER(inode);
+<<<<<<< HEAD
 	struct nfs4_exception exception = { };
+=======
+	struct nfs4_exception exception = {
+		.state = state,
+		.inode = inode,
+	};
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	int err;
 	do {
 		err = nfs4_handle_exception(server,
@@ -2996,11 +3046,19 @@ static int _nfs4_proc_readdir(struct dentry *dentry, struct rpc_cred *cred,
 			dentry->d_parent->d_name.name,
 			dentry->d_name.name,
 			(unsigned long long)cookie);
+<<<<<<< HEAD
 	nfs4_setup_readdir(cookie, NFS_COOKIEVERF(dir), dentry, &args);
 	res.pgbase = args.pgbase;
 	status = nfs4_call_sync(NFS_SERVER(dir)->client, NFS_SERVER(dir), &msg, &args.seq_args, &res.seq_res, 0);
 	if (status >= 0) {
 		memcpy(NFS_COOKIEVERF(dir), res.verifier.data, NFS4_VERIFIER_SIZE);
+=======
+	nfs4_setup_readdir(cookie, NFS_I(dir)->cookieverf, dentry, &args);
+	res.pgbase = args.pgbase;
+	status = nfs4_call_sync(NFS_SERVER(dir)->client, NFS_SERVER(dir), &msg, &args.seq_args, &res.seq_res, 0);
+	if (status >= 0) {
+		memcpy(NFS_I(dir)->cookieverf, res.verifier.data, NFS4_VERIFIER_SIZE);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		status += args.pgbase;
 	}
 
@@ -3419,6 +3477,7 @@ static inline int nfs4_server_supports_acls(struct nfs_server *server)
  */
 #define NFS4ACL_MAXPAGES (XATTR_SIZE_MAX >> PAGE_CACHE_SHIFT)
 
+<<<<<<< HEAD
 static void buf_to_pages(const void *buf, size_t buflen,
 		struct page **pages, unsigned int *pgbase)
 {
@@ -3432,6 +3491,8 @@ static void buf_to_pages(const void *buf, size_t buflen,
 	}
 }
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 static int buf_to_pages_noslab(const void *buf, size_t buflen,
 		struct page **pages, unsigned int *pgbase)
 {
@@ -3528,9 +3589,25 @@ out:
 	nfs4_set_cached_acl(inode, acl);
 }
 
+<<<<<<< HEAD
 static ssize_t __nfs4_get_acl_uncached(struct inode *inode, void *buf, size_t buflen)
 {
 	struct page *pages[NFS4ACL_MAXPAGES];
+=======
+/*
+ * The getxattr API returns the required buffer length when called with a
+ * NULL buf. The NFSv4 acl tool then calls getxattr again after allocating
+ * the required buf.  On a NULL buf, we send a page of data to the server
+ * guessing that the ACL request can be serviced by a page. If so, we cache
+ * up to the page of ACL data, and the 2nd call to getxattr is serviced by
+ * the cache. If not so, we throw away the page, and cache the required
+ * length. The next getxattr call will then produce another round trip to
+ * the server, this time with the input buf of the required size.
+ */
+static ssize_t __nfs4_get_acl_uncached(struct inode *inode, void *buf, size_t buflen)
+{
+	struct page *pages[NFS4ACL_MAXPAGES] = {NULL, };
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	struct nfs_getaclargs args = {
 		.fh = NFS_FH(inode),
 		.acl_pages = pages,
@@ -3545,6 +3622,7 @@ static ssize_t __nfs4_get_acl_uncached(struct inode *inode, void *buf, size_t bu
 		.rpc_argp = &args,
 		.rpc_resp = &res,
 	};
+<<<<<<< HEAD
 	struct page *localpage = NULL;
 	int ret;
 
@@ -3580,6 +3658,63 @@ static ssize_t __nfs4_get_acl_uncached(struct inode *inode, void *buf, size_t bu
 out_free:
 	if (localpage)
 		__free_page(localpage);
+=======
+	int ret = -ENOMEM, npages, i;
+	size_t acl_len = 0;
+
+	npages = (buflen + PAGE_SIZE - 1) >> PAGE_SHIFT;
+	/* As long as we're doing a round trip to the server anyway,
+	 * let's be prepared for a page of acl data. */
+	if (npages == 0)
+		npages = 1;
+
+	for (i = 0; i < npages; i++) {
+		pages[i] = alloc_page(GFP_KERNEL);
+		if (!pages[i])
+			goto out_free;
+	}
+	if (npages > 1) {
+		/* for decoding across pages */
+		res.acl_scratch = alloc_page(GFP_KERNEL);
+		if (!res.acl_scratch)
+			goto out_free;
+	}
+	args.acl_len = npages * PAGE_SIZE;
+	args.acl_pgbase = 0;
+	/* Let decode_getfacl know not to fail if the ACL data is larger than
+	 * the page we send as a guess */
+	if (buf == NULL)
+		res.acl_flags |= NFS4_ACL_LEN_REQUEST;
+	resp_buf = page_address(pages[0]);
+
+	dprintk("%s  buf %p buflen %ld npages %d args.acl_len %ld\n",
+		__func__, buf, buflen, npages, args.acl_len);
+	ret = nfs4_call_sync(NFS_SERVER(inode)->client, NFS_SERVER(inode),
+			     &msg, &args.seq_args, &res.seq_res, 0);
+	if (ret)
+		goto out_free;
+
+	acl_len = res.acl_len - res.acl_data_offset;
+	if (acl_len > args.acl_len)
+		nfs4_write_cached_acl(inode, NULL, acl_len);
+	else
+		nfs4_write_cached_acl(inode, resp_buf + res.acl_data_offset,
+				      acl_len);
+	if (buf) {
+		ret = -ERANGE;
+		if (acl_len > buflen)
+			goto out_free;
+		_copy_from_pages(buf, pages, res.acl_data_offset,
+				res.acl_len);
+	}
+	ret = acl_len;
+out_free:
+	for (i = 0; i < npages; i++)
+		if (pages[i])
+			__free_page(pages[i]);
+	if (res.acl_scratch)
+		__free_page(res.acl_scratch);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	return ret;
 }
 
@@ -3610,6 +3745,11 @@ static ssize_t nfs4_proc_get_acl(struct inode *inode, void *buf, size_t buflen)
 		nfs_zap_acl_cache(inode);
 	ret = nfs4_read_cached_acl(inode, buf, buflen);
 	if (ret != -ENOENT)
+<<<<<<< HEAD
+=======
+		/* -ENOENT is returned if there is no ACL or if there is an ACL
+		 * but no cached acl data, just the acl length */
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		return ret;
 	return nfs4_get_acl_uncached(inode, buf, buflen);
 }
@@ -3678,8 +3818,16 @@ nfs4_async_handle_error(struct rpc_task *task, const struct nfs_server *server, 
 	if (task->tk_status >= 0)
 		return 0;
 	switch(task->tk_status) {
+<<<<<<< HEAD
 		case -NFS4ERR_ADMIN_REVOKED:
 		case -NFS4ERR_BAD_STATEID:
+=======
+		case -NFS4ERR_DELEG_REVOKED:
+		case -NFS4ERR_ADMIN_REVOKED:
+		case -NFS4ERR_BAD_STATEID:
+			if (state != NULL)
+				nfs_remove_bad_delegation(state->inode);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		case -NFS4ERR_OPENMODE:
 			if (state == NULL)
 				break;
@@ -4091,6 +4239,10 @@ static void nfs4_locku_done(struct rpc_task *task, void *data)
 				nfs_restart_rpc(task,
 						 calldata->server->nfs_client);
 	}
+<<<<<<< HEAD
+=======
+	nfs_release_seqid(calldata->arg.seqid);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 static void nfs4_locku_prepare(struct rpc_task *task, void *data)
@@ -4402,7 +4554,13 @@ static int _nfs4_do_setlk(struct nfs4_state *state, int cmd, struct file_lock *f
 static int nfs4_lock_reclaim(struct nfs4_state *state, struct file_lock *request)
 {
 	struct nfs_server *server = NFS_SERVER(state->inode);
+<<<<<<< HEAD
 	struct nfs4_exception exception = { };
+=======
+	struct nfs4_exception exception = {
+		.inode = state->inode,
+	};
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	int err;
 
 	do {
@@ -4420,7 +4578,13 @@ static int nfs4_lock_reclaim(struct nfs4_state *state, struct file_lock *request
 static int nfs4_lock_expired(struct nfs4_state *state, struct file_lock *request)
 {
 	struct nfs_server *server = NFS_SERVER(state->inode);
+<<<<<<< HEAD
 	struct nfs4_exception exception = { };
+=======
+	struct nfs4_exception exception = {
+		.inode = state->inode,
+	};
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	int err;
 
 	err = nfs4_set_lock_state(state, request);
@@ -4484,7 +4648,14 @@ out:
 
 static int nfs4_proc_setlk(struct nfs4_state *state, int cmd, struct file_lock *request)
 {
+<<<<<<< HEAD
 	struct nfs4_exception exception = { };
+=======
+	struct nfs4_exception exception = {
+		.state = state,
+		.inode = state->inode,
+	};
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	int err;
 
 	do {
@@ -4529,6 +4700,23 @@ nfs4_proc_lock(struct file *filp, int cmd, struct file_lock *request)
 
 	if (state == NULL)
 		return -ENOLCK;
+<<<<<<< HEAD
+=======
+	/*
+	 * Don't rely on the VFS having checked the file open mode,
+	 * since it won't do this for flock() locks.
+	 */
+	switch (request->fl_type & (F_RDLCK|F_WRLCK|F_UNLCK)) {
+	case F_RDLCK:
+		if (!(filp->f_mode & FMODE_READ))
+			return -EBADF;
+		break;
+	case F_WRLCK:
+		if (!(filp->f_mode & FMODE_WRITE))
+			return -EBADF;
+	}
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	do {
 		status = nfs4_proc_setlk(state, cmd, request);
 		if ((status != -EAGAIN) || IS_SETLK(cmd))
@@ -4577,6 +4765,10 @@ int nfs4_lock_delegation_recall(struct nfs4_state *state, struct file_lock *fl)
 				 * The show must go on: exit, but mark the
 				 * stateid as needing recovery.
 				 */
+<<<<<<< HEAD
+=======
+			case -NFS4ERR_DELEG_REVOKED:
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			case -NFS4ERR_ADMIN_REVOKED:
 			case -NFS4ERR_BAD_STATEID:
 			case -NFS4ERR_OPENMODE:
@@ -5719,12 +5911,17 @@ static void nfs4_layoutreturn_done(struct rpc_task *task, void *calldata)
 		return;
 	}
 	spin_lock(&lo->plh_inode->i_lock);
+<<<<<<< HEAD
 	if (task->tk_status == 0) {
 		if (lrp->res.lrs_present) {
 			pnfs_set_layout_stateid(lo, &lrp->res.stateid, true);
 		} else
 			BUG_ON(!list_empty(&lo->plh_segs));
 	}
+=======
+	if (task->tk_status == 0 && lrp->res.lrs_present)
+		pnfs_set_layout_stateid(lo, &lrp->res.stateid, true);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	lo->plh_block_lgets--;
 	spin_unlock(&lo->plh_inode->i_lock);
 	dprintk("<-- %s\n", __func__);
@@ -6008,6 +6205,10 @@ const struct nfs_rpc_ops nfs_v4_clientops = {
 	.dentry_ops	= &nfs4_dentry_operations,
 	.dir_inode_ops	= &nfs4_dir_inode_operations,
 	.file_inode_ops	= &nfs4_file_inode_operations,
+<<<<<<< HEAD
+=======
+	.file_ops	= &nfs4_file_operations,
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	.getroot	= nfs4_proc_get_root,
 	.getattr	= nfs4_proc_getattr,
 	.setattr	= nfs4_proc_setattr,

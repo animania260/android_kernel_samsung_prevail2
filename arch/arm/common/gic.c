@@ -24,6 +24,7 @@
  */
 #include <linux/init.h>
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/err.h>
 #include <linux/module.h>
 #include <linux/list.h>
@@ -82,6 +83,28 @@ static DEFINE_RAW_SPINLOCK(irq_controller_lock);
 /* Address of GIC 0 CPU interface */
 void __iomem *gic_cpu_base_addr __read_mostly;
 
+=======
+#include <linux/list.h>
+#include <linux/smp.h>
+#include <linux/cpumask.h>
+#include <linux/io.h>
+
+#include <asm/irq.h>
+#include <asm/mach/irq.h>
+#include <asm/hardware/gic.h>
+
+static DEFINE_SPINLOCK(irq_controller_lock);
+
+/* Address of GIC 0 CPU interface */
+void __iomem *gic_cpu_base_addr __read_mostly;
+
+struct gic_chip_data {
+	unsigned int irq_offset;
+	void __iomem *dist_base;
+	void __iomem *cpu_base;
+};
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 /*
  * Supported arch specific GIC irq extension.
  * Default make them NULL.
@@ -93,7 +116,10 @@ struct irq_chip gic_arch_extn = {
 	.irq_retrigger	= NULL,
 	.irq_set_type	= NULL,
 	.irq_set_wake	= NULL,
+<<<<<<< HEAD
 	.irq_disable	= NULL,
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 };
 
 #ifndef MAX_GIC_NR
@@ -102,6 +128,7 @@ struct irq_chip gic_arch_extn = {
 
 static struct gic_chip_data gic_data[MAX_GIC_NR] __read_mostly;
 
+<<<<<<< HEAD
 #ifdef CONFIG_GIC_NON_BANKED
 static void __iomem *gic_get_percpu_base(union gic_base *base)
 {
@@ -138,17 +165,32 @@ static inline void __iomem *gic_dist_base(struct irq_data *d)
 {
 	struct gic_chip_data *gic_data = irq_data_get_irq_chip_data(d);
 	return gic_data_dist_base(gic_data);
+=======
+static inline void __iomem *gic_dist_base(struct irq_data *d)
+{
+	struct gic_chip_data *gic_data = irq_data_get_irq_chip_data(d);
+	return gic_data->dist_base;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 static inline void __iomem *gic_cpu_base(struct irq_data *d)
 {
 	struct gic_chip_data *gic_data = irq_data_get_irq_chip_data(d);
+<<<<<<< HEAD
 	return gic_data_cpu_base(gic_data);
+=======
+	return gic_data->cpu_base;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 static inline unsigned int gic_irq(struct irq_data *d)
 {
+<<<<<<< HEAD
 	return d->hwirq;
+=======
+	struct gic_chip_data *gic_data = irq_data_get_irq_chip_data(d);
+	return d->irq - gic_data->irq_offset;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 /*
@@ -156,6 +198,7 @@ static inline unsigned int gic_irq(struct irq_data *d)
  */
 static void gic_mask_irq(struct irq_data *d)
 {
+<<<<<<< HEAD
 	u32 mask = 1 << (gic_irq(d) % 32);
 
 	raw_spin_lock(&irq_controller_lock);
@@ -163,10 +206,20 @@ static void gic_mask_irq(struct irq_data *d)
 	if (gic_arch_extn.irq_mask)
 		gic_arch_extn.irq_mask(d);
 	raw_spin_unlock(&irq_controller_lock);
+=======
+	u32 mask = 1 << (d->irq % 32);
+
+	spin_lock(&irq_controller_lock);
+	writel_relaxed(mask, gic_dist_base(d) + GIC_DIST_ENABLE_CLEAR + (gic_irq(d) / 32) * 4);
+	if (gic_arch_extn.irq_mask)
+		gic_arch_extn.irq_mask(d);
+	spin_unlock(&irq_controller_lock);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 static void gic_unmask_irq(struct irq_data *d)
 {
+<<<<<<< HEAD
 	u32 mask = 1 << (gic_irq(d) % 32);
 
 	raw_spin_lock(&irq_controller_lock);
@@ -280,6 +333,23 @@ static void gic_eoi_irq(struct irq_data *d)
 		raw_spin_lock(&irq_controller_lock);
 		gic_arch_extn.irq_eoi(d);
 		raw_spin_unlock(&irq_controller_lock);
+=======
+	u32 mask = 1 << (d->irq % 32);
+
+	spin_lock(&irq_controller_lock);
+	if (gic_arch_extn.irq_unmask)
+		gic_arch_extn.irq_unmask(d);
+	writel_relaxed(mask, gic_dist_base(d) + GIC_DIST_ENABLE_SET + (gic_irq(d) / 32) * 4);
+	spin_unlock(&irq_controller_lock);
+}
+
+static void gic_eoi_irq(struct irq_data *d)
+{
+	if (gic_arch_extn.irq_eoi) {
+		spin_lock(&irq_controller_lock);
+		gic_arch_extn.irq_eoi(d);
+		spin_unlock(&irq_controller_lock);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	}
 
 	writel_relaxed(gic_irq(d), gic_cpu_base(d) + GIC_CPU_EOI);
@@ -303,7 +373,11 @@ static int gic_set_type(struct irq_data *d, unsigned int type)
 	if (type != IRQ_TYPE_LEVEL_HIGH && type != IRQ_TYPE_EDGE_RISING)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	raw_spin_lock(&irq_controller_lock);
+=======
+	spin_lock(&irq_controller_lock);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	if (gic_arch_extn.irq_set_type)
 		gic_arch_extn.irq_set_type(d, type);
@@ -328,7 +402,11 @@ static int gic_set_type(struct irq_data *d, unsigned int type)
 	if (enabled)
 		writel_relaxed(enablemask, base + GIC_DIST_ENABLE_SET + enableoff);
 
+<<<<<<< HEAD
 	raw_spin_unlock(&irq_controller_lock);
+=======
+	spin_unlock(&irq_controller_lock);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	return 0;
 }
@@ -338,8 +416,12 @@ static int gic_retrigger(struct irq_data *d)
 	if (gic_arch_extn.irq_retrigger)
 		return gic_arch_extn.irq_retrigger(d);
 
+<<<<<<< HEAD
 	/* the retrigger expects 0 for failure */
 	return 0;
+=======
+	return -ENXIO;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 #ifdef CONFIG_SMP
@@ -347,6 +429,7 @@ static int gic_set_affinity(struct irq_data *d, const struct cpumask *mask_val,
 			    bool force)
 {
 	void __iomem *reg = gic_dist_base(d) + GIC_DIST_TARGET + (gic_irq(d) & ~3);
+<<<<<<< HEAD
 	unsigned int shift = (gic_irq(d) % 4) * 8;
 	unsigned int cpu = cpumask_any_and(mask_val, cpu_online_mask);
 	u32 val, mask, bit;
@@ -363,6 +446,25 @@ static int gic_set_affinity(struct irq_data *d, const struct cpumask *mask_val,
 	raw_spin_unlock(&irq_controller_lock);
 
 	return IRQ_SET_MASK_OK;
+=======
+	unsigned int shift = (d->irq % 4) * 8;
+	unsigned int cpu = cpumask_first(mask_val);
+	u32 val, mask, bit;
+
+	if (cpu >= 8)
+		return -EINVAL;
+
+	mask = 0xff << shift;
+	bit = 1 << (cpu + shift);
+
+	spin_lock(&irq_controller_lock);
+	d->node = cpu;
+	val = readl_relaxed(reg) & ~mask;
+	writel_relaxed(val | bit, reg);
+	spin_unlock(&irq_controller_lock);
+
+	return 0;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 #endif
 
@@ -370,6 +472,7 @@ static int gic_set_affinity(struct irq_data *d, const struct cpumask *mask_val,
 static int gic_set_wake(struct irq_data *d, unsigned int on)
 {
 	int ret = -ENXIO;
+<<<<<<< HEAD
 	unsigned int reg_offset, bit_offset;
 	unsigned int gicirq = gic_irq(d);
 	struct gic_chip_data *gic_data = irq_data_get_irq_chip_data(d);
@@ -384,6 +487,8 @@ static int gic_set_wake(struct irq_data *d, unsigned int on)
 		gic_data->wakeup_irqs[reg_offset] |=  1 << bit_offset;
 	else
 		gic_data->wakeup_irqs[reg_offset] &=  ~(1 << bit_offset);
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	if (gic_arch_extn.irq_set_wake)
 		ret = gic_arch_extn.irq_set_wake(d, on);
@@ -392,6 +497,7 @@ static int gic_set_wake(struct irq_data *d, unsigned int on)
 }
 
 #else
+<<<<<<< HEAD
 static int gic_set_wake(struct irq_data *d, unsigned int on)
 {
 	return 0;
@@ -424,6 +530,11 @@ asmlinkage void __exception_irq_entry gic_handle_irq(struct pt_regs *regs)
 	} while (1);
 }
 
+=======
+#define gic_set_wake	NULL
+#endif
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 static void gic_handle_cascade_irq(unsigned int irq, struct irq_desc *desc)
 {
 	struct gic_chip_data *chip_data = irq_get_handler_data(irq);
@@ -433,15 +544,25 @@ static void gic_handle_cascade_irq(unsigned int irq, struct irq_desc *desc)
 
 	chained_irq_enter(chip, desc);
 
+<<<<<<< HEAD
 	raw_spin_lock(&irq_controller_lock);
 	status = readl_relaxed(gic_data_cpu_base(chip_data) + GIC_CPU_INTACK);
 	raw_spin_unlock(&irq_controller_lock);
+=======
+	spin_lock(&irq_controller_lock);
+	status = readl_relaxed(chip_data->cpu_base + GIC_CPU_INTACK);
+	spin_unlock(&irq_controller_lock);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	gic_irq = (status & 0x3ff);
 	if (gic_irq == 1023)
 		goto out;
 
+<<<<<<< HEAD
 	cascade_irq = irq_domain_to_irq(&chip_data->domain, gic_irq);
+=======
+	cascade_irq = gic_irq + chip_data->irq_offset;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	if (unlikely(gic_irq < 32 || gic_irq > 1020 || cascade_irq >= NR_IRQS))
 		do_bad_IRQ(cascade_irq, desc);
 	else
@@ -461,7 +582,10 @@ static struct irq_chip gic_chip = {
 #ifdef CONFIG_SMP
 	.irq_set_affinity	= gic_set_affinity,
 #endif
+<<<<<<< HEAD
 	.irq_disable		= gic_disable_irq,
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	.irq_set_wake		= gic_set_wake,
 };
 
@@ -474,6 +598,7 @@ void __init gic_cascade_irq(unsigned int gic_nr, unsigned int irq)
 	irq_set_chained_handler(irq, gic_handle_cascade_irq);
 }
 
+<<<<<<< HEAD
 static void __init gic_dist_init(struct gic_chip_data *gic)
 {
 	unsigned int i, irq;
@@ -488,12 +613,33 @@ static void __init gic_dist_init(struct gic_chip_data *gic)
 #endif
 
 	cpumask = 1 << cpu;
+=======
+static void __init gic_dist_init(struct gic_chip_data *gic,
+	unsigned int irq_start)
+{
+	unsigned int gic_irqs, irq_limit, i;
+	void __iomem *base = gic->dist_base;
+	u32 cpumask = 1 << smp_processor_id();
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	cpumask |= cpumask << 8;
 	cpumask |= cpumask << 16;
 
 	writel_relaxed(0, base + GIC_DIST_CTRL);
 
 	/*
+<<<<<<< HEAD
+=======
+	 * Find out how many interrupts are supported.
+	 * The GIC only supports up to 1020 interrupt sources.
+	 */
+	gic_irqs = readl_relaxed(base + GIC_DIST_CTR) & 0x1f;
+	gic_irqs = (gic_irqs + 1) * 32;
+	if (gic_irqs > 1020)
+		gic_irqs = 1020;
+
+	/*
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	 * Set all global interrupts to be level triggered, active low.
 	 */
 	for (i = 32; i < gic_irqs; i += 16)
@@ -519,6 +665,7 @@ static void __init gic_dist_init(struct gic_chip_data *gic)
 		writel_relaxed(0xffffffff, base + GIC_DIST_ENABLE_CLEAR + i * 4 / 32);
 
 	/*
+<<<<<<< HEAD
 	 * Setup the Linux IRQ subsystem.
 	 */
 	irq_domain_for_each_irq(domain, i, irq) {
@@ -539,12 +686,35 @@ static void __init gic_dist_init(struct gic_chip_data *gic)
 
 	writel_relaxed(1, base + GIC_DIST_CTRL);
 	mb();
+=======
+	 * Limit number of interrupts registered to the platform maximum
+	 */
+	irq_limit = gic->irq_offset + gic_irqs;
+	if (WARN_ON(irq_limit > NR_IRQS))
+		irq_limit = NR_IRQS;
+
+	/*
+	 * Setup the Linux IRQ subsystem.
+	 */
+	for (i = irq_start; i < irq_limit; i++) {
+		irq_set_chip_and_handler(i, &gic_chip, handle_fasteoi_irq);
+		irq_set_chip_data(i, gic);
+		set_irq_flags(i, IRQF_VALID | IRQF_PROBE);
+	}
+
+	writel_relaxed(1, base + GIC_DIST_CTRL);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 static void __cpuinit gic_cpu_init(struct gic_chip_data *gic)
 {
+<<<<<<< HEAD
 	void __iomem *dist_base = gic_data_dist_base(gic);
 	void __iomem *base = gic_data_cpu_base(gic);
+=======
+	void __iomem *dist_base = gic->dist_base;
+	void __iomem *base = gic->cpu_base;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	int i;
 
 	/*
@@ -562,6 +732,7 @@ static void __cpuinit gic_cpu_init(struct gic_chip_data *gic)
 
 	writel_relaxed(0xf0, base + GIC_CPU_PRIMASK);
 	writel_relaxed(1, base + GIC_CPU_CTRL);
+<<<<<<< HEAD
     mb();
 }
 
@@ -789,10 +960,19 @@ void __init gic_init_bases(unsigned int gic_nr, int irq_start,
 	struct gic_chip_data *gic;
 	struct irq_domain *domain;
 	int gic_irqs;
+=======
+}
+
+void __init gic_init(unsigned int gic_nr, unsigned int irq_start,
+	void __iomem *dist_base, void __iomem *cpu_base)
+{
+	struct gic_chip_data *gic;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	BUG_ON(gic_nr >= MAX_GIC_NR);
 
 	gic = &gic_data[gic_nr];
+<<<<<<< HEAD
 	domain = &gic->domain;
 #ifdef CONFIG_GIC_NON_BANKED
 	if (percpu_offset) { /* Frankein-GIC without banked registers... */
@@ -863,6 +1043,17 @@ void __init gic_init_bases(unsigned int gic_nr, int irq_start,
 	gic_dist_init(gic);
 	gic_cpu_init(gic);
 	gic_pm_init(gic);
+=======
+	gic->dist_base = dist_base;
+	gic->cpu_base = cpu_base;
+	gic->irq_offset = (irq_start - 1) & ~31;
+
+	if (gic_nr == 0)
+		gic_cpu_base_addr = cpu_base;
+
+	gic_dist_init(gic, irq_start);
+	gic_cpu_init(gic);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 void __cpuinit gic_secondary_init(unsigned int gic_nr)
@@ -872,6 +1063,7 @@ void __cpuinit gic_secondary_init(unsigned int gic_nr)
 	gic_cpu_init(&gic_data[gic_nr]);
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_SMP
 void gic_raise_softirq(const struct cpumask *mask, unsigned int irq)
 {
@@ -881,6 +1073,22 @@ void gic_raise_softirq(const struct cpumask *mask, unsigned int irq)
 	/* Convert our logical CPU mask into a physical one. */
 	for_each_cpu(cpu, mask)
 		map |= 1 << cpu_logical_map(cpu);
+=======
+void __cpuinit gic_enable_ppi(unsigned int irq)
+{
+	unsigned long flags;
+
+	local_irq_save(flags);
+	irq_set_status_flags(irq, IRQ_NOPROBE);
+	gic_unmask_irq(irq_get_irq_data(irq));
+	local_irq_restore(flags);
+}
+
+#ifdef CONFIG_SMP
+void gic_raise_softirq(const struct cpumask *mask, unsigned int irq)
+{
+	unsigned long map = *cpus_addr(*mask);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	/*
 	 * Ensure that stores to Normal memory are visible to the
@@ -889,6 +1097,7 @@ void gic_raise_softirq(const struct cpumask *mask, unsigned int irq)
 	dsb();
 
 	/* this always happens on GIC0 */
+<<<<<<< HEAD
 	writel_relaxed(map << 16 | irq, gic_data_dist_base(&gic_data[0]) + GIC_DIST_SOFTINT);
 	mb();
 }
@@ -967,5 +1176,8 @@ int __init gic_of_init(struct device_node *node, struct device_node *parent)
 	}
 	gic_cnt++;
 	return 0;
+=======
+	writel_relaxed(map << 16 | irq, gic_data[0].dist_base + GIC_DIST_SOFTINT);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 #endif

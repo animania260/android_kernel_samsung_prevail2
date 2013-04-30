@@ -1842,11 +1842,17 @@ static int i7core_mce_check_error(void *priv, struct mce *mce)
 	if (mce->bank != 8)
 		return 0;
 
+<<<<<<< HEAD
 #ifdef CONFIG_SMP
 	/* Only handle if it is the right mc controller */
 	if (cpu_data(mce->cpu).phys_proc_id != pvt->i7core_dev->socket)
 		return 0;
 #endif
+=======
+	/* Only handle if it is the right mc controller */
+	if (cpu_data(mce->cpu).phys_proc_id != pvt->i7core_dev->socket)
+		return 0;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	smp_rmb();
 	if ((pvt->mce_out + 1) % MCE_LOG_LEN == pvt->mce_in) {

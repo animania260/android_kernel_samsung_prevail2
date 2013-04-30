@@ -25,7 +25,10 @@
 #include <linux/tty.h>
 #include <linux/tty_flip.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <linux/debugfs.h>
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 #include "u_serial.h"
 
@@ -78,6 +81,7 @@
  * next layer of buffering.  For TX that's a circular buffer; for RX
  * consider it a NOP.  A third layer is provided by the TTY code.
  */
+<<<<<<< HEAD
 #define TX_QUEUE_SIZE		8
 #define TX_BUF_SIZE		4096
 #define WRITE_BUF_SIZE		8192		/* TX only */
@@ -86,6 +90,11 @@
 #define RX_BUF_SIZE		4096
 
 
+=======
+#define QUEUE_SIZE		16
+#define WRITE_BUF_SIZE		8192		/* TX only */
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 /* circular buffer */
 struct gs_buf {
 	unsigned		buf_size;
@@ -115,7 +124,11 @@ struct gs_port {
 	int read_allocated;
 	struct list_head	read_queue;
 	unsigned		n_read;
+<<<<<<< HEAD
 	struct work_struct	push;
+=======
+	struct tasklet_struct	push;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	struct list_head	write_pool;
 	int write_started;
@@ -125,6 +138,7 @@ struct gs_port {
 
 	/* REVISIT this state ... */
 	struct usb_cdc_line_coding port_line_coding;	/* 8-N-1 etc */
+<<<<<<< HEAD
 	unsigned long           nbytes_from_host;
 	unsigned long           nbytes_to_tty;
 	unsigned long           nbytes_from_tty;
@@ -133,14 +147,23 @@ struct gs_port {
 
 /* increase N_PORTS if you need more */
 #define N_PORTS		8
+=======
+};
+
+/* increase N_PORTS if you need more */
+#define N_PORTS		4
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 static struct portmaster {
 	struct mutex	lock;			/* protect open/close */
 	struct gs_port	*port;
 } ports[N_PORTS];
 static unsigned	n_ports;
 
+<<<<<<< HEAD
 static struct workqueue_struct *gserial_wq;
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #define GS_CLOSE_TIMEOUT		15		/* seconds */
 
 
@@ -373,13 +396,17 @@ __acquires(&port->port_lock)
 	struct list_head	*pool = &port->write_pool;
 	struct usb_ep		*in = port->port_usb->in;
 	int			status = 0;
+<<<<<<< HEAD
 	static long 		prev_len;
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	bool			do_tty_wake = false;
 
 	while (!list_empty(pool)) {
 		struct usb_request	*req;
 		int			len;
 
+<<<<<<< HEAD
 		if (port->write_started >= TX_QUEUE_SIZE)
 			break;
 
@@ -406,6 +433,14 @@ __acquires(&port->port_lock)
 				}
 				prev_len = 0;
 			}
+=======
+		if (port->write_started >= QUEUE_SIZE)
+			break;
+
+		req = list_entry(pool->next, struct usb_request, list);
+		len = gs_send_packet(port, req->buf, in->maxpacket);
+		if (len == 0) {
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			wake_up_interruptible(&port->drain_wait);
 			break;
 		}
@@ -413,6 +448,10 @@ __acquires(&port->port_lock)
 
 		req->length = len;
 		list_del(&req->list);
+<<<<<<< HEAD
+=======
+		req->zero = (gs_buf_data_avail(&port->port_write_buf) == 0);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 		pr_vdebug(PREFIX "%d: tx len=%d, 0x%02x 0x%02x 0x%02x ...\n",
 				port->port_num, len, *((u8 *)req->buf),
@@ -428,6 +467,7 @@ __acquires(&port->port_lock)
 		spin_unlock(&port->port_lock);
 		status = usb_ep_queue(in, req, GFP_ATOMIC);
 		spin_lock(&port->port_lock);
+<<<<<<< HEAD
 		/*
 		 * If port_usb is NULL, gserial disconnect is called
 		 * while the spinlock is dropped and all requests are
@@ -438,15 +478,27 @@ __acquires(&port->port_lock)
 			gs_free_req(in, req);
 			break;
 		}
+=======
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		if (status) {
 			pr_debug("%s: %s %s err %d\n",
 					__func__, "queue", in->name, status);
 			list_add(&req->list, pool);
 			break;
 		}
+<<<<<<< HEAD
 		prev_len = req->length;
 		port->nbytes_from_tty += req->length;
 
+=======
+
+		port->write_started++;
+
+		/* abort immediately after disconnect */
+		if (!port->port_usb)
+			break;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	}
 
 	if (do_tty_wake && port->port_tty)
@@ -465,7 +517,10 @@ __acquires(&port->port_lock)
 {
 	struct list_head	*pool = &port->read_pool;
 	struct usb_ep		*out = port->port_usb->out;
+<<<<<<< HEAD
 	unsigned		started = 0;
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	while (!list_empty(pool)) {
 		struct usb_request	*req;
@@ -477,12 +532,20 @@ __acquires(&port->port_lock)
 		if (!tty)
 			break;
 
+<<<<<<< HEAD
 		if (port->read_started >= RX_QUEUE_SIZE)
+=======
+		if (port->read_started >= QUEUE_SIZE)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			break;
 
 		req = list_entry(pool->next, struct usb_request, list);
 		list_del(&req->list);
+<<<<<<< HEAD
 		req->length = RX_BUF_SIZE;
+=======
+		req->length = out->maxpacket;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 		/* drop lock while we call out; the controller driver
 		 * may need to call us back (e.g. for disconnect)
@@ -490,6 +553,7 @@ __acquires(&port->port_lock)
 		spin_unlock(&port->port_lock);
 		status = usb_ep_queue(out, req, GFP_ATOMIC);
 		spin_lock(&port->port_lock);
+<<<<<<< HEAD
 		/*
 		 * If port_usb is NULL, gserial disconnect is called
 		 * while the spinlock is dropped and all requests are
@@ -500,6 +564,9 @@ __acquires(&port->port_lock)
 			gs_free_req(out, req);
 			break;
 		}
+=======
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		if (status) {
 			pr_debug("%s: %s %s err %d\n",
 					__func__, "queue", out->name, status);
@@ -508,6 +575,12 @@ __acquires(&port->port_lock)
 		}
 		port->read_started++;
 
+<<<<<<< HEAD
+=======
+		/* abort immediately after disconnect */
+		if (!port->port_usb)
+			break;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	}
 	return port->read_started;
 }
@@ -522,9 +595,15 @@ __acquires(&port->port_lock)
  * So QUEUE_SIZE packets plus however many the FIFO holds (usually two)
  * can be buffered before the TTY layer's buffers (currently 64 KB).
  */
+<<<<<<< HEAD
 static void gs_rx_push(struct work_struct *w)
 {
 	struct gs_port		*port = container_of(w, struct gs_port, push);
+=======
+static void gs_rx_push(unsigned long _port)
+{
+	struct gs_port		*port = (void *)_port;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	struct tty_struct	*tty;
 	struct list_head	*queue = &port->read_queue;
 	bool			disconnect = false;
@@ -533,10 +612,13 @@ static void gs_rx_push(struct work_struct *w)
 	/* hand any queued data to the tty */
 	spin_lock_irq(&port->port_lock);
 	tty = port->port_tty;
+<<<<<<< HEAD
 
 	/* Delay for Dun Test */
 	mdelay(1);
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	while (!list_empty(queue)) {
 		struct usb_request	*req;
 
@@ -581,7 +663,10 @@ static void gs_rx_push(struct work_struct *w)
 			}
 
 			count = tty_insert_flip_string(tty, packet, size);
+<<<<<<< HEAD
 			port->nbytes_to_tty += count;
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			if (count)
 				do_push = true;
 			if (count != size) {
@@ -599,6 +684,7 @@ recycle:
 		port->read_started--;
 	}
 
+<<<<<<< HEAD
 	/* Push from tty to ldisc; this is immediate with low_latency, and
 	 * may trigger callbacks to this driver ... so drop the spinlock.
 	 */
@@ -610,6 +696,13 @@ recycle:
 
 		/* tty may have been closed */
 		tty = port->port_tty;
+=======
+	/* Push from tty to ldisc; without low_latency set this is handled by
+	 * a workqueue, so we won't get callbacks and can hold port_lock
+	 */
+	if (tty && do_push) {
+		tty_flip_buffer_push(tty);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	}
 
 
@@ -618,13 +711,21 @@ recycle:
 	 * this time around, there may be trouble unless there's an
 	 * implicit tty_unthrottle() call on its way...
 	 *
+<<<<<<< HEAD
 	 * REVISIT we should probably add a timer to keep the work queue
+=======
+	 * REVISIT we should probably add a timer to keep the tasklet
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	 * from starving ... but it's not clear that case ever happens.
 	 */
 	if (!list_empty(queue) && tty) {
 		if (!test_bit(TTY_THROTTLED, &tty->flags)) {
 			if (do_push)
+<<<<<<< HEAD
 				queue_work(gserial_wq, &port->push);
+=======
+				tasklet_schedule(&port->push);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			else
 				pr_warning(PREFIX "%d: RX not scheduled?\n",
 					port->port_num);
@@ -641,6 +742,7 @@ recycle:
 static void gs_read_complete(struct usb_ep *ep, struct usb_request *req)
 {
 	struct gs_port	*port = ep->driver_data;
+<<<<<<< HEAD
 	unsigned long flags;
 
 	/* Queue all received data until the tty layer is ready for it. */
@@ -649,15 +751,28 @@ static void gs_read_complete(struct usb_ep *ep, struct usb_request *req)
 	list_add_tail(&req->list, &port->read_queue);
 	queue_work(gserial_wq, &port->push);
 	spin_unlock_irqrestore(&port->port_lock, flags);
+=======
+
+	/* Queue all received data until the tty layer is ready for it. */
+	spin_lock(&port->port_lock);
+	list_add_tail(&req->list, &port->read_queue);
+	tasklet_schedule(&port->push);
+	spin_unlock(&port->port_lock);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 static void gs_write_complete(struct usb_ep *ep, struct usb_request *req)
 {
 	struct gs_port	*port = ep->driver_data;
+<<<<<<< HEAD
 	unsigned long flags;
 
 	spin_lock_irqsave(&port->port_lock, flags);
 	port->nbytes_to_host += req->actual;
+=======
+
+	spin_lock(&port->port_lock);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	list_add(&req->list, &port->write_pool);
 	port->write_started--;
 
@@ -669,8 +784,12 @@ static void gs_write_complete(struct usb_ep *ep, struct usb_request *req)
 		/* FALL THROUGH */
 	case 0:
 		/* normal completion */
+<<<<<<< HEAD
 		if (port->port_usb)
 			gs_start_tx(port);
+=======
+		gs_start_tx(port);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		break;
 
 	case -ESHUTDOWN:
@@ -679,7 +798,11 @@ static void gs_write_complete(struct usb_ep *ep, struct usb_request *req)
 		break;
 	}
 
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&port->port_lock, flags);
+=======
+	spin_unlock(&port->port_lock);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 static void gs_free_requests(struct usb_ep *ep, struct list_head *head,
@@ -697,18 +820,31 @@ static void gs_free_requests(struct usb_ep *ep, struct list_head *head,
 }
 
 static int gs_alloc_requests(struct usb_ep *ep, struct list_head *head,
+<<<<<<< HEAD
 		int num, int size, void (*fn)(struct usb_ep *, struct usb_request *),
+=======
+		void (*fn)(struct usb_ep *, struct usb_request *),
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		int *allocated)
 {
 	int			i;
 	struct usb_request	*req;
+<<<<<<< HEAD
+=======
+	int n = allocated ? QUEUE_SIZE - *allocated : QUEUE_SIZE;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	/* Pre-allocate up to QUEUE_SIZE transfers, but if we can't
 	 * do quite that many this time, don't fail ... we just won't
 	 * be as speedy as we might otherwise be.
 	 */
+<<<<<<< HEAD
 	for (i = 0; i < num; i++) {
 		req = gs_alloc_req(ep, size, GFP_ATOMIC);
+=======
+	for (i = 0; i < n; i++) {
+		req = gs_alloc_req(ep, ep->maxpacket, GFP_ATOMIC);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		if (!req)
 			return list_empty(head) ? -ENOMEM : 0;
 		req->complete = fn;
@@ -741,13 +877,22 @@ static int gs_start_io(struct gs_port *port)
 	 * configurations may use different endpoints with a given port;
 	 * and high speed vs full speed changes packet sizes too.
 	 */
+<<<<<<< HEAD
 	status = gs_alloc_requests(ep, head, RX_QUEUE_SIZE, RX_BUF_SIZE,
 			 gs_read_complete, &port->read_allocated);
+=======
+	status = gs_alloc_requests(ep, head, gs_read_complete,
+		&port->read_allocated);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	if (status)
 		return status;
 
 	status = gs_alloc_requests(port->port_usb->in, &port->write_pool,
+<<<<<<< HEAD
 			TX_QUEUE_SIZE, TX_BUF_SIZE, gs_write_complete, &port->write_allocated);
+=======
+			gs_write_complete, &port->write_allocated);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	if (status) {
 		gs_free_requests(ep, head, &port->read_allocated);
 		return status;
@@ -757,8 +902,11 @@ static int gs_start_io(struct gs_port *port)
 	port->n_read = 0;
 	started = gs_start_rx(port);
 
+<<<<<<< HEAD
 	if (!port->port_usb)
 		return -EIO;
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	/* unblock any pending writes into our circular buffer */
 	if (started) {
 		tty_wakeup(port->port_tty);
@@ -863,6 +1011,7 @@ static int gs_open(struct tty_struct *tty, struct file *file)
 	port->open_count = 1;
 	port->openclose = false;
 
+<<<<<<< HEAD
 	/* low_latency means ldiscs work is carried in the same context
 	 * of tty_flip_buffer_push. The same can be called from IRQ with
 	 * low_latency = 0. But better to use a dedicated worker thread
@@ -870,6 +1019,8 @@ static int gs_open(struct tty_struct *tty, struct file *file)
 	 */
 	tty->low_latency = 1;
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	/* if connected, start the I/O stream */
 	if (port->port_usb) {
 		struct gserial	*gser = port->port_usb;
@@ -943,7 +1094,11 @@ static void gs_close(struct tty_struct *tty, struct file *file)
 
 	/* Iff we're disconnected, there can be no I/O in flight so it's
 	 * ok to free the circular buffer; else just scrub it.  And don't
+<<<<<<< HEAD
 	 * let the push work queue fire again until we're re-opened.
+=======
+	 * let the push tasklet fire again until we're re-opened.
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	 */
 	if (gser == NULL)
 		gs_buf_free(&port->port_write_buf);
@@ -959,6 +1114,7 @@ static void gs_close(struct tty_struct *tty, struct file *file)
 			port->port_num, tty, file);
 
 	wake_up_interruptible(&port->close_wait);
+<<<<<<< HEAD
 
 	/*
 	 * Freeing the previously queued requests as they are
@@ -975,6 +1131,8 @@ static void gs_close(struct tty_struct *tty, struct file *file)
 	}
 	port->read_allocated = port->read_started =
 		port->write_allocated = port->write_started = 0;
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 exit:
 	spin_unlock_irq(&port->port_lock);
 }
@@ -1073,7 +1231,11 @@ static void gs_unthrottle(struct tty_struct *tty)
 		 * rts/cts, or other handshaking with the host, but if the
 		 * read queue backs up enough we'll be NAKing OUT packets.
 		 */
+<<<<<<< HEAD
 		queue_work(gserial_wq, &port->push);
+=======
+		tasklet_schedule(&port->push);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		pr_vdebug(PREFIX "%d: unthrottle\n", port->port_num);
 	}
 	spin_unlock_irqrestore(&port->port_lock, flags);
@@ -1097,6 +1259,7 @@ static int gs_break_ctl(struct tty_struct *tty, int duration)
 	return status;
 }
 
+<<<<<<< HEAD
 static int gs_tiocmget(struct tty_struct *tty)
 {
 	struct gs_port	*port = tty->driver_data;
@@ -1168,6 +1331,8 @@ fail:
 	spin_unlock_irq(&port->port_lock);
 	return status;
 }
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 static const struct tty_operations gs_tty_ops = {
 	.open =			gs_open,
 	.close =		gs_close,
@@ -1178,15 +1343,22 @@ static const struct tty_operations gs_tty_ops = {
 	.chars_in_buffer =	gs_chars_in_buffer,
 	.unthrottle =		gs_unthrottle,
 	.break_ctl =		gs_break_ctl,
+<<<<<<< HEAD
 	.tiocmget  =		gs_tiocmget,
 	.tiocmset  =		gs_tiocmset,
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 };
 
 /*-------------------------------------------------------------------------*/
 
 static struct tty_driver *gs_tty_driver;
 
+<<<<<<< HEAD
 static int
+=======
+static int __init
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 gs_port_alloc(unsigned port_num, struct usb_cdc_line_coding *coding)
 {
 	struct gs_port	*port;
@@ -1199,7 +1371,11 @@ gs_port_alloc(unsigned port_num, struct usb_cdc_line_coding *coding)
 	init_waitqueue_head(&port->close_wait);
 	init_waitqueue_head(&port->drain_wait);
 
+<<<<<<< HEAD
 	INIT_WORK(&port->push, gs_rx_push);
+=======
+	tasklet_init(&port->push, gs_rx_push, (unsigned long) port);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	INIT_LIST_HEAD(&port->read_pool);
 	INIT_LIST_HEAD(&port->read_queue);
@@ -1213,6 +1389,7 @@ gs_port_alloc(unsigned port_num, struct usb_cdc_line_coding *coding)
 	return 0;
 }
 
+<<<<<<< HEAD
 
 #if defined(CONFIG_DEBUG_FS)
 
@@ -1323,6 +1500,8 @@ static void usb_debugfs_init(struct gs_port *ui_dev, int port_num)
 static void usb_debugfs_init(struct gs_port *ui_dev) {}
 #endif
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 /**
  * gserial_setup - initialize TTY driver for one or more ports
  * @g: gadget to associate with these ports
@@ -1342,7 +1521,11 @@ static void usb_debugfs_init(struct gs_port *ui_dev) {}
  *
  * Returns negative errno or zero.
  */
+<<<<<<< HEAD
 int gserial_setup(struct usb_gadget *g, unsigned count)
+=======
+int __init gserial_setup(struct usb_gadget *g, unsigned count)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 {
 	unsigned			i;
 	struct usb_cdc_line_coding	coding;
@@ -1362,8 +1545,12 @@ int gserial_setup(struct usb_gadget *g, unsigned count)
 
 	gs_tty_driver->type = TTY_DRIVER_TYPE_SERIAL;
 	gs_tty_driver->subtype = SERIAL_TYPE_NORMAL;
+<<<<<<< HEAD
 	gs_tty_driver->flags = TTY_DRIVER_REAL_RAW | TTY_DRIVER_DYNAMIC_DEV
 				| TTY_DRIVER_RESET_TERMIOS;
+=======
+	gs_tty_driver->flags = TTY_DRIVER_REAL_RAW | TTY_DRIVER_DYNAMIC_DEV;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	gs_tty_driver->init_termios = tty_std_termios;
 
 	/* 9600-8-N-1 ... matches defaults expected by "usbser.sys" on
@@ -1382,12 +1569,15 @@ int gserial_setup(struct usb_gadget *g, unsigned count)
 
 	tty_set_operations(gs_tty_driver, &gs_tty_ops);
 
+<<<<<<< HEAD
 	gserial_wq = create_singlethread_workqueue("k_gserial");
 	if (!gserial_wq) {
 		status = -ENOMEM;
 		goto fail;
 	}
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	/* make devices be openable */
 	for (i = 0; i < count; i++) {
 		mutex_init(&ports[i].lock);
@@ -1402,7 +1592,10 @@ int gserial_setup(struct usb_gadget *g, unsigned count)
 	/* export the driver ... */
 	status = tty_register_driver(gs_tty_driver);
 	if (status) {
+<<<<<<< HEAD
 		put_tty_driver(gs_tty_driver);
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		pr_err("%s: cannot register, err %d\n",
 				__func__, status);
 		goto fail;
@@ -1418,9 +1611,12 @@ int gserial_setup(struct usb_gadget *g, unsigned count)
 				__func__, i, PTR_ERR(tty_dev));
 	}
 
+<<<<<<< HEAD
 	for (i = 0; i < count; i++)
 		usb_debugfs_init(ports[i].port, i);
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	pr_debug("%s: registered %d ttyGS* device%s\n", __func__,
 			count, (count == 1) ? "" : "s");
 
@@ -1428,8 +1624,11 @@ int gserial_setup(struct usb_gadget *g, unsigned count)
 fail:
 	while (count--)
 		kfree(ports[count].port);
+<<<<<<< HEAD
 	if (gserial_wq)
 		destroy_workqueue(gserial_wq);
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	put_tty_driver(gs_tty_driver);
 	gs_tty_driver = NULL;
 	return status;
@@ -1476,7 +1675,11 @@ void gserial_cleanup(void)
 		ports[i].port = NULL;
 		mutex_unlock(&ports[i].lock);
 
+<<<<<<< HEAD
 		cancel_work_sync(&port->push);
+=======
+		tasklet_kill(&port->push);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 		/* wait for old opens to finish */
 		wait_event(port->close_wait, gs_closed(port));
@@ -1487,7 +1690,10 @@ void gserial_cleanup(void)
 	}
 	n_ports = 0;
 
+<<<<<<< HEAD
 	destroy_workqueue(gserial_wq);
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	tty_unregister_driver(gs_tty_driver);
 	put_tty_driver(gs_tty_driver);
 	gs_tty_driver = NULL;
@@ -1626,8 +1832,11 @@ void gserial_disconnect(struct gserial *gser)
 	port->read_allocated = port->read_started =
 		port->write_allocated = port->write_started = 0;
 
+<<<<<<< HEAD
 	port->nbytes_from_host = port->nbytes_to_tty =
 		port->nbytes_from_tty = port->nbytes_to_host = 0;
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	spin_unlock_irqrestore(&port->port_lock, flags);
 }

@@ -24,13 +24,18 @@
 #include <linux/kthread.h>
 #include <linux/mutex.h>
 #include <linux/freezer.h>
+<<<<<<< HEAD
 #include <linux/usb/otg.h>
+=======
+#include <linux/random.h>
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 #include <asm/uaccess.h>
 #include <asm/byteorder.h>
 
 #include "usb.h"
 
+<<<<<<< HEAD
 #if defined(CONFIG_USB_PEHCI_HCD) || defined(CONFIG_USB_PEHCI_HCD_MODULE)
 #include <linux/usb/hcd.h>
 #include <linux/usb/ch11.h>
@@ -56,6 +61,8 @@ EXPORT_SYMBOL(HostTest);
 #endif
 
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 /* if we are in debug mode, always announce new devices */
 #ifdef DEBUG
 #ifndef CONFIG_USB_ANNOUNCE_NEW_DEVICES
@@ -382,11 +389,16 @@ static int get_port_status(struct usb_device *hdev, int port1,
 {
 	int i, status = -ETIMEDOUT;
 
+<<<<<<< HEAD
 	/* ISP1763A HUB sometimes returns 2 bytes instead of 4 bytes, retry
 	 * if this happens
 	 */
 	for (i = 0; i < USB_STS_RETRIES &&
 			(status == -ETIMEDOUT || status == -EPIPE || status == 2); i++) {
+=======
+	for (i = 0; i < USB_STS_RETRIES &&
+			(status == -ETIMEDOUT || status == -EPIPE); i++) {
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		status = usb_control_msg(hdev, usb_rcvctrlpipe(hdev, 0),
 			USB_REQ_GET_STATUS, USB_DIR_IN | USB_RT_PORT, 0, port1,
 			data, sizeof(*data), USB_STS_TIMEOUT);
@@ -510,13 +522,23 @@ static void hub_tt_work(struct work_struct *work)
 	int			limit = 100;
 
 	spin_lock_irqsave (&hub->tt.lock, flags);
+<<<<<<< HEAD
 	while (--limit && !list_empty (&hub->tt.clear_list)) {
+=======
+	while (!list_empty(&hub->tt.clear_list)) {
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		struct list_head	*next;
 		struct usb_tt_clear	*clear;
 		struct usb_device	*hdev = hub->hdev;
 		const struct hc_driver	*drv;
 		int			status;
 
+<<<<<<< HEAD
+=======
+		if (!hub->quiescing && --limit < 0)
+			break;
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		next = hub->tt.clear_list.next;
 		clear = list_entry (next, struct usb_tt_clear, clear_list);
 		list_del (&clear->clear_list);
@@ -734,10 +756,33 @@ static void hub_activate(struct usb_hub *hub, enum hub_activation_type type)
 	if (type == HUB_INIT3)
 		goto init3;
 
+<<<<<<< HEAD
 	/* After a resume, port power should still be on.
 	 * For any other type of activation, turn it on.
 	 */
 	if (type != HUB_RESUME) {
+=======
+	/* The superspeed hub except for root hub has to use Hub Depth
+	 * value as an offset into the route string to locate the bits
+	 * it uses to determine the downstream port number. So hub driver
+	 * should send a set hub depth request to superspeed hub after
+	 * the superspeed hub is set configuration in initialization or
+	 * reset procedure.
+	 *
+	 * After a resume, port power should still be on.
+	 * For any other type of activation, turn it on.
+	 */
+	if (type != HUB_RESUME) {
+		if (hdev->parent && hub_is_superspeed(hdev)) {
+			ret = usb_control_msg(hdev, usb_sndctrlpipe(hdev, 0),
+					HUB_SET_DEPTH, USB_RT_HUB,
+					hdev->level - 1, 0, NULL, 0,
+					USB_CTRL_SET_TIMEOUT);
+			if (ret < 0)
+				dev_err(hub->intfdev,
+						"set hub depth failed\n");
+		}
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 		/* Speed up system boot by using a delayed_work for the
 		 * hub's initial power-up delays.  This is pretty awkward
@@ -753,10 +798,13 @@ static void hub_activate(struct usb_hub *hub, enum hub_activation_type type)
 		 */
 		if (type == HUB_INIT) {
 			delay = hub_power_on(hub, false);
+<<<<<<< HEAD
 #ifdef CONFIG_USB_OTG
 			if (hdev->bus->is_b_host)
 				goto init2;
 #endif
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			PREPARE_DELAYED_WORK(&hub->init_work, hub_init_func2);
 			schedule_delayed_work(&hub->init_work,
 					msecs_to_jiffies(delay));
@@ -846,6 +894,15 @@ static void hub_activate(struct usb_hub *hub, enum hub_activation_type type)
 					USB_PORT_FEAT_C_PORT_LINK_STATE);
 		}
 
+<<<<<<< HEAD
+=======
+		if ((portchange & USB_PORT_STAT_C_BH_RESET) &&
+				hub_is_superspeed(hub->hdev)) {
+			need_debounce_delay = true;
+			clear_port_feature(hub->hdev, port1,
+					USB_PORT_FEAT_C_BH_PORT_RESET);
+		}
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		/* We can forget about a "removed" device when there's a
 		 * physical disconnect or the connect status changes.
 		 */
@@ -891,11 +948,14 @@ static void hub_activate(struct usb_hub *hub, enum hub_activation_type type)
 	 * will see them later and handle them normally.
 	 */
 	if (need_debounce_delay) {
+<<<<<<< HEAD
 #ifdef CONFIG_USB_OTG
 		if (hdev->bus->is_b_host && type == HUB_INIT)
 			goto init3;
 #endif
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		delay = HUB_DEBOUNCE_STABLE;
 
 		/* Don't do a long sleep inside a workqueue routine */
@@ -967,7 +1027,11 @@ static void hub_quiesce(struct usb_hub *hub, enum hub_quiescing_type type)
 	if (hub->has_indicators)
 		cancel_delayed_work_sync(&hub->leds);
 	if (hub->tt.hub)
+<<<<<<< HEAD
 		cancel_work_sync(&hub->tt.clear_work);
+=======
+		flush_work_sync(&hub->tt.clear_work);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 /* caller has locked the hub device */
@@ -1019,6 +1083,7 @@ static int hub_configure(struct usb_hub *hub,
 		goto fail;
 	}
 
+<<<<<<< HEAD
 	if (hub_is_superspeed(hdev) && (hdev->parent != NULL)) {
 		ret = usb_control_msg(hdev, usb_sndctrlpipe(hdev, 0),
 				HUB_SET_DEPTH, USB_RT_HUB,
@@ -1031,6 +1096,8 @@ static int hub_configure(struct usb_hub *hub,
 		}
 	}
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	/* Request the entire hub descriptor.
 	 * hub->descriptor can handle USB_MAXCHILDREN ports,
 	 * but the hub can/will return fewer bytes here.
@@ -1339,7 +1406,10 @@ static int hub_probe(struct usb_interface *intf, const struct usb_device_id *id)
 #ifdef	CONFIG_USB_OTG_BLACKLIST_HUB
 	if (hdev->parent) {
 		dev_warn(&intf->dev, "ignoring external hub\n");
+<<<<<<< HEAD
 		otg_send_event(OTG_EVENT_HUB_NOT_SUPPORTED);
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		return -ENODEV;
 	}
 #endif
@@ -1673,7 +1743,10 @@ void usb_disconnect(struct usb_device **pdev)
 {
 	struct usb_device	*udev = *pdev;
 	int			i;
+<<<<<<< HEAD
 	struct usb_hcd		*hcd = bus_to_hcd(udev->bus);
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	if (!udev) {
 		pr_debug ("%s nodev\n", __func__);
@@ -1688,6 +1761,7 @@ void usb_disconnect(struct usb_device **pdev)
 	dev_info(&udev->dev, "USB disconnect, device number %d\n",
 			udev->devnum);
 
+<<<<<<< HEAD
 #ifdef CONFIG_USB_OTG
 	if (udev->bus->hnp_support && udev->portnum == udev->bus->otg_port) {
 		cancel_delayed_work(&udev->bus->hnp_polling);
@@ -1695,6 +1769,8 @@ void usb_disconnect(struct usb_device **pdev)
 	}
 #endif
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	usb_lock_device(udev);
 
 	/* Free up all the children before we remove this device */
@@ -1708,9 +1784,13 @@ void usb_disconnect(struct usb_device **pdev)
 	 * so that the hardware is now fully quiesced.
 	 */
 	dev_dbg (&udev->dev, "unregistering device\n");
+<<<<<<< HEAD
 	mutex_lock(hcd->bandwidth_mutex);
 	usb_disable_device(udev, 0);
 	mutex_unlock(hcd->bandwidth_mutex);
+=======
+	usb_disable_device(udev, 0);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	usb_hcd_synchronize_unlinks(udev);
 
 	usb_remove_ep_devs(&udev->ep0);
@@ -1801,6 +1881,7 @@ static int usb_enumerate_device_otg(struct usb_device *udev)
 					(port1 == bus->otg_port)
 						? "" : "non-");
 
+<<<<<<< HEAD
 				/* a_alt_hnp_support is obsoleted */
 				if (port1 != bus->otg_port)
 					goto out;
@@ -1825,6 +1906,17 @@ static int usb_enumerate_device_otg(struct usb_device *udev)
 					usb_sndctrlpipe(udev, 0),
 					USB_REQ_SET_FEATURE, 0,
 					USB_DEVICE_A_HNP_SUPPORT,
+=======
+				/* enable HNP before suspend, it's simpler */
+				if (port1 == bus->otg_port)
+					bus->b_hnp_enable = 1;
+				err = usb_control_msg(udev,
+					usb_sndctrlpipe(udev, 0),
+					USB_REQ_SET_FEATURE, 0,
+					bus->b_hnp_enable
+						? USB_DEVICE_B_HNP_ENABLE
+						: USB_DEVICE_A_ALT_HNP_SUPPORT,
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 					0, NULL, 0, USB_CTRL_SET_TIMEOUT);
 				if (err < 0) {
 					/* OTG MESSAGE: report errors here,
@@ -1833,25 +1925,39 @@ static int usb_enumerate_device_otg(struct usb_device *udev)
 					dev_info(&udev->dev,
 						"can't set HNP mode: %d\n",
 						err);
+<<<<<<< HEAD
 					bus->hnp_support = 0;
+=======
+					bus->b_hnp_enable = 0;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 				}
 			}
 		}
 	}
+<<<<<<< HEAD
 out:
 	if (!is_targeted(udev)) {
 
 		otg_send_event(OTG_EVENT_DEV_NOT_SUPPORTED);
+=======
+
+	if (!is_targeted(udev)) {
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 		/* Maybe it can talk to us, though we can't talk to it.
 		 * (Includes HNP test device.)
 		 */
+<<<<<<< HEAD
 		if (udev->bus->hnp_support) {
+=======
+		if (udev->bus->b_hnp_enable || udev->bus->is_b_host) {
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			err = usb_port_suspend(udev, PMSG_SUSPEND);
 			if (err < 0)
 				dev_dbg(&udev->dev, "HNP fail, %d\n", err);
 		}
 		err = -ENOTSUPP;
+<<<<<<< HEAD
 	} else if (udev->bus->hnp_support &&
 		udev->portnum == udev->bus->otg_port) {
 		/* HNP polling is introduced in OTG supplement Rev 2.0
@@ -1862,6 +1968,11 @@ out:
 		schedule_delayed_work(&udev->bus->hnp_polling,
 			msecs_to_jiffies(THOST_REQ_POLL));
 	}
+=======
+		goto fail;
+	}
+fail:
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #endif
 	return err;
 }
@@ -1965,6 +2076,17 @@ int usb_new_device(struct usb_device *udev)
 	/* Tell the world! */
 	announce_device(udev);
 
+<<<<<<< HEAD
+=======
+	if (udev->serial)
+		add_device_randomness(udev->serial, strlen(udev->serial));
+	if (udev->product)
+		add_device_randomness(udev->product, strlen(udev->product));
+	if (udev->manufacturer)
+		add_device_randomness(udev->manufacturer,
+				      strlen(udev->manufacturer));
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	device_enable_async_suspend(&udev->dev);
 	/* Register the device.  The device driver is responsible
 	 * for configuring the device and invoking the add-device
@@ -2101,7 +2223,11 @@ static unsigned hub_is_wusb(struct usb_hub *hub)
 #define HUB_ROOT_RESET_TIME	50	/* times are in msec */
 #define HUB_SHORT_RESET_TIME	10
 #define HUB_LONG_RESET_TIME	200
+<<<<<<< HEAD
 #define HUB_RESET_TIMEOUT	500
+=======
+#define HUB_RESET_TIMEOUT	800
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 static int hub_port_wait_reset(struct usb_hub *hub, int port1,
 				struct usb_device *udev, unsigned int delay)
@@ -2416,6 +2542,7 @@ int usb_port_suspend(struct usb_device *udev, pm_message_t msg)
 				return status;
 		}
 	}
+<<<<<<< HEAD
 #ifdef CONFIG_USB_OTG
 	if (!udev->bus->is_b_host && udev->bus->hnp_support &&
 		udev->portnum == udev->bus->otg_port) {
@@ -2432,6 +2559,8 @@ int usb_port_suspend(struct usb_device *udev, pm_message_t msg)
 		}
 	}
 #endif
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	/* see 7.1.7.6 */
 	if (hub_is_superspeed(hub->hdev))
@@ -2480,7 +2609,11 @@ int usb_port_suspend(struct usb_device *udev, pm_message_t msg)
 static int finish_port_resume(struct usb_device *udev)
 {
 	int	status = 0;
+<<<<<<< HEAD
 	u16	devstatus;
+=======
+	u16	devstatus = 0;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	/* caller owns the udev device lock */
 	dev_dbg(&udev->dev, "%s\n",
@@ -2525,7 +2658,17 @@ static int finish_port_resume(struct usb_device *udev)
 	if (status) {
 		dev_dbg(&udev->dev, "gone after usb resume? status %d\n",
 				status);
+<<<<<<< HEAD
 	} else if (udev->actconfig) {
+=======
+	/*
+	 * There are a few quirky devices which violate the standard
+	 * by claiming to have remote wakeup enabled after a reset,
+	 * which crash if the feature is cleared, hence check for
+	 * udev->reset_resume
+	 */
+	} else if (udev->actconfig && !udev->reset_resume) {
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		le16_to_cpus(&devstatus);
 		if (devstatus & (1 << USB_DEVICE_REMOTE_WAKEUP)) {
 			status = usb_control_msg(udev,
@@ -3035,6 +3178,7 @@ hub_port_init (struct usb_hub *hub, struct usb_device *udev, int port1,
 					buf->bMaxPacketSize0;
 			kfree(buf);
 
+<<<<<<< HEAD
 			/*
 			 * If it is a HSET Test device, we don't issue a
 			 * second reset which results in failure due to
@@ -3051,6 +3195,16 @@ hub_port_init (struct usb_hub *hub, struct usb_device *udev, int port1,
 					retval = -ENODEV;
 					goto fail;
 				}
+=======
+			retval = hub_port_reset(hub, port1, udev, delay);
+			if (retval < 0)		/* error or disconnect */
+				goto fail;
+			if (oldspeed != udev->speed) {
+				dev_dbg(&udev->dev,
+					"device reset changed speed!\n");
+				retval = -ENODEV;
+				goto fail;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			}
 			if (r) {
 				dev_err(&udev->dev,
@@ -3293,9 +3447,12 @@ static void hub_port_connect_change(struct usb_hub *hub, int port1,
 			(portchange & USB_PORT_STAT_C_CONNECTION))
 		clear_bit(port1, hub->removed_bits);
 
+<<<<<<< HEAD
 #if defined(CONFIG_USB_PEHCI_HCD) || defined(CONFIG_USB_PEHCI_HCD_MODULE)
 	if (Unwanted_SecondReset == 0)   /*stericsson*/
 #endif
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	if (portchange & (USB_PORT_STAT_C_CONNECTION |
 				USB_PORT_STAT_C_ENABLE)) {
 		status = hub_port_debounce(hub, port1);
@@ -3434,6 +3591,7 @@ static void hub_port_connect_change(struct usb_hub *hub, int port1,
 		status = hub_power_remaining(hub);
 		if (status)
 			dev_dbg(hub_dev, "%dmA power budget left\n", status);
+<<<<<<< HEAD
 #if defined(CONFIG_USB_PEHCI_HCD) || defined(CONFIG_USB_PEHCI_HCD_MODULE)
 		if (HostComplianceTest == 1 && udev->devnum > 1) {
 			if (HostTest == 7) {	/*SINGLE_STEP_GET_DEV_DESC */
@@ -3460,6 +3618,9 @@ static void hub_port_connect_change(struct usb_hub *hub, int port1,
 			}
 		}
 #endif
+=======
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		return;
 
 loop_disable:
@@ -3497,11 +3658,15 @@ static void hub_events(void)
 	u16 portchange;
 	int i, ret;
 	int connect_change;
+<<<<<<< HEAD
 #if defined(CONFIG_USB_PEHCI_HCD) || defined(CONFIG_USB_PEHCI_HCD_MODULE)
 	int j;
 	int otgport = 0;
 	struct usb_port_status port_status;
 #endif
+=======
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	/*
 	 *  We restart the list every time to avoid a deadlock with
 	 * deleting hubs downstream from this one. This should be
@@ -3576,6 +3741,7 @@ static void hub_events(void)
 
 		/* deal with port status changes */
 		for (i = 1; i <= hub->descriptor->bNbrPorts; i++) {
+<<<<<<< HEAD
 #if defined(CONFIG_USB_PEHCI_HCD) || defined(CONFIG_USB_PEHCI_HCD_MODULE)
 			struct usb_port_status portsts;
 
@@ -3741,6 +3907,8 @@ static void hub_events(void)
 			 */
 			hdev->otgstate = 0;
 #endif
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			if (test_bit(i, hub->busy_bits))
 				continue;
 			connect_change = test_bit(i, hub->change_bits);
@@ -3864,6 +4032,7 @@ static void hub_events(void)
 				hub_port_warm_reset(hub, i);
 			}
 
+<<<<<<< HEAD
 			if (connect_change) {
 #if defined(CONFIG_USB_PEHCI_HCD) || defined(CONFIG_USB_PEHCI_HCD_MODULE)
 				if (hdev->parent == hdev->bus->root_hub)
@@ -3877,6 +4046,11 @@ static void hub_events(void)
 				hub_port_connect_change(hub, i,
 						portstatus, portchange);
 				}
+=======
+			if (connect_change)
+				hub_port_connect_change(hub, i,
+						portstatus, portchange);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		} /* end for i */
 
 		/* deal with hub status changes */
@@ -3908,6 +4082,7 @@ static void hub_events(void)
 						"condition\n");
 			}
 		}
+<<<<<<< HEAD
 #if defined(CONFIG_USB_PEHCI_HCD) || defined(CONFIG_USB_PEHCI_HCD_MODULE)
 		/* if we have something on otg */
 		if (otgport) {
@@ -4007,6 +4182,9 @@ static void hub_events(void)
 			}
 		}
 #endif
+=======
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
  loop_autopm:
 		/* Balance the usb_autopm_get_interface() above */
 		usb_autopm_put_interface_no_suspend(intf);

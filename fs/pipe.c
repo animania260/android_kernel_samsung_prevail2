@@ -345,6 +345,19 @@ static const struct pipe_buf_operations anon_pipe_buf_ops = {
 	.get = generic_pipe_buf_get,
 };
 
+<<<<<<< HEAD
+=======
+static const struct pipe_buf_operations packet_pipe_buf_ops = {
+	.can_merge = 0,
+	.map = generic_pipe_buf_map,
+	.unmap = generic_pipe_buf_unmap,
+	.confirm = generic_pipe_buf_confirm,
+	.release = anon_pipe_buf_release,
+	.steal = generic_pipe_buf_steal,
+	.get = generic_pipe_buf_get,
+};
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 static ssize_t
 pipe_read(struct kiocb *iocb, const struct iovec *_iov,
 	   unsigned long nr_segs, loff_t pos)
@@ -406,6 +419,16 @@ redo:
 			ret += chars;
 			buf->offset += chars;
 			buf->len -= chars;
+<<<<<<< HEAD
+=======
+
+			/* Was it a packet buffer? Clean up and exit */
+			if (buf->flags & PIPE_BUF_FLAG_PACKET) {
+				total_len = chars;
+				buf->len = 0;
+			}
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			if (!buf->len) {
 				buf->ops = NULL;
 				ops->release(pipe, buf);
@@ -458,6 +481,14 @@ redo:
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+static inline int is_packetized(struct file *file)
+{
+	return (file->f_flags & O_DIRECT) != 0;
+}
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 static ssize_t
 pipe_write(struct kiocb *iocb, const struct iovec *_iov,
 	    unsigned long nr_segs, loff_t ppos)
@@ -592,6 +623,14 @@ redo2:
 			buf->ops = &anon_pipe_buf_ops;
 			buf->offset = 0;
 			buf->len = chars;
+<<<<<<< HEAD
+=======
+			buf->flags = 0;
+			if (is_packetized(filp)) {
+				buf->ops = &packet_pipe_buf_ops;
+				buf->flags = PIPE_BUF_FLAG_PACKET;
+			}
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			pipe->nrbufs = ++bufs;
 			pipe->tmp_page = NULL;
 
@@ -832,6 +871,12 @@ pipe_rdwr_open(struct inode *inode, struct file *filp)
 {
 	int ret = -ENOENT;
 
+<<<<<<< HEAD
+=======
+	if (!(filp->f_mode & (FMODE_READ|FMODE_WRITE)))
+		return -EINVAL;
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	mutex_lock(&inode->i_mutex);
 
 	if (inode->i_pipe) {
@@ -948,7 +993,11 @@ static const struct dentry_operations pipefs_dentry_operations = {
 
 static struct inode * get_pipe_inode(void)
 {
+<<<<<<< HEAD
 	struct inode *inode = new_inode_pseudo(pipe_mnt->mnt_sb);
+=======
+	struct inode *inode = new_inode(pipe_mnt->mnt_sb);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	struct pipe_inode_info *pipe;
 
 	if (!inode)
@@ -1012,7 +1061,11 @@ struct file *create_write_pipe(int flags)
 		goto err_dentry;
 	f->f_mapping = inode->i_mapping;
 
+<<<<<<< HEAD
 	f->f_flags = O_WRONLY | (flags & O_NONBLOCK);
+=======
+	f->f_flags = O_WRONLY | (flags & (O_NONBLOCK | O_DIRECT));
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	f->f_version = 0;
 
 	return f;
@@ -1056,7 +1109,11 @@ int do_pipe_flags(int *fd, int flags)
 	int error;
 	int fdw, fdr;
 
+<<<<<<< HEAD
 	if (flags & ~(O_CLOEXEC | O_NONBLOCK))
+=======
+	if (flags & ~(O_CLOEXEC | O_NONBLOCK | O_DIRECT))
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		return -EINVAL;
 
 	fw = create_write_pipe(flags);
@@ -1291,8 +1348,13 @@ static int __init init_pipe_fs(void)
 
 static void __exit exit_pipe_fs(void)
 {
+<<<<<<< HEAD
 	kern_unmount(pipe_mnt);
 	unregister_filesystem(&pipe_fs_type);
+=======
+	unregister_filesystem(&pipe_fs_type);
+	mntput(pipe_mnt);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 fs_initcall(init_pipe_fs);

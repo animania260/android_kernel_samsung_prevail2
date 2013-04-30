@@ -1158,8 +1158,15 @@ radeon_user_framebuffer_create(struct drm_device *dev,
 	}
 
 	radeon_fb = kzalloc(sizeof(*radeon_fb), GFP_KERNEL);
+<<<<<<< HEAD
 	if (radeon_fb == NULL)
 		return ERR_PTR(-ENOMEM);
+=======
+	if (radeon_fb == NULL) {
+		drm_gem_object_unreference_unlocked(obj);
+		return ERR_PTR(-ENOMEM);
+	}
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	radeon_framebuffer_init(dev, radeon_fb, mode_cmd, obj);
 

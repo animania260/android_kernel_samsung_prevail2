@@ -20,17 +20,23 @@
 #include <linux/profile.h>
 #include <linux/sched.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/rq_stats.h>
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 #include <asm/irq_regs.h>
 
 #include "tick-internal.h"
 
+<<<<<<< HEAD
 
 struct rq_data rq_info;
 struct workqueue_struct *rq_wq;
 spinlock_t rq_lock;
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 /*
  * Per cpu nohz control structure
  */
@@ -490,9 +496,15 @@ static void tick_nohz_restart(struct tick_sched *ts, ktime_t now)
 				hrtimer_get_expires(&ts->sched_timer), 0))
 				break;
 		}
+<<<<<<< HEAD
 		/* Update jiffies and reread time */
 		tick_do_update_jiffies64(now);
 		now = ktime_get();
+=======
+		/* Reread time and update jiffies */
+		now = ktime_get();
+		tick_do_update_jiffies64(now);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	}
 }
 
@@ -646,6 +658,11 @@ static void tick_nohz_switch_to_nohz(void)
 		next = ktime_add(next, tick_period);
 	}
 	local_irq_enable();
+<<<<<<< HEAD
+=======
+
+	printk(KERN_INFO "Switched to NOHz mode on CPU #%d\n", smp_processor_id());
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 /*
@@ -715,6 +732,7 @@ void tick_check_idle(int cpu)
  * High resolution timer specific code
  */
 #ifdef CONFIG_HIGH_RES_TIMERS
+<<<<<<< HEAD
 static void update_rq_stats(void)
 {
 	unsigned long jiffy_gap = 0;
@@ -759,6 +777,8 @@ static void wakeup_user(void)
 		queue_work(rq_wq, &rq_info.def_timer_work);
 	}
 }
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 /*
  * We rearm the timer until we get disabled by the idle code.
  * Called with interrupts disabled and timer->base->cpu_base->lock held.
@@ -806,6 +826,7 @@ static enum hrtimer_restart tick_sched_timer(struct hrtimer *timer)
 		}
 		update_process_times(user_mode(regs));
 		profile_tick(CPU_PROFILING);
+<<<<<<< HEAD
 
 		if ((rq_info.init == 1) && (tick_do_timer_cpu == cpu)) {
 
@@ -819,6 +840,8 @@ static enum hrtimer_restart tick_sched_timer(struct hrtimer *timer)
 			 */
 			wakeup_user();
 		}
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	}
 
 	hrtimer_forward(timer, now, tick_period);
@@ -854,8 +877,15 @@ void tick_setup_sched_timer(void)
 	}
 
 #ifdef CONFIG_NO_HZ
+<<<<<<< HEAD
 	if (tick_nohz_enabled)
 		ts->nohz_mode = NOHZ_MODE_HIGHRES;
+=======
+	if (tick_nohz_enabled) {
+		ts->nohz_mode = NOHZ_MODE_HIGHRES;
+		printk(KERN_INFO "Switched to NOHz mode on CPU #%d\n", smp_processor_id());
+	}
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #endif
 }
 #endif /* HIGH_RES_TIMERS */

@@ -57,7 +57,11 @@ static const unsigned xscale_perf_map[PERF_COUNT_HW_MAX] = {
 	[PERF_COUNT_HW_BUS_CYCLES]	    = HW_OP_UNSUPPORTED,
 };
 
+<<<<<<< HEAD
 static unsigned xscale_perf_cache_map[PERF_COUNT_HW_CACHE_MAX]
+=======
+static const unsigned xscale_perf_cache_map[PERF_COUNT_HW_CACHE_MAX]
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 					   [PERF_COUNT_HW_CACHE_OP_MAX]
 					   [PERF_COUNT_HW_CACHE_RESULT_MAX] = {
 	[C(L1D)] = {
@@ -776,8 +780,11 @@ static const struct arm_pmu xscale2pmu = {
 	.id		= ARM_PERF_PMU_ID_XSCALE2,
 	.name		= "xscale2",
 	.handle_irq	= xscale2pmu_handle_irq,
+<<<<<<< HEAD
 	.request_pmu_irq = armpmu_generic_request_irq,
 	.free_pmu_irq	= armpmu_generic_free_irq,
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	.enable		= xscale2pmu_enable_event,
 	.disable	= xscale2pmu_disable_event,
 	.read_counter	= xscale2pmu_read_counter,

@@ -589,7 +589,11 @@ static int __devexit sdhci_s3c_remove(struct platform_device *pdev)
 
 	sdhci_remove_host(host, 1);
 
+<<<<<<< HEAD
 	for (ptr = 0; ptr < 3; ptr++) {
+=======
+	for (ptr = 0; ptr < MAX_BUS_CLK; ptr++) {
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		if (sc->clk_bus[ptr]) {
 			clk_disable(sc->clk_bus[ptr]);
 			clk_put(sc->clk_bus[ptr]);

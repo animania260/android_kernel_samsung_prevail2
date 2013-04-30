@@ -30,7 +30,10 @@ obj-$(CONFIG_HUGETLBFS)	+= hugetlb.o
 obj-$(CONFIG_NUMA) 	+= mempolicy.o
 obj-$(CONFIG_SPARSEMEM)	+= sparse.o
 obj-$(CONFIG_SPARSEMEM_VMEMMAP) += sparse-vmemmap.o
+<<<<<<< HEAD
 obj-$(CONFIG_ASHMEM) += ashmem.o
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 obj-$(CONFIG_SLOB) += slob.o
 obj-$(CONFIG_COMPACTION) += compaction.o
 obj-$(CONFIG_MMU_NOTIFIER) += mmu_notifier.o

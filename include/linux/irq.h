@@ -23,7 +23,10 @@
 #include <linux/errno.h>
 #include <linux/topology.h>
 #include <linux/wait.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 #include <asm/irq.h>
 #include <asm/ptrace.h>
@@ -66,7 +69,10 @@ typedef	void (*irq_preflow_handler_t)(struct irq_data *data);
  * IRQ_NO_BALANCING		- Interrupt cannot be balanced (affinity set)
  * IRQ_MOVE_PCNTXT		- Interrupt can be migrated from process context
  * IRQ_NESTED_TRHEAD		- Interrupt nests into another thread
+<<<<<<< HEAD
  * IRQ_PER_CPU_DEVID		- Dev_id is a per-cpu variable
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
  */
 enum {
 	IRQ_TYPE_NONE		= 0x00000000,
@@ -89,13 +95,20 @@ enum {
 	IRQ_MOVE_PCNTXT		= (1 << 14),
 	IRQ_NESTED_THREAD	= (1 << 15),
 	IRQ_NOTHREAD		= (1 << 16),
+<<<<<<< HEAD
 	IRQ_PER_CPU_DEVID	= (1 << 17),
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 };
 
 #define IRQF_MODIFY_MASK	\
 	(IRQ_TYPE_SENSE_MASK | IRQ_NOPROBE | IRQ_NOREQUEST | \
 	 IRQ_NOAUTOEN | IRQ_MOVE_PCNTXT | IRQ_LEVEL | IRQ_NO_BALANCING | \
+<<<<<<< HEAD
 	 IRQ_PER_CPU | IRQ_NESTED_THREAD | IRQ_NOTHREAD | IRQ_PER_CPU_DEVID)
+=======
+	 IRQ_PER_CPU | IRQ_NESTED_THREAD)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 #define IRQ_NO_BALANCING_MASK	(IRQ_PER_CPU | IRQ_NO_BALANCING)
 
@@ -116,18 +129,27 @@ enum {
 };
 
 struct msi_desc;
+<<<<<<< HEAD
 struct irq_domain;
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 /**
  * struct irq_data - per irq and irq chip data passed down to chip functions
  * @irq:		interrupt number
+<<<<<<< HEAD
  * @hwirq:		hardware interrupt number, local to the interrupt domain
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
  * @node:		node index useful for balancing
  * @state_use_accessors: status information for irq chip functions.
  *			Use accessor functions to deal with it
  * @chip:		low level interrupt hardware access
+<<<<<<< HEAD
  * @domain:		Interrupt translation domain; responsible for mapping
  *			between hwirq number and linux irq number.
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
  * @handler_data:	per-IRQ data for the irq_chip methods
  * @chip_data:		platform-specific per-chip private data for the chip
  *			methods, to allow shared chip implementations
@@ -140,11 +162,17 @@ struct irq_domain;
  */
 struct irq_data {
 	unsigned int		irq;
+<<<<<<< HEAD
 	unsigned long		hwirq;
 	unsigned int		node;
 	unsigned int		state_use_accessors;
 	struct irq_chip		*chip;
 	struct irq_domain	*domain;
+=======
+	unsigned int		node;
+	unsigned int		state_use_accessors;
+	struct irq_chip		*chip;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	void			*handler_data;
 	void			*chip_data;
 	struct msi_desc		*msi_desc;
@@ -285,7 +313,10 @@ static inline void irqd_clr_chained_irq_inprogress(struct irq_data *d)
  * @irq_retrigger:	resend an IRQ to the CPU
  * @irq_set_type:	set the flow type (IRQ_TYPE_LEVEL/etc.) of an IRQ
  * @irq_set_wake:	enable/disable power-management wake-on of an IRQ
+<<<<<<< HEAD
  * @irq_read_line:	return the current value on the irq line
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
  * @irq_bus_lock:	function to lock access to slow bus (i2c) chips
  * @irq_bus_sync_unlock:function to sync and unlock slow bus (i2c) chips
  * @irq_cpu_online:	configure an interrupt source for a secondary CPU
@@ -314,7 +345,10 @@ struct irq_chip {
 	int		(*irq_set_affinity)(struct irq_data *data, const struct cpumask *dest, bool force);
 	int		(*irq_retrigger)(struct irq_data *data);
 	int		(*irq_set_type)(struct irq_data *data, unsigned int flow_type);
+<<<<<<< HEAD
 	int		(*irq_read_line)(struct irq_data *data);
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	int		(*irq_set_wake)(struct irq_data *data, unsigned int on);
 
 	void		(*irq_bus_lock)(struct irq_data *data);
@@ -374,8 +408,11 @@ enum {
 struct irqaction;
 extern int setup_irq(unsigned int irq, struct irqaction *new);
 extern void remove_irq(unsigned int irq, struct irqaction *act);
+<<<<<<< HEAD
 extern int setup_percpu_irq(unsigned int irq, struct irqaction *new);
 extern void remove_percpu_irq(unsigned int irq, struct irqaction *act);
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 extern void irq_cpu_online(void);
 extern void irq_cpu_offline(void);
@@ -403,7 +440,10 @@ extern void handle_edge_irq(unsigned int irq, struct irq_desc *desc);
 extern void handle_edge_eoi_irq(unsigned int irq, struct irq_desc *desc);
 extern void handle_simple_irq(unsigned int irq, struct irq_desc *desc);
 extern void handle_percpu_irq(unsigned int irq, struct irq_desc *desc);
+<<<<<<< HEAD
 extern void handle_percpu_devid_irq(unsigned int irq, struct irq_desc *desc);
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 extern void handle_bad_irq(unsigned int irq, struct irq_desc *desc);
 extern void handle_nested_irq(unsigned int irq);
 
@@ -411,8 +451,11 @@ extern void handle_nested_irq(unsigned int irq);
 extern void note_interrupt(unsigned int irq, struct irq_desc *desc,
 			   irqreturn_t action_ret);
 
+<<<<<<< HEAD
 /* Resending of interrupts :*/
 void check_irq_resend(struct irq_desc *desc, unsigned int irq);
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 /* Enable/disable irq debugging output: */
 extern int noirqdebug_setup(char *str);
@@ -434,8 +477,11 @@ static inline void irq_set_chip_and_handler(unsigned int irq, struct irq_chip *c
 	irq_set_chip_and_handler_name(irq, chip, handle, NULL);
 }
 
+<<<<<<< HEAD
 extern int irq_set_percpu_devid(unsigned int irq);
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 extern void
 __irq_set_handler(unsigned int irq, irq_flow_handler_t handle, int is_chained,
 		  const char *name);
@@ -497,6 +543,7 @@ static inline void irq_set_nested_thread(unsigned int irq, bool nest)
 		irq_clear_status_flags(irq, IRQ_NESTED_THREAD);
 }
 
+<<<<<<< HEAD
 static inline void irq_set_percpu_devid_flags(unsigned int irq)
 {
 	irq_set_status_flags(irq,
@@ -504,6 +551,8 @@ static inline void irq_set_percpu_devid_flags(unsigned int irq)
 			     IRQ_NOPROBE | IRQ_PER_CPU_DEVID);
 }
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 /* Handle dynamic irq creation and destruction */
 extern unsigned int create_irq_nr(unsigned int irq_want, int node);
 extern int create_irq(void);
@@ -571,6 +620,7 @@ static inline struct msi_desc *irq_data_get_msi(struct irq_data *d)
 	return d->msi_desc;
 }
 
+<<<<<<< HEAD
 int __irq_alloc_descs(int irq, unsigned int from, unsigned int cnt, int node,
 		struct module *owner);
 
@@ -580,6 +630,9 @@ static inline int irq_alloc_descs(int irq, unsigned int from, unsigned int cnt,
 	return __irq_alloc_descs(irq, from, cnt, node, THIS_MODULE);
 }
 
+=======
+int irq_alloc_descs(int irq, unsigned int from, unsigned int cnt, int node);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 void irq_free_descs(unsigned int irq, unsigned int cnt);
 int irq_reserve_irqs(unsigned int from, unsigned int cnt);
 

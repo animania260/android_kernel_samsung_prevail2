@@ -35,18 +35,26 @@
 #include <linux/list.h>
 #include <linux/kallsyms.h>
 #include <linux/proc_fs.h>
+<<<<<<< HEAD
 
 #include <asm/exception.h>
+=======
+#include <linux/ftrace.h>
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #include <asm/system.h>
 #include <asm/mach/arch.h>
 #include <asm/mach/irq.h>
 #include <asm/mach/time.h>
 
+<<<<<<< HEAD
 #include <asm/perftypes.h>
 #ifdef CONFIG_SEC_DEBUG
 #include <mach/sec_debug.h>
 #endif
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 /*
  * No architecture-specific irq_finish function defined in arm/arch/irqs.h.
  */
@@ -64,11 +72,18 @@ int arch_show_interrupts(struct seq_file *p, int prec)
 #ifdef CONFIG_SMP
 	show_ipi_list(p, prec);
 #endif
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_LOCAL_TIMERS
+	show_local_irqs(p, prec);
+#endif
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	seq_printf(p, "%*s: %10lu\n", prec, "Err", irq_err_count);
 	return 0;
 }
 
 /*
+<<<<<<< HEAD
  * handle_IRQ handles all hardware IRQ's.  Decoded IRQs should
  * not come via this function.  Instead, they should provide their
  * own 'handler'.  Used by platform code implementing C-based 1st
@@ -83,6 +98,17 @@ void handle_IRQ(unsigned int irq, struct pt_regs *regs)
 	unsigned long long start_time = cpu_clock(cpu);
 #endif
 	perf_mon_interrupt_in();
+=======
+ * do_IRQ handles all hardware IRQ's.  Decoded IRQs should not
+ * come via this function.  Instead, they should provide their
+ * own 'handler'
+ */
+asmlinkage void __exception_irq_entry
+asm_do_IRQ(unsigned int irq, struct pt_regs *regs)
+{
+	struct pt_regs *old_regs = set_irq_regs(regs);
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	irq_enter();
 
 	/*
@@ -101,6 +127,7 @@ void handle_IRQ(unsigned int irq, struct pt_regs *regs)
 	irq_finish(irq);
 
 	irq_exit();
+<<<<<<< HEAD
 #ifdef CONFIG_SEC_DEBUG
 	sec_debug_irq_enterexit_log(irq, start_time);
 #endif
@@ -115,13 +142,20 @@ asmlinkage void __exception_irq_entry
 asm_do_IRQ(unsigned int irq, struct pt_regs *regs)
 {
 	handle_IRQ(irq, regs);
+=======
+	set_irq_regs(old_regs);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 void set_irq_flags(unsigned int irq, unsigned int iflags)
 {
 	unsigned long clr = 0, set = IRQ_NOREQUEST | IRQ_NOPROBE | IRQ_NOAUTOEN;
 
+<<<<<<< HEAD
 	if (irq >= NR_IRQS) {
+=======
+	if (irq >= nr_irqs) {
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		printk(KERN_ERR "Trying to set irq flags for IRQ%d\n", irq);
 		return;
 	}
@@ -151,6 +185,7 @@ int __init arch_probe_nr_irqs(void)
 
 #ifdef CONFIG_HOTPLUG_CPU
 
+<<<<<<< HEAD
 static bool migrate_one_irq(struct irq_desc *desc)
 {
 	struct irq_data *d = irq_desc_get_irq_data(desc);
@@ -175,11 +210,27 @@ static bool migrate_one_irq(struct irq_desc *desc)
 		c->irq_set_affinity(d, affinity, true);
 	else
 		pr_debug("IRQ%u: unable to set affinity\n", d->irq);
+=======
+static bool migrate_one_irq(struct irq_data *d)
+{
+	unsigned int cpu = cpumask_any_and(d->affinity, cpu_online_mask);
+	bool ret = false;
+
+	if (cpu >= nr_cpu_ids) {
+		cpu = cpumask_any(cpu_online_mask);
+		ret = true;
+	}
+
+	pr_debug("IRQ%u: moving from cpu%u to cpu%u\n", d->irq, d->node, cpu);
+
+	d->chip->irq_set_affinity(d, cpumask_of(cpu), true);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	return ret;
 }
 
 /*
+<<<<<<< HEAD
  * The current CPU has been marked offline.  Migrate IRQs off this CPU.
  * If the affinity settings do not allow other CPUs, force them onto any
  * available CPU.
@@ -190,12 +241,22 @@ static bool migrate_one_irq(struct irq_desc *desc)
 void migrate_irqs(void)
 {
 	unsigned int i;
+=======
+ * The CPU has been marked offline.  Migrate IRQs off this CPU.  If
+ * the affinity settings do not allow other CPUs, force them onto any
+ * available CPU.
+ */
+void migrate_irqs(void)
+{
+	unsigned int i, cpu = smp_processor_id();
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	struct irq_desc *desc;
 	unsigned long flags;
 
 	local_irq_save(flags);
 
 	for_each_irq_desc(i, desc) {
+<<<<<<< HEAD
 		bool affinity_broken = false;
 
 		if (!desc)
@@ -208,6 +269,25 @@ void migrate_irqs(void)
 		if (affinity_broken && printk_ratelimit())
 			pr_warning("IRQ%u no longer affine to CPU%u\n", i,
 				smp_processor_id());
+=======
+		struct irq_data *d = &desc->irq_data;
+		bool affinity_broken = false;
+
+		raw_spin_lock(&desc->lock);
+		do {
+			if (desc->action == NULL)
+				break;
+
+			if (d->node != cpu)
+				break;
+
+			affinity_broken = migrate_one_irq(d);
+		} while (0);
+		raw_spin_unlock(&desc->lock);
+
+		if (affinity_broken && printk_ratelimit())
+			pr_warning("IRQ%u no longer affine to CPU%u\n", i, cpu);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	}
 
 	local_irq_restore(flags);

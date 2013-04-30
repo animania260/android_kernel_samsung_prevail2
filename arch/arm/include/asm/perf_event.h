@@ -24,11 +24,14 @@ enum arm_perf_pmu_ids {
 	ARM_PERF_PMU_ID_V6MP,
 	ARM_PERF_PMU_ID_CA8,
 	ARM_PERF_PMU_ID_CA9,
+<<<<<<< HEAD
 	ARM_PERF_PMU_ID_CA5,
 	ARM_PERF_PMU_ID_CA15,
 	ARM_PERF_PMU_ID_SCORPION,
 	ARM_PERF_PMU_ID_SCORPIONMP,
 	ARM_PERF_PMU_ID_KRAIT,
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	ARM_NUM_PMU_IDS,
 };
 

@@ -563,6 +563,7 @@ out_unlock:
 }
 
 /**
+<<<<<<< HEAD
  * debug_object_assert_init - debug checks when object should be init-ed
  * @addr:	address of the object
  * @descr:	pointer to an object specific debug description structure
@@ -596,6 +597,8 @@ void debug_object_assert_init(void *addr, struct debug_obj_descr *descr)
 }
 
 /**
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
  * debug_object_active_state - debug checks object usage state machine
  * @addr:	address of the object
  * @descr:	pointer to an object specific debug description structure

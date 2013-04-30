@@ -341,6 +341,7 @@ void (*pm_idle)(void);
 EXPORT_SYMBOL(pm_idle);
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_X86_32
 /*
  * This halt magic was a workaround for ancient floppy DMA
@@ -364,11 +365,16 @@ static inline int hlt_use_halt(void)
 	return (!hlt_counter && boot_cpu_data.hlt_works_ok);
 }
 #else
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 static inline int hlt_use_halt(void)
 {
 	return 1;
 }
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 /*
  * We use this if we don't have any better

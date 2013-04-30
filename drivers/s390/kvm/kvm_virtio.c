@@ -413,6 +413,29 @@ static void kvm_extint_handler(unsigned int ext_int_code,
 }
 
 /*
+<<<<<<< HEAD
+=======
+ * For s390-virtio, we expect a page above main storage containing
+ * the virtio configuration. Try to actually load from this area
+ * in order to figure out if the host provides this page.
+ */
+static int __init test_devices_support(unsigned long addr)
+{
+	int ret = -EIO;
+
+	asm volatile(
+		"0:	lura	0,%1\n"
+		"1:	xgr	%0,%0\n"
+		"2:\n"
+		EX_TABLE(0b,2b)
+		EX_TABLE(1b,2b)
+		: "+d" (ret)
+		: "a" (addr)
+		: "0", "cc");
+	return ret;
+}
+/*
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
  * Init function for virtio
  * devices are in a single page above top of "normal" mem
  */
@@ -423,10 +446,23 @@ static int __init kvm_devices_init(void)
 	if (!MACHINE_IS_KVM)
 		return -ENODEV;
 
+<<<<<<< HEAD
+=======
+	if (test_devices_support(real_memory_size) < 0)
+		return -ENODEV;
+
+	rc = vmem_add_mapping(real_memory_size, PAGE_SIZE);
+	if (rc)
+		return rc;
+
+	kvm_devices = (void *) real_memory_size;
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	kvm_root = root_device_register("kvm_s390");
 	if (IS_ERR(kvm_root)) {
 		rc = PTR_ERR(kvm_root);
 		printk(KERN_ERR "Could not register kvm_s390 root device");
+<<<<<<< HEAD
 		return rc;
 	}
 
@@ -438,6 +474,12 @@ static int __init kvm_devices_init(void)
 
 	kvm_devices = (void *) real_memory_size;
 
+=======
+		vmem_remove_mapping(real_memory_size, PAGE_SIZE);
+		return rc;
+	}
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	INIT_WORK(&hotplug_work, hotplug_devices);
 
 	service_subclass_irq_register();

@@ -937,7 +937,11 @@ static inline int atapi_cdb_len(const u16 *dev_id)
 	}
 }
 
+<<<<<<< HEAD
 static inline bool atapi_command_packet_set(const u16 *dev_id)
+=======
+static inline int atapi_command_packet_set(const u16 *dev_id)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 {
 	return (dev_id[ATA_ID_CONFIG] >> 8) & 0x1f;
 }

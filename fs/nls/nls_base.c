@@ -114,18 +114,43 @@ int utf32_to_utf8(unicode_t u, u8 *s, int maxlen)
 }
 EXPORT_SYMBOL(utf32_to_utf8);
 
+<<<<<<< HEAD
 int utf8s_to_utf16s(const u8 *s, int len, wchar_t *pwcs)
+=======
+static inline void put_utf16(wchar_t *s, unsigned c, enum utf16_endian endian)
+{
+	switch (endian) {
+	default:
+		*s = (wchar_t) c;
+		break;
+	case UTF16_LITTLE_ENDIAN:
+		*s = __cpu_to_le16(c);
+		break;
+	case UTF16_BIG_ENDIAN:
+		*s = __cpu_to_be16(c);
+		break;
+	}
+}
+
+int utf8s_to_utf16s(const u8 *s, int len, enum utf16_endian endian,
+		wchar_t *pwcs, int maxlen)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 {
 	u16 *op;
 	int size;
 	unicode_t u;
 
 	op = pwcs;
+<<<<<<< HEAD
 	while (*s && len > 0) {
+=======
+	while (len > 0 && maxlen > 0 && *s) {
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		if (*s & 0x80) {
 			size = utf8_to_utf32(s, len, &u);
 			if (size < 0)
 				return -EINVAL;
+<<<<<<< HEAD
 
 			if (u >= PLANE_SIZE) {
 				u -= PLANE_SIZE;
@@ -142,6 +167,31 @@ int utf8s_to_utf16s(const u8 *s, int len, wchar_t *pwcs)
 		} else {
 			*op++ = *s++;
 			len--;
+=======
+			s += size;
+			len -= size;
+
+			if (u >= PLANE_SIZE) {
+				if (maxlen < 2)
+					break;
+				u -= PLANE_SIZE;
+				put_utf16(op++, SURROGATE_PAIR |
+						((u >> 10) & SURROGATE_BITS),
+						endian);
+				put_utf16(op++, SURROGATE_PAIR |
+						SURROGATE_LOW |
+						(u & SURROGATE_BITS),
+						endian);
+				maxlen -= 2;
+			} else {
+				put_utf16(op++, u, endian);
+				maxlen--;
+			}
+		} else {
+			put_utf16(op++, *s++, endian);
+			len--;
+			maxlen--;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		}
 	}
 	return op - pwcs;

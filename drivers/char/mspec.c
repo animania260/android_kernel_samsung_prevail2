@@ -284,7 +284,11 @@ mspec_mmap(struct file *file, struct vm_area_struct *vma,
 	vdata->flags = flags;
 	vdata->type = type;
 	spin_lock_init(&vdata->lock);
+<<<<<<< HEAD
 	vdata->refcnt = ATOMIC_INIT(1);
+=======
+	atomic_set(&vdata->refcnt, 1);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	vma->vm_private_data = vdata;
 
 	vma->vm_flags |= (VM_IO | VM_RESERVED | VM_PFNMAP | VM_DONTEXPAND);

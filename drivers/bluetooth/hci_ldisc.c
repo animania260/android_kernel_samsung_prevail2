@@ -2,9 +2,15 @@
  *
  *  Bluetooth HCI UART driver
  *
+<<<<<<< HEAD
  *  Copyright (C) 2002-2003  Maxim Krasnyansky <maxk@qualcomm.com>
  *  Copyright (C) 2004-2005  Marcel Holtmann <marcel@holtmann.org>
  *  Copyright (c) 2000-2001, 2010-2011, Code Aurora Forum. All rights reserved.
+=======
+ *  Copyright (C) 2000-2001  Qualcomm Incorporated
+ *  Copyright (C) 2002-2003  Maxim Krasnyansky <maxk@qualcomm.com>
+ *  Copyright (C) 2004-2005  Marcel Holtmann <marcel@holtmann.org>
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -136,11 +142,14 @@ restart:
 
 	while ((skb = hci_uart_dequeue(hu))) {
 		int len;
+<<<<<<< HEAD
 /* Samsung Bluetooth Feature.2012.01.19
  * Add wake_peer uart operation which is called before starting UART TX
  */
 		if (hdev->wake_peer)
 			hdev->wake_peer(hdev);
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 		set_bit(TTY_DO_WRITE_WAKEUP, &tty->flags);
 		len = tty->ops->write(tty, skb->data, skb->len);
@@ -242,7 +251,10 @@ static void hci_uart_destruct(struct hci_dev *hdev)
 		return;
 
 	BT_DBG("%s", hdev->name);
+<<<<<<< HEAD
 	kfree(hdev->driver_data);
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 /* ------ LDISC part ------ */
@@ -315,12 +327,21 @@ static void hci_uart_tty_close(struct tty_struct *tty)
 			hci_uart_close(hdev);
 
 		if (test_and_clear_bit(HCI_UART_PROTO_SET, &hu->flags)) {
+<<<<<<< HEAD
 			hu->proto->close(hu);
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			if (hdev) {
 				hci_unregister_dev(hdev);
 				hci_free_dev(hdev);
 			}
+<<<<<<< HEAD
 		}
+=======
+			hu->proto->close(hu);
+		}
+		kfree(hu);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	}
 }
 
@@ -374,7 +395,11 @@ static void hci_uart_tty_receive(struct tty_struct *tty, const u8 *data, char *f
 
 	spin_lock(&hu->rx_lock);
 	hu->proto->recv(hu, (void *) data, count);
+<<<<<<< HEAD
 		hu->hdev->stat.byte_rx += count;
+=======
+	hu->hdev->stat.byte_rx += count;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	spin_unlock(&hu->rx_lock);
 
 	tty_unthrottle(tty);
@@ -513,6 +538,7 @@ static int hci_uart_tty_ioctl(struct tty_struct *tty, struct file * file,
 /*
  * We don't provide read/write/poll interface for user space.
  */
+<<<<<<< HEAD
 struct hci_uart_hook {
 	unsigned int len;
 	unsigned char *head;
@@ -603,11 +629,18 @@ static ssize_t hci_uart_tty_read(struct tty_struct *tty, struct file *file,
 	BT_DBG("%s: ret = %d", __func__, ret);
 
 	return ret;
+=======
+static ssize_t hci_uart_tty_read(struct tty_struct *tty, struct file *file,
+					unsigned char __user *buf, size_t nr)
+{
+	return 0;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 static ssize_t hci_uart_tty_write(struct tty_struct *tty, struct file *file,
 					const unsigned char *data, size_t count)
 {
+<<<<<<< HEAD
 	struct hci_uart *hu = (void *) tty->disc_data;
 	struct hci_dev *hdev = hu->hdev;
 	int ret;
@@ -646,6 +679,9 @@ static ssize_t hci_uart_tty_write(struct tty_struct *tty, struct file *file,
 	BT_DBG("%s: ret = %d", __func__, ret);
 
 	return ret;
+=======
+	return 0;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 static unsigned int hci_uart_tty_poll(struct tty_struct *tty,
@@ -693,9 +729,12 @@ static int __init hci_uart_init(void)
 #ifdef CONFIG_BT_HCIUART_ATH3K
 	ath_init();
 #endif
+<<<<<<< HEAD
 #ifdef CONFIG_BT_HCIUART_IBS
 	ibs_init();
 #endif
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	return 0;
 }
@@ -716,9 +755,12 @@ static void __exit hci_uart_exit(void)
 #ifdef CONFIG_BT_HCIUART_ATH3K
 	ath_deinit();
 #endif
+<<<<<<< HEAD
 #ifdef CONFIG_BT_HCIUART_IBS
 	ibs_deinit();
 #endif
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	/* Release tty registration of line discipline */
 	if ((err = tty_unregister_ldisc(N_HCI)))

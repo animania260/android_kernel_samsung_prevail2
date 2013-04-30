@@ -386,7 +386,11 @@ static struct ubi_wl_entry *find_wl_entry(struct rb_root *root, int max)
  */
 int ubi_wl_get_peb(struct ubi_device *ubi, int dtype)
 {
+<<<<<<< HEAD
 	int err, medium_ec;
+=======
+	int err;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	struct ubi_wl_entry *e, *first, *last;
 
 	ubi_assert(dtype == UBI_LONGTERM || dtype == UBI_SHORTTERM ||
@@ -424,7 +428,11 @@ retry:
 		 * For unknown data we pick a physical eraseblock with medium
 		 * erase counter. But we by no means can pick a physical
 		 * eraseblock with erase counter greater or equivalent than the
+<<<<<<< HEAD
 		 * lowest erase counter plus %WL_FREE_MAX_DIFF.
+=======
+		 * lowest erase counter plus %WL_FREE_MAX_DIFF/2.
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		 */
 		first = rb_entry(rb_first(&ubi->free), struct ubi_wl_entry,
 					u.rb);
@@ -433,10 +441,15 @@ retry:
 		if (last->ec - first->ec < WL_FREE_MAX_DIFF)
 			e = rb_entry(ubi->free.rb_node,
 					struct ubi_wl_entry, u.rb);
+<<<<<<< HEAD
 		else {
 			medium_ec = (first->ec + WL_FREE_MAX_DIFF)/2;
 			e = find_wl_entry(&ubi->free, medium_ec);
 		}
+=======
+		else
+			e = find_wl_entry(&ubi->free, WL_FREE_MAX_DIFF/2);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		break;
 	case UBI_SHORTTERM:
 		/*
@@ -792,7 +805,14 @@ static int wear_leveling_worker(struct ubi_device *ubi, struct ubi_work *wrk,
 			protect = 1;
 			goto out_not_moved;
 		}
+<<<<<<< HEAD
 
+=======
+		if (err == MOVE_RETRY) {
+			scrubbing = 1;
+			goto out_not_moved;
+		}
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		if (err == MOVE_CANCEL_BITFLIPS || err == MOVE_TARGET_WR_ERR ||
 		    err == MOVE_TARGET_RD_ERR) {
 			/*
@@ -1046,7 +1066,10 @@ static int erase_worker(struct ubi_device *ubi, struct ubi_work *wl_wrk,
 
 	ubi_err("failed to erase PEB %d, error %d", pnum, err);
 	kfree(wl_wrk);
+<<<<<<< HEAD
 	kmem_cache_free(ubi_wl_entry_slab, e);
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	if (err == -EINTR || err == -ENOMEM || err == -EAGAIN ||
 	    err == -EBUSY) {
@@ -1059,14 +1082,24 @@ static int erase_worker(struct ubi_device *ubi, struct ubi_work *wl_wrk,
 			goto out_ro;
 		}
 		return err;
+<<<<<<< HEAD
 	} else if (err != -EIO) {
+=======
+	}
+
+	kmem_cache_free(ubi_wl_entry_slab, e);
+	if (err != -EIO)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		/*
 		 * If this is not %-EIO, we have no idea what to do. Scheduling
 		 * this physical eraseblock for erasure again would cause
 		 * errors again and again. Well, lets switch to R/O mode.
 		 */
 		goto out_ro;
+<<<<<<< HEAD
 	}
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	/* It is %-EIO, the PEB went bad */
 

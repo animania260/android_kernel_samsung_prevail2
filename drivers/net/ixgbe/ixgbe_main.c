@@ -129,6 +129,15 @@ static DEFINE_PCI_DEVICE_TABLE(ixgbe_pci_tbl) = {
 	 board_82599 },
 	{PCI_VDEVICE(INTEL, IXGBE_DEV_ID_82599_LS),
 	 board_82599 },
+<<<<<<< HEAD
+=======
+	{PCI_VDEVICE(INTEL, IXGBE_DEV_ID_82599EN_SFP),
+	 board_82599 },
+	{PCI_VDEVICE(INTEL, IXGBE_DEV_ID_82599_SFP_SF_QP),
+	 board_82599 },
+	{PCI_VDEVICE(INTEL, IXGBE_DEV_ID_X540T1),
+	 board_X540 },
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	/* required last entry */
 	{0, }

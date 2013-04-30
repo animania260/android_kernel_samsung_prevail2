@@ -20,7 +20,11 @@
 #include <linux/compiler.h>
 #include <linux/mutex.h>
 
+<<<<<<< HEAD
 #define MIN_MEMORY_BLOCK_SIZE     (1 << SECTION_SIZE_BITS)
+=======
+#define MIN_MEMORY_BLOCK_SIZE     (1UL << SECTION_SIZE_BITS)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 struct memory_block {
 	unsigned long start_section_nr;

@@ -221,7 +221,11 @@ static void sirdev_config_fsm(struct work_struct *work)
 			break;
 
 		case SIRDEV_STATE_DONGLE_SPEED:
+<<<<<<< HEAD
 			if (dev->dongle_drv->reset) {
+=======
+			if (dev->dongle_drv->set_speed) {
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 				ret = dev->dongle_drv->set_speed(dev, fsm->param);
 				if (ret < 0) {
 					fsm->result = ret;

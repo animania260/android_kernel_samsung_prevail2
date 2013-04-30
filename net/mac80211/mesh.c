@@ -490,6 +490,10 @@ void ieee80211_stop_mesh(struct ieee80211_sub_if_data *sdata)
 
 	del_timer_sync(&sdata->u.mesh.housekeeping_timer);
 	del_timer_sync(&sdata->u.mesh.mesh_path_root_timer);
+<<<<<<< HEAD
+=======
+	del_timer_sync(&sdata->u.mesh.mesh_path_timer);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	/*
 	 * If the timer fired while we waited for it, it will have
 	 * requeued the work. Now the work will be running again

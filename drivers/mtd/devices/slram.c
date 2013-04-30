@@ -266,7 +266,11 @@ static int parse_cmdline(char *devname, char *szstart, char *szlength)
 
 	if (*(szlength) != '+') {
 		devlength = simple_strtoul(szlength, &buffer, 0);
+<<<<<<< HEAD
 		devlength = handle_unit(devlength, buffer) - devstart;
+=======
+		devlength = handle_unit(devlength, buffer);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		if (devlength < devstart)
 			goto err_out;
 

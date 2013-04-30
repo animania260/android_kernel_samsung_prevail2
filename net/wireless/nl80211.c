@@ -23,12 +23,15 @@
 #include "nl80211.h"
 #include "reg.h"
 
+<<<<<<< HEAD
 static bool nl80211_valid_auth_type(enum nl80211_auth_type auth_type);
 static int nl80211_crypto_settings(struct cfg80211_registered_device *rdev,
 				   struct genl_info *info,
 				   struct cfg80211_crypto_settings *settings,
 				   int cipher_limit);
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 static int nl80211_pre_doit(struct genl_ops *ops, struct sk_buff *skb,
 			    struct genl_info *info);
 static void nl80211_post_doit(struct genl_ops *ops, struct sk_buff *skb,
@@ -89,8 +92,13 @@ static const struct nla_policy nl80211_policy[NL80211_ATTR_MAX+1] = {
 	[NL80211_ATTR_IFINDEX] = { .type = NLA_U32 },
 	[NL80211_ATTR_IFNAME] = { .type = NLA_NUL_STRING, .len = IFNAMSIZ-1 },
 
+<<<<<<< HEAD
 	[NL80211_ATTR_MAC] = { .type = NLA_BINARY, .len = ETH_ALEN },
 	[NL80211_ATTR_PREV_BSSID] = { .type = NLA_BINARY, .len = ETH_ALEN },
+=======
+	[NL80211_ATTR_MAC] = { .len = ETH_ALEN },
+	[NL80211_ATTR_PREV_BSSID] = { .len = ETH_ALEN },
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	[NL80211_ATTR_KEY] = { .type = NLA_NESTED, },
 	[NL80211_ATTR_KEY_DATA] = { .type = NLA_BINARY,
@@ -98,7 +106,11 @@ static const struct nla_policy nl80211_policy[NL80211_ATTR_MAX+1] = {
 	[NL80211_ATTR_KEY_IDX] = { .type = NLA_U8 },
 	[NL80211_ATTR_KEY_CIPHER] = { .type = NLA_U32 },
 	[NL80211_ATTR_KEY_DEFAULT] = { .type = NLA_FLAG },
+<<<<<<< HEAD
 	[NL80211_ATTR_KEY_SEQ] = { .type = NLA_BINARY, .len = 16 },
+=======
+	[NL80211_ATTR_KEY_SEQ] = { .type = NLA_BINARY, .len = 8 },
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	[NL80211_ATTR_KEY_TYPE] = { .type = NLA_U32 },
 
 	[NL80211_ATTR_BEACON_INTERVAL] = { .type = NLA_U32 },
@@ -132,8 +144,12 @@ static const struct nla_policy nl80211_policy[NL80211_ATTR_MAX+1] = {
 	[NL80211_ATTR_MESH_CONFIG] = { .type = NLA_NESTED },
 	[NL80211_ATTR_SUPPORT_MESH_AUTH] = { .type = NLA_FLAG },
 
+<<<<<<< HEAD
 	[NL80211_ATTR_HT_CAPABILITY] = { .type = NLA_BINARY,
 					 .len = NL80211_HT_CAPABILITY_LEN },
+=======
+	[NL80211_ATTR_HT_CAPABILITY] = { .len = NL80211_HT_CAPABILITY_LEN },
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	[NL80211_ATTR_MGMT_SUBTYPE] = { .type = NLA_U8 },
 	[NL80211_ATTR_IE] = { .type = NLA_BINARY,
@@ -182,6 +198,7 @@ static const struct nla_policy nl80211_policy[NL80211_ATTR_MAX+1] = {
 	[NL80211_ATTR_WOWLAN_TRIGGERS] = { .type = NLA_NESTED },
 	[NL80211_ATTR_STA_PLINK_STATE] = { .type = NLA_U8 },
 	[NL80211_ATTR_SCHED_SCAN_INTERVAL] = { .type = NLA_U32 },
+<<<<<<< HEAD
 	[NL80211_ATTR_HIDDEN_SSID] = { .type = NLA_U32 },
 	[NL80211_ATTR_SCAN_SUPP_RATES] = { .type = NLA_NESTED },
 	[NL80211_ATTR_IE_PROBE_RESP] = { .type = NLA_BINARY,
@@ -189,6 +206,8 @@ static const struct nla_policy nl80211_policy[NL80211_ATTR_MAX+1] = {
 	[NL80211_ATTR_IE_ASSOC_RESP] = { .type = NLA_BINARY,
 					 .len = IEEE80211_MAX_DATA_LEN },
 	[NL80211_ATTR_TX_NO_CCK_RATE] = { .type = NLA_FLAG },
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 };
 
 /* policy for the key attributes */
@@ -196,7 +215,11 @@ static const struct nla_policy nl80211_key_policy[NL80211_KEY_MAX + 1] = {
 	[NL80211_KEY_DATA] = { .type = NLA_BINARY, .len = WLAN_MAX_KEY_LEN },
 	[NL80211_KEY_IDX] = { .type = NLA_U8 },
 	[NL80211_KEY_CIPHER] = { .type = NLA_U32 },
+<<<<<<< HEAD
 	[NL80211_KEY_SEQ] = { .type = NLA_BINARY, .len = 16 },
+=======
+	[NL80211_KEY_SEQ] = { .type = NLA_BINARY, .len = 8 },
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	[NL80211_KEY_DEFAULT] = { .type = NLA_FLAG },
 	[NL80211_KEY_DEFAULT_MGMT] = { .type = NLA_FLAG },
 	[NL80211_KEY_TYPE] = { .type = NLA_U32 },
@@ -719,10 +742,13 @@ static int nl80211_send_wiphy(struct sk_buff *msg, u32 pid, u32 seq, int flags,
 	NLA_PUT_U32(msg, NL80211_ATTR_WIPHY_ANTENNA_AVAIL_RX,
 		    dev->wiphy.available_antennas_rx);
 
+<<<<<<< HEAD
 	if (dev->wiphy.flags & WIPHY_FLAG_AP_PROBE_RESP_OFFLOAD)
 		NLA_PUT_U32(msg, NL80211_ATTR_PROBE_RESP_OFFLOAD,
 			dev->wiphy.probe_resp_offload);
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	if ((dev->wiphy.available_antennas_tx ||
 	     dev->wiphy.available_antennas_rx) && dev->ops->get_antenna) {
 		u32 tx_ant = 0, rx_ant = 0;
@@ -959,10 +985,13 @@ static int nl80211_send_wiphy(struct sk_buff *msg, u32 pid, u32 seq, int flags,
 	if (nl80211_put_iface_combinations(&dev->wiphy, msg))
 		goto nla_put_failure;
 
+<<<<<<< HEAD
 	if (dev->wiphy.flags & WIPHY_FLAG_HAVE_AP_SME)
 		NLA_PUT_U32(msg, NL80211_ATTR_DEVICE_AP_SME,
 			dev->wiphy.ap_sme_capa);
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	return genlmsg_end(msg, hdr);
 
  nla_put_failure:
@@ -1203,6 +1232,14 @@ static int nl80211_set_wiphy(struct sk_buff *skb, struct genl_info *info)
 			goto bad_res;
 		}
 
+<<<<<<< HEAD
+=======
+		if (!netif_running(netdev)) {
+			result = -ENETDOWN;
+			goto bad_res;
+		}
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		nla_for_each_nested(nl_txq_params,
 				    info->attrs[NL80211_ATTR_WIPHY_TXQ_PARAMS],
 				    rem_txq_params) {
@@ -1978,10 +2015,14 @@ static int nl80211_addset_beacon(struct sk_buff *skb, struct genl_info *info)
 	struct beacon_parameters params;
 	int haveinfo = 0, err;
 
+<<<<<<< HEAD
 	if (!is_valid_ie_attr(info->attrs[NL80211_ATTR_BEACON_TAIL]) ||
 	    !is_valid_ie_attr(info->attrs[NL80211_ATTR_IE]) ||
 	    !is_valid_ie_attr(info->attrs[NL80211_ATTR_IE_PROBE_RESP]) ||
 	    !is_valid_ie_attr(info->attrs[NL80211_ATTR_IE_ASSOC_RESP]))
+=======
+	if (!is_valid_ie_attr(info->attrs[NL80211_ATTR_BEACON_TAIL]))
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		return -EINVAL;
 
 	if (dev->ieee80211_ptr->iftype != NL80211_IFTYPE_AP &&
@@ -2007,6 +2048,7 @@ static int nl80211_addset_beacon(struct sk_buff *skb, struct genl_info *info)
 		if (err)
 			return err;
 
+<<<<<<< HEAD
 		/*
 		 * In theory, some of these attributes could be required for
 		 * NEW_BEACON, but since they were not used when the command was
@@ -2050,6 +2092,8 @@ static int nl80211_addset_beacon(struct sk_buff *skb, struct genl_info *info)
 		if (err)
 			return err;
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		call = rdev->ops->add_beacon;
 		break;
 	case NL80211_CMD_SET_BEACON:
@@ -2080,6 +2124,7 @@ static int nl80211_addset_beacon(struct sk_buff *skb, struct genl_info *info)
 	if (!haveinfo)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	if (info->attrs[NL80211_ATTR_IE]) {
 		params.beacon_ies = nla_data(info->attrs[NL80211_ATTR_IE]);
 		params.beacon_ies_len = nla_len(info->attrs[NL80211_ATTR_IE]);
@@ -2099,6 +2144,8 @@ static int nl80211_addset_beacon(struct sk_buff *skb, struct genl_info *info)
 			nla_len(info->attrs[NL80211_ATTR_IE_ASSOC_RESP]);
 	}
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	err = call(&rdev->wiphy, dev, &params);
 	if (!err && params.interval)
 		wdev->beacon_interval = params.interval;
@@ -2295,10 +2342,13 @@ static int nl80211_send_station(struct sk_buff *msg, u32 pid, u32 seq,
 	}
 	nla_nest_end(msg, sinfoattr);
 
+<<<<<<< HEAD
 	if (sinfo->assoc_req_ies)
 		NLA_PUT(msg, NL80211_ATTR_IE, sinfo->assoc_req_ies_len,
 			sinfo->assoc_req_ies);
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	return genlmsg_end(msg, hdr);
 
  nla_put_failure:
@@ -2326,7 +2376,10 @@ static int nl80211_dump_station(struct sk_buff *skb,
 	}
 
 	while (1) {
+<<<<<<< HEAD
 		memset(&sinfo, 0, sizeof(sinfo));
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		err = dev->ops->dump_station(&dev->wiphy, netdev, sta_idx,
 					     mac_addr, &sinfo);
 		if (err == -ENOENT)
@@ -3388,6 +3441,10 @@ static int nl80211_trigger_scan(struct sk_buff *skb, struct genl_info *info)
 	struct nlattr *attr;
 	struct wiphy *wiphy;
 	int err, tmp, n_ssids = 0, n_channels, i;
+<<<<<<< HEAD
+=======
+	enum ieee80211_band band;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	size_t ie_len;
 
 	if (!is_valid_ie_attr(info->attrs[NL80211_ATTR_IE]))
@@ -3407,7 +3464,10 @@ static int nl80211_trigger_scan(struct sk_buff *skb, struct genl_info *info)
 		if (!n_channels)
 			return -EINVAL;
 	} else {
+<<<<<<< HEAD
 		enum ieee80211_band band;
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		n_channels = 0;
 
 		for (band = 0; band < IEEE80211_NUM_BANDS; band++)
@@ -3468,8 +3528,11 @@ static int nl80211_trigger_scan(struct sk_buff *skb, struct genl_info *info)
 			i++;
 		}
 	} else {
+<<<<<<< HEAD
 		enum ieee80211_band band;
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		/* all channels */
 		for (band = 0; band < IEEE80211_NUM_BANDS; band++) {
 			int j;
@@ -3515,6 +3578,7 @@ static int nl80211_trigger_scan(struct sk_buff *skb, struct genl_info *info)
 		       nla_data(info->attrs[NL80211_ATTR_IE]),
 		       request->ie_len);
 	}
+<<<<<<< HEAD
 	for (i = 0; i < IEEE80211_NUM_BANDS; i++)
 		if (wiphy->bands[i])
 			request->rates[i] =
@@ -3541,6 +3605,11 @@ static int nl80211_trigger_scan(struct sk_buff *skb, struct genl_info *info)
 	request->wiphy = &rdev->wiphy;
 	request->no_cck =
 		nla_get_flag(info->attrs[NL80211_ATTR_TX_NO_CCK_RATE]);
+=======
+
+	request->dev = dev;
+	request->wiphy = &rdev->wiphy;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	rdev->scan_req = request;
 	err = rdev->ops->scan(&rdev->wiphy, dev, request);
@@ -3982,6 +4051,25 @@ static bool nl80211_valid_wpa_versions(u32 wpa_versions)
 				  NL80211_WPA_VERSION_2));
 }
 
+<<<<<<< HEAD
+=======
+static bool nl80211_valid_akm_suite(u32 akm)
+{
+	return akm == WLAN_AKM_SUITE_8021X ||
+		akm == WLAN_AKM_SUITE_PSK;
+}
+
+static bool nl80211_valid_cipher_suite(u32 cipher)
+{
+	return cipher == WLAN_CIPHER_SUITE_WEP40 ||
+		cipher == WLAN_CIPHER_SUITE_WEP104 ||
+		cipher == WLAN_CIPHER_SUITE_TKIP ||
+		cipher == WLAN_CIPHER_SUITE_CCMP ||
+		cipher == WLAN_CIPHER_SUITE_AES_CMAC;
+}
+
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 static int nl80211_authenticate(struct sk_buff *skb, struct genl_info *info)
 {
 	struct cfg80211_registered_device *rdev = info->user_ptr[0];
@@ -4114,17 +4202,26 @@ static int nl80211_crypto_settings(struct cfg80211_registered_device *rdev,
 		memcpy(settings->ciphers_pairwise, data, len);
 
 		for (i = 0; i < settings->n_ciphers_pairwise; i++)
+<<<<<<< HEAD
 			if (!cfg80211_supported_cipher_suite(
 				&rdev->wiphy,
 				settings->ciphers_pairwise[i]))
+=======
+			if (!nl80211_valid_cipher_suite(
+					settings->ciphers_pairwise[i]))
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 				return -EINVAL;
 	}
 
 	if (info->attrs[NL80211_ATTR_CIPHER_SUITE_GROUP]) {
 		settings->cipher_group =
 			nla_get_u32(info->attrs[NL80211_ATTR_CIPHER_SUITE_GROUP]);
+<<<<<<< HEAD
 		if (!cfg80211_supported_cipher_suite(&rdev->wiphy,
 					settings->cipher_group))
+=======
+		if (!nl80211_valid_cipher_suite(settings->cipher_group))
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			return -EINVAL;
 	}
 
@@ -4137,7 +4234,11 @@ static int nl80211_crypto_settings(struct cfg80211_registered_device *rdev,
 
 	if (info->attrs[NL80211_ATTR_AKM_SUITES]) {
 		void *data;
+<<<<<<< HEAD
 		int len;
+=======
+		int len, i;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 		data = nla_data(info->attrs[NL80211_ATTR_AKM_SUITES]);
 		len = nla_len(info->attrs[NL80211_ATTR_AKM_SUITES]);
@@ -4150,6 +4251,13 @@ static int nl80211_crypto_settings(struct cfg80211_registered_device *rdev,
 			return -EINVAL;
 
 		memcpy(settings->akm_suites, data, len);
+<<<<<<< HEAD
+=======
+
+		for (i = 0; i < settings->n_akm_suites; i++)
+			if (!nl80211_valid_akm_suite(settings->akm_suites[i]))
+				return -EINVAL;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	}
 
 	return 0;
@@ -4395,11 +4503,33 @@ static int nl80211_join_ibss(struct sk_buff *skb, struct genl_info *info)
 			nla_len(info->attrs[NL80211_ATTR_BSS_BASIC_RATES]);
 		struct ieee80211_supported_band *sband =
 			wiphy->bands[ibss.channel->band];
+<<<<<<< HEAD
 		int err;
 		err = ieee80211_get_ratemask(sband, rates, n_rates,
 					     &ibss.basic_rates);
 		if (err)
 			return err;
+=======
+		int i, j;
+
+		if (n_rates == 0)
+			return -EINVAL;
+
+		for (i = 0; i < n_rates; i++) {
+			int rate = (rates[i] & 0x7f) * 5;
+			bool found = false;
+
+			for (j = 0; j < sband->n_bitrates; j++) {
+				if (sband->bitrates[j].bitrate == rate) {
+					found = true;
+					ibss.basic_rates |= BIT(j);
+					break;
+				}
+			}
+			if (!found)
+				return -EINVAL;
+		}
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	}
 
 	if (info->attrs[NL80211_ATTR_MCAST_RATE] &&
@@ -5517,7 +5647,11 @@ static struct genl_ops nl80211_ops[] = {
 		.doit = nl80211_get_key,
 		.policy = nl80211_policy,
 		.flags = GENL_ADMIN_PERM,
+<<<<<<< HEAD
 		.internal_flags = NL80211_FLAG_NEED_NETDEV |
+=======
+		.internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 				  NL80211_FLAG_NEED_RTNL,
 	},
 	{
@@ -5549,7 +5683,11 @@ static struct genl_ops nl80211_ops[] = {
 		.policy = nl80211_policy,
 		.flags = GENL_ADMIN_PERM,
 		.doit = nl80211_addset_beacon,
+<<<<<<< HEAD
 		.internal_flags = NL80211_FLAG_NEED_NETDEV |
+=======
+		.internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 				  NL80211_FLAG_NEED_RTNL,
 	},
 	{
@@ -5557,7 +5695,11 @@ static struct genl_ops nl80211_ops[] = {
 		.policy = nl80211_policy,
 		.flags = GENL_ADMIN_PERM,
 		.doit = nl80211_addset_beacon,
+<<<<<<< HEAD
 		.internal_flags = NL80211_FLAG_NEED_NETDEV |
+=======
+		.internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 				  NL80211_FLAG_NEED_RTNL,
 	},
 	{
@@ -5581,7 +5723,11 @@ static struct genl_ops nl80211_ops[] = {
 		.doit = nl80211_set_station,
 		.policy = nl80211_policy,
 		.flags = GENL_ADMIN_PERM,
+<<<<<<< HEAD
 		.internal_flags = NL80211_FLAG_NEED_NETDEV |
+=======
+		.internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 				  NL80211_FLAG_NEED_RTNL,
 	},
 	{
@@ -5597,7 +5743,11 @@ static struct genl_ops nl80211_ops[] = {
 		.doit = nl80211_del_station,
 		.policy = nl80211_policy,
 		.flags = GENL_ADMIN_PERM,
+<<<<<<< HEAD
 		.internal_flags = NL80211_FLAG_NEED_NETDEV |
+=======
+		.internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 				  NL80211_FLAG_NEED_RTNL,
 	},
 	{
@@ -5630,7 +5780,11 @@ static struct genl_ops nl80211_ops[] = {
 		.doit = nl80211_del_mpath,
 		.policy = nl80211_policy,
 		.flags = GENL_ADMIN_PERM,
+<<<<<<< HEAD
 		.internal_flags = NL80211_FLAG_NEED_NETDEV |
+=======
+		.internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 				  NL80211_FLAG_NEED_RTNL,
 	},
 	{
@@ -5638,7 +5792,11 @@ static struct genl_ops nl80211_ops[] = {
 		.doit = nl80211_set_bss,
 		.policy = nl80211_policy,
 		.flags = GENL_ADMIN_PERM,
+<<<<<<< HEAD
 		.internal_flags = NL80211_FLAG_NEED_NETDEV |
+=======
+		.internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 				  NL80211_FLAG_NEED_RTNL,
 	},
 	{
@@ -5664,7 +5822,11 @@ static struct genl_ops nl80211_ops[] = {
 		.doit = nl80211_get_mesh_config,
 		.policy = nl80211_policy,
 		/* can be retrieved by unprivileged users */
+<<<<<<< HEAD
 		.internal_flags = NL80211_FLAG_NEED_NETDEV |
+=======
+		.internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 				  NL80211_FLAG_NEED_RTNL,
 	},
 	{
@@ -5796,7 +5958,11 @@ static struct genl_ops nl80211_ops[] = {
 		.doit = nl80211_setdel_pmksa,
 		.policy = nl80211_policy,
 		.flags = GENL_ADMIN_PERM,
+<<<<<<< HEAD
 		.internal_flags = NL80211_FLAG_NEED_NETDEV |
+=======
+		.internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 				  NL80211_FLAG_NEED_RTNL,
 	},
 	{
@@ -5804,7 +5970,11 @@ static struct genl_ops nl80211_ops[] = {
 		.doit = nl80211_setdel_pmksa,
 		.policy = nl80211_policy,
 		.flags = GENL_ADMIN_PERM,
+<<<<<<< HEAD
 		.internal_flags = NL80211_FLAG_NEED_NETDEV |
+=======
+		.internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 				  NL80211_FLAG_NEED_RTNL,
 	},
 	{
@@ -5812,7 +5982,11 @@ static struct genl_ops nl80211_ops[] = {
 		.doit = nl80211_flush_pmksa,
 		.policy = nl80211_policy,
 		.flags = GENL_ADMIN_PERM,
+<<<<<<< HEAD
 		.internal_flags = NL80211_FLAG_NEED_NETDEV |
+=======
+		.internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 				  NL80211_FLAG_NEED_RTNL,
 	},
 	{
@@ -5900,7 +6074,11 @@ static struct genl_ops nl80211_ops[] = {
 		.doit = nl80211_set_wds_peer,
 		.policy = nl80211_policy,
 		.flags = GENL_ADMIN_PERM,
+<<<<<<< HEAD
 		.internal_flags = NL80211_FLAG_NEED_NETDEV |
+=======
+		.internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 				  NL80211_FLAG_NEED_RTNL,
 	},
 	{

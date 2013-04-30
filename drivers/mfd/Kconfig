@@ -145,6 +145,7 @@ config TPS65010
 	  This driver can also be built as a module.  If so, the module
 	  will be called tps65010.
 
+<<<<<<< HEAD
 config TPS65023
         tristate "TPS65023 Power Management chip"
         depends on I2C && ARCH_MSM_SCORPION && !MSM_SMP
@@ -177,6 +178,8 @@ config MARIMBA_TSADC
 	  Say yes here if you want to include support for TSADC in the
 	  Qualcomm Marimba chip.
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 config TPS6507X
 	tristate "TPS6507x Power Management / Touch Screen chips"
 	select MFD_CORE
@@ -213,6 +216,7 @@ config MENELAUS
 	  and other features that are often used in portable devices like
 	  cell phones and PDAs.
 
+<<<<<<< HEAD
 config MARIMBA_CORE
 	tristate "Marimba Core"
 	depends on I2C && (ARCH_MSM7X30 || ARCH_MSM8X60 || ARCH_MSM7X27A)
@@ -240,6 +244,8 @@ config TIMPANI_CODEC
 	 This driver programs Timpani Wideband Codec for input/output of
 	 audio signal.
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 config TWL4030_CORE
 	bool "Texas Instruments TWL4030/TWL5030/TWL6030/TPS659x0 Support"
 	depends on I2C=y && GENERIC_HARDIRQS
@@ -277,7 +283,11 @@ config TWL4030_POWER
 	  and load scripts controlling which resources are switched off/on
 	  or reset when a sleep, wakeup or warm reset event occurs.
 
+<<<<<<< HEAD
 config MFD_TWL4030_AUDIO
+=======
+config TWL4030_CODEC
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	bool
 	depends on TWL4030_CORE
 	select MFD_CORE
@@ -292,12 +302,15 @@ config TWL6030_PWM
 	  Say yes here if you want support for TWL6030 PWM.
 	  This is used to control charging LED brightness.
 
+<<<<<<< HEAD
 config TWL6040_CORE
 	bool
 	depends on TWL4030_CORE && GENERIC_HARDIRQS
 	select MFD_CORE
 	default n
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 config MFD_STMPE
 	bool "Support STMicroelectronics STMPE"
 	depends on I2C=y && GENERIC_HARDIRQS
@@ -774,6 +787,7 @@ config MFD_PM8921_CORE
 	  Say M here if you want to include support for PM8921 chip as a module.
 	  This will build a module called "pm8921-core".
 
+<<<<<<< HEAD
 config MFD_PM8821_CORE
 	tristate "Qualcomm PM8821 PMIC chip"
 	depends on MSM_SSBI
@@ -819,6 +833,8 @@ config MFD_PM8038_CORE
 	  Say M here if you want to include support for PM8038 chip as a module.
 	  This will build a module called "pm8038-core".
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 config MFD_PM8XXX_IRQ
 	bool "Support for Qualcomm PM8xxx IRQ features"
 	depends on MFD_PM8XXX
@@ -841,6 +857,7 @@ config MFD_TPS65910
 config TPS65911_COMPARATOR
 	tristate
 
+<<<<<<< HEAD
 config MFD_PM8XXX_DEBUG
 	tristate "Qualcomm PM8xxx debugfs support"
 	depends on MFD_PM8XXX && DEBUG_FS
@@ -889,6 +906,8 @@ config WCD9310_CODEC
           read/write capability to registers which are part of the
           WCD9310 core and gives the ability to use the WCD9310 codec.
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 endif # MFD_SUPPORT
 
 menu "Multimedia Capabilities Port drivers"

@@ -113,7 +113,11 @@ static unsigned long get_timestamp(int this_cpu)
 	return cpu_clock(this_cpu) >> 30LL;  /* 2^30 ~= 10^9 */
 }
 
+<<<<<<< HEAD
 static unsigned long get_sample_period(void)
+=======
+static u64 get_sample_period(void)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 {
 	/*
 	 * convert watchdog_thresh from seconds to ns
@@ -121,7 +125,11 @@ static unsigned long get_sample_period(void)
 	 * increment before the hardlockup detector generates
 	 * a warning
 	 */
+<<<<<<< HEAD
 	return get_softlockup_thresh() * (NSEC_PER_SEC / 5);
+=======
+	return get_softlockup_thresh() * ((u64)NSEC_PER_SEC / 5);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 /* Commands for resetting the watchdog */

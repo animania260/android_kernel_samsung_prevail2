@@ -21,9 +21,13 @@
    COPYRIGHTS, TRADEMARKS OR OTHER RIGHTS, RELATING TO USE OF THIS
    SOFTWARE IS DISCLAIMED.
 */
+<<<<<<< HEAD
 #ifdef CONFIG_BT_MGMT
 #include "hci_core_mgmt.h"
 #else
+=======
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #ifndef __HCI_CORE_H
 #define __HCI_CORE_H
 
@@ -76,6 +80,7 @@ struct bt_uuid {
 	u8 svc_hint;
 };
 
+<<<<<<< HEAD
 struct key_master_id {
 	__le16 ediv;
 	u8 rand[8];
@@ -90,14 +95,19 @@ struct link_key_data {
 	u8 data[0];
 } __packed;
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 struct link_key {
 	struct list_head list;
 	bdaddr_t bdaddr;
 	u8 type;
 	u8 val[16];
 	u8 pin_len;
+<<<<<<< HEAD
 	u8 dlen;
 	u8 data[0];
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 };
 
 struct oob_data {
@@ -107,12 +117,15 @@ struct oob_data {
 	u8 randomizer[16];
 };
 
+<<<<<<< HEAD
 struct adv_entry {
 	struct list_head list;
 	bdaddr_t bdaddr;
 	u8 bdaddr_type;
 };
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #define NUM_REASSEMBLY 4
 struct hci_dev {
 	struct list_head list;
@@ -131,7 +144,10 @@ struct hci_dev {
 	__u8		major_class;
 	__u8		minor_class;
 	__u8		features[8];
+<<<<<<< HEAD
 	__u8		extfeatures[8];
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	__u8		commands[64];
 	__u8		ssp_mode;
 	__u8		hci_ver;
@@ -196,8 +212,11 @@ struct hci_dev {
 
 	__u16			init_last_cmd;
 
+<<<<<<< HEAD
 	struct crypto_blkcipher	*tfm;
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	struct inquiry_cache	inq_cache;
 	struct hci_conn_hash	conn_hash;
 	struct list_head	blacklist;
@@ -208,9 +227,12 @@ struct hci_dev {
 
 	struct list_head	remote_oob_data;
 
+<<<<<<< HEAD
 	struct list_head	adv_entries;
 	struct timer_list	adv_timer;
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	struct hci_dev_stats	stat;
 
 	struct sk_buff_head	driver_init;
@@ -236,19 +258,28 @@ struct hci_dev {
 	void (*destruct)(struct hci_dev *hdev);
 	void (*notify)(struct hci_dev *hdev, unsigned int evt);
 	int (*ioctl)(struct hci_dev *hdev, unsigned int cmd, unsigned long arg);
+<<<<<<< HEAD
 /* Samsung Bluetooth Feature.2012.01.19
  * Add wake_peer uart operation which is called before starting UART TX
  */
 	void (*wake_peer)(struct hci_dev *);
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 };
 
 struct hci_conn {
 	struct list_head list;
 
 	atomic_t	refcnt;
+<<<<<<< HEAD
 
 	bdaddr_t	dst;
 	__u8		dst_type;
+=======
+	spinlock_t	lock;
+
+	bdaddr_t	dst;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	__u16		handle;
 	__u16		state;
 	__u8		mode;
@@ -267,7 +298,10 @@ struct hci_conn {
 	__u8		sec_level;
 	__u8		pending_sec_level;
 	__u8		pin_length;
+<<<<<<< HEAD
 	__u8		enc_key_size;
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	__u8		io_capability;
 	__u8		power_save;
 	__u16		disc_timeout;
@@ -294,6 +328,10 @@ struct hci_conn {
 	struct hci_dev	*hdev;
 	void		*l2cap_data;
 	void		*sco_data;
+<<<<<<< HEAD
+=======
+	void		*priv;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	struct hci_conn	*link;
 
@@ -341,14 +379,21 @@ static inline long inquiry_entry_age(struct inquiry_entry *e)
 	return jiffies - e->timestamp;
 }
 
+<<<<<<< HEAD
 struct inquiry_entry *hci_inquiry_cache_lookup(struct hci_dev *hdev,
 							bdaddr_t *bdaddr);
+=======
+struct inquiry_entry *hci_inquiry_cache_lookup(struct hci_dev *hdev, bdaddr_t *bdaddr);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 void hci_inquiry_cache_update(struct hci_dev *hdev, struct inquiry_data *data);
 
 /* ----- HCI Connections ----- */
 enum {
 	HCI_CONN_AUTH_PEND,
+<<<<<<< HEAD
 	HCI_CONN_REAUTH_PEND,
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	HCI_CONN_ENCRYPT_PEND,
 	HCI_CONN_RSWITCH_PEND,
 	HCI_CONN_MODE_CHANGE_PEND,
@@ -451,21 +496,30 @@ void hci_add_sco(struct hci_conn *conn, __u16 handle);
 void hci_setup_sync(struct hci_conn *conn, __u16 handle);
 void hci_sco_setup(struct hci_conn *conn, __u8 status);
 
+<<<<<<< HEAD
 struct hci_conn *hci_conn_add(struct hci_dev *hdev, int type,
 					__u16 pkt_type, bdaddr_t *dst);
+=======
+struct hci_conn *hci_conn_add(struct hci_dev *hdev, int type, bdaddr_t *dst);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 int hci_conn_del(struct hci_conn *conn);
 void hci_conn_hash_flush(struct hci_dev *hdev);
 void hci_conn_check_pending(struct hci_dev *hdev);
 
+<<<<<<< HEAD
 struct hci_conn *hci_connect(struct hci_dev *hdev, int type,
 						__u16 pkt_type, bdaddr_t *dst,
 						__u8 sec_level, __u8 auth_type);
+=======
+struct hci_conn *hci_connect(struct hci_dev *hdev, int type, bdaddr_t *dst, __u8 sec_level, __u8 auth_type);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 int hci_conn_check_link_mode(struct hci_conn *conn);
 int hci_conn_check_secure(struct hci_conn *conn, __u8 sec_level);
 int hci_conn_security(struct hci_conn *conn, __u8 sec_level, __u8 auth_type);
 int hci_conn_change_link_key(struct hci_conn *conn);
 int hci_conn_switch_role(struct hci_conn *conn, __u8 role);
 
+<<<<<<< HEAD
 /* BEGIN SS_BLUEZ_BT +kjh 2011.06.23 : */
 /* workaround for a2dp chopping in multi connection. */
 int hci_conn_change_policy(struct hci_conn *conn, __u8 policy);
@@ -473,6 +527,9 @@ int hci_conn_set_encrypt(struct hci_conn *conn, __u8 enable);
 /* END SS_BLUEZ_BT */
 
 void hci_conn_enter_active_mode(struct hci_conn *conn, __u8 force_active);
+=======
+void hci_conn_enter_active_mode(struct hci_conn *conn);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 void hci_conn_enter_sniff_mode(struct hci_conn *conn);
 
 void hci_conn_hold_device(struct hci_conn *conn);
@@ -493,6 +550,7 @@ static inline void hci_conn_put(struct hci_conn *conn)
 			if (conn->state == BT_CONNECTED) {
 				timeo = msecs_to_jiffies(conn->disc_timeout);
 				if (!conn->out)
+<<<<<<< HEAD
 					timeo *= 20;
 			} else {
 				timeo = msecs_to_jiffies(10);
@@ -500,6 +558,13 @@ static inline void hci_conn_put(struct hci_conn *conn)
 		} else {
 			timeo = msecs_to_jiffies(10);
 		}
+=======
+					timeo *= 2;
+			} else
+				timeo = msecs_to_jiffies(10);
+		} else
+			timeo = msecs_to_jiffies(10);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		mod_timer(&conn->disc_timer, jiffies + timeo);
 	}
 }
@@ -558,8 +623,11 @@ int hci_inquiry(void __user *arg);
 
 struct bdaddr_list *hci_blacklist_lookup(struct hci_dev *hdev, bdaddr_t *bdaddr);
 int hci_blacklist_clear(struct hci_dev *hdev);
+<<<<<<< HEAD
 int hci_blacklist_add(struct hci_dev *hdev, bdaddr_t *bdaddr);
 int hci_blacklist_del(struct hci_dev *hdev, bdaddr_t *bdaddr);
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 int hci_uuids_clear(struct hci_dev *hdev);
 
@@ -567,11 +635,14 @@ int hci_link_keys_clear(struct hci_dev *hdev);
 struct link_key *hci_find_link_key(struct hci_dev *hdev, bdaddr_t *bdaddr);
 int hci_add_link_key(struct hci_dev *hdev, struct hci_conn *conn, int new_key,
 			bdaddr_t *bdaddr, u8 *val, u8 type, u8 pin_len);
+<<<<<<< HEAD
 struct link_key *hci_find_ltk(struct hci_dev *hdev, __le16 ediv, u8 rand[8]);
 struct link_key *hci_find_link_key_type(struct hci_dev *hdev,
 					bdaddr_t *bdaddr, u8 type);
 int hci_add_ltk(struct hci_dev *hdev, int new_key, bdaddr_t *bdaddr,
 			u8 key_size, __le16 ediv, u8 rand[8], u8 ltk[16]);
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 int hci_remove_link_key(struct hci_dev *hdev, bdaddr_t *bdaddr);
 
 int hci_remote_oob_data_clear(struct hci_dev *hdev);
@@ -581,12 +652,15 @@ int hci_add_remote_oob_data(struct hci_dev *hdev, bdaddr_t *bdaddr, u8 *hash,
 								u8 *randomizer);
 int hci_remove_remote_oob_data(struct hci_dev *hdev, bdaddr_t *bdaddr);
 
+<<<<<<< HEAD
 #define ADV_CLEAR_TIMEOUT (3*60*HZ) /* Three minutes */
 int hci_adv_entries_clear(struct hci_dev *hdev);
 struct adv_entry *hci_find_adv_entry(struct hci_dev *hdev, bdaddr_t *bdaddr);
 int hci_add_adv_entry(struct hci_dev *hdev,
 					struct hci_ev_le_advertising_info *ev);
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 void hci_del_off_timer(struct hci_dev *hdev);
 
 void hci_event_packet(struct hci_dev *hdev, struct sk_buff *skb);
@@ -613,9 +687,12 @@ void hci_conn_del_sysfs(struct hci_conn *conn);
 #define lmp_no_flush_capable(dev)  ((dev)->features[6] & LMP_NO_FLUSH)
 #define lmp_le_capable(dev)        ((dev)->features[4] & LMP_LE)
 
+<<<<<<< HEAD
 /* ----- Extended LMP capabilities ----- */
 #define lmp_host_le_capable(dev)   ((dev)->extfeatures[0] & LMP_HOST_LE)
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 /* ----- HCI protocols ----- */
 struct hci_proto {
 	char		*name;
@@ -624,6 +701,7 @@ struct hci_proto {
 
 	void		*priv;
 
+<<<<<<< HEAD
 	int (*connect_ind)	(struct hci_dev *hdev, bdaddr_t *bdaddr,
 								__u8 type);
 	int (*connect_cfm)	(struct hci_conn *conn, __u8 status);
@@ -638,6 +716,18 @@ struct hci_proto {
 
 static inline int hci_proto_connect_ind(struct hci_dev *hdev, bdaddr_t *bdaddr,
 								__u8 type)
+=======
+	int (*connect_ind)	(struct hci_dev *hdev, bdaddr_t *bdaddr, __u8 type);
+	int (*connect_cfm)	(struct hci_conn *conn, __u8 status);
+	int (*disconn_ind)	(struct hci_conn *conn);
+	int (*disconn_cfm)	(struct hci_conn *conn, __u8 reason);
+	int (*recv_acldata)	(struct hci_conn *conn, struct sk_buff *skb, __u16 flags);
+	int (*recv_scodata)	(struct hci_conn *conn, struct sk_buff *skb);
+	int (*security_cfm)	(struct hci_conn *conn, __u8 status, __u8 encrypt);
+};
+
+static inline int hci_proto_connect_ind(struct hci_dev *hdev, bdaddr_t *bdaddr, __u8 type)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 {
 	register struct hci_proto *hp;
 	int mask = 0;
@@ -723,8 +813,12 @@ static inline void hci_proto_auth_cfm(struct hci_conn *conn, __u8 status)
 		conn->security_cfm_cb(conn, status);
 }
 
+<<<<<<< HEAD
 static inline void hci_proto_encrypt_cfm(struct hci_conn *conn, __u8 status,
 								__u8 encrypt)
+=======
+static inline void hci_proto_encrypt_cfm(struct hci_conn *conn, __u8 status, __u8 encrypt)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 {
 	register struct hci_proto *hp;
 
@@ -749,8 +843,12 @@ struct hci_cb {
 
 	char *name;
 
+<<<<<<< HEAD
 	void (*security_cfm)	(struct hci_conn *conn, __u8 status,
 								__u8 encrypt);
+=======
+	void (*security_cfm)	(struct hci_conn *conn, __u8 status, __u8 encrypt);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	void (*key_change_cfm)	(struct hci_conn *conn, __u8 status);
 	void (*role_switch_cfm)	(struct hci_conn *conn, __u8 status, __u8 role);
 };
@@ -776,17 +874,24 @@ static inline void hci_auth_cfm(struct hci_conn *conn, __u8 status)
 	read_unlock_bh(&hci_cb_list_lock);
 }
 
+<<<<<<< HEAD
 static inline void hci_encrypt_cfm(struct hci_conn *conn, __u8 status,
 								__u8 encrypt)
+=======
+static inline void hci_encrypt_cfm(struct hci_conn *conn, __u8 status, __u8 encrypt)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 {
 	struct list_head *p;
 
 	if (conn->sec_level == BT_SECURITY_SDP)
 		conn->sec_level = BT_SECURITY_LOW;
 
+<<<<<<< HEAD
 	if (conn->pending_sec_level > conn->sec_level)
 		conn->sec_level = conn->pending_sec_level;
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	hci_proto_encrypt_cfm(conn, status, encrypt);
 
 	read_lock_bh(&hci_cb_list_lock);
@@ -811,8 +916,12 @@ static inline void hci_key_change_cfm(struct hci_conn *conn, __u8 status)
 	read_unlock_bh(&hci_cb_list_lock);
 }
 
+<<<<<<< HEAD
 static inline void hci_role_switch_cfm(struct hci_conn *conn, __u8 status,
 								__u8 role)
+=======
+static inline void hci_role_switch_cfm(struct hci_conn *conn, __u8 status, __u8 role)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 {
 	struct list_head *p;
 
@@ -904,6 +1013,7 @@ void hci_req_complete(struct hci_dev *hdev, __u16 cmd, int result);
 
 void hci_le_conn_update(struct hci_conn *conn, u16 min, u16 max,
 					u16 latency, u16 to_multiplier);
+<<<<<<< HEAD
 void hci_le_start_enc(struct hci_conn *conn, __le16 ediv, __u8 rand[8],
 							__u8 ltk[16]);
 void hci_le_ltk_reply(struct hci_conn *conn, u8 ltk[16]);
@@ -912,3 +1022,6 @@ void hci_le_ltk_neg_reply(struct hci_conn *conn);
 #endif /* __HCI_CORE_H */
 
 #endif /* BT_MGMT */
+=======
+#endif /* __HCI_CORE_H */
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y

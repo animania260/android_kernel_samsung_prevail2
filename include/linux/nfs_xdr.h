@@ -591,8 +591,18 @@ struct nfs_getaclargs {
 	struct nfs4_sequence_args 	seq_args;
 };
 
+<<<<<<< HEAD
 struct nfs_getaclres {
 	size_t				acl_len;
+=======
+/* getxattr ACL interface flags */
+#define NFS4_ACL_LEN_REQUEST	0x0001	/* zero length getxattr buffer */
+struct nfs_getaclres {
+	size_t				acl_len;
+	size_t				acl_data_offset;
+	int				acl_flags;
+	struct page *			acl_scratch;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	struct nfs4_sequence_res	seq_res;
 };
 
@@ -1149,6 +1159,10 @@ struct nfs_rpc_ops {
 	const struct dentry_operations *dentry_ops;
 	const struct inode_operations *dir_inode_ops;
 	const struct inode_operations *file_inode_ops;
+<<<<<<< HEAD
+=======
+	const struct file_operations *file_ops;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	int	(*getroot) (struct nfs_server *, struct nfs_fh *,
 			    struct nfs_fsinfo *);

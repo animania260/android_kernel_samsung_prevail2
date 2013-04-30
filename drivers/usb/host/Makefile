@@ -15,7 +15,10 @@ xhci-hcd-y := xhci.o xhci-mem.o xhci-pci.o
 xhci-hcd-y += xhci-ring.o xhci-hub.o xhci-dbg.o
 
 obj-$(CONFIG_USB_WHCI_HCD)	+= whci/
+<<<<<<< HEAD
 obj-$(CONFIG_USB_PEHCI_HCD)	+= pehci/
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 obj-$(CONFIG_PCI)		+= pci-quirks.o
 

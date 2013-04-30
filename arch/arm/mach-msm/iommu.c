@@ -8,6 +8,14 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+<<<<<<< HEAD
+=======
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
  */
 
 #define pr_fmt(fmt)	KBUILD_MODNAME ": " fmt
@@ -22,7 +30,10 @@
 #include <linux/slab.h>
 #include <linux/iommu.h>
 #include <linux/clk.h>
+<<<<<<< HEAD
 #include <linux/scatterlist.h>
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 #include <asm/cacheflush.h>
 #include <asm/sizes.h>
@@ -38,6 +49,7 @@ __asm__ __volatile__ (							\
 #define RCP15_PRRR(reg)		MRC(reg, p15, 0, c10, c2, 0)
 #define RCP15_NMRR(reg)		MRC(reg, p15, 0, c10, c2, 1)
 
+<<<<<<< HEAD
 /* Sharability attributes of MSM IOMMU mappings */
 #define MSM_IOMMU_ATTR_NON_SH		0x0
 #define MSM_IOMMU_ATTR_SH		0x4
@@ -54,13 +66,18 @@ static inline void clean_pte(unsigned long *start, unsigned long *end)
 	dmac_flush_range(start, end);
 }
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 static int msm_iommu_tex_class[4];
 
 DEFINE_SPINLOCK(msm_iommu_lock);
 
 struct msm_priv {
 	unsigned long *pgtable;
+<<<<<<< HEAD
 	int redirect;
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	struct list_head list_attached;
 };
 
@@ -88,12 +105,17 @@ static void __disable_clocks(struct msm_iommu_drvdata *drvdata)
 	clk_disable(drvdata->pclk);
 }
 
+<<<<<<< HEAD
 static int __flush_iotlb_va(struct iommu_domain *domain, unsigned int va)
+=======
+static int __flush_iotlb(struct iommu_domain *domain)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 {
 	struct msm_priv *priv = domain->priv;
 	struct msm_iommu_drvdata *iommu_drvdata;
 	struct msm_iommu_ctx_drvdata *ctx_drvdata;
 	int ret = 0;
+<<<<<<< HEAD
 	int asid;
 
 	list_for_each_entry(ctx_drvdata, &priv->list_attached, attached_elm) {
@@ -127,24 +149,49 @@ static int __flush_iotlb(struct iommu_domain *domain)
 	struct msm_iommu_ctx_drvdata *ctx_drvdata;
 	int ret = 0;
 	int asid;
+=======
+#ifndef CONFIG_IOMMU_PGTABLES_L2
+	unsigned long *fl_table = priv->pgtable;
+	int i;
+
+	if (!list_empty(&priv->list_attached)) {
+		dmac_flush_range(fl_table, fl_table + SZ_16K);
+
+		for (i = 0; i < NUM_FL_PTE; i++)
+			if ((fl_table[i] & 0x03) == FL_TYPE_TABLE) {
+				void *sl_table = __va(fl_table[i] &
+								FL_BASE_MASK);
+				dmac_flush_range(sl_table, sl_table + SZ_4K);
+			}
+	}
+#endif
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	list_for_each_entry(ctx_drvdata, &priv->list_attached, attached_elm) {
 		if (!ctx_drvdata->pdev || !ctx_drvdata->pdev->dev.parent)
 			BUG();
 
 		iommu_drvdata = dev_get_drvdata(ctx_drvdata->pdev->dev.parent);
+<<<<<<< HEAD
 		if (!iommu_drvdata)
 			BUG();
+=======
+		BUG_ON(!iommu_drvdata);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 		ret = __enable_clocks(iommu_drvdata);
 		if (ret)
 			goto fail;
 
+<<<<<<< HEAD
 		asid = GET_CONTEXTIDR_ASID(iommu_drvdata->base,
 					   ctx_drvdata->num);
 
 		SET_TLBIASID(iommu_drvdata->base, ctx_drvdata->num, asid);
 		mb();
+=======
+		SET_CTX_TLBIALL(iommu_drvdata->base, ctx_drvdata->num, 0);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		__disable_clocks(iommu_drvdata);
 	}
 fail:
@@ -167,11 +214,16 @@ static void __reset_context(void __iomem *base, int ctx)
 	SET_BFBCR(base, ctx, 0);
 	SET_PAR(base, ctx, 0);
 	SET_FAR(base, ctx, 0);
+<<<<<<< HEAD
+=======
+	SET_CTX_TLBIALL(base, ctx, 0);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	SET_TLBFLPTER(base, ctx, 0);
 	SET_TLBSLPTER(base, ctx, 0);
 	SET_TLBLKCR(base, ctx, 0);
 	SET_PRRR(base, ctx, 0);
 	SET_NMRR(base, ctx, 0);
+<<<<<<< HEAD
 	mb();
 }
 
@@ -180,6 +232,13 @@ static void __program_context(void __iomem *base, int ctx, int ncb,
 {
 	unsigned int prrr, nmrr;
 	int i, j, found;
+=======
+}
+
+static void __program_context(void __iomem *base, int ctx, phys_addr_t pgtable)
+{
+	unsigned int prrr, nmrr;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	__reset_context(base, ctx);
 
 	/* Set up HTW mode */
@@ -190,7 +249,17 @@ static void __program_context(void __iomem *base, int ctx, int ncb,
 	SET_V2PCFG(base, ctx, 0x3);
 
 	SET_TTBCR(base, ctx, 0);
+<<<<<<< HEAD
 	SET_TTBR0_PA(base, ctx, (pgtable >> TTBR0_PA_SHIFT));
+=======
+	SET_TTBR0_PA(base, ctx, (pgtable >> 14));
+
+	/* Invalidate the TLB for this context */
+	SET_CTX_TLBIALL(base, ctx, 0);
+
+	/* Set interrupt number to "secure" interrupt */
+	SET_IRPTNDX(base, ctx, 0);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	/* Enable context fault interrupt */
 	SET_CFEIE(base, ctx, 1);
@@ -215,6 +284,7 @@ static void __program_context(void __iomem *base, int ctx, int ncb,
 	/* Turn on BFB prefetch */
 	SET_BFBDFE(base, ctx, 1);
 
+<<<<<<< HEAD
 	/* Configure page tables as inner-cacheable and shareable to reduce
 	 * the TLB miss penalty.
 	 */
@@ -270,6 +340,33 @@ static void __program_context(void __iomem *base, int ctx, int ncb,
 }
 
 static int msm_iommu_domain_init(struct iommu_domain *domain, int flags)
+=======
+#ifdef CONFIG_IOMMU_PGTABLES_L2
+	/* Configure page tables as inner-cacheable and shareable to reduce
+	 * the TLB miss penalty.
+	 */
+	SET_TTBR0_SH(base, ctx, 1);
+	SET_TTBR1_SH(base, ctx, 1);
+
+	SET_TTBR0_NOS(base, ctx, 1);
+	SET_TTBR1_NOS(base, ctx, 1);
+
+	SET_TTBR0_IRGNH(base, ctx, 0); /* WB, WA */
+	SET_TTBR0_IRGNL(base, ctx, 1);
+
+	SET_TTBR1_IRGNH(base, ctx, 0); /* WB, WA */
+	SET_TTBR1_IRGNL(base, ctx, 1);
+
+	SET_TTBR0_ORGN(base, ctx, 1); /* WB, WA */
+	SET_TTBR1_ORGN(base, ctx, 1); /* WB, WA */
+#endif
+
+	/* Enable the MMU */
+	SET_M(base, ctx, 1);
+}
+
+static int msm_iommu_domain_init(struct iommu_domain *domain)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 {
 	struct msm_priv *priv = kzalloc(sizeof(*priv), GFP_KERNEL);
 
@@ -283,10 +380,13 @@ static int msm_iommu_domain_init(struct iommu_domain *domain, int flags)
 	if (!priv->pgtable)
 		goto fail_nomem;
 
+<<<<<<< HEAD
 #ifdef CONFIG_IOMMU_PGTABLES_L2
 	priv->redirect = flags & MSM_IOMMU_DOMAIN_PT_CACHEABLE;
 #endif
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	memset(priv->pgtable, 0, SZ_16K);
 	domain->priv = priv;
 	return 0;
@@ -366,11 +466,20 @@ static int msm_iommu_attach_dev(struct iommu_domain *domain, struct device *dev)
 	if (ret)
 		goto fail;
 
+<<<<<<< HEAD
 	__program_context(iommu_drvdata->base, ctx_dev->num, iommu_drvdata->ncb,
 			  __pa(priv->pgtable), priv->redirect);
 
 	__disable_clocks(iommu_drvdata);
 	list_add(&(ctx_drvdata->attached_elm), &priv->list_attached);
+=======
+	__program_context(iommu_drvdata->base, ctx_dev->num,
+			  __pa(priv->pgtable));
+
+	__disable_clocks(iommu_drvdata);
+	list_add(&(ctx_drvdata->attached_elm), &priv->list_attached);
+	ret = __flush_iotlb(domain);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 fail:
 	spin_unlock_irqrestore(&msm_iommu_lock, flags);
@@ -400,12 +509,22 @@ static void msm_iommu_detach_dev(struct iommu_domain *domain,
 	if (!iommu_drvdata || !ctx_drvdata || !ctx_dev)
 		goto fail;
 
+<<<<<<< HEAD
 	ret = __enable_clocks(iommu_drvdata);
 	if (ret)
 		goto fail;
 
 	SET_TLBIASID(iommu_drvdata->base, ctx_dev->num,
 		     GET_CONTEXTIDR_ASID(iommu_drvdata->base, ctx_dev->num));
+=======
+	ret = __flush_iotlb(domain);
+	if (ret)
+		goto fail;
+
+	ret = __enable_clocks(iommu_drvdata);
+	if (ret)
+		goto fail;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	__reset_context(iommu_drvdata->base, ctx_dev->num);
 	__disable_clocks(iommu_drvdata);
@@ -415,6 +534,7 @@ fail:
 	spin_unlock_irqrestore(&msm_iommu_lock, flags);
 }
 
+<<<<<<< HEAD
 static int __get_pgprot(int prot, int len)
 {
 	unsigned int pgprot;
@@ -443,6 +563,8 @@ static int __get_pgprot(int prot, int len)
 	return pgprot;
 }
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 static int msm_iommu_map(struct iommu_domain *domain, unsigned long va,
 			 phys_addr_t pa, int order, int prot)
 {
@@ -456,10 +578,25 @@ static int msm_iommu_map(struct iommu_domain *domain, unsigned long va,
 	unsigned long sl_offset;
 	unsigned int pgprot;
 	size_t len = 0x1000UL << order;
+<<<<<<< HEAD
 	int ret = 0;
 
 	spin_lock_irqsave(&msm_iommu_lock, flags);
 
+=======
+	int ret = 0, tex, sh;
+
+	spin_lock_irqsave(&msm_iommu_lock, flags);
+
+	sh = (prot & MSM_IOMMU_ATTR_SH) ? 1 : 0;
+	tex = msm_iommu_tex_class[prot & MSM_IOMMU_CP_MASK];
+
+	if (tex < 0 || tex > NUM_TEX_CLASS - 1) {
+		ret = -EINVAL;
+		goto fail;
+	}
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	priv = domain->priv;
 	if (!priv) {
 		ret = -EINVAL;
@@ -481,11 +618,24 @@ static int msm_iommu_map(struct iommu_domain *domain, unsigned long va,
 		goto fail;
 	}
 
+<<<<<<< HEAD
 	pgprot = __get_pgprot(prot, len);
 
 	if (!pgprot) {
 		ret = -EINVAL;
 		goto fail;
+=======
+	if (len == SZ_16M || len == SZ_1M) {
+		pgprot = sh ? FL_SHARED : 0;
+		pgprot |= tex & 0x01 ? FL_BUFFERABLE : 0;
+		pgprot |= tex & 0x02 ? FL_CACHEABLE : 0;
+		pgprot |= tex & 0x04 ? FL_TEX0 : 0;
+	} else	{
+		pgprot = sh ? SL_SHARED : 0;
+		pgprot |= tex & 0x01 ? SL_BUFFERABLE : 0;
+		pgprot |= tex & 0x02 ? SL_CACHEABLE : 0;
+		pgprot |= tex & 0x04 ? SL_TEX0 : 0;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	}
 
 	fl_offset = FL_OFFSET(va);	/* Upper 12 bits */
@@ -493,6 +643,7 @@ static int msm_iommu_map(struct iommu_domain *domain, unsigned long va,
 
 	if (len == SZ_16M) {
 		int i = 0;
+<<<<<<< HEAD
 
 		for (i = 0; i < 16; i++)
 			if (*(fl_pte+i)) {
@@ -500,10 +651,13 @@ static int msm_iommu_map(struct iommu_domain *domain, unsigned long va,
 				goto fail;
 			}
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		for (i = 0; i < 16; i++)
 			*(fl_pte+i) = (pa & 0xFF000000) | FL_SUPERSECTION |
 				  FL_AP_READ | FL_AP_WRITE | FL_TYPE_SECT |
 				  FL_SHARED | FL_NG | pgprot;
+<<<<<<< HEAD
 		if (!priv->redirect)
 			clean_pte(fl_pte, fl_pte + 16);
 	}
@@ -546,12 +700,35 @@ static int msm_iommu_map(struct iommu_domain *domain, unsigned long va,
 			ret = -EBUSY;
 			goto fail;
 		}
+=======
+	}
+
+	if (len == SZ_1M)
+		*fl_pte = (pa & 0xFFF00000) | FL_AP_READ | FL_AP_WRITE | FL_NG |
+					    FL_TYPE_SECT | FL_SHARED | pgprot;
+
+	/* Need a 2nd level table */
+	if ((len == SZ_4K || len == SZ_64K) && (*fl_pte) == 0) {
+		unsigned long *sl;
+		sl = (unsigned long *) __get_free_pages(GFP_ATOMIC,
+							get_order(SZ_4K));
+
+		if (!sl) {
+			pr_debug("Could not allocate second level table\n");
+			ret = -ENOMEM;
+			goto fail;
+		}
+
+		memset(sl, 0, SZ_4K);
+		*fl_pte = ((((int)__pa(sl)) & FL_BASE_MASK) | FL_TYPE_TABLE);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	}
 
 	sl_table = (unsigned long *) __va(((*fl_pte) & FL_BASE_MASK));
 	sl_offset = SL_OFFSET(va);
 	sl_pte = sl_table + sl_offset;
 
+<<<<<<< HEAD
 	if (len == SZ_4K) {
 		if (*sl_pte) {
 			ret = -EBUSY;
@@ -563,11 +740,18 @@ static int msm_iommu_map(struct iommu_domain *domain, unsigned long va,
 		if (!priv->redirect)
 			clean_pte(sl_pte, sl_pte + 1);
 	}
+=======
+
+	if (len == SZ_4K)
+		*sl_pte = (pa & SL_BASE_MASK_SMALL) | SL_AP0 | SL_AP1 | SL_NG |
+					  SL_SHARED | SL_TYPE_SMALL | pgprot;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	if (len == SZ_64K) {
 		int i;
 
 		for (i = 0; i < 16; i++)
+<<<<<<< HEAD
 			if (*(sl_pte+i)) {
 				ret = -EBUSY;
 				goto fail;
@@ -582,6 +766,13 @@ static int msm_iommu_map(struct iommu_domain *domain, unsigned long va,
 	}
 
 	ret = __flush_iotlb_va(domain, va);
+=======
+			*(sl_pte+i) = (pa & SL_BASE_MASK_LARGE) | SL_AP0 |
+			    SL_NG | SL_AP1 | SL_SHARED | SL_TYPE_LARGE | pgprot;
+	}
+
+	ret = __flush_iotlb(domain);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 fail:
 	spin_unlock_irqrestore(&msm_iommu_lock, flags);
 	return ret;
@@ -635,6 +826,7 @@ static int msm_iommu_unmap(struct iommu_domain *domain, unsigned long va,
 	}
 
 	/* Unmap supersection */
+<<<<<<< HEAD
 	if (len == SZ_16M) {
 		for (i = 0; i < 16; i++)
 			*(fl_pte+i) = 0;
@@ -650,6 +842,15 @@ static int msm_iommu_unmap(struct iommu_domain *domain, unsigned long va,
 			clean_pte(fl_pte, fl_pte + 1);
 	}
 
+=======
+	if (len == SZ_16M)
+		for (i = 0; i < 16; i++)
+			*(fl_pte+i) = 0;
+
+	if (len == SZ_1M)
+		*fl_pte = 0;
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	sl_table = (unsigned long *) __va(((*fl_pte) & FL_BASE_MASK));
 	sl_offset = SL_OFFSET(va);
 	sl_pte = sl_table + sl_offset;
@@ -657,6 +858,7 @@ static int msm_iommu_unmap(struct iommu_domain *domain, unsigned long va,
 	if (len == SZ_64K) {
 		for (i = 0; i < 16; i++)
 			*(sl_pte+i) = 0;
+<<<<<<< HEAD
 
 		if (!priv->redirect)
 			clean_pte(sl_pte, sl_pte + 16);
@@ -669,6 +871,13 @@ static int msm_iommu_unmap(struct iommu_domain *domain, unsigned long va,
 			clean_pte(sl_pte, sl_pte + 1);
 	}
 
+=======
+	}
+
+	if (len == SZ_4K)
+		*sl_pte = 0;
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	if (len == SZ_4K || len == SZ_64K) {
 		int used = 0;
 
@@ -678,6 +887,7 @@ static int msm_iommu_unmap(struct iommu_domain *domain, unsigned long va,
 		if (!used) {
 			free_page((unsigned long)sl_table);
 			*fl_pte = 0;
+<<<<<<< HEAD
 
 			if (!priv->redirect)
 				clean_pte(fl_pte, fl_pte + 1);
@@ -805,11 +1015,18 @@ static int msm_iommu_map_range(struct iommu_domain *domain, unsigned int va,
 		sl_offset = 0;
 	}
 	__flush_iotlb(domain);
+=======
+		}
+	}
+
+	ret = __flush_iotlb(domain);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 fail:
 	spin_unlock_irqrestore(&msm_iommu_lock, flags);
 	return ret;
 }
 
+<<<<<<< HEAD
 
 static int msm_iommu_unmap_range(struct iommu_domain *domain, unsigned int va,
 				 unsigned int len)
@@ -882,6 +1099,8 @@ static int msm_iommu_unmap_range(struct iommu_domain *domain, unsigned int va,
 	return 0;
 }
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 static phys_addr_t msm_iommu_iova_to_phys(struct iommu_domain *domain,
 					  unsigned long va)
 {
@@ -911,9 +1130,16 @@ static phys_addr_t msm_iommu_iova_to_phys(struct iommu_domain *domain,
 	if (ret)
 		goto fail;
 
+<<<<<<< HEAD
 	SET_V2PPR(base, ctx, va & V2Pxx_VA);
 
 	mb();
+=======
+	/* Invalidate context TLB */
+	SET_CTX_TLBIALL(base, ctx, 0);
+	SET_V2PPR(base, ctx, va & V2Pxx_VA);
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	par = GET_PAR(base, ctx);
 
 	/* We are dealing with a supersection */
@@ -982,7 +1208,10 @@ irqreturn_t msm_iommu_fault_handler(int irq, void *dev_id)
 
 	pr_err("Unexpected IOMMU page fault!\n");
 	pr_err("base = %08x\n", (unsigned int) base);
+<<<<<<< HEAD
 	pr_err("name = %s\n", drvdata->name);
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	ret = __enable_clocks(drvdata);
 	if (ret)
@@ -1003,12 +1232,15 @@ fail:
 	return 0;
 }
 
+<<<<<<< HEAD
 static phys_addr_t msm_iommu_get_pt_base_addr(struct iommu_domain *domain)
 {
 	struct msm_priv *priv = domain->priv;
 	return __pa(priv->pgtable);
 }
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 static struct iommu_ops msm_iommu_ops = {
 	.domain_init = msm_iommu_domain_init,
 	.domain_destroy = msm_iommu_domain_destroy,
@@ -1016,11 +1248,16 @@ static struct iommu_ops msm_iommu_ops = {
 	.detach_dev = msm_iommu_detach_dev,
 	.map = msm_iommu_map,
 	.unmap = msm_iommu_unmap,
+<<<<<<< HEAD
 	.map_range = msm_iommu_map_range,
 	.unmap_range = msm_iommu_unmap_range,
 	.iova_to_phys = msm_iommu_iova_to_phys,
 	.domain_has_cap = msm_iommu_domain_has_cap,
 	.get_pt_base_addr = msm_iommu_get_pt_base_addr
+=======
+	.iova_to_phys = msm_iommu_iova_to_phys,
+	.domain_has_cap = msm_iommu_domain_has_cap
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 };
 
 static int __init get_tex_class(int icp, int ocp, int mt, int nos)
@@ -1063,9 +1300,12 @@ static void __init setup_iommu_tex_classes(void)
 
 static int __init msm_iommu_init(void)
 {
+<<<<<<< HEAD
 	if (!msm_soc_version_supports_iommu())
 		return -ENODEV;
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	setup_iommu_tex_classes();
 	register_iommu(&msm_iommu_ops);
 	return 0;

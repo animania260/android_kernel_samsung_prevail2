@@ -32,7 +32,10 @@ enum perf_type_id {
 	PERF_TYPE_HW_CACHE			= 3,
 	PERF_TYPE_RAW				= 4,
 	PERF_TYPE_BREAKPOINT			= 5,
+<<<<<<< HEAD
 	PERF_TYPE_SHARED			= 6,
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	PERF_TYPE_MAX,				/* non-ABI */
 };
@@ -55,7 +58,10 @@ enum perf_hw_id {
 	PERF_COUNT_HW_BUS_CYCLES		= 6,
 	PERF_COUNT_HW_STALLED_CYCLES_FRONTEND	= 7,
 	PERF_COUNT_HW_STALLED_CYCLES_BACKEND	= 8,
+<<<<<<< HEAD
 	PERF_COUNT_HW_L2_CYCLES			= 9,
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	PERF_COUNT_HW_MAX,			/* non-ABI */
 };
@@ -220,9 +226,14 @@ struct perf_event_attr {
 				precise_ip     :  2, /* skid constraint       */
 				mmap_data      :  1, /* non-exec mmap data    */
 				sample_id_all  :  1, /* sample_type all events */
+<<<<<<< HEAD
 				single_instance:1, /* per-cpu event if unset */
 
 				__reserved_1:44;
+=======
+
+				__reserved_1   : 45;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	union {
 		__u32		wakeup_events;	  /* wakeup every n events */
@@ -810,7 +821,11 @@ struct perf_event {
 	struct hw_perf_event		hw;
 
 	struct perf_event_context	*ctx;
+<<<<<<< HEAD
 	struct file			*filp;
+=======
+	atomic_long_t			refcount;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	/*
 	 * These accumulate total time (in nanoseconds) that children
@@ -1192,6 +1207,15 @@ static inline void perf_event_disable(struct perf_event *event)		{ }
 static inline void perf_event_task_tick(void)				{ }
 #endif
 
+<<<<<<< HEAD
+=======
+#if defined(CONFIG_PERF_EVENTS) && defined(CONFIG_CPU_SUP_INTEL)
+extern void perf_restore_debug_store(void);
+#else
+static inline void perf_restore_debug_store(void)			{ }
+#endif
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #define perf_output_put(handle, x) perf_output_copy((handle), &(x), sizeof(x))
 
 /*

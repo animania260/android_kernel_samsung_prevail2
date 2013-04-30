@@ -139,10 +139,19 @@ static void fsl_spi_change_mode(struct spi_device *spi)
 static void fsl_spi_chipselect(struct spi_device *spi, int value)
 {
 	struct mpc8xxx_spi *mpc8xxx_spi = spi_master_get_devdata(spi->master);
+<<<<<<< HEAD
 	struct fsl_spi_platform_data *pdata = spi->dev.parent->platform_data;
 	bool pol = spi->mode & SPI_CS_HIGH;
 	struct spi_mpc8xxx_cs	*cs = spi->controller_state;
 
+=======
+	struct fsl_spi_platform_data *pdata;
+	bool pol = spi->mode & SPI_CS_HIGH;
+	struct spi_mpc8xxx_cs	*cs = spi->controller_state;
+
+	pdata = spi->dev.parent->parent->platform_data;
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	if (value == BITBANG_CS_INACTIVE) {
 		if (pdata->cs_control)
 			pdata->cs_control(spi, !pol);
@@ -934,7 +943,11 @@ err:
 
 static void fsl_spi_cs_control(struct spi_device *spi, bool on)
 {
+<<<<<<< HEAD
 	struct device *dev = spi->dev.parent;
+=======
+	struct device *dev = spi->dev.parent->parent;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	struct mpc8xxx_spi_probe_info *pinfo = to_of_pinfo(dev->platform_data);
 	u16 cs = spi->chip_select;
 	int gpio = pinfo->gpios[cs];

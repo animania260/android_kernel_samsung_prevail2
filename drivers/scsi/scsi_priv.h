@@ -110,6 +110,10 @@ extern void scsi_exit_procfs(void);
 #endif /* CONFIG_PROC_FS */
 
 /* scsi_scan.c */
+<<<<<<< HEAD
+=======
+extern int scsi_complete_async_scans(void);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 extern int scsi_scan_host_selected(struct Scsi_Host *, unsigned int,
 				   unsigned int, unsigned int, int);
 extern void scsi_forget_host(struct Scsi_Host *);

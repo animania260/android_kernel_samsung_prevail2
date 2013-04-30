@@ -1102,10 +1102,16 @@ mwifiex_cmd_802_11_ad_hoc_join(struct mwifiex_private *priv,
 				adhoc_join->bss_descriptor.bssid,
 				adhoc_join->bss_descriptor.ssid);
 
+<<<<<<< HEAD
 	for (i = 0; bss_desc->supported_rates[i] &&
 			i < MWIFIEX_SUPPORTED_RATES;
 			i++)
 			;
+=======
+	for (i = 0; i < MWIFIEX_SUPPORTED_RATES &&
+		    bss_desc->supported_rates[i]; i++)
+		;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	rates_size = i;
 
 	/* Copy Data Rates from the Rates recorded in scan response */

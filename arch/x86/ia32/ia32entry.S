@@ -208,7 +208,11 @@ sysexit_from_sys_call:
 	testl $(_TIF_ALLWORK_MASK & ~_TIF_SYSCALL_AUDIT),TI_flags(%r10)
 	jnz ia32_ret_from_sys_call
 	TRACE_IRQS_ON
+<<<<<<< HEAD
 	sti
+=======
+	ENABLE_INTERRUPTS(CLBR_NONE)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	movl %eax,%esi		/* second arg, syscall return value */
 	cmpl $0,%eax		/* is it < 0? */
 	setl %al		/* 1 if so, 0 if not */
@@ -218,7 +222,11 @@ sysexit_from_sys_call:
 	GET_THREAD_INFO(%r10)
 	movl RAX-ARGOFFSET(%rsp),%eax	/* reload syscall return value */
 	movl $(_TIF_ALLWORK_MASK & ~_TIF_SYSCALL_AUDIT),%edi
+<<<<<<< HEAD
 	cli
+=======
+	DISABLE_INTERRUPTS(CLBR_NONE)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	TRACE_IRQS_OFF
 	testl %edi,TI_flags(%r10)
 	jz \exit

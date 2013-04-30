@@ -15,6 +15,10 @@
 #include <asm/stackprotector.h>
 #include <asm/perf_event.h>
 #include <asm/mmu_context.h>
+<<<<<<< HEAD
+=======
+#include <asm/archrandom.h>
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #include <asm/hypervisor.h>
 #include <asm/processor.h>
 #include <asm/sections.h>
@@ -675,9 +679,13 @@ static void __init early_identify_cpu(struct cpuinfo_x86 *c)
 	if (this_cpu->c_early_init)
 		this_cpu->c_early_init(c);
 
+<<<<<<< HEAD
 #ifdef CONFIG_SMP
 	c->cpu_index = 0;
 #endif
+=======
+	c->cpu_index = 0;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	filter_cpuid_features(c, false);
 
 	setup_smep(c);
@@ -760,10 +768,14 @@ static void __cpuinit generic_identify(struct cpuinfo_x86 *c)
 		c->apicid = c->initial_apicid;
 # endif
 #endif
+<<<<<<< HEAD
 
 #ifdef CONFIG_X86_HT
 		c->phys_proc_id = c->initial_apicid;
 #endif
+=======
+		c->phys_proc_id = c->initial_apicid;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	}
 
 	setup_smep(c);
@@ -857,6 +869,10 @@ static void __cpuinit identify_cpu(struct cpuinfo_x86 *c)
 #endif
 
 	init_hypervisor(c);
+<<<<<<< HEAD
+=======
+	x86_init_rdrand(c);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	/*
 	 * Clear/Set all flags overriden by options, need do it

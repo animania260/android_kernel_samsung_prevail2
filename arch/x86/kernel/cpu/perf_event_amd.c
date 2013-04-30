@@ -437,6 +437,10 @@ static __initconst const struct x86_pmu amd_pmu = {
  * 0x023	DE	PERF_CTL[2:0]
  * 0x02D	LS	PERF_CTL[3]
  * 0x02E	LS	PERF_CTL[3,0]
+<<<<<<< HEAD
+=======
+ * 0x031	LS	PERF_CTL[2:0] (**)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
  * 0x043	CU	PERF_CTL[2:0]
  * 0x045	CU	PERF_CTL[2:0]
  * 0x046	CU	PERF_CTL[2:0]
@@ -450,10 +454,19 @@ static __initconst const struct x86_pmu amd_pmu = {
  * 0x0DD	LS	PERF_CTL[5:0]
  * 0x0DE	LS	PERF_CTL[5:0]
  * 0x0DF	LS	PERF_CTL[5:0]
+<<<<<<< HEAD
  * 0x1D6	EX	PERF_CTL[5:0]
  * 0x1D8	EX	PERF_CTL[5:0]
  *
  * (*) depending on the umask all FPU counters may be used
+=======
+ * 0x1C0	EX	PERF_CTL[5:3]
+ * 0x1D6	EX	PERF_CTL[5:0]
+ * 0x1D8	EX	PERF_CTL[5:0]
+ *
+ * (*)  depending on the umask all FPU counters may be used
+ * (**) only one unitmask enabled at a time
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
  */
 
 static struct event_constraint amd_f15_PMC0  = EVENT_CONSTRAINT(0, 0x01, 0);
@@ -503,6 +516,15 @@ amd_get_event_constraints_f15h(struct cpu_hw_events *cpuc, struct perf_event *ev
 			return &amd_f15_PMC3;
 		case 0x02E:
 			return &amd_f15_PMC30;
+<<<<<<< HEAD
+=======
+		case 0x031:
+			if (hweight_long(hwc->config & ARCH_PERFMON_EVENTSEL_UMASK) <= 1)
+				return &amd_f15_PMC20;
+			return &emptyconstraint;
+		case 0x1C0:
+			return &amd_f15_PMC53;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		default:
 			return &amd_f15_PMC50;
 		}

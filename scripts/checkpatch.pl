@@ -7,12 +7,15 @@
 
 use strict;
 
+<<<<<<< HEAD
 use constant BEFORE_SHORTTEXT => 0;
 use constant IN_SHORTTEXT => 1;
 use constant AFTER_SHORTTEXT => 2;
 use constant CHECK_NEXT_SHORTTEXT => 3;
 use constant SHORTTEXT_LIMIT => 75;
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 my $P = $0;
 $P =~ s@.*/@@g;
 
@@ -1153,6 +1156,7 @@ sub check_absolute_file {
 	}
 }
 
+<<<<<<< HEAD
 sub cleanup_continuation_headers {
 	# Collapse any header-continuation lines into a single line so they
 	# can be parsed meaningfully, as the parser only has one line
@@ -1180,6 +1184,8 @@ sub cleanup_continuation_headers {
 	} while ($again);
 }
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 sub process {
 	my $filename = shift;
 
@@ -1188,8 +1194,11 @@ sub process {
 	my $prevrawline="";
 	my $stashline="";
 	my $stashrawline="";
+<<<<<<< HEAD
 	my $subjectline="";
 	my $sublinenr="";
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	my $length;
 	my $indent;
@@ -1229,6 +1238,7 @@ sub process {
 	my @setup_docs = ();
 	my $setup_docs = 0;
 
+<<<<<<< HEAD
 	my $exec_file = "";
 
 	my $shorttext = BEFORE_SHORTTEXT;
@@ -1238,6 +1248,10 @@ sub process {
 	cleanup_continuation_headers();
 	my $line;
 
+=======
+	sanitise_line_reset();
+	my $line;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	foreach my $rawline (@rawlines) {
 		$linenr++;
 		$line = $rawline;
@@ -1374,7 +1388,10 @@ sub process {
 		if ($line =~ /^diff --git.*?(\S+)$/) {
 			$realfile = $1;
 			$realfile =~ s@^([^/]*)/@@;
+<<<<<<< HEAD
 			$exec_file = $realfile;
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 		} elsif ($line =~ /^\+\+\+\s+(\S+)/) {
 			$realfile = $1;
@@ -1389,6 +1406,7 @@ sub process {
 			if ($realfile =~ m@^include/asm/@) {
 				ERROR("do not modify files in include/asm, change architecture specific files in include/asm-<architecture>\n" . "$here$rawline\n");
 			}
+<<<<<<< HEAD
 			$exec_file = "";
 			next;
 		}
@@ -1409,12 +1427,18 @@ sub process {
 			    ERROR("Source file has +x permissions: " .
 			    "$exec_file\n");
 		}
+=======
+			next;
+		}
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		$here .= "FILE: $realfile:$realline:" if ($realcnt != 0);
 
 		my $hereline = "$here\n$rawline\n";
 		my $herecurr = "$here\n$rawline\n";
 		my $hereprev = "$here\n$prevrawline\n$rawline\n";
 
+<<<<<<< HEAD
 		if ($shorttext != AFTER_SHORTTEXT) {
 			if ($shorttext == IN_SHORTTEXT) {
 				if ($line=~/^---/ || $line=~/^diff.*/) {
@@ -1465,6 +1489,8 @@ sub process {
 			}
 		}
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		$cnt_lines++ if ($realcnt != 0);
 
 # Check for incorrect file permissions
@@ -1487,6 +1513,7 @@ sub process {
 				WARN("space required after Signed-off-by:\n" .
 					$herecurr);
 			}
+<<<<<<< HEAD
 			if ($line =~ /^\s*signed-off-by:.*(quicinc|qualcomm)\.com/i) {
 				WARN("invalid Signed-off-by identity\n" . $line );
 			}
@@ -1495,6 +1522,8 @@ sub process {
 #check the patch for invalid author credentials
 		if ($line =~ /^From:.*(quicinc|qualcomm)\.com/) {
 			WARN("invalid author identity\n" . $line );
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		}
 
 # Check for wrappage within a valid hunk of the file
@@ -1543,6 +1572,40 @@ sub process {
 			$rpt_cleaners = 1;
 		}
 
+<<<<<<< HEAD
+=======
+# check for Kconfig help text having a real description
+# Only applies when adding the entry originally, after that we do not have
+# sufficient context to determine whether it is indeed long enough.
+		if ($realfile =~ /Kconfig/ &&
+		    $line =~ /\+\s*(?:---)?help(?:---)?$/) {
+			my $length = 0;
+			my $cnt = $realcnt;
+			my $ln = $linenr + 1;
+			my $f;
+			my $is_end = 0;
+			while ($cnt > 0 && defined $lines[$ln - 1]) {
+				$f = $lines[$ln - 1];
+				$cnt-- if ($lines[$ln - 1] !~ /^-/);
+				$is_end = $lines[$ln - 1] =~ /^\+/;
+				$ln++;
+
+				next if ($f =~ /^-/);
+				$f =~ s/^.//;
+				$f =~ s/#.*//;
+				$f =~ s/^\s+//;
+				next if ($f =~ /^$/);
+				if ($f =~ /^\s*config\s/) {
+					$is_end = 1;
+					last;
+				}
+				$length++;
+			}
+			WARN("please write a paragraph that describes the config symbol fully\n" . $herecurr) if ($is_end && $length < 4);
+			#print "is_end<$is_end> length<$length>\n";
+		}
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 # check we are in a valid source file if not then ignore this hunk
 		next if ($realfile !~ /\.(h|c|s|S|pl|sh)$/);
 
@@ -1551,7 +1614,10 @@ sub process {
 		    $rawline !~ /^.\s*\*\s*\@$Ident\s/ &&
 		    !($line =~ /^\+\s*$logFunctions\s*\(\s*(?:(KERN_\S+\s*|[^"]*))?"[X\t]*"\s*(?:|,|\)\s*;)\s*$/ ||
 		    $line =~ /^\+\s*"[^"]*"\s*(?:\s*|,|\)\s*;)\s*$/) &&
+<<<<<<< HEAD
 		    $realfile ne "scripts/checkpatch.pl" &&
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		    $length > 80)
 		{
 			WARN("line over 80 characters\n" . $herecurr);
@@ -1957,6 +2023,15 @@ sub process {
 				$herecurr);
 		}
 
+<<<<<<< HEAD
+=======
+# check for static const char * arrays.
+		if ($line =~ /\bstatic\s+const\s+char\s*\*\s*(\w+)\s*\[\s*\]\s*=\s*/) {
+			WARN("static const char * array should probably be static const char * const\n" .
+				$herecurr);
+               }
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 # check for static char foo[] = "bar" declarations.
 		if ($line =~ /\bstatic\s+char\s+(\w+)\s*\[\s*\]\s*=\s*"/) {
 			WARN("static char array declaration should probably be static const char\n" .
@@ -2327,7 +2402,11 @@ sub process {
 
 # check spacing on parentheses
 		if ($line =~ /\(\s/ && $line !~ /\(\s*(?:\\)?$/ &&
+<<<<<<< HEAD
 		    $line !~ /for\s*\(\s+;/ && $line !~ /^\+\s*[A-Z_][A-Z\d_]*\(\s*\d+(\,.*)?\)\,?$/) {
+=======
+		    $line !~ /for\s*\(\s+;/) {
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			ERROR("space prohibited after that open parenthesis '('\n" . $herecurr);
 		}
 		if ($line =~ /(\s+)\)/ && $line !~ /^.\s*\)/ &&
@@ -2521,7 +2600,11 @@ sub process {
 		if ($realfile !~ m@/vmlinux.lds.h$@ &&
 		    $line =~ /^.\s*\#\s*define\s*$Ident(\()?/) {
 			my $ln = $linenr;
+<<<<<<< HEAD
 			my $cnt = $realcnt - 1;
+=======
+			my $cnt = $realcnt;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			my ($off, $dstat, $dcond, $rest);
 			my $ctx = '';
 
@@ -2577,19 +2660,25 @@ sub process {
 			{
 			}
 
+<<<<<<< HEAD
 			# Extremely long macros may fall off the end of the
 			# available context without closing.  Give a dangling
 			# backslash the benefit of the doubt and allow it
 			# to gobble any hanging open-parens.
 			$dstat =~ s/\(.+\\$/1/;
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			my $exceptions = qr{
 				$Declare|
 				module_param_named|
 				MODULE_PARAM_DESC|
 				DECLARE_PER_CPU|
 				DEFINE_PER_CPU|
+<<<<<<< HEAD
 				CLK_[A-Z\d_]+|
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 				__typeof__\(|
 				union|
 				struct|
@@ -2748,6 +2837,7 @@ sub process {
 			WARN("Use of volatile is usually wrong: see Documentation/volatile-considered-harmful.txt\n" . $herecurr);
 		}
 
+<<<<<<< HEAD
 # sys_open/read/write/close are not allowed in the kernel
 		if ($line =~ /\b(sys_(?:open|read|write|close))\b/) {
 			ERROR("$1 is inappropriate in kernel code.\n" .
@@ -2825,6 +2915,12 @@ sub process {
 		if ($line =~ /^.\s*\#\s*if\s+1\b/) {
 			WARN("if this code is required consider removing"
 				. " #if 1\n" .  $herecurr);
+=======
+# warn about #if 0
+		if ($line =~ /^.\s*\#\s*if\s+0\b/) {
+			CHK("if this code is redundant consider removing it\n" .
+				$herecurr);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		}
 
 # check for needless kfree() checks
@@ -2857,11 +2953,14 @@ sub process {
 			}
 		}
 
+<<<<<<< HEAD
 # check the patch for use of mdelay
 		if ($line =~ /\bmdelay\s*\(/) {
 			WARN("use of mdelay() found: msleep() is the preferred API.\n" . $line );
 		}
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 # warn about #ifdefs in C files
 #		if ($line =~ /^.\s*\#\s*if(|n)def/ && ($realfile =~ /\.c$/)) {
 #			print "#ifdef in C files should be avoided\n";
@@ -2971,11 +3070,14 @@ sub process {
 		    WARN("Statements terminations use 1 semicolon\n" . $herecurr);
 		}
 
+<<<<<<< HEAD
 # check for return codes on error paths
 		if ($line =~ /\breturn\s+-\d+/) {
 			ERROR("illegal return value, please use an error code\n" . $herecurr);
 		}
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 # check for gcc specific __FUNCTION__
 		if ($line =~ /__FUNCTION__/) {
 			WARN("__func__ should be used instead of gcc specific __FUNCTION__\n"  . $herecurr);

@@ -575,6 +575,12 @@ static bool guest_cpuid_has_xsave(struct kvm_vcpu *vcpu)
 {
 	struct kvm_cpuid_entry2 *best;
 
+<<<<<<< HEAD
+=======
+	if (!cpu_has_xsave)
+		return 0;
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	best = kvm_find_cpuid_entry(vcpu, 1, 0);
 	return best && (best->ecx & bit(X86_FEATURE_XSAVE));
 }
@@ -1070,7 +1076,10 @@ static int kvm_guest_time_update(struct kvm_vcpu *v)
 {
 	unsigned long flags;
 	struct kvm_vcpu_arch *vcpu = &v->arch;
+<<<<<<< HEAD
 	void *shared_kaddr;
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	unsigned long this_tsc_khz;
 	s64 kernel_ns, max_kernel_ns;
 	u64 tsc_timestamp;
@@ -1106,7 +1115,11 @@ static int kvm_guest_time_update(struct kvm_vcpu *v)
 
 	local_irq_restore(flags);
 
+<<<<<<< HEAD
 	if (!vcpu->time_page)
+=======
+	if (!vcpu->pv_time_enabled)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		return 0;
 
 	/*
@@ -1164,6 +1177,7 @@ static int kvm_guest_time_update(struct kvm_vcpu *v)
 	 */
 	vcpu->hv_clock.version += 2;
 
+<<<<<<< HEAD
 	shared_kaddr = kmap_atomic(vcpu->time_page, KM_USER0);
 
 	memcpy(shared_kaddr + vcpu->time_offset, &vcpu->hv_clock,
@@ -1172,6 +1186,11 @@ static int kvm_guest_time_update(struct kvm_vcpu *v)
 	kunmap_atomic(shared_kaddr, KM_USER0);
 
 	mark_page_dirty(v->kvm, vcpu->time >> PAGE_SHIFT);
+=======
+	kvm_write_guest_cached(v->kvm, &vcpu->pv_time,
+				&vcpu->hv_clock,
+				sizeof(vcpu->hv_clock));
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	return 0;
 }
 
@@ -1451,7 +1470,12 @@ static int kvm_pv_enable_async_pf(struct kvm_vcpu *vcpu, u64 data)
 		return 0;
 	}
 
+<<<<<<< HEAD
 	if (kvm_gfn_to_hva_cache_init(vcpu->kvm, &vcpu->arch.apf.data, gpa))
+=======
+	if (kvm_gfn_to_hva_cache_init(vcpu->kvm, &vcpu->arch.apf.data, gpa,
+					sizeof(u32)))
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		return 1;
 
 	vcpu->arch.apf.send_user_only = !(data & KVM_ASYNC_PF_SEND_ALWAYS);
@@ -1461,10 +1485,14 @@ static int kvm_pv_enable_async_pf(struct kvm_vcpu *vcpu, u64 data)
 
 static void kvmclock_reset(struct kvm_vcpu *vcpu)
 {
+<<<<<<< HEAD
 	if (vcpu->arch.time_page) {
 		kvm_release_page_dirty(vcpu->arch.time_page);
 		vcpu->arch.time_page = NULL;
 	}
+=======
+	vcpu->arch.pv_time_enabled = false;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 int kvm_set_msr_common(struct kvm_vcpu *vcpu, u32 msr, u64 data)
@@ -1524,6 +1552,10 @@ int kvm_set_msr_common(struct kvm_vcpu *vcpu, u32 msr, u64 data)
 		break;
 	case MSR_KVM_SYSTEM_TIME_NEW:
 	case MSR_KVM_SYSTEM_TIME: {
+<<<<<<< HEAD
+=======
+		u64 gpa_offset;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		kvmclock_reset(vcpu);
 
 		vcpu->arch.time = data;
@@ -1533,6 +1565,7 @@ int kvm_set_msr_common(struct kvm_vcpu *vcpu, u32 msr, u64 data)
 		if (!(data & 1))
 			break;
 
+<<<<<<< HEAD
 		/* ...but clean it before doing the actual write */
 		vcpu->arch.time_offset = data & ~(PAGE_MASK | 1);
 
@@ -1543,6 +1576,16 @@ int kvm_set_msr_common(struct kvm_vcpu *vcpu, u32 msr, u64 data)
 			kvm_release_page_clean(vcpu->arch.time_page);
 			vcpu->arch.time_page = NULL;
 		}
+=======
+		gpa_offset = data & ~(PAGE_MASK | 1);
+
+		if (kvm_gfn_to_hva_cache_init(vcpu->kvm,
+		     &vcpu->arch.pv_time, data & ~1ULL,
+		     sizeof(struct pvclock_vcpu_time_info)))
+			vcpu->arch.pv_time_enabled = false;
+		else
+			vcpu->arch.pv_time_enabled = true;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		break;
 	}
 	case MSR_KVM_ASYNC_PF_EN:
@@ -3410,6 +3453,12 @@ long kvm_arch_vm_ioctl(struct file *filp,
 		r = -EEXIST;
 		if (kvm->arch.vpic)
 			goto create_irqchip_unlock;
+<<<<<<< HEAD
+=======
+		r = -EINVAL;
+		if (atomic_read(&kvm->online_vcpus))
+			goto create_irqchip_unlock;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		r = -ENOMEM;
 		vpic = kvm_create_pic(kvm);
 		if (vpic) {
@@ -4407,6 +4456,31 @@ static int emulator_intercept(struct x86_emulate_ctxt *ctxt,
 	return kvm_x86_ops->check_intercept(emul_to_vcpu(ctxt), info, stage);
 }
 
+<<<<<<< HEAD
+=======
+static bool emulator_get_cpuid(struct x86_emulate_ctxt *ctxt,
+			       u32 *eax, u32 *ebx, u32 *ecx, u32 *edx)
+{
+	struct kvm_cpuid_entry2 *cpuid = NULL;
+
+	if (eax && ecx)
+		cpuid = kvm_find_cpuid_entry(emul_to_vcpu(ctxt),
+					    *eax, *ecx);
+
+	if (cpuid) {
+		*eax = cpuid->eax;
+		*ecx = cpuid->ecx;
+		if (ebx)
+			*ebx = cpuid->ebx;
+		if (edx)
+			*edx = cpuid->edx;
+		return true;
+	}
+
+	return false;
+}
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 static struct x86_emulate_ops emulate_ops = {
 	.read_std            = kvm_read_guest_virt_system,
 	.write_std           = kvm_write_guest_virt_system,
@@ -4437,6 +4511,10 @@ static struct x86_emulate_ops emulate_ops = {
 	.get_fpu             = emulator_get_fpu,
 	.put_fpu             = emulator_put_fpu,
 	.intercept           = emulator_intercept,
+<<<<<<< HEAD
+=======
+	.get_cpuid           = emulator_get_cpuid,
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 };
 
 static void cache_all_regs(struct kvm_vcpu *vcpu)
@@ -5828,6 +5906,12 @@ int kvm_arch_vcpu_ioctl_set_sregs(struct kvm_vcpu *vcpu,
 	int pending_vec, max_bits, idx;
 	struct desc_ptr dt;
 
+<<<<<<< HEAD
+=======
+	if (!guest_cpuid_has_xsave(vcpu) && (sregs->cr4 & X86_CR4_OSXSAVE))
+		return -EINVAL;
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	dt.size = sregs->idt.limit;
 	dt.address = sregs->idt.base;
 	kvm_x86_ops->set_idt(vcpu, &dt);
@@ -6093,12 +6177,16 @@ int kvm_arch_vcpu_setup(struct kvm_vcpu *vcpu)
 	if (r == 0)
 		r = kvm_mmu_setup(vcpu);
 	vcpu_put(vcpu);
+<<<<<<< HEAD
 	if (r < 0)
 		goto free_vcpu;
 
 	return 0;
 free_vcpu:
 	kvm_x86_ops->vcpu_free(vcpu);
+=======
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	return r;
 }
 
@@ -6171,6 +6259,14 @@ void kvm_arch_check_processor_compat(void *rtn)
 	kvm_x86_ops->check_processor_compatibility(rtn);
 }
 
+<<<<<<< HEAD
+=======
+bool kvm_vcpu_compatible(struct kvm_vcpu *vcpu)
+{
+	return irqchip_in_kernel(vcpu->kvm) == (vcpu->arch.apic != NULL);
+}
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 int kvm_arch_vcpu_init(struct kvm_vcpu *vcpu)
 {
 	struct page *page;
@@ -6220,6 +6316,10 @@ int kvm_arch_vcpu_init(struct kvm_vcpu *vcpu)
 	if (!zalloc_cpumask_var(&vcpu->arch.wbinvd_dirty_mask, GFP_KERNEL))
 		goto fail_free_mce_banks;
 
+<<<<<<< HEAD
+=======
+	vcpu->arch.pv_time_enabled = false;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	kvm_async_pf_hash_reset(vcpu);
 
 	return 0;

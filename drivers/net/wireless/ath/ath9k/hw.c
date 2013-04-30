@@ -513,6 +513,7 @@ static int __ath9k_hw_init(struct ath_hw *ah)
 	ah->WARegVal |= (AR_WA_D3_L1_DISABLE |
 			 AR_WA_ASPM_TIMER_BASED_DISABLE);
 
+<<<<<<< HEAD
 	/*
 	 * Read back AR_WA into a permanent copy and set bits 14 and 17.
 	 * We need to do this to avoid RMW of this register. We cannot
@@ -524,6 +525,8 @@ static int __ath9k_hw_init(struct ath_hw *ah)
 
 	ath9k_hw_read_revisions(ah);
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	if (!ath9k_hw_set_reset_reg(ah, ATH9K_RESET_POWER_ON)) {
 		ath_err(common, "Couldn't reset chip\n");
 		return -EIO;
@@ -541,7 +544,11 @@ static int __ath9k_hw_init(struct ath_hw *ah)
 
 	if (ah->config.serialize_regmode == SER_REG_MODE_AUTO) {
 		if (ah->hw_version.macVersion == AR_SREV_VERSION_5416_PCI ||
+<<<<<<< HEAD
 		    ((AR_SREV_9160(ah) || AR_SREV_9280(ah)) &&
+=======
+		    ((AR_SREV_9160(ah) || AR_SREV_9280(ah) || AR_SREV_9287(ah)) &&
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		     !ah->is_pciexpress)) {
 			ah->config.serialize_regmode =
 				SER_REG_MODE_ON;
@@ -693,13 +700,34 @@ static void ath9k_hw_init_qos(struct ath_hw *ah)
 
 u32 ar9003_get_pll_sqsum_dvc(struct ath_hw *ah)
 {
+<<<<<<< HEAD
+=======
+	struct ath_common *common = ath9k_hw_common(ah);
+	int i = 0;
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	REG_CLR_BIT(ah, PLL3, PLL3_DO_MEAS_MASK);
 	udelay(100);
 	REG_SET_BIT(ah, PLL3, PLL3_DO_MEAS_MASK);
 
+<<<<<<< HEAD
 	while ((REG_READ(ah, PLL4) & PLL4_MEAS_DONE) == 0)
 		udelay(100);
 
+=======
+	while ((REG_READ(ah, PLL4) & PLL4_MEAS_DONE) == 0) {
+
+		udelay(100);
+
+		if (WARN_ON_ONCE(i >= 100)) {
+			ath_err(common, "PLL4 meaurement not done\n");
+			break;
+		}
+
+		i++;
+	}
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	return (REG_READ(ah, PLL3) & SQSUM_DVC_MASK) >> 3;
 }
 EXPORT_SYMBOL(ar9003_get_pll_sqsum_dvc);
@@ -1942,6 +1970,13 @@ int ath9k_hw_fill_cap_info(struct ath_hw *ah)
 		pCap->num_gpio_pins = AR9271_NUM_GPIO;
 	else if (AR_DEVID_7010(ah))
 		pCap->num_gpio_pins = AR7010_NUM_GPIO;
+<<<<<<< HEAD
+=======
+	else if (AR_SREV_9300_20_OR_LATER(ah))
+		pCap->num_gpio_pins = AR9300_NUM_GPIO;
+	else if (AR_SREV_9287_11_OR_LATER(ah))
+		pCap->num_gpio_pins = AR9287_NUM_GPIO;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	else if (AR_SREV_9285_12_OR_LATER(ah))
 		pCap->num_gpio_pins = AR9285_NUM_GPIO;
 	else if (AR_SREV_9280_20_OR_LATER(ah))

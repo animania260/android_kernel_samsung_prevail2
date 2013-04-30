@@ -93,6 +93,10 @@ extern int radeon_audio;
 extern int radeon_disp_priority;
 extern int radeon_hw_i2c;
 extern int radeon_pcie_gen2;
+<<<<<<< HEAD
+=======
+extern int radeon_msi;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 /*
  * Copy from radeon_drv.h so we don't have to include both and have conflicting

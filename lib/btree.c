@@ -319,8 +319,13 @@ void *btree_get_prev(struct btree_head *head, struct btree_geo *geo,
 
 	if (head->height == 0)
 		return NULL;
+<<<<<<< HEAD
 retry:
 	longcpy(key, __key, geo->keylen);
+=======
+	longcpy(key, __key, geo->keylen);
+retry:
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	dec_key(geo, key);
 
 	node = head->node;
@@ -351,7 +356,11 @@ retry:
 	}
 miss:
 	if (retry_key) {
+<<<<<<< HEAD
 		__key = retry_key;
+=======
+		longcpy(key, retry_key, geo->keylen);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		retry_key = NULL;
 		goto retry;
 	}

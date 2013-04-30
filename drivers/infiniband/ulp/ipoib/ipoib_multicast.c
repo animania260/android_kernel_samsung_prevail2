@@ -189,7 +189,13 @@ static int ipoib_mcast_join_finish(struct ipoib_mcast *mcast,
 
 	mcast->mcmember = *mcmember;
 
+<<<<<<< HEAD
 	/* Set the cached Q_Key before we attach if it's the broadcast group */
+=======
+	/* Set the multicast MTU and cached Q_Key before we attach if it's
+	 * the broadcast group.
+	 */
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	if (!memcmp(mcast->mcmember.mgid.raw, priv->dev->broadcast + 4,
 		    sizeof (union ib_gid))) {
 		spin_lock_irq(&priv->lock);
@@ -197,10 +203,23 @@ static int ipoib_mcast_join_finish(struct ipoib_mcast *mcast,
 			spin_unlock_irq(&priv->lock);
 			return -EAGAIN;
 		}
+<<<<<<< HEAD
+=======
+		priv->mcast_mtu = IPOIB_UD_MTU(ib_mtu_enum_to_int(priv->broadcast->mcmember.mtu));
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		priv->qkey = be32_to_cpu(priv->broadcast->mcmember.qkey);
 		spin_unlock_irq(&priv->lock);
 		priv->tx_wr.wr.ud.remote_qkey = priv->qkey;
 		set_qkey = 1;
+<<<<<<< HEAD
+=======
+
+		if (!ipoib_cm_admin_enabled(dev)) {
+			rtnl_lock();
+			dev_set_mtu(dev, min(priv->mcast_mtu, priv->admin_mtu));
+			rtnl_unlock();
+		}
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	}
 
 	if (!test_bit(IPOIB_MCAST_FLAG_SENDONLY, &mcast->flags)) {
@@ -258,10 +277,15 @@ static int ipoib_mcast_join_finish(struct ipoib_mcast *mcast,
 	netif_tx_lock_bh(dev);
 	while (!skb_queue_empty(&mcast->pkt_queue)) {
 		struct sk_buff *skb = skb_dequeue(&mcast->pkt_queue);
+<<<<<<< HEAD
+=======
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		netif_tx_unlock_bh(dev);
 
 		skb->dev = dev;
 
+<<<<<<< HEAD
 		if (!skb_dst(skb) || !skb_dst(skb)->neighbour) {
 			/* put pseudoheader back on for next time */
 			skb_push(skb, sizeof (struct ipoib_pseudoheader));
@@ -269,6 +293,11 @@ static int ipoib_mcast_join_finish(struct ipoib_mcast *mcast,
 
 		if (dev_queue_xmit(skb))
 			ipoib_warn(priv, "dev_queue_xmit failed to requeue packet\n");
+=======
+		if (dev_queue_xmit(skb))
+			ipoib_warn(priv, "dev_queue_xmit failed to requeue packet\n");
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		netif_tx_lock_bh(dev);
 	}
 	netif_tx_unlock_bh(dev);
@@ -589,6 +618,7 @@ void ipoib_mcast_join_task(struct work_struct *work)
 		return;
 	}
 
+<<<<<<< HEAD
 	priv->mcast_mtu = IPOIB_UD_MTU(ib_mtu_enum_to_int(priv->broadcast->mcmember.mtu));
 
 	if (!ipoib_cm_admin_enabled(dev)) {
@@ -597,6 +627,8 @@ void ipoib_mcast_join_task(struct work_struct *work)
 		rtnl_unlock();
 	}
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	ipoib_dbg_mcast(priv, "successfully joined all multicast groups\n");
 
 	clear_bit(IPOIB_MCAST_RUN, &priv->flags);
@@ -715,11 +747,23 @@ void ipoib_mcast_send(struct net_device *dev, void *mgid, struct sk_buff *skb)
 
 out:
 	if (mcast && mcast->ah) {
+<<<<<<< HEAD
 		if (skb_dst(skb)		&&
 		    skb_dst(skb)->neighbour &&
 		    !*to_ipoib_neigh(skb_dst(skb)->neighbour)) {
 			struct ipoib_neigh *neigh = ipoib_neigh_alloc(skb_dst(skb)->neighbour,
 									skb->dev);
+=======
+		struct dst_entry *dst = skb_dst(skb);
+		struct neighbour *n = NULL;
+
+		rcu_read_lock();
+		if (dst)
+			n = dst_get_neighbour(dst);
+		if (n && !*to_ipoib_neigh(n)) {
+			struct ipoib_neigh *neigh = ipoib_neigh_alloc(n,
+								      skb->dev);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 			if (neigh) {
 				kref_get(&mcast->ah->ref);
@@ -727,7 +771,11 @@ out:
 				list_add_tail(&neigh->list, &mcast->neigh_list);
 			}
 		}
+<<<<<<< HEAD
 
+=======
+		rcu_read_unlock();
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		spin_unlock_irqrestore(&priv->lock, flags);
 		ipoib_send(dev, skb, mcast->ah, IB_MULTICAST_QPN);
 		return;

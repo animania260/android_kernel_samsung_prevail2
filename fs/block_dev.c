@@ -64,7 +64,11 @@ static void bdev_inode_switch_bdi(struct inode *inode,
 	spin_unlock(&inode_wb_list_lock);
 }
 
+<<<<<<< HEAD
 static sector_t max_block(struct block_device *bdev)
+=======
+sector_t blkdev_max_block(struct block_device *bdev)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 {
 	sector_t retval = ~((sector_t)0);
 	loff_t sz = i_size_read(bdev->bd_inode);
@@ -135,7 +139,11 @@ static int
 blkdev_get_block(struct inode *inode, sector_t iblock,
 		struct buffer_head *bh, int create)
 {
+<<<<<<< HEAD
 	if (iblock >= max_block(I_BDEV(inode))) {
+=======
+	if (iblock >= blkdev_max_block(I_BDEV(inode))) {
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		if (create)
 			return -EIO;
 
@@ -157,7 +165,11 @@ static int
 blkdev_get_blocks(struct inode *inode, sector_t iblock,
 		struct buffer_head *bh, int create)
 {
+<<<<<<< HEAD
 	sector_t end_block = max_block(I_BDEV(inode));
+=======
+	sector_t end_block = blkdev_max_block(I_BDEV(inode));
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	unsigned long max_blocks = bh->b_size >> inode->i_blkbits;
 
 	if ((iblock + max_blocks) > end_block) {
@@ -576,6 +588,10 @@ struct block_device *bdgrab(struct block_device *bdev)
 	ihold(bdev->bd_inode);
 	return bdev;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(bdgrab);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 long nr_blockdev_pages(void)
 {
@@ -1052,7 +1068,13 @@ void bd_set_size(struct block_device *bdev, loff_t size)
 {
 	unsigned bsize = bdev_logical_block_size(bdev);
 
+<<<<<<< HEAD
 	bdev->bd_inode->i_size = size;
+=======
+	mutex_lock(&bdev->bd_inode->i_mutex);
+	i_size_write(bdev->bd_inode, size);
+	mutex_unlock(&bdev->bd_inode->i_mutex);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	while (bsize < PAGE_CACHE_SIZE) {
 		if (size & bsize)
 			break;
@@ -1075,6 +1097,10 @@ static int __blkdev_put(struct block_device *bdev, fmode_t mode, int for_part);
 static int __blkdev_get(struct block_device *bdev, fmode_t mode, int for_part)
 {
 	struct gendisk *disk;
+<<<<<<< HEAD
+=======
+	struct module *owner;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	int ret;
 	int partno;
 	int perm = 0;
@@ -1100,6 +1126,10 @@ static int __blkdev_get(struct block_device *bdev, fmode_t mode, int for_part)
 	disk = get_gendisk(bdev->bd_dev, &partno);
 	if (!disk)
 		goto out;
+<<<<<<< HEAD
+=======
+	owner = disk->fops->owner;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	disk_block_events(disk);
 	mutex_lock_nested(&bdev->bd_mutex, for_part);
@@ -1127,8 +1157,13 @@ static int __blkdev_get(struct block_device *bdev, fmode_t mode, int for_part)
 					bdev->bd_disk = NULL;
 					mutex_unlock(&bdev->bd_mutex);
 					disk_unblock_events(disk);
+<<<<<<< HEAD
 					module_put(disk->fops->owner);
 					put_disk(disk);
+=======
+					put_disk(disk);
+					module_put(owner);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 					goto restart;
 				}
 			}
@@ -1147,8 +1182,17 @@ static int __blkdev_get(struct block_device *bdev, fmode_t mode, int for_part)
 			 * The latter is necessary to prevent ghost
 			 * partitions on a removed medium.
 			 */
+<<<<<<< HEAD
 			if (bdev->bd_invalidated && (!ret || ret == -ENOMEDIUM))
 				rescan_partitions(disk, bdev);
+=======
+			if (bdev->bd_invalidated) {
+				if (!ret)
+					rescan_partitions(disk, bdev);
+				else if (ret == -ENOMEDIUM)
+					invalidate_partitions(disk, bdev);
+			}
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			if (ret)
 				goto out_clear;
 		} else {
@@ -1178,14 +1222,28 @@ static int __blkdev_get(struct block_device *bdev, fmode_t mode, int for_part)
 			if (bdev->bd_disk->fops->open)
 				ret = bdev->bd_disk->fops->open(bdev, mode);
 			/* the same as first opener case, read comment there */
+<<<<<<< HEAD
 			if (bdev->bd_invalidated && (!ret || ret == -ENOMEDIUM))
 				rescan_partitions(bdev->bd_disk, bdev);
+=======
+			if (bdev->bd_invalidated) {
+				if (!ret)
+					rescan_partitions(bdev->bd_disk, bdev);
+				else if (ret == -ENOMEDIUM)
+					invalidate_partitions(bdev->bd_disk, bdev);
+			}
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			if (ret)
 				goto out_unlock_bdev;
 		}
 		/* only one opener holds refs to the module and disk */
+<<<<<<< HEAD
 		module_put(disk->fops->owner);
 		put_disk(disk);
+=======
+		put_disk(disk);
+		module_put(owner);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	}
 	bdev->bd_openers++;
 	if (for_part)
@@ -1205,8 +1263,13 @@ static int __blkdev_get(struct block_device *bdev, fmode_t mode, int for_part)
  out_unlock_bdev:
 	mutex_unlock(&bdev->bd_mutex);
 	disk_unblock_events(disk);
+<<<<<<< HEAD
 	module_put(disk->fops->owner);
 	put_disk(disk);
+=======
+	put_disk(disk);
+	module_put(owner);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
  out:
 	bdput(bdev);
 
@@ -1432,14 +1495,23 @@ static int __blkdev_put(struct block_device *bdev, fmode_t mode, int for_part)
 	if (!bdev->bd_openers) {
 		struct module *owner = disk->fops->owner;
 
+<<<<<<< HEAD
 		put_disk(disk);
 		module_put(owner);
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		disk_put_part(bdev->bd_part);
 		bdev->bd_part = NULL;
 		bdev->bd_disk = NULL;
 		if (bdev != bdev->bd_contains)
 			victim = bdev->bd_contains;
 		bdev->bd_contains = NULL;
+<<<<<<< HEAD
+=======
+
+		put_disk(disk);
+		module_put(owner);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	}
 	mutex_unlock(&bdev->bd_mutex);
 	bdput(bdev);

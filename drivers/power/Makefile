@@ -36,6 +36,7 @@ obj-$(CONFIG_CHARGER_ISP1704)	+= isp1704_charger.o
 obj-$(CONFIG_CHARGER_MAX8903)	+= max8903_charger.o
 obj-$(CONFIG_CHARGER_TWL4030)	+= twl4030_charger.o
 obj-$(CONFIG_CHARGER_GPIO)	+= gpio-charger.o
+<<<<<<< HEAD
 obj-$(CONFIG_BATTERY_MSM)       += msm_battery.o
 obj-$(CONFIG_BATTERY_MSM8X60)   += msm_charger.o
 obj-$(CONFIG_PM8058_CHARGER)    += pmic8058-charger.o
@@ -51,3 +52,5 @@ obj-$(CONFIG_PM8921_CHARGER)	+= pm8921-charger.o
 obj-$(CONFIG_LTC4088_CHARGER)	+= ltc4088-charger.o
 obj-$(CONFIG_CHARGER_SMB328A)	+= smb328a_charger.o
 obj-$(CONFIG_BATTERY_SAMSUNG)	+= samsung_battery.o
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y

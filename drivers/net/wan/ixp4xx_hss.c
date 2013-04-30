@@ -8,6 +8,10 @@
  * as published by the Free Software Foundation.
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/module.h>
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #include <linux/bitops.h>
 #include <linux/cdev.h>
 #include <linux/dma-mapping.h>

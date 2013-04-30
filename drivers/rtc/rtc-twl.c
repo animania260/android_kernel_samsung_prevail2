@@ -490,6 +490,14 @@ static int __devinit twl_rtc_probe(struct platform_device *pdev)
 			goto out2;
 	}
 
+<<<<<<< HEAD
+=======
+	/* ensure interrupts are disabled, bootloaders can be strange */
+	ret = twl_rtc_write_u8(0, REG_RTC_INTERRUPTS_REG);
+	if (ret < 0)
+		dev_warn(&pdev->dev, "unable to disable interrupt\n");
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	/* init cached IRQ enable bits */
 	ret = twl_rtc_read_u8(&rtc_irq_bits, REG_RTC_INTERRUPTS_REG);
 	if (ret < 0)

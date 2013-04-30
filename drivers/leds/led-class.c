@@ -22,8 +22,11 @@
 #include <linux/leds.h>
 #include "leds.h"
 
+<<<<<<< HEAD
 #define LED_BUFF_SIZE 50
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 static struct class *leds_class;
 
 static void led_update_brightness(struct led_classdev *led_cdev)
@@ -40,7 +43,11 @@ static ssize_t led_brightness_show(struct device *dev,
 	/* no lock needed for this */
 	led_update_brightness(led_cdev);
 
+<<<<<<< HEAD
 	return snprintf(buf, LED_BUFF_SIZE, "%u\n", led_cdev->brightness);
+=======
+	return sprintf(buf, "%u\n", led_cdev->brightness);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 static ssize_t led_brightness_store(struct device *dev,
@@ -66,6 +73,7 @@ static ssize_t led_brightness_store(struct device *dev,
 	return ret;
 }
 
+<<<<<<< HEAD
 static ssize_t led_max_brightness_store(struct device *dev,
 		struct device_attribute *attr, const char *buf, size_t size)
 {
@@ -85,18 +93,28 @@ static ssize_t led_max_brightness_store(struct device *dev,
 	return ret;
 }
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 static ssize_t led_max_brightness_show(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {
 	struct led_classdev *led_cdev = dev_get_drvdata(dev);
 
+<<<<<<< HEAD
 	return snprintf(buf, LED_BUFF_SIZE, "%u\n", led_cdev->max_brightness);
+=======
+	return sprintf(buf, "%u\n", led_cdev->max_brightness);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 static struct device_attribute led_class_attrs[] = {
 	__ATTR(brightness, 0644, led_brightness_show, led_brightness_store),
+<<<<<<< HEAD
 	__ATTR(max_brightness, 0644, led_max_brightness_show,
 			led_max_brightness_store),
+=======
+	__ATTR(max_brightness, 0444, led_max_brightness_show, NULL),
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #ifdef CONFIG_LEDS_TRIGGERS
 	__ATTR(trigger, 0644, led_trigger_show, led_trigger_store),
 #endif
@@ -289,6 +307,11 @@ void led_blink_set(struct led_classdev *led_cdev,
 		   unsigned long *delay_on,
 		   unsigned long *delay_off)
 {
+<<<<<<< HEAD
+=======
+	del_timer_sync(&led_cdev->blink_timer);
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	if (led_cdev->blink_set &&
 	    !led_cdev->blink_set(led_cdev, delay_on, delay_off))
 		return;

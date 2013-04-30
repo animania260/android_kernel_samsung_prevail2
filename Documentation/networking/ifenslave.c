@@ -539,12 +539,20 @@ static int if_getconfig(char *ifname)
 		metric = 0;
 	} else
 		metric = ifr.ifr_metric;
+<<<<<<< HEAD
+=======
+	printf("The result of SIOCGIFMETRIC is %d\n", metric);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	strcpy(ifr.ifr_name, ifname);
 	if (ioctl(skfd, SIOCGIFMTU, &ifr) < 0)
 		mtu = 0;
 	else
 		mtu = ifr.ifr_mtu;
+<<<<<<< HEAD
+=======
+	printf("The result of SIOCGIFMTU is %d\n", mtu);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	strcpy(ifr.ifr_name, ifname);
 	if (ioctl(skfd, SIOCGIFDSTADDR, &ifr) < 0) {

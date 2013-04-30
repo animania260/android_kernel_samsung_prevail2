@@ -1009,6 +1009,11 @@ int freeze_super(struct super_block *sb)
 			printk(KERN_ERR
 				"VFS:Filesystem freeze failed\n");
 			sb->s_frozen = SB_UNFROZEN;
+<<<<<<< HEAD
+=======
+			smp_wmb();
+			wake_up(&sb->s_wait_unfrozen);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			deactivate_locked_super(sb);
 			return ret;
 		}

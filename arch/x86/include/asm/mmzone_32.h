@@ -14,12 +14,15 @@ extern struct pglist_data *node_data[];
 
 #include <asm/numaq.h>
 
+<<<<<<< HEAD
 extern void resume_map_numa_kva(pgd_t *pgd);
 
 #else /* !CONFIG_NUMA */
 
 static inline void resume_map_numa_kva(pgd_t *pgd) {}
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #endif /* CONFIG_NUMA */
 
 #ifdef CONFIG_DISCONTIGMEM

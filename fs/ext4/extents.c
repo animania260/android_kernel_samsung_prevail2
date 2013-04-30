@@ -341,6 +341,11 @@ static int ext4_valid_extent(struct inode *inode, struct ext4_extent *ext)
 	ext4_fsblk_t block = ext4_ext_pblock(ext);
 	int len = ext4_ext_get_actual_len(ext);
 
+<<<<<<< HEAD
+=======
+	if (len == 0)
+		return 0;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	return ext4_data_block_valid(EXT4_SB(inode->i_sb), block, len);
 }
 
@@ -2138,13 +2143,22 @@ ext4_ext_in_cache(struct inode *inode, ext4_lblk_t block,
  * last index in the block only.
  */
 static int ext4_ext_rm_idx(handle_t *handle, struct inode *inode,
+<<<<<<< HEAD
 			struct ext4_ext_path *path)
+=======
+			struct ext4_ext_path *path, int depth)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 {
 	int err;
 	ext4_fsblk_t leaf;
 
 	/* free index block */
+<<<<<<< HEAD
 	path--;
+=======
+	depth--;
+	path = path + depth;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	leaf = ext4_idx_pblock(path->p_idx);
 	if (unlikely(path->p_hdr->eh_entries == 0)) {
 		EXT4_ERROR_INODE(inode, "path->p_hdr->eh_entries == 0");
@@ -2160,6 +2174,22 @@ static int ext4_ext_rm_idx(handle_t *handle, struct inode *inode,
 	ext_debug("index is empty, remove it, free block %llu\n", leaf);
 	ext4_free_blocks(handle, inode, NULL, leaf, 1,
 			 EXT4_FREE_BLOCKS_METADATA | EXT4_FREE_BLOCKS_FORGET);
+<<<<<<< HEAD
+=======
+
+	while (--depth >= 0) {
+		if (path->p_idx != EXT_FIRST_INDEX(path->p_hdr))
+			break;
+		path--;
+		err = ext4_ext_get_access(handle, inode, path);
+		if (err)
+			break;
+		path->p_idx->ei_block = (path+1)->p_idx->ei_block;
+		err = ext4_ext_dirty(handle, inode, path);
+		if (err)
+			break;
+	}
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	return err;
 }
 
@@ -2469,6 +2499,13 @@ ext4_ext_rm_leaf(handle_t *handle, struct inode *inode,
 		if (uninitialized && num)
 			ext4_ext_mark_uninitialized(ex);
 
+<<<<<<< HEAD
+=======
+		err = ext4_ext_dirty(handle, inode, path + depth);
+		if (err)
+			goto out;
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		/*
 		 * If the extent was completely released,
 		 * we need to remove it from the leaf
@@ -2490,10 +2527,13 @@ ext4_ext_rm_leaf(handle_t *handle, struct inode *inode,
 			le16_add_cpu(&eh->eh_entries, -1);
 		}
 
+<<<<<<< HEAD
 		err = ext4_ext_dirty(handle, inode, path + depth);
 		if (err)
 			goto out;
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		ext_debug("new extent: %u:%u:%llu\n", block, num,
 				ext4_ext_pblock(ex));
 		ex--;
@@ -2507,7 +2547,11 @@ ext4_ext_rm_leaf(handle_t *handle, struct inode *inode,
 	/* if this leaf is free, then we should
 	 * remove it from index block above */
 	if (err == 0 && eh->eh_entries == 0 && path[depth].p_bh != NULL)
+<<<<<<< HEAD
 		err = ext4_ext_rm_idx(handle, inode, path + depth);
+=======
+		err = ext4_ext_rm_idx(handle, inode, path, depth);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 out:
 	return err;
@@ -2637,7 +2681,11 @@ again:
 				/* index is empty, remove it;
 				 * handle must be already prepared by the
 				 * truncatei_leaf() */
+<<<<<<< HEAD
 				err = ext4_ext_rm_idx(handle, inode, path + i);
+=======
+				err = ext4_ext_rm_idx(handle, inode, path, i);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			}
 			/* root level has p_bh == NULL, brelse() eats this */
 			brelse(path[i].p_bh);
@@ -2844,7 +2892,11 @@ static int ext4_split_extent_at(handle_t *handle,
 		if (err)
 			goto fix_extent_len;
 		/* update the extent length and mark as initialized */
+<<<<<<< HEAD
 		ex->ee_len = cpu_to_le32(ee_len);
+=======
+		ex->ee_len = cpu_to_le16(ee_len);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		ext4_ext_try_to_merge(inode, path, ex);
 		err = ext4_ext_dirty(handle, inode, path + depth);
 		goto out;
@@ -2885,6 +2937,10 @@ static int ext4_split_extent(handle_t *handle,
 	int err = 0;
 	int uninitialized;
 	int split_flag1, flags1;
+<<<<<<< HEAD
+=======
+	int allocated = map->m_len;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	depth = ext_depth(inode);
 	ex = path[depth].p_ext;
@@ -2903,6 +2959,11 @@ static int ext4_split_extent(handle_t *handle,
 				map->m_lblk + map->m_len, split_flag1, flags1);
 		if (err)
 			goto out;
+<<<<<<< HEAD
+=======
+	} else {
+		allocated = ee_len - (map->m_lblk - ee_block);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	}
 
 	ext4_ext_drop_refs(path);
@@ -2925,7 +2986,11 @@ static int ext4_split_extent(handle_t *handle,
 
 	ext4_ext_show_leaf(inode, path);
 out:
+<<<<<<< HEAD
 	return err ? err : map->m_len;
+=======
+	return err ? err : allocated;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 #define EXT4_EXT_ZERO_LEN 7
@@ -3293,6 +3358,10 @@ out:
 					allocated - map->m_len);
 		allocated = map->m_len;
 	}
+<<<<<<< HEAD
+=======
+	map->m_len = allocated;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	/*
 	 * If we have done fallocate with the offset that is already

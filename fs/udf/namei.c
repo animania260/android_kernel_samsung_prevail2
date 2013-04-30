@@ -1297,6 +1297,10 @@ static int udf_encode_fh(struct dentry *de, __u32 *fh, int *lenp,
 	*lenp = 3;
 	fid->udf.block = location.logicalBlockNum;
 	fid->udf.partref = location.partitionReferenceNum;
+<<<<<<< HEAD
+=======
+	fid->udf.parent_partref = 0;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	fid->udf.generation = inode->i_generation;
 
 	if (connectable && !S_ISDIR(inode->i_mode)) {

@@ -351,7 +351,11 @@ ENDPROC(__aeabi_idivmod)
 
 #endif
 
+<<<<<<< HEAD
 ENTRY(Ldiv0)
+=======
+Ldiv0:
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 UNWIND(.fnstart)
 UNWIND(.pad #4)
 UNWIND(.save {lr})

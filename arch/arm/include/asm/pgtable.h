@@ -22,9 +22,13 @@
 
 #include <asm/memory.h>
 #include <mach/vmalloc.h>
+<<<<<<< HEAD
 #include <mach/memory.h>
 #include <asm/pgtable-hwdef.h>
 #include <asm/tlbflush.h>
+=======
+#include <asm/pgtable-hwdef.h>
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 /*
  * Just any arbitrary offset to the start of the vmalloc VM area: the
@@ -234,6 +238,7 @@ extern pgprot_t		pgprot_kernel;
 #define pgprot_writecombine(prot) \
 	__pgprot_modify(prot, L_PTE_MT_MASK, L_PTE_MT_BUFFERABLE)
 
+<<<<<<< HEAD
 #define pgprot_device(prot) \
 	__pgprot_modify(prot, L_PTE_MT_MASK, L_PTE_MT_DEV_NONSHARED)
 
@@ -246,18 +251,26 @@ extern pgprot_t		pgprot_kernel;
 #define pgprot_writebackwacache(prot) \
 	__pgprot_modify(prot, L_PTE_MT_MASK, L_PTE_MT_WRITEALLOC)
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #ifdef CONFIG_ARM_DMA_MEM_BUFFERABLE
 #define pgprot_dmacoherent(prot) \
 	__pgprot_modify(prot, L_PTE_MT_MASK, L_PTE_MT_BUFFERABLE | L_PTE_XN)
 #define __HAVE_PHYS_MEM_ACCESS_PROT
+<<<<<<< HEAD
 #define COHERENT_IS_NORMAL 1
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 struct file;
 extern pgprot_t phys_mem_access_prot(struct file *file, unsigned long pfn,
 				     unsigned long size, pgprot_t vma_prot);
 #else
 #define pgprot_dmacoherent(prot) \
 	__pgprot_modify(prot, L_PTE_MT_MASK, L_PTE_MT_UNCACHED | L_PTE_XN)
+<<<<<<< HEAD
 #define COHERENT_IS_NORMAL 0
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #endif
 
 #endif /* __ASSEMBLY__ */
@@ -376,6 +389,21 @@ static inline pte_t *pmd_page_vaddr(pmd_t pmd)
 #define set_pte_ext(ptep,pte,ext) cpu_set_pte_ext(ptep,pte,ext)
 #define pte_clear(mm,addr,ptep)	set_pte_ext(ptep, __pte(0), 0)
 
+<<<<<<< HEAD
+=======
+#define pte_none(pte)		(!pte_val(pte))
+#define pte_present(pte)	(pte_val(pte) & L_PTE_PRESENT)
+#define pte_write(pte)		(!(pte_val(pte) & L_PTE_RDONLY))
+#define pte_dirty(pte)		(pte_val(pte) & L_PTE_DIRTY)
+#define pte_young(pte)		(pte_val(pte) & L_PTE_YOUNG)
+#define pte_exec(pte)		(!(pte_val(pte) & L_PTE_XN))
+#define pte_special(pte)	(0)
+
+#define pte_present_user(pte) \
+	((pte_val(pte) & (L_PTE_PRESENT | L_PTE_USER)) == \
+	 (L_PTE_PRESENT | L_PTE_USER))
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #if __LINUX_ARM_ARCH__ < 6
 static inline void __sync_icache_dcache(pte_t pteval)
 {
@@ -387,6 +415,7 @@ extern void __sync_icache_dcache(pte_t pteval);
 static inline void set_pte_at(struct mm_struct *mm, unsigned long addr,
 			      pte_t *ptep, pte_t pteval)
 {
+<<<<<<< HEAD
 	if (addr >= TASK_SIZE)
 		set_pte_ext(ptep, pteval, 0);
 	else {
@@ -406,6 +435,17 @@ static inline void set_pte_at(struct mm_struct *mm, unsigned long addr,
 #define pte_present_user(pte) \
 	((pte_val(pte) & (L_PTE_PRESENT | L_PTE_USER)) == \
 	 (L_PTE_PRESENT | L_PTE_USER))
+=======
+	unsigned long ext = 0;
+
+	if (addr < TASK_SIZE && pte_present_user(pteval)) {
+		__sync_icache_dcache(pteval);
+		ext |= PTE_EXT_NG;
+	}
+
+	set_pte_ext(ptep, pteval, ext);
+}
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 #define PTE_BIT_FUNC(fn,op) \
 static inline pte_t pte_##fn(pte_t pte) { pte_val(pte) op; return pte; }
@@ -432,6 +472,7 @@ static inline pte_t pte_modify(pte_t pte, pgprot_t newprot)
  *
  *   3 3 2 2 2 2 2 2 2 2 2 2 1 1 1 1 1 1 1 1 1 1
  *   1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0
+<<<<<<< HEAD
  *   <--------------- offset --------------------> <- type --> 0 0 0
  *
  * This gives us up to 63 swap files and 32GB per swap file.  Note that
@@ -439,6 +480,15 @@ static inline pte_t pte_modify(pte_t pte, pgprot_t newprot)
  */
 #define __SWP_TYPE_SHIFT	3
 #define __SWP_TYPE_BITS		6
+=======
+ *   <--------------- offset ----------------------> < type -> 0 0 0
+ *
+ * This gives us up to 31 swap files and 64GB per swap file.  Note that
+ * the offset field is always non-zero.
+ */
+#define __SWP_TYPE_SHIFT	3
+#define __SWP_TYPE_BITS		5
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #define __SWP_TYPE_MASK		((1 << __SWP_TYPE_BITS) - 1)
 #define __SWP_OFFSET_SHIFT	(__SWP_TYPE_BITS + __SWP_TYPE_SHIFT)
 
@@ -486,7 +536,11 @@ static inline pte_t pte_modify(pte_t pte, pgprot_t newprot)
  * into virtual address `from'
  */
 #define io_remap_pfn_range(vma,from,pfn,size,prot) \
+<<<<<<< HEAD
 	remap_pfn_range(vma,from,pfn,size,prot)
+=======
+		remap_pfn_range(vma, from, pfn, size, prot)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 #define pgtable_cache_init() do { } while (0)
 

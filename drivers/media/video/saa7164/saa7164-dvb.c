@@ -475,6 +475,10 @@ int saa7164_dvb_register(struct saa7164_port *port)
 	case SAA7164_BOARD_HAUPPAUGE_HVR2200:
 	case SAA7164_BOARD_HAUPPAUGE_HVR2200_2:
 	case SAA7164_BOARD_HAUPPAUGE_HVR2200_3:
+<<<<<<< HEAD
+=======
+	case SAA7164_BOARD_HAUPPAUGE_HVR2200_4:
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		i2c_bus = &dev->i2c_bus[port->nr + 1];
 		switch (port->nr) {
 		case 0:

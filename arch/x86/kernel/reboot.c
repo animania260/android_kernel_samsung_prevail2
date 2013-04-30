@@ -124,7 +124,11 @@ __setup("reboot=", reboot_setup);
  */
 
 /*
+<<<<<<< HEAD
  * Some machines require the "reboot=b"  commandline option,
+=======
+ * Some machines require the "reboot=b" or "reboot=k"  commandline options,
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
  * this quirk makes that automatic.
  */
 static int __init set_bios_reboot(const struct dmi_system_id *d)
@@ -136,6 +140,18 @@ static int __init set_bios_reboot(const struct dmi_system_id *d)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static int __init set_kbd_reboot(const struct dmi_system_id *d)
+{
+	if (reboot_type != BOOT_KBD) {
+		reboot_type = BOOT_KBD;
+		printk(KERN_INFO "%s series board detected. Selecting KBD-method for reboot.\n", d->ident);
+	}
+	return 0;
+}
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 static struct dmi_system_id __initdata reboot_dmi_table[] = {
 	{	/* Handle problems with rebooting on Dell E520's */
 		.callback = set_bios_reboot,
@@ -295,7 +311,11 @@ static struct dmi_system_id __initdata reboot_dmi_table[] = {
 		},
 	},
 	{ /* Handle reboot issue on Acer Aspire one */
+<<<<<<< HEAD
 		.callback = set_bios_reboot,
+=======
+		.callback = set_kbd_reboot,
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		.ident = "Acer Aspire One A110",
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Acer"),
@@ -443,6 +463,17 @@ static struct dmi_system_id __initdata pci_reboot_dmi_table[] = {
 			DMI_MATCH(DMI_PRODUCT_NAME, "Latitude E6420"),
 		},
 	},
+<<<<<<< HEAD
+=======
+	{	/* Handle problems with rebooting on the Precision M6600. */
+		.callback = set_pci_reboot,
+		.ident = "Dell OptiPlex 990",
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
+			DMI_MATCH(DMI_PRODUCT_NAME, "Precision M6600"),
+		},
+	},
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	{ }
 };
 

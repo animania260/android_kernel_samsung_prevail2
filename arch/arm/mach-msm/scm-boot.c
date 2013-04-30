@@ -8,22 +8,42 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+<<<<<<< HEAD
+=======
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
  */
 
 #include <linux/module.h>
 #include <linux/slab.h>
 
+<<<<<<< HEAD
 #include <mach/scm.h>
+=======
+#include "scm.h"
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #include "scm-boot.h"
 
 /*
  * Set the cold/warm boot address for one of the CPU cores.
  */
+<<<<<<< HEAD
 int scm_set_boot_addr(void *addr, int flags)
 {
 	struct {
 		unsigned int flags;
 		void *addr;
+=======
+int scm_set_boot_addr(phys_addr_t addr, int flags)
+{
+	struct {
+		unsigned int flags;
+		phys_addr_t  addr;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	} cmd;
 
 	cmd.addr = addr;
@@ -32,4 +52,7 @@ int scm_set_boot_addr(void *addr, int flags)
 			&cmd, sizeof(cmd), NULL, 0);
 }
 EXPORT_SYMBOL(scm_set_boot_addr);
+<<<<<<< HEAD
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y

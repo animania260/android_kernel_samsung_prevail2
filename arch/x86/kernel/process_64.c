@@ -56,17 +56,42 @@ asmlinkage extern void ret_from_fork(void);
 DEFINE_PER_CPU(unsigned long, old_rsp);
 static DEFINE_PER_CPU(unsigned char, is_idle);
 
+<<<<<<< HEAD
 void enter_idle(void)
 {
 	percpu_write(is_idle, 1);
 	idle_notifier_call_chain(IDLE_START);
+=======
+static ATOMIC_NOTIFIER_HEAD(idle_notifier);
+
+void idle_notifier_register(struct notifier_block *n)
+{
+	atomic_notifier_chain_register(&idle_notifier, n);
+}
+EXPORT_SYMBOL_GPL(idle_notifier_register);
+
+void idle_notifier_unregister(struct notifier_block *n)
+{
+	atomic_notifier_chain_unregister(&idle_notifier, n);
+}
+EXPORT_SYMBOL_GPL(idle_notifier_unregister);
+
+void enter_idle(void)
+{
+	percpu_write(is_idle, 1);
+	atomic_notifier_call_chain(&idle_notifier, IDLE_START, NULL);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 static void __exit_idle(void)
 {
 	if (x86_test_and_clear_bit_percpu(0, is_idle) == 0)
 		return;
+<<<<<<< HEAD
 	idle_notifier_call_chain(IDLE_END);
+=======
+	atomic_notifier_call_chain(&idle_notifier, IDLE_END, NULL);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 /* Called from interrupts to signify idle end */
@@ -363,6 +388,7 @@ __switch_to(struct task_struct *prev_p, struct task_struct *next_p)
 	int cpu = smp_processor_id();
 	struct tss_struct *tss = &per_cpu(init_tss, cpu);
 	unsigned fsindex, gsindex;
+<<<<<<< HEAD
 	bool preload_fpu;
 
 	/*
@@ -375,6 +401,11 @@ __switch_to(struct task_struct *prev_p, struct task_struct *next_p)
 	/* we're going to use this soon, after a few expensive things */
 	if (preload_fpu)
 		prefetch(next->fpu.state);
+=======
+	fpu_switch_t fpu;
+
+	fpu = switch_fpu_prepare(prev_p, next_p);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	/*
 	 * Reload esp0, LDT and the page table pointer:
@@ -404,6 +435,7 @@ __switch_to(struct task_struct *prev_p, struct task_struct *next_p)
 
 	load_TLS(next, cpu);
 
+<<<<<<< HEAD
 	/* Must be after DS reload */
 	__unlazy_fpu(prev_p);
 
@@ -411,6 +443,8 @@ __switch_to(struct task_struct *prev_p, struct task_struct *next_p)
 	if (preload_fpu)
 		clts();
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	/*
 	 * Leave lazy mode, flushing any hypercalls made here.
 	 * This must be done before restoring TLS segments so
@@ -451,6 +485,11 @@ __switch_to(struct task_struct *prev_p, struct task_struct *next_p)
 		wrmsrl(MSR_KERNEL_GS_BASE, next->gs);
 	prev->gsindex = gsindex;
 
+<<<<<<< HEAD
+=======
+	switch_fpu_finish(next_p, fpu);
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	/*
 	 * Switch the PDA and FPU contexts.
 	 */
@@ -469,6 +508,7 @@ __switch_to(struct task_struct *prev_p, struct task_struct *next_p)
 		     task_thread_info(prev_p)->flags & _TIF_WORK_CTXSW_PREV))
 		__switch_to_xtra(prev_p, next_p, tss);
 
+<<<<<<< HEAD
 	/*
 	 * Preload the FPU context, now that we've determined that the
 	 * task is likely to be using it. 
@@ -476,6 +516,8 @@ __switch_to(struct task_struct *prev_p, struct task_struct *next_p)
 	if (preload_fpu)
 		__math_state_restore();
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	return prev_p;
 }
 

@@ -255,7 +255,10 @@ core-y				+= arch/arm/kernel/ arch/arm/mm/ arch/arm/common/
 core-y				+= $(machdirs) $(platdirs)
 
 drivers-$(CONFIG_OPROFILE)      += arch/arm/oprofile/
+<<<<<<< HEAD
 core-y				+= arch/arm/perfmon/
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 libs-y				:= arch/arm/lib/ $(libs-y)
 

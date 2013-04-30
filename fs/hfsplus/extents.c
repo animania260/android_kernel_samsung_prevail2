@@ -499,7 +499,11 @@ void hfsplus_file_truncate(struct inode *inode)
 		struct address_space *mapping = inode->i_mapping;
 		struct page *page;
 		void *fsdata;
+<<<<<<< HEAD
 		u32 size = inode->i_size;
+=======
+		loff_t size = inode->i_size;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		int res;
 
 		res = pagecache_write_begin(NULL, mapping, size, 0,

@@ -100,7 +100,10 @@
 
 #include <linux/kmemcheck.h>
 #include <linux/kmemleak.h>
+<<<<<<< HEAD
 #include <linux/memory_hotplug.h>
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 /*
  * Kmemleak configuration and common defines.
@@ -1221,9 +1224,15 @@ static void kmemleak_scan(void)
 #endif
 
 	/*
+<<<<<<< HEAD
 	 * Struct page scanning for each node.
 	 */
 	lock_memory_hotplug();
+=======
+	 * Struct page scanning for each node. The code below is not yet safe
+	 * with MEMORY_HOTPLUG.
+	 */
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	for_each_online_node(i) {
 		pg_data_t *pgdat = NODE_DATA(i);
 		unsigned long start_pfn = pgdat->node_start_pfn;
@@ -1242,7 +1251,10 @@ static void kmemleak_scan(void)
 			scan_block(page, page + 1, NULL, 1);
 		}
 	}
+<<<<<<< HEAD
 	unlock_memory_hotplug();
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	/*
 	 * Scanning the task stacks (may introduce false negatives).

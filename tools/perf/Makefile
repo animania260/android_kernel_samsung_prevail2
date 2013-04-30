@@ -54,7 +54,11 @@ ifeq ($(ARCH),x86_64)
 	ARCH := x86
 	IS_X86_64 := 0
 	ifeq (, $(findstring m32,$(EXTRA_CFLAGS)))
+<<<<<<< HEAD
 		IS_X86_64 := $(shell echo __x86_64__ | ${CC} -E -xc - | tail -n 1)
+=======
+		IS_X86_64 := $(shell echo __x86_64__ | ${CC} -E -x c - | tail -n 1)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	endif
 	ifeq (${IS_X86_64}, 1)
 		RAW_ARCH := x86_64
@@ -366,7 +370,10 @@ BUILTIN_OBJS += $(OUTPUT)builtin-list.o
 BUILTIN_OBJS += $(OUTPUT)builtin-record.o
 BUILTIN_OBJS += $(OUTPUT)builtin-report.o
 BUILTIN_OBJS += $(OUTPUT)builtin-stat.o
+<<<<<<< HEAD
 BUILTIN_OBJS += $(OUTPUT)builtin-periodic.o
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 BUILTIN_OBJS += $(OUTPUT)builtin-timechart.o
 BUILTIN_OBJS += $(OUTPUT)builtin-top.o
 BUILTIN_OBJS += $(OUTPUT)builtin-script.o

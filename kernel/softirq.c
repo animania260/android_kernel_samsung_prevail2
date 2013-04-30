@@ -29,9 +29,12 @@
 #include <trace/events/irq.h>
 
 #include <asm/irq.h>
+<<<<<<< HEAD
 #ifdef CONFIG_SEC_DEBUG
 #include <mach/sec_debug.h>
 #endif
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 /*
    - No shared variables, all the data are CPU local.
    - If a softirq needs serialization, let it serialize itself
@@ -463,6 +466,7 @@ static void tasklet_action(struct softirq_action *a)
 			if (!atomic_read(&t->count)) {
 				if (!test_and_clear_bit(TASKLET_STATE_SCHED, &t->state))
 					BUG();
+<<<<<<< HEAD
 #ifdef CONFIG_SEC_DEBUG
 				sec_debug_irq_sched_log(-1, t->func, 3);
 				t->func(t->data);
@@ -470,6 +474,9 @@ static void tasklet_action(struct softirq_action *a)
 #else
 				t->func(t->data);
 #endif
+=======
+				t->func(t->data);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 				tasklet_unlock(t);
 				continue;
 			}

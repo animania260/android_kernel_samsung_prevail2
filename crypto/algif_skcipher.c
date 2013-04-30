@@ -432,6 +432,10 @@ static int skcipher_recvmsg(struct kiocb *unused, struct socket *sock,
 	long copied = 0;
 
 	lock_sock(sk);
+<<<<<<< HEAD
+=======
+	msg->msg_namelen = 0;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	for (iov = msg->msg_iov, iovlen = msg->msg_iovlen; iovlen > 0;
 	     iovlen--, iov++) {
 		unsigned long seglen = iov->iov_len;

@@ -692,6 +692,7 @@ static struct omap_hwmod_ocp_if *omap44xx_aess_masters[] = {
 
 static struct omap_hwmod_addr_space omap44xx_aess_addrs[] = {
 	{
+<<<<<<< HEAD
 		.name		= "dmem",
 		.pa_start	= 0x40180000,
 		.pa_end		= 0x4018ffff
@@ -713,6 +714,8 @@ static struct omap_hwmod_addr_space omap44xx_aess_addrs[] = {
 	},
 	{
 		.name		= "mpu",
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		.pa_start	= 0x401f1000,
 		.pa_end		= 0x401f13ff,
 		.flags		= ADDR_TYPE_RT
@@ -731,6 +734,7 @@ static struct omap_hwmod_ocp_if omap44xx_l4_abe__aess = {
 
 static struct omap_hwmod_addr_space omap44xx_aess_dma_addrs[] = {
 	{
+<<<<<<< HEAD
 		.name		= "dmem_dma",
 		.pa_start	= 0x49080000,
 		.pa_end		= 0x4908ffff
@@ -752,6 +756,8 @@ static struct omap_hwmod_addr_space omap44xx_aess_dma_addrs[] = {
 	},
 	{
 		.name		= "dma",
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		.pa_start	= 0x490f1000,
 		.pa_end		= 0x490f13ff,
 		.flags		= ADDR_TYPE_RT
@@ -5093,7 +5099,11 @@ static __initdata struct omap_hwmod *omap44xx_hwmods[] = {
 	&omap44xx_mpu_private_hwmod,
 
 	/* aess class */
+<<<<<<< HEAD
 	&omap44xx_aess_hwmod,
+=======
+/*	&omap44xx_aess_hwmod, */
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	/* bandgap class */
 	&omap44xx_bandgap_hwmod,
@@ -5163,7 +5173,11 @@ static __initdata struct omap_hwmod *omap44xx_hwmods[] = {
 	&omap44xx_mcbsp4_hwmod,
 
 	/* mcpdm class */
+<<<<<<< HEAD
 	&omap44xx_mcpdm_hwmod,
+=======
+/*	&omap44xx_mcpdm_hwmod, */
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	/* mcspi class */
 	&omap44xx_mcspi1_hwmod,

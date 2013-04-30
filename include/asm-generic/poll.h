@@ -28,6 +28,11 @@
 #define POLLRDHUP       0x2000
 #endif
 
+<<<<<<< HEAD
+=======
+#define POLLFREE	0x4000	/* currently only for epoll */
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 struct pollfd {
 	int fd;
 	short events;

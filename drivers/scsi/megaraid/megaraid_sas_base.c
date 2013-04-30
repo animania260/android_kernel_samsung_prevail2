@@ -1906,7 +1906,10 @@ static int megasas_generic_reset(struct scsi_cmnd *scmd)
 static enum
 blk_eh_timer_return megasas_reset_timer(struct scsi_cmnd *scmd)
 {
+<<<<<<< HEAD
 	struct megasas_cmd *cmd = (struct megasas_cmd *)scmd->SCp.ptr;
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	struct megasas_instance *instance;
 	unsigned long flags;
 
@@ -1915,7 +1918,11 @@ blk_eh_timer_return megasas_reset_timer(struct scsi_cmnd *scmd)
 		return BLK_EH_NOT_HANDLED;
 	}
 
+<<<<<<< HEAD
 	instance = cmd->instance;
+=======
+	instance = (struct megasas_instance *)scmd->device->host->hostdata;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	if (!(instance->flag & MEGASAS_FW_BUSY)) {
 		/* FW is busy, throttle IO */
 		spin_lock_irqsave(instance->host->host_lock, flags);
@@ -4053,7 +4060,10 @@ megasas_probe_one(struct pci_dev *pdev, const struct pci_device_id *id)
 	spin_lock_init(&instance->cmd_pool_lock);
 	spin_lock_init(&instance->hba_lock);
 	spin_lock_init(&instance->completion_lock);
+<<<<<<< HEAD
 	spin_lock_init(&poll_aen_lock);
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	mutex_init(&instance->aen_mutex);
 	mutex_init(&instance->reset_mutex);
@@ -5381,6 +5391,11 @@ static int __init megasas_init(void)
 	printk(KERN_INFO "megasas: %s %s\n", MEGASAS_VERSION,
 	       MEGASAS_EXT_VERSION);
 
+<<<<<<< HEAD
+=======
+	spin_lock_init(&poll_aen_lock);
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	support_poll_for_event = 2;
 	support_device_change = 1;
 

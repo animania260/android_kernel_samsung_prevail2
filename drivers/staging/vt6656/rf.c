@@ -769,6 +769,12 @@ BYTE    byPwr = pDevice->byCCKPwr;
         return TRUE;
     }
 
+<<<<<<< HEAD
+=======
+	if (uCH == 0)
+		return -EINVAL;
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
     switch (uRATE) {
     case RATE_1M:
     case RATE_2M:

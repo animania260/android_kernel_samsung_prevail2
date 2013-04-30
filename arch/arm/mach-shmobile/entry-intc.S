@@ -51,4 +51,10 @@
 	.macro  test_for_ipi, irqnr, irqstat, base, tmp
 	.endm
 
+<<<<<<< HEAD
+=======
+	.macro  test_for_ltirq, irqnr, irqstat, base, tmp
+	.endm
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	arch_irq_handler shmobile_handle_irq_intc

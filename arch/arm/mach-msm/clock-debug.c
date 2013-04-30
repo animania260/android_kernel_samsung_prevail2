@@ -1,6 +1,10 @@
 /*
  * Copyright (C) 2007 Google, Inc.
+<<<<<<< HEAD
  * Copyright (c) 2007-2011, Code Aurora Forum. All rights reserved.
+=======
+ * Copyright (c) 2007-2010, Code Aurora Forum. All rights reserved.
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
  *
  * This software is licensed under the terms of the GNU General Public
  * License version 2, as published by the Free Software Foundation, and
@@ -17,11 +21,15 @@
 #include <linux/module.h>
 #include <linux/ctype.h>
 #include <linux/debugfs.h>
+<<<<<<< HEAD
 #include <linux/seq_file.h>
 #include <linux/clk.h>
 #include <linux/list.h>
 #include <linux/clkdev.h>
 
+=======
+#include <linux/clk.h>
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #include "clock.h"
 
 static int clock_debug_rate_set(void *data, u64 val)
@@ -31,12 +39,24 @@ static int clock_debug_rate_set(void *data, u64 val)
 
 	/* Only increases to max rate will succeed, but that's actually good
 	 * for debugging purposes so we don't check for error. */
+<<<<<<< HEAD
 	if (clock->flags & CLKFLAG_MAX)
 		clk_set_max_rate(clock, val);
 	ret = clk_set_rate(clock, val);
 	if (ret)
 		pr_err("clk_set_rate failed (%d)\n", ret);
 
+=======
+	if (clock->flags & CLK_MAX)
+		clk_set_max_rate(clock, val);
+	if (clock->flags & CLK_MIN)
+		ret = clk_set_min_rate(clock, val);
+	else
+		ret = clk_set_rate(clock, val);
+	if (ret != 0)
+		printk(KERN_ERR "clk_set%s_rate failed (%d)\n",
+			(clock->flags & CLK_MIN) ? "_min" : "", ret);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	return ret;
 }
 
@@ -50,6 +70,7 @@ static int clock_debug_rate_get(void *data, u64 *val)
 DEFINE_SIMPLE_ATTRIBUTE(clock_rate_fops, clock_debug_rate_get,
 			clock_debug_rate_set, "%llu\n");
 
+<<<<<<< HEAD
 static struct clk *measure;
 
 static int clock_debug_measure_get(void *data, u64 *val)
@@ -86,15 +107,23 @@ static int clock_debug_measure_get(void *data, u64 *val)
 DEFINE_SIMPLE_ATTRIBUTE(clock_measure_fops, clock_debug_measure_get,
 			NULL, "%lld\n");
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 static int clock_debug_enable_set(void *data, u64 val)
 {
 	struct clk *clock = data;
 	int rc = 0;
 
 	if (val)
+<<<<<<< HEAD
 		rc = clk_enable(clock);
 	else
 		clk_disable(clock);
+=======
+		rc = clock->ops->enable(clock->id);
+	else
+		clock->ops->disable(clock->id);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	return rc;
 }
@@ -102,6 +131,7 @@ static int clock_debug_enable_set(void *data, u64 val)
 static int clock_debug_enable_get(void *data, u64 *val)
 {
 	struct clk *clock = data;
+<<<<<<< HEAD
 	int enabled;
 
 	if (clock->ops->is_enabled)
@@ -110,17 +140,30 @@ static int clock_debug_enable_get(void *data, u64 *val)
 		enabled = !!(clock->count);
 
 	*val = enabled;
+=======
+
+	*val = clock->ops->is_enabled(clock->id);
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	return 0;
 }
 
 DEFINE_SIMPLE_ATTRIBUTE(clock_enable_fops, clock_debug_enable_get,
+<<<<<<< HEAD
 			clock_debug_enable_set, "%lld\n");
+=======
+			clock_debug_enable_set, "%llu\n");
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 static int clock_debug_local_get(void *data, u64 *val)
 {
 	struct clk *clock = data;
 
+<<<<<<< HEAD
 	*val = clock->ops->is_local(clock);
+=======
+	*val = clock->ops->is_local(clock->id);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	return 0;
 }
@@ -128,6 +171,7 @@ static int clock_debug_local_get(void *data, u64 *val)
 DEFINE_SIMPLE_ATTRIBUTE(clock_local_fops, clock_debug_local_get,
 			NULL, "%llu\n");
 
+<<<<<<< HEAD
 static int clock_debug_hwcg_get(void *data, u64 *val)
 {
 	struct clk *clock = data;
@@ -240,6 +284,18 @@ static const struct file_operations list_rates_fops = {
 	.release	= seq_release,
 };
 
+=======
+static struct dentry *debugfs_base;
+
+int __init clock_debug_init(void)
+{
+	debugfs_base = debugfs_create_dir("clk", NULL);
+	if (!debugfs_base)
+		return -ENOMEM;
+	return 0;
+}
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 int __init clock_debug_add(struct clk *clock)
 {
 	char temp[50], *ptr;
@@ -248,7 +304,11 @@ int __init clock_debug_add(struct clk *clock)
 	if (!debugfs_base)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	strlcpy(temp, clock->dbg_name, ARRAY_SIZE(temp));
+=======
+	strncpy(temp, clock->dbg_name, ARRAY_SIZE(temp)-1);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	for (ptr = temp; *ptr; ptr++)
 		*ptr = tolower(*ptr);
 
@@ -267,6 +327,7 @@ int __init clock_debug_add(struct clk *clock)
 	if (!debugfs_create_file("is_local", S_IRUGO, clk_dir, clock,
 				&clock_local_fops))
 		goto error;
+<<<<<<< HEAD
 
 	if (!debugfs_create_file("has_hw_gating", S_IRUGO, clk_dir, clock,
 				&clock_hwcg_fops))
@@ -283,6 +344,8 @@ int __init clock_debug_add(struct clk *clock)
 				S_IRUGO, clk_dir, clock, &list_rates_fops))
 			goto error;
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	return 0;
 error:
 	debugfs_remove_recursive(clk_dir);

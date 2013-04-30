@@ -52,6 +52,13 @@ extern void fpundefinstr(void);
 
 EXPORT_SYMBOL(__backtrace);
 
+<<<<<<< HEAD
+=======
+	/* platform dependent support */
+EXPORT_SYMBOL(__udelay);
+EXPORT_SYMBOL(__const_udelay);
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	/* networking */
 EXPORT_SYMBOL(csum_partial);
 EXPORT_SYMBOL(csum_partial_copy_from_user);

@@ -30,8 +30,11 @@ static int jack_switch_types[] = {
 	SW_LINEOUT_INSERT,
 	SW_JACK_PHYSICAL_INSERT,
 	SW_VIDEOOUT_INSERT,
+<<<<<<< HEAD
 	SW_HPHL_OVERCURRENT,
 	SW_HPHR_OVERCURRENT,
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 };
 
 static int snd_jack_dev_free(struct snd_device *device)

@@ -1816,6 +1816,11 @@ static void __devinit riva_update_default_var(struct fb_var_screeninfo *var,
 			     specs->modedb, specs->modedb_len,
 			     NULL, 8);
 	} else if (specs->modedb != NULL) {
+<<<<<<< HEAD
+=======
+		/* get first mode in database as fallback */
+		modedb = specs->modedb[0];
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		/* get preferred timing */
 		if (info->monspecs.misc & FB_MISC_1ST_DETAIL) {
 			int i;
@@ -1826,9 +1831,12 @@ static void __devinit riva_update_default_var(struct fb_var_screeninfo *var,
 					break;
 				}
 			}
+<<<<<<< HEAD
 		} else {
 			/* otherwise, get first mode in database */
 			modedb = specs->modedb[0];
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		}
 		var->bits_per_pixel = 8;
 		riva_update_var(var, &modedb);

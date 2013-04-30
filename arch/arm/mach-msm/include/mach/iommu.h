@@ -8,6 +8,14 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+<<<<<<< HEAD
+=======
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
  */
 
 #ifndef MSM_IOMMU_H
@@ -15,12 +23,25 @@
 
 #include <linux/interrupt.h>
 #include <linux/clk.h>
+<<<<<<< HEAD
 #include <mach/socinfo.h>
 
 extern pgprot_t     pgprot_kernel;
 
 /* Domain attributes */
 #define MSM_IOMMU_DOMAIN_PT_CACHEABLE	0x1
+=======
+
+/* Sharability attributes of MSM IOMMU mappings */
+#define MSM_IOMMU_ATTR_NON_SH		0x0
+#define MSM_IOMMU_ATTR_SH		0x4
+
+/* Cacheability attributes of MSM IOMMU mappings */
+#define MSM_IOMMU_ATTR_NONCACHED	0x0
+#define MSM_IOMMU_ATTR_CACHED_WB_WA	0x1
+#define MSM_IOMMU_ATTR_CACHED_WB_NWA	0x2
+#define MSM_IOMMU_ATTR_CACHED_WT	0x3
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 /* Mask for the cache policy attribute */
 #define MSM_IOMMU_CP_MASK		0x03
@@ -76,7 +97,10 @@ struct msm_iommu_drvdata {
 	int ncb;
 	struct clk *clk;
 	struct clk *pclk;
+<<<<<<< HEAD
 	const char *name;
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 };
 
 /**
@@ -96,6 +120,7 @@ struct msm_iommu_ctx_drvdata {
 };
 
 /*
+<<<<<<< HEAD
  * Interrupt handler for the IOMMU context fault interrupt. Hooking the
  * interrupt is not supported in the API yet, but this will print an error
  * message and dump useful IOMMU registers.
@@ -104,11 +129,14 @@ irqreturn_t msm_iommu_fault_handler(int irq, void *dev_id);
 
 #ifdef CONFIG_MSM_IOMMU
 /*
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
  * Look up an IOMMU context device by its context name. NULL if none found.
  * Useful for testing and drivers that do not yet fully have IOMMU stuff in
  * their platform devices.
  */
 struct device *msm_iommu_get_ctx(const char *ctx_name);
+<<<<<<< HEAD
 #else
 static inline struct device *msm_iommu_get_ctx(const char *ctx_name)
 {
@@ -131,3 +159,14 @@ static inline int msm_soc_version_supports_iommu(void)
 	}
 	return 1;
 }
+=======
+
+/*
+ * Interrupt handler for the IOMMU context fault interrupt. Hooking the
+ * interrupt is not supported in the API yet, but this will print an error
+ * message and dump useful IOMMU registers.
+ */
+irqreturn_t msm_iommu_fault_handler(int irq, void *dev_id);
+
+#endif
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y

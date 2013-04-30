@@ -225,7 +225,12 @@ struct snd_soc_platform *imx_ssi_dma_mx2_init(struct platform_device *pdev,
 		struct imx_ssi *ssi);
 
 int snd_imx_pcm_mmap(struct snd_pcm_substream *substream, struct vm_area_struct *vma);
+<<<<<<< HEAD
 int imx_pcm_new(struct snd_soc_pcm_runtime *rtd);
+=======
+int imx_pcm_new(struct snd_card *card, struct snd_soc_dai *dai,
+	struct snd_pcm *pcm);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 void imx_pcm_free(struct snd_pcm *pcm);
 
 /*

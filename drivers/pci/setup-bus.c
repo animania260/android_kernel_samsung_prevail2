@@ -34,6 +34,10 @@ struct resource_list_x {
 	resource_size_t start;
 	resource_size_t end;
 	resource_size_t add_size;
+<<<<<<< HEAD
+=======
+	resource_size_t min_align;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	unsigned long flags;
 };
 
@@ -65,7 +69,11 @@ void pci_realloc(void)
  */
 static void add_to_list(struct resource_list_x *head,
 		 struct pci_dev *dev, struct resource *res,
+<<<<<<< HEAD
 		 resource_size_t add_size)
+=======
+		 resource_size_t add_size, resource_size_t min_align)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 {
 	struct resource_list_x *list = head;
 	struct resource_list_x *ln = list->next;
@@ -84,13 +92,23 @@ static void add_to_list(struct resource_list_x *head,
 	tmp->end = res->end;
 	tmp->flags = res->flags;
 	tmp->add_size = add_size;
+<<<<<<< HEAD
+=======
+	tmp->min_align = min_align;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	list->next = tmp;
 }
 
 static void add_to_failed_list(struct resource_list_x *head,
 				struct pci_dev *dev, struct resource *res)
 {
+<<<<<<< HEAD
 	add_to_list(head, dev, res, 0);
+=======
+	add_to_list(head, dev, res,
+			0 /* dont care */,
+			0 /* dont care */);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 static void __dev_sort_resources(struct pci_dev *dev,
@@ -159,6 +177,7 @@ static void adjust_resources_sorted(struct resource_list_x *add_head,
 
 		idx = res - &list->dev->resource[0];
 		add_size=list->add_size;
+<<<<<<< HEAD
 		if (!resource_size(res) && add_size) {
 			 res->end = res->start + add_size - 1;
 			 if(pci_assign_resource(list->dev, idx))
@@ -166,6 +185,18 @@ static void adjust_resources_sorted(struct resource_list_x *add_head,
 		} else if (add_size) {
 			adjust_resource(res, res->start,
 				resource_size(res) + add_size);
+=======
+		if (!resource_size(res)) {
+			res->end = res->start + add_size - 1;
+			if(pci_assign_resource(list->dev, idx))
+				reset_resource(res);
+		} else {
+			resource_size_t align = list->min_align;
+			res->flags |= list->flags & (IORESOURCE_STARTALIGN|IORESOURCE_SIZEALIGN);
+			if (pci_reassign_resource(list->dev, idx, add_size, align))
+				dev_printk(KERN_DEBUG, &list->dev->dev, "failed to add optional resources res=%pR\n",
+							res);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		}
 out:
 		tmp = list;
@@ -543,6 +574,23 @@ static resource_size_t calculate_memsize(resource_size_t size,
 	return size;
 }
 
+<<<<<<< HEAD
+=======
+static resource_size_t get_res_add_size(struct resource_list_x *add_head,
+					struct resource *res)
+{
+	struct resource_list_x *list;
+
+	/* check if it is in add_head list */
+	for (list = add_head->next; list && list->res != res;
+			list = list->next);
+	if (list)
+		return list->add_size;
+
+	return 0;
+}
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 /**
  * pbus_size_io() - size the io window of a given bus
  *
@@ -562,6 +610,10 @@ static void pbus_size_io(struct pci_bus *bus, resource_size_t min_size,
 	struct pci_dev *dev;
 	struct resource *b_res = find_free_bus_resource(bus, IORESOURCE_IO);
 	unsigned long size = 0, size0 = 0, size1 = 0;
+<<<<<<< HEAD
+=======
+	resource_size_t children_add_size = 0;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	if (!b_res)
  		return;
@@ -582,12 +634,25 @@ static void pbus_size_io(struct pci_bus *bus, resource_size_t min_size,
 				size += r_size;
 			else
 				size1 += r_size;
+<<<<<<< HEAD
+=======
+
+			if (add_head)
+				children_add_size += get_res_add_size(add_head, r);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		}
 	}
 	size0 = calculate_iosize(size, min_size, size1,
 			resource_size(b_res), 4096);
+<<<<<<< HEAD
 	size1 = (!add_head || (add_head && !add_size)) ? size0 :
 		calculate_iosize(size, min_size+add_size, size1,
+=======
+	if (children_add_size > add_size)
+		add_size = children_add_size;
+	size1 = (!add_head || (add_head && !add_size)) ? size0 :
+		calculate_iosize(size, min_size, add_size + size1,
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			resource_size(b_res), 4096);
 	if (!size0 && !size1) {
 		if (b_res->start || b_res->end)
@@ -602,7 +667,11 @@ static void pbus_size_io(struct pci_bus *bus, resource_size_t min_size,
 	b_res->end = b_res->start + size0 - 1;
 	b_res->flags |= IORESOURCE_STARTALIGN;
 	if (size1 > size0 && add_head)
+<<<<<<< HEAD
 		add_to_list(add_head, bus->self, b_res, size1-size0);
+=======
+		add_to_list(add_head, bus->self, b_res, size1-size0, 4096);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 /**
@@ -627,6 +696,10 @@ static int pbus_size_mem(struct pci_bus *bus, unsigned long mask,
 	int order, max_order;
 	struct resource *b_res = find_free_bus_resource(bus, type);
 	unsigned int mem64_mask = 0;
+<<<<<<< HEAD
+=======
+	resource_size_t children_add_size = 0;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	if (!b_res)
 		return 0;
@@ -668,6 +741,12 @@ static int pbus_size_mem(struct pci_bus *bus, unsigned long mask,
 			if (order > max_order)
 				max_order = order;
 			mem64_mask &= r->flags & IORESOURCE_MEM_64;
+<<<<<<< HEAD
+=======
+
+			if (add_head)
+				children_add_size += get_res_add_size(add_head, r);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		}
 	}
 	align = 0;
@@ -684,8 +763,15 @@ static int pbus_size_mem(struct pci_bus *bus, unsigned long mask,
 		align += aligns[order];
 	}
 	size0 = calculate_memsize(size, min_size, 0, resource_size(b_res), min_align);
+<<<<<<< HEAD
 	size1 = (!add_head || (add_head && !add_size)) ? size0 :
 		calculate_memsize(size, min_size+add_size, 0,
+=======
+	if (children_add_size > add_size)
+		add_size = children_add_size;
+	size1 = (!add_head || (add_head && !add_size)) ? size0 :
+		calculate_memsize(size, min_size, add_size,
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 				resource_size(b_res), min_align);
 	if (!size0 && !size1) {
 		if (b_res->start || b_res->end)
@@ -699,7 +785,11 @@ static int pbus_size_mem(struct pci_bus *bus, unsigned long mask,
 	b_res->end = size0 + min_align - 1;
 	b_res->flags |= IORESOURCE_STARTALIGN | mem64_mask;
 	if (size1 > size0 && add_head)
+<<<<<<< HEAD
 		add_to_list(add_head, bus->self, b_res, size1-size0);
+=======
+		add_to_list(add_head, bus->self, b_res, size1-size0, min_align);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	return 1;
 }
 

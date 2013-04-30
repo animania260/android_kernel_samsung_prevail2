@@ -137,7 +137,11 @@ static irqreturn_t sr_interrupt(int irq, void *data)
 		sr_write_reg(sr_info, ERRCONFIG_V1, status);
 	} else if (sr_info->ip_type == SR_TYPE_V2) {
 		/* Read the status bits */
+<<<<<<< HEAD
 		sr_read_reg(sr_info, IRQSTATUS);
+=======
+		status = sr_read_reg(sr_info, IRQSTATUS);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 		/* Clear them by writing back */
 		sr_write_reg(sr_info, IRQSTATUS, status);

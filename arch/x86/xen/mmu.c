@@ -320,8 +320,18 @@ static pteval_t pte_mfn_to_pfn(pteval_t val)
 {
 	if (val & _PAGE_PRESENT) {
 		unsigned long mfn = (val & PTE_PFN_MASK) >> PAGE_SHIFT;
+<<<<<<< HEAD
 		pteval_t flags = val & PTE_FLAGS_MASK;
 		val = ((pteval_t)mfn_to_pfn(mfn) << PAGE_SHIFT) | flags;
+=======
+		unsigned long pfn = mfn_to_pfn(mfn);
+
+		pteval_t flags = val & PTE_FLAGS_MASK;
+		if (unlikely(pfn == ~0))
+			val = flags & ~_PAGE_PRESENT;
+		else
+			val = ((pteval_t)pfn << PAGE_SHIFT) | flags;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	}
 
 	return val;
@@ -1780,7 +1790,13 @@ pgd_t * __init xen_setup_kernel_pagetable(pgd_t *pgd,
 	initial_kernel_pmd =
 		extend_brk(sizeof(pmd_t) * PTRS_PER_PMD, PAGE_SIZE);
 
+<<<<<<< HEAD
 	max_pfn_mapped = PFN_DOWN(__pa(xen_start_info->mfn_list));
+=======
+	max_pfn_mapped = PFN_DOWN(__pa(xen_start_info->pt_base) +
+				  xen_start_info->nr_pt_frames * PAGE_SIZE +
+				  512*1024);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	kernel_pmd = m2v(pgd[KERNEL_PGD_BOUNDARY].pgd);
 	memcpy(initial_kernel_pmd, kernel_pmd, sizeof(pmd_t) * PTRS_PER_PMD);
@@ -2004,6 +2020,10 @@ static const struct pv_mmu_ops xen_mmu_ops __initconst = {
 	.lazy_mode = {
 		.enter = paravirt_enter_lazy_mmu,
 		.leave = xen_leave_lazy_mmu,
+<<<<<<< HEAD
+=======
+		.flush = paravirt_flush_lazy_mmu,
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	},
 
 	.set_fixmap = xen_set_fixmap,

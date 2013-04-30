@@ -8,7 +8,10 @@ obj-$(CONFIG_DEVTMPFS)	+= devtmpfs.o
 obj-y			+= power/
 obj-$(CONFIG_HAS_DMA)	+= dma-mapping.o
 obj-$(CONFIG_HAVE_GENERIC_DMA_COHERENT) += dma-coherent.o
+<<<<<<< HEAD
 obj-$(CONFIG_GENLOCK) += genlock.o
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 obj-$(CONFIG_ISA)	+= isa.o
 obj-$(CONFIG_FW_LOADER)	+= firmware_class.o
 obj-$(CONFIG_NUMA)	+= node.o

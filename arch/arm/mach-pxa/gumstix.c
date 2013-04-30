@@ -106,7 +106,11 @@ static void __init gumstix_mmc_init(void)
 }
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_USB_GADGET_PXA25X
+=======
+#ifdef CONFIG_USB_PXA25X
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 static struct gpio_vbus_mach_info gumstix_udc_info = {
 	.gpio_vbus		= GPIO_GUMSTIX_USB_GPIOn,
 	.gpio_pullup		= GPIO_GUMSTIX_USB_GPIOx,

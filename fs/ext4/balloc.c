@@ -514,7 +514,12 @@ ext4_fsblk_t ext4_count_free_blocks(struct super_block *sb)
 		if (bitmap_bh == NULL)
 			continue;
 
+<<<<<<< HEAD
 		x = ext4_count_free(bitmap_bh, sb->s_blocksize);
+=======
+		x = ext4_count_free(bitmap_bh->b_data,
+				    EXT4_BLOCKS_PER_GROUP(sb) / 8);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		printk(KERN_DEBUG "group %u: stored = %d, counted = %u\n",
 			i, ext4_free_blks_count(sb, gdp), x);
 		bitmap_count += x;

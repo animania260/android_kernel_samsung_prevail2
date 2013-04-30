@@ -59,7 +59,10 @@
 
 #include <net/arp.h>
 #include <net/ip.h>
+<<<<<<< HEAD
 #include <net/tcp.h>
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #include <net/route.h>
 #include <net/ip_fib.h>
 #include <net/rtnetlink.h>
@@ -736,7 +739,10 @@ int devinet_ioctl(struct net *net, unsigned int cmd, void __user *arg)
 	case SIOCSIFBRDADDR:	/* Set the broadcast address */
 	case SIOCSIFDSTADDR:	/* Set the destination address */
 	case SIOCSIFNETMASK: 	/* Set the netmask for the interface */
+<<<<<<< HEAD
 	case SIOCKILLADDR:	/* Nuke all sockets on this address */
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		ret = -EACCES;
 		if (!capable(CAP_NET_ADMIN))
 			goto out;
@@ -788,8 +794,12 @@ int devinet_ioctl(struct net *net, unsigned int cmd, void __user *arg)
 	}
 
 	ret = -EADDRNOTAVAIL;
+<<<<<<< HEAD
 	if (!ifa && cmd != SIOCSIFADDR && cmd != SIOCSIFFLAGS
 	    && cmd != SIOCKILLADDR)
+=======
+	if (!ifa && cmd != SIOCSIFADDR && cmd != SIOCSIFFLAGS)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		goto done;
 
 	switch (cmd) {
@@ -915,9 +925,12 @@ int devinet_ioctl(struct net *net, unsigned int cmd, void __user *arg)
 			inet_insert_ifa(ifa);
 		}
 		break;
+<<<<<<< HEAD
 	case SIOCKILLADDR:	/* Nuke all connections on this address */
 		ret = tcp_nuke_addr(net, (struct sockaddr *) sin);
 		break;
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	}
 done:
 	rtnl_unlock();
@@ -1496,7 +1509,13 @@ static int devinet_conf_proc(ctl_table *ctl, int write,
 			     void __user *buffer,
 			     size_t *lenp, loff_t *ppos)
 {
+<<<<<<< HEAD
 	int ret = proc_dointvec(ctl, write, buffer, lenp, ppos);
+=======
+	int old_value = *(int *)ctl->data;
+	int ret = proc_dointvec(ctl, write, buffer, lenp, ppos);
+	int new_value = *(int *)ctl->data;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	if (write) {
 		struct ipv4_devconf *cnf = ctl->extra1;
@@ -1507,6 +1526,12 @@ static int devinet_conf_proc(ctl_table *ctl, int write,
 
 		if (cnf == net->ipv4.devconf_dflt)
 			devinet_copy_dflt_conf(net, i);
+<<<<<<< HEAD
+=======
+		if (i == IPV4_DEVCONF_ACCEPT_LOCAL - 1)
+			if ((new_value == 0) && (old_value != 0))
+				rt_cache_flush(net, 0);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	}
 
 	return ret;
@@ -1839,8 +1864,14 @@ void __init devinet_init(void)
 
 	rtnl_af_register(&inet_af_ops);
 
+<<<<<<< HEAD
 	rtnl_register(PF_INET, RTM_NEWADDR, inet_rtm_newaddr, NULL);
 	rtnl_register(PF_INET, RTM_DELADDR, inet_rtm_deladdr, NULL);
 	rtnl_register(PF_INET, RTM_GETADDR, NULL, inet_dump_ifaddr);
+=======
+	rtnl_register(PF_INET, RTM_NEWADDR, inet_rtm_newaddr, NULL, NULL);
+	rtnl_register(PF_INET, RTM_DELADDR, inet_rtm_deladdr, NULL, NULL);
+	rtnl_register(PF_INET, RTM_GETADDR, NULL, inet_dump_ifaddr, NULL);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 

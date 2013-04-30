@@ -319,10 +319,14 @@ static struct scsi_device *scsi_alloc_sdev(struct scsi_target *starget,
 	return sdev;
 
 out_device_destroy:
+<<<<<<< HEAD
 	scsi_device_set_state(sdev, SDEV_DEL);
 	transport_destroy_device(&sdev->sdev_gendev);
 	put_device(&sdev->sdev_dev);
 	put_device(&sdev->sdev_gendev);
+=======
+	__scsi_remove_device(sdev);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 out:
 	if (display_failure_msg)
 		printk(ALLOC_FAILURE_MSG, __func__);
@@ -779,6 +783,19 @@ static int scsi_add_lun(struct scsi_device *sdev, unsigned char *inq_result,
 	sdev->model = (char *) (sdev->inquiry + 16);
 	sdev->rev = (char *) (sdev->inquiry + 32);
 
+<<<<<<< HEAD
+=======
+	if (strncmp(sdev->vendor, "ATA     ", 8) == 0) {
+		/*
+		 * sata emulation layer device.  This is a hack to work around
+		 * the SATL power management specifications which state that
+		 * when the SATL detects the device has gone into standby
+		 * mode, it shall respond with NOT READY.
+		 */
+		sdev->allow_restart = 1;
+	}
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	if (*bflags & BLIST_ISROM) {
 		sdev->type = TYPE_ROM;
 		sdev->removable = 1;
@@ -1713,6 +1730,12 @@ static void scsi_sysfs_add_devices(struct Scsi_Host *shost)
 {
 	struct scsi_device *sdev;
 	shost_for_each_device(sdev, shost) {
+<<<<<<< HEAD
+=======
+		/* target removed before the device could be added */
+		if (sdev->sdev_state == SDEV_DEL)
+			continue;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		if (!scsi_host_scan_allowed(shost) ||
 		    scsi_sysfs_add_sdev(sdev) != 0)
 			__scsi_remove_device(sdev);
@@ -1818,6 +1841,10 @@ static void scsi_finish_async_scan(struct async_scan_data *data)
 	}
 	spin_unlock(&async_scan_lock);
 
+<<<<<<< HEAD
+=======
+	scsi_autopm_put_host(shost);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	scsi_host_put(shost);
 	kfree(data);
 }
@@ -1844,7 +1871,10 @@ static int do_scan_async(void *_data)
 
 	do_scsi_scan_host(shost);
 	scsi_finish_async_scan(data);
+<<<<<<< HEAD
 	scsi_autopm_put_host(shost);
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	return 0;
 }
 
@@ -1872,7 +1902,11 @@ void scsi_scan_host(struct Scsi_Host *shost)
 	p = kthread_run(do_scan_async, data, "scsi_scan_%d", shost->host_no);
 	if (IS_ERR(p))
 		do_scan_async(data);
+<<<<<<< HEAD
 	/* scsi_autopm_put_host(shost) is called in do_scan_async() */
+=======
+	/* scsi_autopm_put_host(shost) is called in scsi_finish_async_scan() */
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 EXPORT_SYMBOL(scsi_scan_host);
 

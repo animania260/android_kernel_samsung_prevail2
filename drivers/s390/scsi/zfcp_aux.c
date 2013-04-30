@@ -518,6 +518,10 @@ struct zfcp_port *zfcp_port_enqueue(struct zfcp_adapter *adapter, u64 wwpn,
 
 	rwlock_init(&port->unit_list_lock);
 	INIT_LIST_HEAD(&port->unit_list);
+<<<<<<< HEAD
+=======
+	atomic_set(&port->units, 0);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	INIT_WORK(&port->gid_pn_work, zfcp_fc_port_did_lookup);
 	INIT_WORK(&port->test_link_work, zfcp_fc_link_test_work);

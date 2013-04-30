@@ -1497,7 +1497,11 @@ static struct dst_entry *xfrm_bundle_create(struct xfrm_policy *policy,
 		goto free_dst;
 
 	/* Copy neighbour for reachability confirmation */
+<<<<<<< HEAD
 	dst0->neighbour = neigh_clone(dst->neighbour);
+=======
+	dst_set_neighbour(dst0, neigh_clone(dst_get_neighbour(dst)));
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	xfrm_init_path((struct xfrm_dst *)dst0, dst, nfheader_len);
 	xfrm_init_pmtu(dst_prev);
@@ -1759,7 +1763,11 @@ static struct dst_entry *make_blackhole(struct net *net, u16 family,
 
 	if (!afinfo) {
 		dst_release(dst_orig);
+<<<<<<< HEAD
 		ret = ERR_PTR(-EINVAL);
+=======
+		return ERR_PTR(-EINVAL);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	} else {
 		ret = afinfo->blackhole_route(net, dst_orig);
 	}
@@ -1917,6 +1925,12 @@ no_transform:
 	}
 ok:
 	xfrm_pols_put(pols, drop_pols);
+<<<<<<< HEAD
+=======
+	if (dst && dst->xfrm &&
+	    dst->xfrm->props.mode == XFRM_MODE_TUNNEL)
+		dst->flags |= DST_XFRM_TUNNEL;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	return dst;
 
 nopol:

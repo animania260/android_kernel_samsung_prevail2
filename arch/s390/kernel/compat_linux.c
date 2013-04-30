@@ -631,7 +631,10 @@ asmlinkage unsigned long old32_mmap(struct mmap_arg_struct_emu31 __user *arg)
 		return -EFAULT;
 	if (a.offset & ~PAGE_MASK)
 		return -EINVAL;
+<<<<<<< HEAD
 	a.addr = (unsigned long) compat_ptr(a.addr);
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	return sys_mmap_pgoff(a.addr, a.len, a.prot, a.flags, a.fd,
 			      a.offset >> PAGE_SHIFT);
 }
@@ -642,7 +645,10 @@ asmlinkage long sys32_mmap2(struct mmap_arg_struct_emu31 __user *arg)
 
 	if (copy_from_user(&a, arg, sizeof(a)))
 		return -EFAULT;
+<<<<<<< HEAD
 	a.addr = (unsigned long) compat_ptr(a.addr);
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	return sys_mmap_pgoff(a.addr, a.len, a.prot, a.flags, a.fd, a.offset);
 }
 

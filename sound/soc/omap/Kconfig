@@ -2,9 +2,12 @@ config SND_OMAP_SOC
 	tristate "SoC Audio for the Texas Instruments OMAP chips"
 	depends on ARCH_OMAP
 
+<<<<<<< HEAD
 config SND_OMAP_SOC_ABE_DSP
 	tristate
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 config SND_OMAP_SOC_MCBSP
 	tristate
 	select OMAP_MCBSP
@@ -12,12 +15,15 @@ config SND_OMAP_SOC_MCBSP
 config SND_OMAP_SOC_MCPDM
 	tristate
 
+<<<<<<< HEAD
 config SND_OMAP_SOC_ABE
 	tristate
 
 config SND_OMAP_SOC_DMIC
 	tristate
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 config SND_OMAP_SOC_N810
 	tristate "SoC Audio support for Nokia N810"
 	depends on SND_OMAP_SOC && MACH_NOKIA_N810 && I2C
@@ -101,6 +107,7 @@ config SND_OMAP_SOC_SDP3430
 	  SDP3430.
 
 config SND_OMAP_SOC_SDP4430
+<<<<<<< HEAD
 	tristate "SoC Audio support for Texas Instruments SDP4430 or PandaBoard"
 	depends on TWL4030_CORE && (MACH_OMAP_4430SDP || MACH_OMAP4_PANDA)
 	select SND_OMAP_SOC_MCPDM
@@ -119,6 +126,15 @@ config SND_OMAP_SOC_HDMI
 	depends on SND_OMAP_SOC_SDP4430
 	help
 	  Say Y if you want to add support for HDMI interface on SDP4430
+=======
+	tristate "SoC Audio support for Texas Instruments SDP4430"
+	depends on TWL4030_CORE && SND_OMAP_SOC && MACH_OMAP_4430SDP
+	select SND_OMAP_SOC_MCPDM
+	select SND_SOC_TWL6040
+	help
+	  Say Y if you want to add support for SoC audio on Texas Instruments
+	  SDP4430.
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 config SND_OMAP_SOC_OMAP3_PANDORA
 	tristate "SoC Audio support for OMAP3 Pandora"

@@ -2,12 +2,20 @@
  * soc-dapm.c  --  ALSA SoC Dynamic Audio Power Management
  *
  * Copyright 2005 Wolfson Microelectronics PLC.
+<<<<<<< HEAD
  *
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
  * Author: Liam Girdwood <lrg@slimlogic.co.uk>
  *
  *  This program is free software; you can redistribute  it and/or modify it
  *  under  the terms of  the GNU General  Public License as published by the
+<<<<<<< HEAD
  *  Free Software Foundation;  only version 2 of the  License.
+=======
+ *  Free Software Foundation;  either version 2 of the  License, or (at your
+ *  option) any later version.
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
  *
  *  Features:
  *    o Changes power status of internal codec blocks depending on the
@@ -29,8 +37,11 @@
  *    o Support for reduced codec bias currents.
  */
 
+<<<<<<< HEAD
 #undef DEBUG
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 #include <linux/init.h>
@@ -50,10 +61,13 @@
 
 #include <trace/events/asoc.h>
 
+<<<<<<< HEAD
 #define PATH_MAX_HOPS 16
 
 int soc_dsp_runtime_update(struct snd_soc_dapm_widget *);
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 /* dapm power sequences - make this per codec in the future */
 static int dapm_up_seq[] = {
 	[snd_soc_dapm_pre] = 0,
@@ -61,7 +75,10 @@ static int dapm_up_seq[] = {
 	[snd_soc_dapm_micbias] = 2,
 	[snd_soc_dapm_aif_in] = 3,
 	[snd_soc_dapm_aif_out] = 3,
+<<<<<<< HEAD
 	[snd_soc_dapm_adc] = 3,
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	[snd_soc_dapm_mic] = 4,
 	[snd_soc_dapm_mux] = 5,
 	[snd_soc_dapm_virt_mux] = 5,
@@ -74,6 +91,10 @@ static int dapm_up_seq[] = {
 	[snd_soc_dapm_out_drv] = 10,
 	[snd_soc_dapm_hp] = 10,
 	[snd_soc_dapm_spk] = 10,
+<<<<<<< HEAD
+=======
+	[snd_soc_dapm_line] = 10,
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	[snd_soc_dapm_post] = 11,
 };
 
@@ -82,6 +103,10 @@ static int dapm_down_seq[] = {
 	[snd_soc_dapm_adc] = 1,
 	[snd_soc_dapm_hp] = 2,
 	[snd_soc_dapm_spk] = 2,
+<<<<<<< HEAD
+=======
+	[snd_soc_dapm_line] = 2,
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	[snd_soc_dapm_out_drv] = 2,
 	[snd_soc_dapm_pga] = 4,
 	[snd_soc_dapm_mixer_named_ctl] = 5,
@@ -131,6 +156,7 @@ static inline struct snd_soc_dapm_widget *dapm_cnew_widget(
 	return kmemdup(_widget, sizeof(*_widget), GFP_KERNEL);
 }
 
+<<<<<<< HEAD
 static inline struct snd_card *dapm_get_card(struct snd_soc_dapm_context *dapm)
 {
 	if (dapm->codec)
@@ -515,6 +541,8 @@ found:
 	return paths;
 }
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 /**
  * snd_soc_dapm_set_bias_level - set the bias level for the system
  * @dapm: DAPM context
@@ -585,7 +613,11 @@ static void dapm_set_path_status(struct snd_soc_dapm_widget *w,
 		unsigned int mask = (1 << fls(max)) - 1;
 		unsigned int invert = mc->invert;
 
+<<<<<<< HEAD
 		val = soc_widget_read(w, reg);
+=======
+		val = snd_soc_read(w->codec, reg);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		val = (val >> shift) & mask;
 
 		if ((invert && !val) || (!invert && val))
@@ -601,12 +633,20 @@ static void dapm_set_path_status(struct snd_soc_dapm_widget *w,
 
 		for (bitmask = 1; bitmask < e->max; bitmask <<= 1)
 		;
+<<<<<<< HEAD
 		val = soc_widget_read(w, e->reg);
+=======
+		val = snd_soc_read(w->codec, e->reg);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		item = (val >> e->shift_l) & (bitmask - 1);
 
 		p->connect = 0;
 		for (i = 0; i < e->max; i++) {
+<<<<<<< HEAD
 			if (!(strcmp(p->name, snd_soc_get_enum_text(e, i))) && item == i)
+=======
+			if (!(strcmp(p->name, e->texts[i])) && item == i)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 				p->connect = 1;
 		}
 	}
@@ -622,7 +662,11 @@ static void dapm_set_path_status(struct snd_soc_dapm_widget *w,
 		 * that the default mux choice (the first) will be
 		 * correctly powered up during initialization.
 		 */
+<<<<<<< HEAD
 		if (!strcmp(p->name, snd_soc_get_enum_text(e, 0)))
+=======
+		if (!strcmp(p->name, e->texts[0]))
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			p->connect = 1;
 	}
 	break;
@@ -631,7 +675,11 @@ static void dapm_set_path_status(struct snd_soc_dapm_widget *w,
 			w->kcontrol_news[i].private_value;
 		int val, item;
 
+<<<<<<< HEAD
 		val = soc_widget_read(w, e->reg);
+=======
+		val = snd_soc_read(w->codec, e->reg);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		val = (val >> e->shift_l) & e->mask;
 		for (item = 0; item < e->max; item++) {
 			if (val == e->values[item])
@@ -640,7 +688,11 @@ static void dapm_set_path_status(struct snd_soc_dapm_widget *w,
 
 		p->connect = 0;
 		for (i = 0; i < e->max; i++) {
+<<<<<<< HEAD
 			if (!(strcmp(p->name, snd_soc_get_enum_text(e, i))) && item == i)
+=======
+			if (!(strcmp(p->name, e->texts[i])) && item == i)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 				p->connect = 1;
 		}
 	}
@@ -681,11 +733,19 @@ static int dapm_connect_mux(struct snd_soc_dapm_context *dapm,
 	int i;
 
 	for (i = 0; i < e->max; i++) {
+<<<<<<< HEAD
 		if (!(strcmp(control_name, snd_soc_get_enum_text(e, i)))) {
 			list_add(&path->list, &dapm->card->paths);
 			list_add(&path->list_sink, &dest->sources);
 			list_add(&path->list_source, &src->sinks);
 			path->name = (char*)snd_soc_get_enum_text(e, i);
+=======
+		if (!(strcmp(control_name, e->texts[i]))) {
+			list_add(&path->list, &dapm->card->paths);
+			list_add(&path->list_sink, &dest->sources);
+			list_add(&path->list_source, &src->sinks);
+			path->name = (char*)e->texts[i];
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			dapm_set_path_status(dest, path, 0);
 			return 0;
 		}
@@ -883,7 +943,11 @@ static int dapm_new_mux(struct snd_soc_dapm_widget *w)
 	wlist->widgets[wlistentries - 1] = w;
 
 	if (!kcontrol) {
+<<<<<<< HEAD
 		if (dapm->codec && dapm->codec->name_prefix)
+=======
+		if (dapm->codec)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			prefix = dapm->codec->name_prefix;
 		else
 			prefix = NULL;
@@ -905,7 +969,11 @@ static int dapm_new_mux(struct snd_soc_dapm_widget *w)
 		 * cut the prefix off the front of the widget name.
 		 */
 		kcontrol = snd_soc_cnew(&w->kcontrol_news[0], wlist,
+<<<<<<< HEAD
 					name, prefix);
+=======
+					name + prefix_len, prefix);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		ret = snd_ctl_add(card, kcontrol);
 		if (ret < 0) {
 			dev_err(dapm->dev,
@@ -935,6 +1003,18 @@ static int dapm_new_pga(struct snd_soc_dapm_widget *w)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+/* reset 'walked' bit for each dapm path */
+static inline void dapm_clear_walk(struct snd_soc_dapm_context *dapm)
+{
+	struct snd_soc_dapm_path *p;
+
+	list_for_each_entry(p, &dapm->card->paths, list)
+		p->walked = 0;
+}
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 /* We implement power down on suspend by checking the power state of
  * the ALSA card - when we are suspending the ALSA state for the card
  * is set to D3.
@@ -1063,7 +1143,11 @@ int dapm_reg_event(struct snd_soc_dapm_widget *w,
 	else
 		val = w->off_val;
 
+<<<<<<< HEAD
 	soc_widget_update_bits(w, -(w->reg + 1),
+=======
+	snd_soc_update_bits(w->codec, -(w->reg + 1),
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			    w->mask << w->shift, val << w->shift);
 
 	return 0;
@@ -1235,15 +1319,24 @@ static void dapm_seq_run_coalesced(struct snd_soc_dapm_context *dapm,
 				   struct list_head *pending)
 {
 	struct snd_soc_card *card = dapm->card;
+<<<<<<< HEAD
 	struct snd_soc_dapm_widget *w, *_w;
+=======
+	struct snd_soc_dapm_widget *w;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	int reg, power;
 	unsigned int value = 0;
 	unsigned int mask = 0;
 	unsigned int cur_mask;
 
+<<<<<<< HEAD
 	_w = list_first_entry(pending, struct snd_soc_dapm_widget,
 				power_list);
 	reg = _w->reg;
+=======
+	reg = list_first_entry(pending, struct snd_soc_dapm_widget,
+			       power_list)->reg;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	list_for_each_entry(w, pending, power_list) {
 		cur_mask = 1 << w->shift;
@@ -1268,17 +1361,24 @@ static void dapm_seq_run_coalesced(struct snd_soc_dapm_context *dapm,
 	}
 
 	if (reg >= 0) {
+<<<<<<< HEAD
 		/* Any widget will do, they should all be updating the
 		 * same register.
 		 */
 		w = list_first_entry(pending, struct snd_soc_dapm_widget,
 				     power_list);
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		pop_dbg(dapm->dev, card->pop_time,
 			"pop test : Applying 0x%x/0x%x to %x in %dms\n",
 			value, mask, reg, card->pop_time);
 		pop_wait(card->pop_time);
+<<<<<<< HEAD
 		soc_widget_update_bits(_w, reg, mask, value);
+=======
+		snd_soc_update_bits(dapm->codec, reg, mask, value);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	}
 
 	list_for_each_entry(w, pending, power_list) {
@@ -1306,13 +1406,17 @@ static void dapm_seq_run(struct snd_soc_dapm_context *dapm,
 	struct snd_soc_dapm_context *cur_dapm = NULL;
 	int ret, i;
 	int *sort;
+<<<<<<< HEAD
 	int nWidgets;
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	if (power_up)
 		sort = dapm_up_seq;
 	else
 		sort = dapm_down_seq;
 
+<<<<<<< HEAD
 	nWidgets = ARRAY_SIZE(dapm_up_seq);
 
 	list_for_each_entry_safe(w, n, list, power_list) {
@@ -1328,6 +1432,15 @@ static void dapm_seq_run(struct snd_soc_dapm_context *dapm,
 		if (sort[w->id] != cur_sort || w->reg != cur_reg ||
 		    w->dapm != cur_dapm || w->subseq != cur_subseq) {
 			if (cur_dapm && !list_empty(&pending))
+=======
+	list_for_each_entry_safe(w, n, list, power_list) {
+		ret = 0;
+
+		/* Do we need to apply any queued changes? */
+		if (sort[w->id] != cur_sort || w->reg != cur_reg ||
+		    w->dapm != cur_dapm || w->subseq != cur_subseq) {
+			if (!list_empty(&pending))
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 				dapm_seq_run_coalesced(cur_dapm, &pending);
 
 			if (cur_dapm && cur_dapm->seq_notifier) {
@@ -1387,7 +1500,11 @@ static void dapm_seq_run(struct snd_soc_dapm_context *dapm,
 				"Failed to apply widget power: %d\n", ret);
 	}
 
+<<<<<<< HEAD
 	if (cur_dapm && !list_empty(&pending))
+=======
+	if (!list_empty(&pending))
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		dapm_seq_run_coalesced(cur_dapm, &pending);
 
 	if (cur_dapm && cur_dapm->seq_notifier) {
@@ -1509,8 +1626,11 @@ static int dapm_power_widgets(struct snd_soc_dapm_context *dapm, int event)
 
 	trace_snd_soc_dapm_start(card);
 
+<<<<<<< HEAD
 	mutex_lock(&card->dapm_power_mutex);
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	list_for_each_entry(d, &card->dapm_list, list)
 		if (d->n_widgets || d->codec == NULL)
 			d->dev_power = 0;
@@ -1563,10 +1683,14 @@ static int dapm_power_widgets(struct snd_soc_dapm_context *dapm, int event)
 			dapm->dev_power = 1;
 			break;
 		case SND_SOC_DAPM_STREAM_STOP:
+<<<<<<< HEAD
 			if (dapm->codec)
 				dapm->dev_power = !!dapm->codec->active;
 			else
 				dapm->dev_power = 0;
+=======
+			dapm->dev_power = !!dapm->codec->active;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			break;
 		case SND_SOC_DAPM_STREAM_SUSPEND:
 			dapm->dev_power = 0;
@@ -1620,8 +1744,11 @@ static int dapm_power_widgets(struct snd_soc_dapm_context *dapm, int event)
 		"DAPM sequencing finished, waiting %dms\n", card->pop_time);
 	pop_wait(card->pop_time);
 
+<<<<<<< HEAD
 	mutex_unlock(&card->dapm_power_mutex);
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	trace_snd_soc_dapm_done(card);
 
 	return 0;
@@ -1802,7 +1929,11 @@ static inline void dapm_debugfs_cleanup(struct snd_soc_dapm_context *dapm)
 #endif
 
 /* test and update the power status of a mux widget */
+<<<<<<< HEAD
 int snd_soc_dapm_mux_update_power(struct snd_soc_dapm_widget *widget,
+=======
+static int dapm_mux_update_power(struct snd_soc_dapm_widget *widget,
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 				 struct snd_kcontrol *kcontrol, int change,
 				 int mux, struct soc_enum *e)
 {
@@ -1819,21 +1950,33 @@ int snd_soc_dapm_mux_update_power(struct snd_soc_dapm_widget *widget,
 
 	/* find dapm widget path assoc with kcontrol */
 	list_for_each_entry(path, &widget->dapm->card->paths, list) {
+<<<<<<< HEAD
 
 		if (path->kcontrol != kcontrol)
 			continue;
 
 		if (!path->name || !snd_soc_get_enum_text(e, mux))
+=======
+		if (path->kcontrol != kcontrol)
+			continue;
+
+		if (!path->name || !e->texts[mux])
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			continue;
 
 		found = 1;
 		/* we now need to match the string in the enum to the path */
+<<<<<<< HEAD
 		if (!(strcmp(path->name, snd_soc_get_enum_text(e, mux))))
+=======
+		if (!(strcmp(path->name, e->texts[mux])))
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			path->connect = 1; /* new connection */
 		else
 			path->connect = 0; /* old connection must be powered down */
 	}
 
+<<<<<<< HEAD
 	if (found) {
 		if (widget->platform)
 			soc_dsp_runtime_update(widget);
@@ -1849,6 +1992,17 @@ EXPORT_SYMBOL_GPL(snd_soc_dapm_mux_update_power);
 /* test and update the power status of a mixer or switch widget */
 int snd_soc_dapm_mixer_update_power(struct snd_soc_dapm_widget *widget,
 		struct snd_kcontrol *kcontrol, int connect)
+=======
+	if (found)
+		dapm_power_widgets(widget->dapm, SND_SOC_DAPM_STREAM_NOP);
+
+	return 0;
+}
+
+/* test and update the power status of a mixer or switch widget */
+static int dapm_mixer_update_power(struct snd_soc_dapm_widget *widget,
+				   struct snd_kcontrol *kcontrol, int connect)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 {
 	struct snd_soc_dapm_path *path;
 	int found = 0;
@@ -1869,6 +2023,7 @@ int snd_soc_dapm_mixer_update_power(struct snd_soc_dapm_widget *widget,
 		break;
 	}
 
+<<<<<<< HEAD
 	if (found) {
 		if (widget->platform)
 			soc_dsp_runtime_update(widget);
@@ -1891,6 +2046,28 @@ static ssize_t widget_show(struct snd_soc_dapm_context *dapm,
 	count += sprintf(buf + count, "\n%s\n", name);
 
 	list_for_each_entry(w, &dapm->card->widgets, list) {
+=======
+	if (found)
+		dapm_power_widgets(widget->dapm, SND_SOC_DAPM_STREAM_NOP);
+
+	return 0;
+}
+
+/* show dapm widget status in sys fs */
+static ssize_t dapm_widget_show(struct device *dev,
+	struct device_attribute *attr, char *buf)
+{
+	struct snd_soc_pcm_runtime *rtd =
+			container_of(dev, struct snd_soc_pcm_runtime, dev);
+	struct snd_soc_codec *codec =rtd->codec;
+	struct snd_soc_dapm_widget *w;
+	int count = 0;
+	char *state = "not set";
+
+	list_for_each_entry(w, &codec->card->widgets, list) {
+		if (w->dapm != &codec->dapm)
+			continue;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 		/* only display widgets that burnm power */
 		switch (w->id) {
@@ -1915,7 +2092,11 @@ static ssize_t widget_show(struct snd_soc_dapm_context *dapm,
 		}
 	}
 
+<<<<<<< HEAD
 	switch (dapm->bias_level) {
+=======
+	switch (codec->dapm.bias_level) {
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	case SND_SOC_BIAS_ON:
 		state = "On";
 		break;
@@ -1934,6 +2115,7 @@ static ssize_t widget_show(struct snd_soc_dapm_context *dapm,
 	return count;
 }
 
+<<<<<<< HEAD
 /* show dapm widget status in sys fs */
 static ssize_t dapm_widget_show(struct device *dev,
 	struct device_attribute *attr, char *buf)
@@ -1949,6 +2131,8 @@ static ssize_t dapm_widget_show(struct device *dev,
 	return count;
 }
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 static DEVICE_ATTR(dapm_widget, 0444, dapm_widget_show, NULL);
 
 int snd_soc_dapm_sys_add(struct device *dev)
@@ -2294,7 +2478,11 @@ int snd_soc_dapm_new_widgets(struct snd_soc_dapm_context *dapm)
 
 		/* Read the initial power state from the device */
 		if (w->reg >= 0) {
+<<<<<<< HEAD
 			val = soc_widget_read(w, w->reg);
+=======
+			val = snd_soc_read(w->codec, w->reg);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			val &= 1 << w->shift;
 			if (w->invert)
 				val = !val;
@@ -2313,6 +2501,7 @@ int snd_soc_dapm_new_widgets(struct snd_soc_dapm_context *dapm)
 }
 EXPORT_SYMBOL_GPL(snd_soc_dapm_new_widgets);
 
+<<<<<<< HEAD
 const char *snd_soc_dapm_get_aif(struct snd_soc_dapm_context *dapm,
 		const char *stream_name, enum snd_soc_dapm_type type)
 {
@@ -2331,6 +2520,8 @@ const char *snd_soc_dapm_get_aif(struct snd_soc_dapm_context *dapm,
 }
 EXPORT_SYMBOL_GPL(snd_soc_dapm_get_aif);
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 /**
  * snd_soc_dapm_get_volsw - dapm mixer get callback
  * @kcontrol: mixer control
@@ -2428,7 +2619,11 @@ int snd_soc_dapm_put_volsw(struct snd_kcontrol *kcontrol,
 			update.val = val;
 			widget->dapm->update = &update;
 
+<<<<<<< HEAD
 			snd_soc_dapm_mixer_update_power(widget, kcontrol, connect);
+=======
+			dapm_mixer_update_power(widget, kcontrol, connect);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 			widget->dapm->update = NULL;
 		}
@@ -2519,7 +2714,11 @@ int snd_soc_dapm_put_enum_double(struct snd_kcontrol *kcontrol,
 			update.val = val;
 			widget->dapm->update = &update;
 
+<<<<<<< HEAD
 			snd_soc_dapm_mux_update_power(widget, kcontrol, change, mux, e);
+=======
+			dapm_mux_update_power(widget, kcontrol, change, mux, e);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 			widget->dapm->update = NULL;
 		}
@@ -2580,8 +2779,13 @@ int snd_soc_dapm_put_enum_virt(struct snd_kcontrol *kcontrol,
 
 			widget->value = ucontrol->value.enumerated.item[0];
 
+<<<<<<< HEAD
 			snd_soc_dapm_mux_update_power(widget, kcontrol, change,
 					widget->value, e);
+=======
+			dapm_mux_update_power(widget, kcontrol, change,
+					      widget->value, e);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		}
 	}
 
@@ -2684,7 +2888,11 @@ int snd_soc_dapm_put_value_enum_double(struct snd_kcontrol *kcontrol,
 			update.val = val;
 			widget->dapm->update = &update;
 
+<<<<<<< HEAD
 			snd_soc_dapm_mux_update_power(widget, kcontrol, change, mux, e);
+=======
+			dapm_mux_update_power(widget, kcontrol, change, mux, e);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 			widget->dapm->update = NULL;
 		}
@@ -2800,7 +3008,10 @@ int snd_soc_dapm_new_control(struct snd_soc_dapm_context *dapm,
 	dapm->n_widgets++;
 	w->dapm = dapm;
 	w->codec = dapm->codec;
+<<<<<<< HEAD
 	w->platform = dapm->platform;
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	INIT_LIST_HEAD(&w->sources);
 	INIT_LIST_HEAD(&w->sinks);
 	INIT_LIST_HEAD(&w->list);
@@ -2847,9 +3058,12 @@ static void soc_dapm_stream_event(struct snd_soc_dapm_context *dapm,
 {
 	struct snd_soc_dapm_widget *w;
 
+<<<<<<< HEAD
 	if (!dapm)
 		return;
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	list_for_each_entry(w, &dapm->card->widgets, list)
 	{
 		if (!w->sname || w->dapm != dapm)
@@ -2874,9 +3088,12 @@ static void soc_dapm_stream_event(struct snd_soc_dapm_context *dapm,
 	}
 
 	dapm_power_widgets(dapm, event);
+<<<<<<< HEAD
 	/* do we need to notify any clients that DAPM stream is complete */
 	if (dapm->stream_event)
 		dapm->stream_event(dapm);
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 /**
@@ -2893,6 +3110,7 @@ static void soc_dapm_stream_event(struct snd_soc_dapm_context *dapm,
 int snd_soc_dapm_stream_event(struct snd_soc_pcm_runtime *rtd,
 	const char *stream, int event)
 {
+<<<<<<< HEAD
 	if (stream == NULL)
 		return 0;
 
@@ -2902,6 +3120,16 @@ int snd_soc_dapm_stream_event(struct snd_soc_pcm_runtime *rtd,
 	soc_dapm_stream_event(&rtd->codec->dapm, stream, event);
 	mutex_unlock(&rtd->codec->mutex);
 	mutex_unlock(&rtd->card->dapm_mutex);
+=======
+	struct snd_soc_codec *codec = rtd->codec;
+
+	if (stream == NULL)
+		return 0;
+
+	mutex_lock(&codec->mutex);
+	soc_dapm_stream_event(&codec->dapm, stream, event);
+	mutex_unlock(&codec->mutex);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	return 0;
 }
 
@@ -3070,9 +3298,19 @@ static void soc_dapm_shutdown_codec(struct snd_soc_dapm_context *dapm)
 	 * standby.
 	 */
 	if (powerdown) {
+<<<<<<< HEAD
 		snd_soc_dapm_set_bias_level(dapm, SND_SOC_BIAS_PREPARE);
 		dapm_seq_run(dapm, &down_list, 0, false);
 		snd_soc_dapm_set_bias_level(dapm, SND_SOC_BIAS_STANDBY);
+=======
+		if (dapm->bias_level == SND_SOC_BIAS_ON)
+			snd_soc_dapm_set_bias_level(dapm,
+						    SND_SOC_BIAS_PREPARE);
+		dapm_seq_run(dapm, &down_list, 0, false);
+		if (dapm->bias_level == SND_SOC_BIAS_PREPARE)
+			snd_soc_dapm_set_bias_level(dapm,
+						    SND_SOC_BIAS_STANDBY);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	}
 }
 
@@ -3082,6 +3320,7 @@ static void soc_dapm_shutdown_codec(struct snd_soc_dapm_context *dapm)
 void snd_soc_dapm_shutdown(struct snd_soc_card *card)
 {
 	struct snd_soc_codec *codec;
+<<<<<<< HEAD
 	struct snd_soc_platform *platform;
 
 	list_for_each_entry(codec, &card->codec_dev_list, list) {
@@ -3092,10 +3331,22 @@ void snd_soc_dapm_shutdown(struct snd_soc_card *card)
 	list_for_each_entry(platform, &card->platform_dev_list, list) {
 		soc_dapm_shutdown_codec(&platform->dapm);
 		snd_soc_dapm_set_bias_level(&platform->dapm, SND_SOC_BIAS_OFF);
+=======
+
+	list_for_each_entry(codec, &card->codec_dev_list, card_list) {
+		soc_dapm_shutdown_codec(&codec->dapm);
+		if (codec->dapm.bias_level == SND_SOC_BIAS_STANDBY)
+			snd_soc_dapm_set_bias_level(&codec->dapm,
+						    SND_SOC_BIAS_OFF);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	}
 }
 
 /* Module information */
 MODULE_AUTHOR("Liam Girdwood, lrg@slimlogic.co.uk");
 MODULE_DESCRIPTION("Dynamic Audio Power Management core for ALSA SoC");
+<<<<<<< HEAD
 MODULE_LICENSE("GPL v2");
+=======
+MODULE_LICENSE("GPL");
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y

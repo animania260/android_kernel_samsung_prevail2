@@ -734,12 +734,20 @@ static int ti_hecc_error(struct net_device *ndev, int int_status,
 		}
 		if (err_status & HECC_CANES_CRCE) {
 			hecc_set_bit(priv, HECC_CANES, HECC_CANES_CRCE);
+<<<<<<< HEAD
 			cf->data[2] |= CAN_ERR_PROT_LOC_CRC_SEQ |
+=======
+			cf->data[3] |= CAN_ERR_PROT_LOC_CRC_SEQ |
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 					CAN_ERR_PROT_LOC_CRC_DEL;
 		}
 		if (err_status & HECC_CANES_ACKE) {
 			hecc_set_bit(priv, HECC_CANES, HECC_CANES_ACKE);
+<<<<<<< HEAD
 			cf->data[2] |= CAN_ERR_PROT_LOC_ACK |
+=======
+			cf->data[3] |= CAN_ERR_PROT_LOC_ACK |
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 					CAN_ERR_PROT_LOC_ACK_DEL;
 		}
 	}
@@ -969,12 +977,19 @@ static int __devexit ti_hecc_remove(struct platform_device *pdev)
 	struct net_device *ndev = platform_get_drvdata(pdev);
 	struct ti_hecc_priv *priv = netdev_priv(ndev);
 
+<<<<<<< HEAD
+=======
+	unregister_candev(ndev);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	clk_disable(priv->clk);
 	clk_put(priv->clk);
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	iounmap(priv->base);
 	release_mem_region(res->start, resource_size(res));
+<<<<<<< HEAD
 	unregister_candev(ndev);
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	free_candev(ndev);
 	platform_set_drvdata(pdev, NULL);
 

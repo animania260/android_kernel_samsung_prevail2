@@ -8,6 +8,14 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+<<<<<<< HEAD
+=======
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
  */
 
 #include <linux/console.h>
@@ -41,6 +49,10 @@ static inline char __dcc_getchar(void)
 
 	asm volatile("mrc p14, 0, %0, c0, c5, 0	@ read comms data reg"
 		: "=r" (__c));
+<<<<<<< HEAD
+=======
+	isb();
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	return __c;
 }
@@ -50,6 +62,10 @@ static inline void __dcc_putchar(char c)
 	asm volatile("mcr p14, 0, %0, c0, c5, 0	@ write a char"
 		: /* no output register */
 		: "r" (c));
+<<<<<<< HEAD
+=======
+	isb();
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 static int hvc_dcc_put_chars(uint32_t vt, const char *buf, int count)

@@ -205,7 +205,11 @@ static struct amba_pl010_data integrator_uart_data = {
 
 #define CM_CTRL	IO_ADDRESS(INTEGRATOR_HDR_CTRL)
 
+<<<<<<< HEAD
 static DEFINE_RAW_SPINLOCK(cm_lock);
+=======
+static DEFINE_SPINLOCK(cm_lock);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 /**
  * cm_control - update the CM_CTRL register.
@@ -217,10 +221,17 @@ void cm_control(u32 mask, u32 set)
 	unsigned long flags;
 	u32 val;
 
+<<<<<<< HEAD
 	raw_spin_lock_irqsave(&cm_lock, flags);
 	val = readl(CM_CTRL) & ~mask;
 	writel(val | set, CM_CTRL);
 	raw_spin_unlock_irqrestore(&cm_lock, flags);
+=======
+	spin_lock_irqsave(&cm_lock, flags);
+	val = readl(CM_CTRL) & ~mask;
+	writel(val | set, CM_CTRL);
+	spin_unlock_irqrestore(&cm_lock, flags);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 EXPORT_SYMBOL(cm_control);

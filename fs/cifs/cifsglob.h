@@ -43,6 +43,10 @@
 
 #define CIFS_MIN_RCV_POOL 4
 
+<<<<<<< HEAD
+=======
+#define MAX_REOPEN_ATT	5 /* these many maximum attempts to reopen a file */
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 /*
  * default attribute cache timeout (jiffies)
  */

@@ -869,7 +869,11 @@ static int inet_diag_rcv_msg(struct sk_buff *skb, struct nlmsghdr *nlh)
 		}
 
 		return netlink_dump_start(idiagnl, skb, nlh,
+<<<<<<< HEAD
 					  inet_diag_dump, NULL);
+=======
+					  inet_diag_dump, NULL, 0);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	}
 
 	return inet_diag_get_exact(skb, nlh);

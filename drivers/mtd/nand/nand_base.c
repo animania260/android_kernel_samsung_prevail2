@@ -2097,14 +2097,32 @@ static int nand_write_page(struct mtd_info *mtd, struct nand_chip *chip,
 
 /**
  * nand_fill_oob - [Internal] Transfer client buffer to oob
+<<<<<<< HEAD
  * @chip:	nand chip structure
+=======
+ * @mtd:	MTD device structure
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
  * @oob:	oob data buffer
  * @len:	oob data write length
  * @ops:	oob ops structure
  */
+<<<<<<< HEAD
 static uint8_t *nand_fill_oob(struct nand_chip *chip, uint8_t *oob, size_t len,
 						struct mtd_oob_ops *ops)
 {
+=======
+static uint8_t *nand_fill_oob(struct mtd_info *mtd, uint8_t *oob, size_t len,
+			      struct mtd_oob_ops *ops)
+{
+	struct nand_chip *chip = mtd->priv;
+
+	/*
+	 * Initialise to all 0xFF, to avoid the possibility of left over OOB
+	 * data from a previous OOB read.
+	 */
+	memset(chip->oob_poi, 0xff, mtd->oobsize);
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	switch (ops->mode) {
 
 	case MTD_OOB_PLACE:
@@ -2201,10 +2219,13 @@ static int nand_do_write_ops(struct mtd_info *mtd, loff_t to,
 	    (chip->pagebuf << chip->page_shift) < (to + ops->len))
 		chip->pagebuf = -1;
 
+<<<<<<< HEAD
 	/* If we're not given explicit OOB data, let it be 0xFF */
 	if (likely(!oob))
 		memset(chip->oob_poi, 0xff, mtd->oobsize);
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	/* Don't allow multipage oob writes with offset */
 	if (oob && ops->ooboffs && (ops->ooboffs + ops->ooblen > oobmaxlen))
 		return -EINVAL;
@@ -2226,8 +2247,16 @@ static int nand_do_write_ops(struct mtd_info *mtd, loff_t to,
 
 		if (unlikely(oob)) {
 			size_t len = min(oobwritelen, oobmaxlen);
+<<<<<<< HEAD
 			oob = nand_fill_oob(chip, oob, len, ops);
 			oobwritelen -= len;
+=======
+			oob = nand_fill_oob(mtd, oob, len, ops);
+			oobwritelen -= len;
+		} else {
+			/* We still need to erase leftover OOB data */
+			memset(chip->oob_poi, 0xff, mtd->oobsize);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		}
 
 		ret = chip->write_page(mtd, chip, wbuf, page, cached,
@@ -2401,10 +2430,15 @@ static int nand_do_write_oob(struct mtd_info *mtd, loff_t to,
 	if (page == chip->pagebuf)
 		chip->pagebuf = -1;
 
+<<<<<<< HEAD
 	memset(chip->oob_poi, 0xff, mtd->oobsize);
 	nand_fill_oob(chip, ops->oobbuf, ops->ooblen, ops);
 	status = chip->ecc.write_oob(mtd, chip, page & chip->pagemask);
 	memset(chip->oob_poi, 0xff, mtd->oobsize);
+=======
+	nand_fill_oob(mtd, ops->oobbuf, ops->ooblen, ops);
+	status = chip->ecc.write_oob(mtd, chip, page & chip->pagemask);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	if (status)
 		return status;
@@ -3217,6 +3251,7 @@ int nand_scan_ident(struct mtd_info *mtd, int maxchips,
 }
 EXPORT_SYMBOL(nand_scan_ident);
 
+<<<<<<< HEAD
 static void nand_panic_wait(struct mtd_info *mtd)
 {
 	struct nand_chip *chip = mtd->priv;
@@ -3255,6 +3290,8 @@ static int nand_panic_write(struct mtd_info *mtd, loff_t to, size_t len,
 	return ret;
 }
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 /**
  * nand_scan_tail - [NAND Interface] Scan for the NAND device
@@ -3498,7 +3535,10 @@ int nand_scan_tail(struct mtd_info *mtd)
 	mtd->panic_write = panic_nand_write;
 	mtd->read_oob = nand_read_oob;
 	mtd->write_oob = nand_write_oob;
+<<<<<<< HEAD
 	mtd->panic_write = nand_panic_write;
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	mtd->sync = nand_sync;
 	mtd->lock = NULL;
 	mtd->unlock = NULL;

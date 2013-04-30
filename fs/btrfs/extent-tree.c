@@ -3786,7 +3786,11 @@ static void update_global_block_rsv(struct btrfs_fs_info *fs_info)
 	spin_lock(&block_rsv->lock);
 	spin_lock(&sinfo->lock);
 
+<<<<<<< HEAD
 	block_rsv->size = num_bytes;
+=======
+	block_rsv->size = min_t(u64, num_bytes, 512 * 1024 * 1024);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	num_bytes = sinfo->bytes_used + sinfo->bytes_pinned +
 		    sinfo->bytes_reserved + sinfo->bytes_readonly +

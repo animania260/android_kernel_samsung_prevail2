@@ -223,7 +223,11 @@ void sctp_outq_init(struct sctp_association *asoc, struct sctp_outq *q)
 
 /* Free the outqueue structure and any related pending chunks.
  */
+<<<<<<< HEAD
 void sctp_outq_teardown(struct sctp_outq *q)
+=======
+static void __sctp_outq_teardown(struct sctp_outq *q)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 {
 	struct sctp_transport *transport;
 	struct list_head *lchunk, *temp;
@@ -276,8 +280,11 @@ void sctp_outq_teardown(struct sctp_outq *q)
 		sctp_chunk_free(chunk);
 	}
 
+<<<<<<< HEAD
 	q->error = 0;
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	/* Throw away any leftover control chunks. */
 	list_for_each_entry_safe(chunk, tmp, &q->control_chunk_list, list) {
 		list_del_init(&chunk->list);
@@ -285,11 +292,24 @@ void sctp_outq_teardown(struct sctp_outq *q)
 	}
 }
 
+<<<<<<< HEAD
+=======
+void sctp_outq_teardown(struct sctp_outq *q)
+{
+	__sctp_outq_teardown(q);
+	sctp_outq_init(q->asoc, q);
+}
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 /* Free the outqueue structure and any related pending chunks.  */
 void sctp_outq_free(struct sctp_outq *q)
 {
 	/* Throw away leftover chunks. */
+<<<<<<< HEAD
 	sctp_outq_teardown(q);
+=======
+	__sctp_outq_teardown(q);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	/* If we were kmalloc()'d, free the memory.  */
 	if (q->malloced)
@@ -411,8 +431,12 @@ void sctp_retransmit_mark(struct sctp_outq *q,
 					chunk->transport->flight_size -=
 							sctp_data_size(chunk);
 				q->outstanding_bytes -= sctp_data_size(chunk);
+<<<<<<< HEAD
 				q->asoc->peer.rwnd += (sctp_data_size(chunk) +
 							sizeof(struct sk_buff));
+=======
+				q->asoc->peer.rwnd += sctp_data_size(chunk);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			}
 			continue;
 		}
@@ -432,8 +456,12 @@ void sctp_retransmit_mark(struct sctp_outq *q,
 			 * (Section 7.2.4)), add the data size of those
 			 * chunks to the rwnd.
 			 */
+<<<<<<< HEAD
 			q->asoc->peer.rwnd += (sctp_data_size(chunk) +
 						sizeof(struct sk_buff));
+=======
+			q->asoc->peer.rwnd += sctp_data_size(chunk);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			q->outstanding_bytes -= sctp_data_size(chunk);
 			if (chunk->transport)
 				transport->flight_size -= sctp_data_size(chunk);

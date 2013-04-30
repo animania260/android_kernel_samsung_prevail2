@@ -62,6 +62,11 @@ static struct usb_device_id rtl871x_usb_id_tbl[] = {
 	{USB_DEVICE(0x0B05, 0x1791)}, /* 11n mode disable */
 	/* Belkin */
 	{USB_DEVICE(0x050D, 0x945A)},
+<<<<<<< HEAD
+=======
+	/* ISY IWL - Belkin clone */
+	{USB_DEVICE(0x050D, 0x11F1)},
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	/* Corega */
 	{USB_DEVICE(0x07AA, 0x0047)},
 	/* D-Link */
@@ -86,6 +91,11 @@ static struct usb_device_id rtl871x_usb_id_tbl[] = {
 	{USB_DEVICE(0x0DF6, 0x0045)},
 	{USB_DEVICE(0x0DF6, 0x0059)}, /* 11n mode disable */
 	{USB_DEVICE(0x0DF6, 0x004B)},
+<<<<<<< HEAD
+=======
+	{USB_DEVICE(0x0DF6, 0x005B)},
+	{USB_DEVICE(0x0DF6, 0x005D)},
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	{USB_DEVICE(0x0DF6, 0x0063)},
 	/* Sweex */
 	{USB_DEVICE(0x177F, 0x0154)},

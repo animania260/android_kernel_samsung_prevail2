@@ -66,6 +66,11 @@ static MPT_CALLBACK	mpt_callbacks[MPT_MAX_CALLBACKS];
 
 #define FAULT_POLLING_INTERVAL 1000 /* in milliseconds */
 
+<<<<<<< HEAD
+=======
+#define MAX_HBA_QUEUE_DEPTH	30000
+#define MAX_CHAIN_DEPTH		100000
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 static int max_queue_depth = -1;
 module_param(max_queue_depth, int, 0);
 MODULE_PARM_DESC(max_queue_depth, " max controller queue depth ");
@@ -1082,6 +1087,7 @@ _base_config_dma_addressing(struct MPT2SAS_ADAPTER *ioc, struct pci_dev *pdev)
 }
 
 /**
+<<<<<<< HEAD
  * _base_save_msix_table - backup msix vector table
  * @ioc: per adapter object
  *
@@ -1117,6 +1123,8 @@ _base_restore_msix_table(struct MPT2SAS_ADAPTER *ioc)
 }
 
 /**
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
  * _base_check_enable_msix - checks MSIX capabable.
  * @ioc: per adapter object
  *
@@ -1128,7 +1136,18 @@ _base_check_enable_msix(struct MPT2SAS_ADAPTER *ioc)
 {
 	int base;
 	u16 message_control;
+<<<<<<< HEAD
 	u32 msix_table_offset;
+=======
+
+
+	/* Check whether controller SAS2008 B0 controller,
+	   if it is SAS2008 B0 controller use IO-APIC instead of MSIX */
+	if (ioc->pdev->device == MPI2_MFGPAGE_DEVID_SAS2008 &&
+	    ioc->pdev->revision == 0x01) {
+		return -EINVAL;
+	}
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	base = pci_find_capability(ioc->pdev, PCI_CAP_ID_MSIX);
 	if (!base) {
@@ -1141,6 +1160,7 @@ _base_check_enable_msix(struct MPT2SAS_ADAPTER *ioc)
 	pci_read_config_word(ioc->pdev, base + 2, &message_control);
 	ioc->msix_vector_count = (message_control & 0x3FF) + 1;
 
+<<<<<<< HEAD
 	/* get msix table  */
 	pci_read_config_dword(ioc->pdev, base + 4, &msix_table_offset);
 	msix_table_offset &= 0xFFFFFFF8;
@@ -1149,6 +1169,10 @@ _base_check_enable_msix(struct MPT2SAS_ADAPTER *ioc)
 	dinitprintk(ioc, printk(MPT2SAS_INFO_FMT "msix is supported, "
 	    "vector_count(%d), table_offset(0x%08x), table(%p)\n", ioc->name,
 	    ioc->msix_vector_count, msix_table_offset, ioc->msix_table));
+=======
+	dinitprintk(ioc, printk(MPT2SAS_INFO_FMT "msix is supported, "
+	    "vector_count(%d)\n", ioc->name, ioc->msix_vector_count));
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	return 0;
 }
 
@@ -1162,8 +1186,11 @@ _base_disable_msix(struct MPT2SAS_ADAPTER *ioc)
 {
 	if (ioc->msix_enable) {
 		pci_disable_msix(ioc->pdev);
+<<<<<<< HEAD
 		kfree(ioc->msix_table_backup);
 		ioc->msix_table_backup = NULL;
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		ioc->msix_enable = 0;
 	}
 }
@@ -1189,6 +1216,7 @@ _base_enable_msix(struct MPT2SAS_ADAPTER *ioc)
 	if (_base_check_enable_msix(ioc) != 0)
 		goto try_ioapic;
 
+<<<<<<< HEAD
 	ioc->msix_table_backup = kcalloc(ioc->msix_vector_count,
 	    sizeof(u32), GFP_KERNEL);
 	if (!ioc->msix_table_backup) {
@@ -1197,6 +1225,8 @@ _base_enable_msix(struct MPT2SAS_ADAPTER *ioc)
 		goto try_ioapic;
 	}
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	memset(&entries, 0, sizeof(struct msix_entry));
 	r = pci_enable_msix(ioc->pdev, &entries, 1);
 	if (r) {
@@ -2149,8 +2179,11 @@ _base_release_memory_pools(struct MPT2SAS_ADAPTER *ioc)
 		}
 		if (ioc->chain_dma_pool)
 			pci_pool_destroy(ioc->chain_dma_pool);
+<<<<<<< HEAD
 	}
 	if (ioc->chain_lookup) {
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		free_pages((ulong)ioc->chain_lookup, ioc->chain_pages);
 		ioc->chain_lookup = NULL;
 	}
@@ -2168,9 +2201,13 @@ static int
 _base_allocate_memory_pools(struct MPT2SAS_ADAPTER *ioc,  int sleep_flag)
 {
 	struct mpt2sas_facts *facts;
+<<<<<<< HEAD
 	u32 queue_size, queue_diff;
 	u16 max_sge_elements;
 	u16 num_of_reply_frames;
+=======
+	u16 max_sge_elements;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	u16 chains_needed_per_io;
 	u32 sz, total_sz;
 	u32 retry_sz;
@@ -2193,11 +2230,23 @@ _base_allocate_memory_pools(struct MPT2SAS_ADAPTER *ioc,  int sleep_flag)
 	}
 
 	/* command line tunables  for max controller queue depth */
+<<<<<<< HEAD
 	if (max_queue_depth != -1)
 		max_request_credit = (max_queue_depth < facts->RequestCredit)
 		    ? max_queue_depth : facts->RequestCredit;
 	else
 		max_request_credit = facts->RequestCredit;
+=======
+	if (max_queue_depth != -1 && max_queue_depth != 0) {
+		max_request_credit = min_t(u16, max_queue_depth +
+			ioc->hi_priority_depth + ioc->internal_depth,
+			facts->RequestCredit);
+		if (max_request_credit > MAX_HBA_QUEUE_DEPTH)
+			max_request_credit =  MAX_HBA_QUEUE_DEPTH;
+	} else
+		max_request_credit = min_t(u16, facts->RequestCredit,
+		    MAX_HBA_QUEUE_DEPTH);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	ioc->hba_queue_depth = max_request_credit;
 	ioc->hi_priority_depth = facts->HighPriorityCredit;
@@ -2238,6 +2287,7 @@ _base_allocate_memory_pools(struct MPT2SAS_ADAPTER *ioc,  int sleep_flag)
 	}
 	ioc->chains_needed_per_io = chains_needed_per_io;
 
+<<<<<<< HEAD
 	/* reply free queue sizing - taking into account for events */
 	num_of_reply_frames = ioc->hba_queue_depth + 32;
 
@@ -2282,6 +2332,27 @@ _base_allocate_memory_pools(struct MPT2SAS_ADAPTER *ioc,  int sleep_flag)
 		queue_size = facts->MaxReplyDescriptorPostQueueDepth;
 	}
 	ioc->reply_post_queue_depth = queue_size;
+=======
+	/* reply free queue sizing - taking into account for 64 FW events */
+	ioc->reply_free_queue_depth = ioc->hba_queue_depth + 64;
+
+	/* align the reply post queue on the next 16 count boundary */
+	if (!ioc->reply_free_queue_depth % 16)
+		ioc->reply_post_queue_depth = ioc->reply_free_queue_depth + 16;
+	else
+		ioc->reply_post_queue_depth = ioc->reply_free_queue_depth +
+				32 - (ioc->reply_free_queue_depth % 16);
+	if (ioc->reply_post_queue_depth >
+	    facts->MaxReplyDescriptorPostQueueDepth) {
+		ioc->reply_post_queue_depth = min_t(u16,
+		    (facts->MaxReplyDescriptorPostQueueDepth -
+		    (facts->MaxReplyDescriptorPostQueueDepth % 16)),
+		    (ioc->hba_queue_depth - (ioc->hba_queue_depth % 16)));
+		ioc->reply_free_queue_depth = ioc->reply_post_queue_depth - 16;
+		ioc->hba_queue_depth = ioc->reply_free_queue_depth - 64;
+	}
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	dinitprintk(ioc, printk(MPT2SAS_INFO_FMT "scatter gather: "
 	    "sge_in_main_msg(%d), sge_per_chain(%d), sge_per_io(%d), "
@@ -2295,7 +2366,11 @@ _base_allocate_memory_pools(struct MPT2SAS_ADAPTER *ioc,  int sleep_flag)
 	/* set the scsi host can_queue depth
 	 * with some internal commands that could be outstanding
 	 */
+<<<<<<< HEAD
 	ioc->shost->can_queue = ioc->scsiio_depth - (2);
+=======
+	ioc->shost->can_queue = ioc->scsiio_depth;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	dinitprintk(ioc, printk(MPT2SAS_INFO_FMT "scsi host: "
 	    "can_queue depth (%d)\n", ioc->name, ioc->shost->can_queue));
 
@@ -2367,6 +2442,7 @@ _base_allocate_memory_pools(struct MPT2SAS_ADAPTER *ioc,  int sleep_flag)
 	    "depth(%d)\n", ioc->name, ioc->request,
 	    ioc->scsiio_depth));
 
+<<<<<<< HEAD
 	/* loop till the allocation succeeds */
 	do {
 		sz = ioc->chain_depth * sizeof(struct chain_tracker);
@@ -2376,6 +2452,14 @@ _base_allocate_memory_pools(struct MPT2SAS_ADAPTER *ioc,  int sleep_flag)
 		if (ioc->chain_lookup == NULL)
 			ioc->chain_depth -= 100;
 	} while (ioc->chain_lookup == NULL);
+=======
+	ioc->chain_depth = min_t(u32, ioc->chain_depth, MAX_CHAIN_DEPTH);
+	sz = ioc->chain_depth * sizeof(struct chain_tracker);
+	ioc->chain_pages = get_order(sz);
+
+	ioc->chain_lookup = (struct chain_tracker *)__get_free_pages(
+	    GFP_KERNEL, ioc->chain_pages);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	ioc->chain_dma_pool = pci_pool_create("chain pool", ioc->pdev,
 	    ioc->request_sz, 16, 0);
 	if (!ioc->chain_dma_pool) {
@@ -3136,7 +3220,11 @@ _base_get_port_facts(struct MPT2SAS_ADAPTER *ioc, int port, int sleep_flag)
 	}
 
 	pfacts = &ioc->pfacts[port];
+<<<<<<< HEAD
 	memset(pfacts, 0, sizeof(Mpi2PortFactsReply_t));
+=======
+	memset(pfacts, 0, sizeof(struct mpt2sas_port_facts));
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	pfacts->PortNumber = mpi_reply.PortNumber;
 	pfacts->VP_ID = mpi_reply.VP_ID;
 	pfacts->VF_ID = mpi_reply.VF_ID;
@@ -3178,7 +3266,11 @@ _base_get_ioc_facts(struct MPT2SAS_ADAPTER *ioc, int sleep_flag)
 	}
 
 	facts = &ioc->facts;
+<<<<<<< HEAD
 	memset(facts, 0, sizeof(Mpi2IOCFactsReply_t));
+=======
+	memset(facts, 0, sizeof(struct mpt2sas_facts));
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	facts->MsgVersion = le16_to_cpu(mpi_reply.MsgVersion);
 	facts->HeaderVersion = le16_to_cpu(mpi_reply.HeaderVersion);
 	facts->VP_ID = mpi_reply.VP_ID;
@@ -3513,9 +3605,12 @@ _base_diag_reset(struct MPT2SAS_ADAPTER *ioc, int sleep_flag)
 	u32 hcb_size;
 
 	printk(MPT2SAS_INFO_FMT "sending diag reset !!\n", ioc->name);
+<<<<<<< HEAD
 
 	_base_save_msix_table(ioc);
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	drsprintk(ioc, printk(MPT2SAS_INFO_FMT "clear interrupts\n",
 	    ioc->name));
 
@@ -3611,7 +3706,10 @@ _base_diag_reset(struct MPT2SAS_ADAPTER *ioc, int sleep_flag)
 		goto out;
 	}
 
+<<<<<<< HEAD
 	_base_restore_msix_table(ioc);
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	printk(MPT2SAS_INFO_FMT "diag reset: SUCCESS\n", ioc->name);
 	return 0;
 
@@ -3863,7 +3961,11 @@ mpt2sas_base_attach(struct MPT2SAS_ADAPTER *ioc)
 		goto out_free_resources;
 
 	ioc->pfacts = kcalloc(ioc->facts.NumberOfPorts,
+<<<<<<< HEAD
 	    sizeof(Mpi2PortFactsReply_t), GFP_KERNEL);
+=======
+	    sizeof(struct mpt2sas_port_facts), GFP_KERNEL);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	if (!ioc->pfacts) {
 		r = -ENOMEM;
 		goto out_free_resources;

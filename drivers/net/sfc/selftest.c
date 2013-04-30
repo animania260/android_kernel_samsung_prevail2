@@ -698,7 +698,11 @@ int efx_selftest(struct efx_nic *efx, struct efx_self_tests *tests,
 	/* Detach the device so the kernel doesn't transmit during the
 	 * loopback test and the watchdog timeout doesn't fire.
 	 */
+<<<<<<< HEAD
 	netif_device_detach(efx->net_dev);
+=======
+	efx_device_detach_sync(efx);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	mutex_lock(&efx->mac_lock);
 	if (efx->loopback_modes) {

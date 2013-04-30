@@ -576,6 +576,10 @@ no_firmware:
 		"%s: please contact support@connecttech.com\n",
 		serial->type->description);
 	kfree(result);
+<<<<<<< HEAD
+=======
+	kfree(command);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	return -ENODEV;
 
 no_command_private:

@@ -237,6 +237,10 @@ struct comedi_device_file_info {
 	struct comedi_device *device;
 	struct comedi_subdevice *read_subdevice;
 	struct comedi_subdevice *write_subdevice;
+<<<<<<< HEAD
+=======
+	struct device *hardware_device;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 };
 
 #ifdef CONFIG_COMEDI_DEBUG

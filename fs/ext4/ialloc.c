@@ -22,6 +22,10 @@
 #include <linux/random.h>
 #include <linux/bitops.h>
 #include <linux/blkdev.h>
+<<<<<<< HEAD
+=======
+#include <linux/math64.h>
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #include <asm/byteorder.h>
 
 #include "ext4.h"
@@ -345,8 +349,13 @@ static int find_group_flex(struct super_block *sb, struct inode *parent,
 	ext4_group_t ngroups = ext4_get_groups_count(sb);
 	int flex_size = ext4_flex_bg_size(sbi);
 	ext4_group_t best_flex = parent_fbg_group;
+<<<<<<< HEAD
 	int blocks_per_flex = sbi->s_blocks_per_group * flex_size;
 	int flexbg_free_blocks;
+=======
+	ext4_fsblk_t blocks_per_flex = sbi->s_blocks_per_group * flex_size;
+	ext4_fsblk_t flexbg_free_blocks;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	int flex_freeb_ratio;
 	ext4_group_t n_fbg_groups;
 	ext4_group_t i;
@@ -355,8 +364,13 @@ static int find_group_flex(struct super_block *sb, struct inode *parent,
 		sbi->s_log_groups_per_flex;
 
 find_close_to_parent:
+<<<<<<< HEAD
 	flexbg_free_blocks = atomic_read(&flex_group[best_flex].free_blocks);
 	flex_freeb_ratio = flexbg_free_blocks * 100 / blocks_per_flex;
+=======
+	flexbg_free_blocks = atomic64_read(&flex_group[best_flex].free_blocks);
+	flex_freeb_ratio = div64_u64(flexbg_free_blocks * 100, blocks_per_flex);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	if (atomic_read(&flex_group[best_flex].free_inodes) &&
 	    flex_freeb_ratio > free_block_ratio)
 		goto found_flexbg;
@@ -370,8 +384,13 @@ find_close_to_parent:
 		if (i == parent_fbg_group || i == parent_fbg_group - 1)
 			continue;
 
+<<<<<<< HEAD
 		flexbg_free_blocks = atomic_read(&flex_group[i].free_blocks);
 		flex_freeb_ratio = flexbg_free_blocks * 100 / blocks_per_flex;
+=======
+		flexbg_free_blocks = atomic64_read(&flex_group[i].free_blocks);
+		flex_freeb_ratio = div64_u64(flexbg_free_blocks * 100, blocks_per_flex);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 		if (flex_freeb_ratio > free_block_ratio &&
 		    (atomic_read(&flex_group[i].free_inodes))) {
@@ -380,14 +399,23 @@ find_close_to_parent:
 		}
 
 		if ((atomic_read(&flex_group[best_flex].free_inodes) == 0) ||
+<<<<<<< HEAD
 		    ((atomic_read(&flex_group[i].free_blocks) >
 		      atomic_read(&flex_group[best_flex].free_blocks)) &&
+=======
+		    ((atomic64_read(&flex_group[i].free_blocks) >
+		      atomic64_read(&flex_group[best_flex].free_blocks)) &&
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		     atomic_read(&flex_group[i].free_inodes)))
 			best_flex = i;
 	}
 
 	if (!atomic_read(&flex_group[best_flex].free_inodes) ||
+<<<<<<< HEAD
 	    !atomic_read(&flex_group[best_flex].free_blocks))
+=======
+	    !atomic64_read(&flex_group[best_flex].free_blocks))
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		return -1;
 
 found_flexbg:
@@ -406,8 +434,13 @@ out:
 }
 
 struct orlov_stats {
+<<<<<<< HEAD
 	__u32 free_inodes;
 	__u32 free_blocks;
+=======
+	__u64 free_blocks;
+	__u32 free_inodes;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	__u32 used_dirs;
 };
 
@@ -424,7 +457,11 @@ static void get_orlov_stats(struct super_block *sb, ext4_group_t g,
 
 	if (flex_size > 1) {
 		stats->free_inodes = atomic_read(&flex_group[g].free_inodes);
+<<<<<<< HEAD
 		stats->free_blocks = atomic_read(&flex_group[g].free_blocks);
+=======
+		stats->free_blocks = atomic64_read(&flex_group[g].free_blocks);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		stats->used_dirs = atomic_read(&flex_group[g].used_dirs);
 		return;
 	}
@@ -1021,8 +1058,17 @@ got:
 	if (IS_DIRSYNC(inode))
 		ext4_handle_sync(handle);
 	if (insert_inode_locked(inode) < 0) {
+<<<<<<< HEAD
 		err = -EINVAL;
 		goto fail_drop;
+=======
+		/*
+		 * Likely a bitmap corruption causing inode to be allocated
+		 * twice.
+		 */
+		err = -EIO;
+		goto fail;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	}
 	spin_lock(&sbi->s_next_gen_lock);
 	inode->i_generation = sbi->s_next_generation++;
@@ -1189,7 +1235,12 @@ unsigned long ext4_count_free_inodes(struct super_block *sb)
 		if (!bitmap_bh)
 			continue;
 
+<<<<<<< HEAD
 		x = ext4_count_free(bitmap_bh, EXT4_INODES_PER_GROUP(sb) / 8);
+=======
+		x = ext4_count_free(bitmap_bh->b_data,
+				    EXT4_INODES_PER_GROUP(sb) / 8);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		printk(KERN_DEBUG "group %lu: stored = %d, counted = %lu\n",
 			(unsigned long) i, ext4_free_inodes_count(sb, gdp), x);
 		bitmap_count += x;

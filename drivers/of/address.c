@@ -577,6 +577,7 @@ int of_address_to_resource(struct device_node *dev, int index,
 }
 EXPORT_SYMBOL_GPL(of_address_to_resource);
 
+<<<<<<< HEAD
 struct device_node *of_find_matching_node_by_address(struct device_node *from,
 					const struct of_device_id *matches,
 					u64 base_address)
@@ -595,6 +596,8 @@ struct device_node *of_find_matching_node_by_address(struct device_node *from,
 	return NULL;
 }
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 /**
  * of_iomap - Maps the memory mapped IO for a given device_node

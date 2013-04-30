@@ -472,6 +472,11 @@ static int wm8940_set_bias_level(struct snd_soc_codec *codec,
 		break;
 	}
 
+<<<<<<< HEAD
+=======
+	codec->dapm.bias_level = level;
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	return ret;
 }
 

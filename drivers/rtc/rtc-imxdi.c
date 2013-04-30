@@ -391,6 +391,11 @@ static int dryice_rtc_probe(struct platform_device *pdev)
 	if (imxdi->ioaddr == NULL)
 		return -ENOMEM;
 
+<<<<<<< HEAD
+=======
+	spin_lock_init(&imxdi->irq_lock);
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	imxdi->irq = platform_get_irq(pdev, 0);
 	if (imxdi->irq < 0)
 		return imxdi->irq;

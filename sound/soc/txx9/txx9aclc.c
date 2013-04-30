@@ -288,10 +288,16 @@ static void txx9aclc_pcm_free_dma_buffers(struct snd_pcm *pcm)
 	snd_pcm_lib_preallocate_free_for_all(pcm);
 }
 
+<<<<<<< HEAD
 static int txx9aclc_pcm_new(struct snd_soc_pcm_runtime *rtd)
 {
 	struct snd_soc_dai *dai = rtd->cpu_dai;
 	struct snd_pcm *pcm = rtd->pcm;
+=======
+static int txx9aclc_pcm_new(struct snd_card *card, struct snd_soc_dai *dai,
+			    struct snd_pcm *pcm)
+{
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	struct platform_device *pdev = to_platform_device(dai->platform->dev);
 	struct txx9aclc_soc_device *dev;
 	struct resource *r;

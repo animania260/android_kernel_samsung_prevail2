@@ -53,7 +53,10 @@ struct cfcnfg *get_cfcnfg(struct net *net)
 	struct caif_net *caifn;
 	BUG_ON(!net);
 	caifn = net_generic(net, caif_net_id);
+<<<<<<< HEAD
 	BUG_ON(!caifn);
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	return caifn->cfg;
 }
 EXPORT_SYMBOL(get_cfcnfg);
@@ -63,7 +66,10 @@ static struct caif_device_entry_list *caif_device_list(struct net *net)
 	struct caif_net *caifn;
 	BUG_ON(!net);
 	caifn = net_generic(net, caif_net_id);
+<<<<<<< HEAD
 	BUG_ON(!caifn);
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	return &caifn->caifdevs;
 }
 
@@ -92,7 +98,10 @@ static struct caif_device_entry *caif_device_alloc(struct net_device *dev)
 	struct caif_device_entry *caifd;
 
 	caifdevs = caif_device_list(dev_net(dev));
+<<<<<<< HEAD
 	BUG_ON(!caifdevs);
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	caifd = kzalloc(sizeof(*caifd), GFP_ATOMIC);
 	if (!caifd)
@@ -108,7 +117,11 @@ static struct caif_device_entry *caif_get(struct net_device *dev)
 	struct caif_device_entry_list *caifdevs =
 	    caif_device_list(dev_net(dev));
 	struct caif_device_entry *caifd;
+<<<<<<< HEAD
 	BUG_ON(!caifdevs);
+=======
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	list_for_each_entry_rcu(caifd, &caifdevs->list, list) {
 		if (caifd->netdev == dev)
 			return caifd;
@@ -209,8 +222,12 @@ static int caif_device_notify(struct notifier_block *me, unsigned long what,
 	enum cfcnfg_phy_preference pref;
 	enum cfcnfg_phy_type phy_type;
 	struct cfcnfg *cfg;
+<<<<<<< HEAD
 	struct caif_device_entry_list *caifdevs =
 	    caif_device_list(dev_net(dev));
+=======
+	struct caif_device_entry_list *caifdevs;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	if (dev->type != ARPHRD_CAIF)
 		return 0;
@@ -219,6 +236,11 @@ static int caif_device_notify(struct notifier_block *me, unsigned long what,
 	if (cfg == NULL)
 		return 0;
 
+<<<<<<< HEAD
+=======
+	caifdevs = caif_device_list(dev_net(dev));
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	switch (what) {
 	case NETDEV_REGISTER:
 		caifd = caif_device_alloc(dev);
@@ -348,7 +370,11 @@ static struct notifier_block caif_device_notifier = {
 static int caif_init_net(struct net *net)
 {
 	struct caif_net *caifn = net_generic(net, caif_net_id);
+<<<<<<< HEAD
 	BUG_ON(!caifn);
+=======
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	INIT_LIST_HEAD(&caifn->caifdevs.list);
 	mutex_init(&caifn->caifdevs.lock);
 
@@ -413,7 +439,11 @@ static int __init caif_device_init(void)
 {
 	int result;
 
+<<<<<<< HEAD
 	result = register_pernet_device(&caif_net_ops);
+=======
+	result = register_pernet_subsys(&caif_net_ops);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	if (result)
 		return result;
@@ -426,9 +456,15 @@ static int __init caif_device_init(void)
 
 static void __exit caif_device_exit(void)
 {
+<<<<<<< HEAD
 	unregister_pernet_device(&caif_net_ops);
 	unregister_netdevice_notifier(&caif_device_notifier);
 	dev_remove_pack(&caif_packet_type);
+=======
+	unregister_netdevice_notifier(&caif_device_notifier);
+	dev_remove_pack(&caif_packet_type);
+	unregister_pernet_subsys(&caif_net_ops);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 module_init(caif_device_init);

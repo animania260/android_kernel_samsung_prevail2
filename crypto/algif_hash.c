@@ -159,6 +159,11 @@ static int hash_recvmsg(struct kiocb *unused, struct socket *sock,
 	else if (len < ds)
 		msg->msg_flags |= MSG_TRUNC;
 
+<<<<<<< HEAD
+=======
+	msg->msg_namelen = 0;
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	lock_sock(sk);
 	if (ctx->more) {
 		ctx->more = 0;

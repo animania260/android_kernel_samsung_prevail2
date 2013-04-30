@@ -83,9 +83,18 @@ int sysctl_tcp_ecn __read_mostly = 2;
 EXPORT_SYMBOL(sysctl_tcp_ecn);
 int sysctl_tcp_dsack __read_mostly = 1;
 int sysctl_tcp_app_win __read_mostly = 31;
+<<<<<<< HEAD
 int sysctl_tcp_adv_win_scale __read_mostly = 2;
 EXPORT_SYMBOL(sysctl_tcp_adv_win_scale);
 
+=======
+int sysctl_tcp_adv_win_scale __read_mostly = 1;
+EXPORT_SYMBOL(sysctl_tcp_adv_win_scale);
+
+/* rfc5961 challenge ack rate limiting */
+int sysctl_tcp_challenge_ack_limit = 100;
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 int sysctl_tcp_stdurg __read_mostly;
 int sysctl_tcp_rfc1337 __read_mostly;
 int sysctl_tcp_max_orphans __read_mostly = NR_FILE;
@@ -328,6 +337,10 @@ static void tcp_grow_window(struct sock *sk, struct sk_buff *skb)
 			incr = __tcp_grow_window(sk, skb);
 
 		if (incr) {
+<<<<<<< HEAD
+=======
+			incr = max_t(int, incr, 2 * skb->len);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			tp->rcv_ssthresh = min(tp->rcv_ssthresh + incr,
 					       tp->window_clamp);
 			inet_csk(sk)->icsk_ack.quick |= 1;
@@ -460,8 +473,16 @@ static void tcp_rcv_rtt_update(struct tcp_sock *tp, u32 sample, int win_dep)
 		if (!win_dep) {
 			m -= (new_sample >> 3);
 			new_sample += m;
+<<<<<<< HEAD
 		} else if (m < new_sample)
 			new_sample = m << 3;
+=======
+		} else {
+			m <<= 3;
+			if (m < new_sample)
+				new_sample = m;
+		}
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	} else {
 		/* No previous measure. */
 		new_sample = m << 3;
@@ -1289,25 +1310,43 @@ static int tcp_match_skb_to_sack(struct sock *sk, struct sk_buff *skb,
 	return in_sack;
 }
 
+<<<<<<< HEAD
 static u8 tcp_sacktag_one(struct sk_buff *skb, struct sock *sk,
 			  struct tcp_sacktag_state *state,
 			  int dup_sack, int pcount)
 {
 	struct tcp_sock *tp = tcp_sk(sk);
 	u8 sacked = TCP_SKB_CB(skb)->sacked;
+=======
+/* Mark the given newly-SACKed range as such, adjusting counters and hints. */
+static u8 tcp_sacktag_one(struct sock *sk,
+			  struct tcp_sacktag_state *state, u8 sacked,
+			  u32 start_seq, u32 end_seq,
+			  int dup_sack, int pcount)
+{
+	struct tcp_sock *tp = tcp_sk(sk);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	int fack_count = state->fack_count;
 
 	/* Account D-SACK for retransmitted packet. */
 	if (dup_sack && (sacked & TCPCB_RETRANS)) {
 		if (tp->undo_marker && tp->undo_retrans &&
+<<<<<<< HEAD
 		    after(TCP_SKB_CB(skb)->end_seq, tp->undo_marker))
+=======
+		    after(end_seq, tp->undo_marker))
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			tp->undo_retrans--;
 		if (sacked & TCPCB_SACKED_ACKED)
 			state->reord = min(fack_count, state->reord);
 	}
 
 	/* Nothing to do; acked frame is about to be dropped (was ACKed). */
+<<<<<<< HEAD
 	if (!after(TCP_SKB_CB(skb)->end_seq, tp->snd_una))
+=======
+	if (!after(end_seq, tp->snd_una))
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		return sacked;
 
 	if (!(sacked & TCPCB_SACKED_ACKED)) {
@@ -1326,13 +1365,21 @@ static u8 tcp_sacktag_one(struct sk_buff *skb, struct sock *sk,
 				/* New sack for not retransmitted frame,
 				 * which was in hole. It is reordering.
 				 */
+<<<<<<< HEAD
 				if (before(TCP_SKB_CB(skb)->seq,
+=======
+				if (before(start_seq,
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 					   tcp_highest_sack_seq(tp)))
 					state->reord = min(fack_count,
 							   state->reord);
 
 				/* SACK enhanced F-RTO (RFC4138; Appendix B) */
+<<<<<<< HEAD
 				if (!after(TCP_SKB_CB(skb)->end_seq, tp->frto_highmark))
+=======
+				if (!after(end_seq, tp->frto_highmark))
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 					state->flag |= FLAG_ONLY_ORIG_SACKED;
 			}
 
@@ -1350,8 +1397,12 @@ static u8 tcp_sacktag_one(struct sk_buff *skb, struct sock *sk,
 
 		/* Lost marker hint past SACKed? Tweak RFC3517 cnt */
 		if (!tcp_is_fack(tp) && (tp->lost_skb_hint != NULL) &&
+<<<<<<< HEAD
 		    before(TCP_SKB_CB(skb)->seq,
 			   TCP_SKB_CB(tp->lost_skb_hint)->seq))
+=======
+		    before(start_seq, TCP_SKB_CB(tp->lost_skb_hint)->seq))
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			tp->lost_cnt_hint += pcount;
 
 		if (fack_count > tp->fackets_out)
@@ -1370,6 +1421,12 @@ static u8 tcp_sacktag_one(struct sk_buff *skb, struct sock *sk,
 	return sacked;
 }
 
+<<<<<<< HEAD
+=======
+/* Shift newly-SACKed bytes from this skb to the immediately previous
+ * already-SACKed sk_buff. Mark the newly-SACKed bytes as such.
+ */
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 static int tcp_shifted_skb(struct sock *sk, struct sk_buff *skb,
 			   struct tcp_sacktag_state *state,
 			   unsigned int pcount, int shifted, int mss,
@@ -1377,12 +1434,30 @@ static int tcp_shifted_skb(struct sock *sk, struct sk_buff *skb,
 {
 	struct tcp_sock *tp = tcp_sk(sk);
 	struct sk_buff *prev = tcp_write_queue_prev(sk, skb);
+<<<<<<< HEAD
 
 	BUG_ON(!pcount);
 
 	/* Tweak before seqno plays */
 	if (!tcp_is_fack(tp) && tcp_is_sack(tp) && tp->lost_skb_hint &&
 	    !before(TCP_SKB_CB(tp->lost_skb_hint)->seq, TCP_SKB_CB(skb)->seq))
+=======
+	u32 start_seq = TCP_SKB_CB(skb)->seq;	/* start of newly-SACKed */
+	u32 end_seq = start_seq + shifted;	/* end of newly-SACKed */
+
+	BUG_ON(!pcount);
+
+	/* Adjust counters and hints for the newly sacked sequence
+	 * range but discard the return value since prev is already
+	 * marked. We must tag the range first because the seq
+	 * advancement below implicitly advances
+	 * tcp_highest_sack_seq() when skb is highest_sack.
+	 */
+	tcp_sacktag_one(sk, state, TCP_SKB_CB(skb)->sacked,
+			start_seq, end_seq, dup_sack, pcount);
+
+	if (skb == tp->lost_skb_hint)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		tp->lost_cnt_hint += pcount;
 
 	TCP_SKB_CB(prev)->end_seq += shifted;
@@ -1408,9 +1483,12 @@ static int tcp_shifted_skb(struct sock *sk, struct sk_buff *skb,
 		skb_shinfo(skb)->gso_type = 0;
 	}
 
+<<<<<<< HEAD
 	/* We discard results */
 	tcp_sacktag_one(skb, sk, state, dup_sack, pcount);
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	/* Difference in this won't matter, both ACKed by the same cumul. ACK */
 	TCP_SKB_CB(prev)->sacked |= (TCP_SKB_CB(skb)->sacked & TCPCB_EVER_RETRANS);
 
@@ -1558,6 +1636,13 @@ static struct sk_buff *tcp_shift_skb_data(struct sock *sk, struct sk_buff *skb,
 		}
 	}
 
+<<<<<<< HEAD
+=======
+	/* tcp_sacktag_one() won't SACK-tag ranges below snd_una */
+	if (!after(TCP_SKB_CB(skb)->seq + len, tp->snd_una))
+		goto fallback;
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	if (!skb_shift(prev, skb, len))
 		goto fallback;
 	if (!tcp_shifted_skb(sk, skb, state, pcount, len, mss, dup_sack))
@@ -1648,10 +1733,21 @@ static struct sk_buff *tcp_sacktag_walk(struct sk_buff *skb, struct sock *sk,
 			break;
 
 		if (in_sack) {
+<<<<<<< HEAD
 			TCP_SKB_CB(skb)->sacked = tcp_sacktag_one(skb, sk,
 								  state,
 								  dup_sack,
 								  tcp_skb_pcount(skb));
+=======
+			TCP_SKB_CB(skb)->sacked =
+				tcp_sacktag_one(sk,
+						state,
+						TCP_SKB_CB(skb)->sacked,
+						TCP_SKB_CB(skb)->seq,
+						TCP_SKB_CB(skb)->end_seq,
+						dup_sack,
+						tcp_skb_pcount(skb));
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 			if (!before(TCP_SKB_CB(skb)->seq,
 				    tcp_highest_sack_seq(tp)))
@@ -2220,11 +2316,16 @@ void tcp_enter_loss(struct sock *sk, int how)
 	if (tcp_is_reno(tp))
 		tcp_reset_reno_sack(tp);
 
+<<<<<<< HEAD
 	if (!how) {
 		/* Push undo marker, if it was plain RTO and nothing
 		 * was retransmitted. */
 		tp->undo_marker = tp->snd_una;
 	} else {
+=======
+	tp->undo_marker = tp->snd_una;
+	if (how) {
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		tp->sacked_out = 0;
 		tp->fackets_out = 0;
 	}
@@ -2536,6 +2637,10 @@ static void tcp_mark_head_lost(struct sock *sk, int packets, int mark_head)
 
 		if (cnt > packets) {
 			if ((tcp_is_sack(tp) && !tcp_is_fack(tp)) ||
+<<<<<<< HEAD
+=======
+			    (TCP_SKB_CB(skb)->sacked & TCPCB_SACKED_ACKED) ||
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			    (oldcnt >= packets))
 				break;
 
@@ -3563,6 +3668,14 @@ static int tcp_process_frto(struct sock *sk, int flag)
 		}
 	} else {
 		if (!(flag & FLAG_DATA_ACKED) && (tp->frto_counter == 1)) {
+<<<<<<< HEAD
+=======
+			if (!tcp_packets_in_flight(tp)) {
+				tcp_enter_frto_loss(sk, 2, flag);
+				return true;
+			}
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			/* Prevent sending of new data. */
 			tp->snd_cwnd = min(tp->snd_cwnd,
 					   tcp_packets_in_flight(tp));
@@ -3611,6 +3724,27 @@ static int tcp_process_frto(struct sock *sk, int flag)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+/* RFC 5961 7 [ACK Throttling] */
+static void tcp_send_challenge_ack(struct sock *sk)
+{
+	/* unprotected vars, we dont care of overwrites */
+	static u32 challenge_timestamp;
+	static unsigned int challenge_count;
+	u32 now = jiffies / HZ;
+
+	if (now != challenge_timestamp) {
+		challenge_timestamp = now;
+		challenge_count = 0;
+	}
+	if (++challenge_count <= sysctl_tcp_challenge_ack_limit) {
+		NET_INC_STATS_BH(sock_net(sk), LINUX_MIB_TCPCHALLENGEACK);
+		tcp_send_ack(sk);
+	}
+}
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 /* This routine deals with incoming acks, but not outgoing ones. */
 static int tcp_ack(struct sock *sk, struct sk_buff *skb, int flag)
 {
@@ -3627,8 +3761,19 @@ static int tcp_ack(struct sock *sk, struct sk_buff *skb, int flag)
 	/* If the ack is older than previous acks
 	 * then we can probably ignore it.
 	 */
+<<<<<<< HEAD
 	if (before(ack, prior_snd_una))
 		goto old_ack;
+=======
+	if (before(ack, prior_snd_una)) {
+		/* RFC 5961 5.2 [Blind Data Injection Attack].[Mitigation] */
+		if (before(ack, prior_snd_una - tp->max_window)) {
+			tcp_send_challenge_ack(sk);
+			return -1;
+		}
+		goto old_ack;
+	}
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	/* If the ack includes data we haven't sent yet, discard
 	 * this segment (RFC793 Section 3.9).
@@ -5146,8 +5291,13 @@ out:
 /* Does PAWS and seqno based validation of an incoming segment, flags will
  * play significant role here.
  */
+<<<<<<< HEAD
 static int tcp_validate_incoming(struct sock *sk, struct sk_buff *skb,
 			      struct tcphdr *th, int syn_inerr)
+=======
+static bool tcp_validate_incoming(struct sock *sk, struct sk_buff *skb,
+				  struct tcphdr *th, int syn_inerr)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 {
 	u8 *hash_location;
 	struct tcp_sock *tp = tcp_sk(sk);
@@ -5172,13 +5322,22 @@ static int tcp_validate_incoming(struct sock *sk, struct sk_buff *skb,
 		 * an acknowledgment should be sent in reply (unless the RST
 		 * bit is set, if so drop the segment and return)".
 		 */
+<<<<<<< HEAD
 		if (!th->rst)
 			tcp_send_dupack(sk, skb);
+=======
+		if (!th->rst) {
+			if (th->syn)
+				goto syn_challenge;
+			tcp_send_dupack(sk, skb);
+		}
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		goto discard;
 	}
 
 	/* Step 2: check RST bit */
 	if (th->rst) {
+<<<<<<< HEAD
 		tcp_reset(sk);
 		goto discard;
 	}
@@ -5204,6 +5363,40 @@ static int tcp_validate_incoming(struct sock *sk, struct sk_buff *skb,
 discard:
 	__kfree_skb(skb);
 	return 0;
+=======
+		/* RFC 5961 3.2 :
+		 * If sequence number exactly matches RCV.NXT, then
+		 *     RESET the connection
+		 * else
+		 *     Send a challenge ACK
+		 */
+		if (TCP_SKB_CB(skb)->seq == tp->rcv_nxt)
+			tcp_reset(sk);
+		else
+			tcp_send_challenge_ack(sk);
+		goto discard;
+	}
+
+	/* step 3: check security and precedence [ignored] */
+
+	/* step 4: Check for a SYN
+	 * RFC 5691 4.2 : Send a challenge ack
+	 */
+	if (th->syn) {
+syn_challenge:
+		if (syn_inerr)
+			TCP_INC_STATS_BH(sock_net(sk), TCP_MIB_INERRS);
+		NET_INC_STATS_BH(sock_net(sk), LINUX_MIB_TCPSYNCHALLENGE);
+		tcp_send_challenge_ack(sk);
+		goto discard;
+	}
+
+	return true;
+
+discard:
+	__kfree_skb(skb);
+	return false;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 /*
@@ -5233,7 +5426,10 @@ int tcp_rcv_established(struct sock *sk, struct sk_buff *skb,
 			struct tcphdr *th, unsigned len)
 {
 	struct tcp_sock *tp = tcp_sk(sk);
+<<<<<<< HEAD
 	int res;
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	/*
 	 *	Header prediction.
@@ -5318,7 +5514,13 @@ int tcp_rcv_established(struct sock *sk, struct sk_buff *skb,
 			if (tp->copied_seq == tp->rcv_nxt &&
 			    len - tcp_header_len <= tp->ucopy.len) {
 #ifdef CONFIG_NET_DMA
+<<<<<<< HEAD
 				if (tcp_dma_try_early_copy(sk, skb, tcp_header_len)) {
+=======
+				if (tp->ucopy.task == current &&
+				    sock_owned_by_user(sk) &&
+				    tcp_dma_try_early_copy(sk, skb, tcp_header_len)) {
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 					copied_early = 1;
 					eaten = 1;
 				}
@@ -5354,6 +5556,12 @@ int tcp_rcv_established(struct sock *sk, struct sk_buff *skb,
 				if (tcp_checksum_complete_user(sk, skb))
 					goto csum_error;
 
+<<<<<<< HEAD
+=======
+				if ((int)skb->truesize > sk->sk_forward_alloc)
+					goto step5;
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 				/* Predicted packet is in window by definition.
 				 * seq == rcv_nxt and rcv_wup <= rcv_nxt.
 				 * Hence, check seq<=rcv_wup reduces to:
@@ -5365,9 +5573,12 @@ int tcp_rcv_established(struct sock *sk, struct sk_buff *skb,
 
 				tcp_rcv_rtt_measure_ts(sk, skb);
 
+<<<<<<< HEAD
 				if ((int)skb->truesize > sk->sk_forward_alloc)
 					goto step5;
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 				NET_INC_STATS_BH(sock_net(sk), LINUX_MIB_TCPHPHITS);
 
 				/* Bulk data transfer: receiver */
@@ -5411,14 +5622,27 @@ slow_path:
 	 *	Standard slow path.
 	 */
 
+<<<<<<< HEAD
 	res = tcp_validate_incoming(sk, skb, th, 1);
 	if (res <= 0)
 		return -res;
+=======
+	if (!tcp_validate_incoming(sk, skb, th, 1))
+		return 0;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 step5:
 	if (th->ack && tcp_ack(sk, skb, FLAG_SLOWPATH) < 0)
 		goto discard;
 
+<<<<<<< HEAD
+=======
+	/* ts_recent update must be made after we are sure that the packet
+	 * is in window.
+	 */
+	tcp_replace_ts_recent(tp, TCP_SKB_CB(skb)->seq);
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	tcp_rcv_rtt_measure_ts(sk, skb);
 
 	/* Process urgent data. */
@@ -5723,7 +5947,10 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb,
 	struct tcp_sock *tp = tcp_sk(sk);
 	struct inet_connection_sock *icsk = inet_csk(sk);
 	int queued = 0;
+<<<<<<< HEAD
 	int res;
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	tp->rx_opt.saw_tstamp = 0;
 
@@ -5739,6 +5966,11 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb,
 			goto discard;
 
 		if (th->syn) {
+<<<<<<< HEAD
+=======
+			if (th->fin)
+				goto discard;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			if (icsk->icsk_af_ops->conn_request(sk, skb) < 0)
 				return 1;
 
@@ -5776,9 +6008,14 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb,
 		return 0;
 	}
 
+<<<<<<< HEAD
 	res = tcp_validate_incoming(sk, skb, th, 0);
 	if (res <= 0)
 		return -res;
+=======
+	if (!tcp_validate_incoming(sk, skb, th, 0))
+		return 0;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	/* step 5: check the ACK field */
 	if (th->ack) {
@@ -5895,6 +6132,14 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb,
 	} else
 		goto discard;
 
+<<<<<<< HEAD
+=======
+	/* ts_recent update must be made after we are sure that the packet
+	 * is in window.
+	 */
+	tcp_replace_ts_recent(tp, TCP_SKB_CB(skb)->seq);
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	/* step 6: check the URG bit */
 	tcp_urg(sk, skb, th);
 

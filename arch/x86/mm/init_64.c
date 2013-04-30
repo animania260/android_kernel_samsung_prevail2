@@ -831,6 +831,12 @@ int kern_addr_valid(unsigned long addr)
 	if (pud_none(*pud))
 		return 0;
 
+<<<<<<< HEAD
+=======
+	if (pud_large(*pud))
+		return pfn_valid(pud_pfn(*pud));
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	pmd = pmd_offset(pud, addr);
 	if (pmd_none(*pmd))
 		return 0;

@@ -166,6 +166,10 @@
 
 /* PLL registers bitfields */
 #define PLLP_SHIFT		0
+<<<<<<< HEAD
+=======
+#define PLLP_MASK		7
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #define PLLQ_SHIFT		3
 #define PLLR_SHIFT		0
 #define PLLJ_SHIFT		2

@@ -20,6 +20,7 @@
 #include <linux/highmem.h>
 #include <linux/perf_event.h>
 
+<<<<<<< HEAD
 #include <asm/exception.h>
 #include <asm/system.h>
 #include <asm/pgtable.h>
@@ -33,6 +34,11 @@
 #ifdef CONFIG_EMULATE_DOMAIN_MANAGER_V7
 #include <asm/domain.h>
 #endif /* CONFIG_EMULATE_DOMAIN_MANAGER_V7 */
+=======
+#include <asm/system.h>
+#include <asm/pgtable.h>
+#include <asm/tlbflush.h>
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 #include "fault.h"
 
@@ -276,7 +282,13 @@ good_area:
 	return fault;
 
 check_stack:
+<<<<<<< HEAD
 	if (vma->vm_flags & VM_GROWSDOWN && !expand_stack(vma, addr))
+=======
+	/* Don't allow expansion below FIRST_USER_ADDRESS */
+	if (vma->vm_flags & VM_GROWSDOWN &&
+	    addr >= FIRST_USER_ADDRESS && !expand_stack(vma, addr))
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		goto good_area;
 out:
 	return fault;
@@ -494,6 +506,7 @@ do_bad(unsigned long addr, unsigned int fsr, struct pt_regs *regs)
 	return 1;
 }
 
+<<<<<<< HEAD
 #if defined(CONFIG_ARCH_MSM_SCORPION) && !defined(CONFIG_MSM_SMP)
 #define __str(x) #x
 #define MRC(x, v1, v2, v4, v5, v6) do {					\
@@ -537,6 +550,8 @@ do_imprecise_ext(unsigned long addr, unsigned int fsr, struct pt_regs *regs)
 	return 1;
 }
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 static struct fsr_info {
 	int	(*fn)(unsigned long addr, unsigned int fsr, struct pt_regs *regs);
 	int	sig;
@@ -574,7 +589,11 @@ static struct fsr_info {
 	{ do_bad,		SIGBUS,  0,		"unknown 19"			   },
 	{ do_bad,		SIGBUS,  0,		"lock abort"			   }, /* xscale */
 	{ do_bad,		SIGBUS,  0,		"unknown 21"			   },
+<<<<<<< HEAD
 	{ do_imprecise_ext,	SIGBUS,  BUS_OBJERR,	"imprecise external abort"	   }, /* xscale */
+=======
+	{ do_bad,		SIGBUS,  BUS_OBJERR,	"imprecise external abort"	   }, /* xscale */
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	{ do_bad,		SIGBUS,  0,		"unknown 23"			   },
 	{ do_bad,		SIGBUS,  0,		"dcache parity error"		   }, /* xscale */
 	{ do_bad,		SIGBUS,  0,		"unknown 25"			   },
@@ -599,6 +618,7 @@ hook_fault_code(int nr, int (*fn)(unsigned long, unsigned int, struct pt_regs *)
 	fsr_info[nr].name = name;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_MSM_KRAIT_TBB_ABORT_HANDLER
 static int krait_tbb_fixup(unsigned int fsr, struct pt_regs *regs)
 {
@@ -668,6 +688,8 @@ static int krait_tbb_fixup(unsigned int fsr, struct pt_regs *regs)
 }
 #endif
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 /*
  * Dispatch a data abort to the relevant handler.
  */
@@ -677,6 +699,7 @@ do_DataAbort(unsigned long addr, unsigned int fsr, struct pt_regs *regs)
 	const struct fsr_info *inf = fsr_info + fsr_fs(fsr);
 	struct siginfo info;
 
+<<<<<<< HEAD
 #ifdef CONFIG_EMULATE_DOMAIN_MANAGER_V7
 	if (emulate_domain_manager_data_abort(fsr, addr))
 		return;
@@ -687,6 +710,8 @@ do_DataAbort(unsigned long addr, unsigned int fsr, struct pt_regs *regs)
 		return;
 #endif
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	if (!inf->fn(addr, fsr & ~FSR_LNX_PF, regs))
 		return;
 
@@ -755,11 +780,14 @@ do_PrefetchAbort(unsigned long addr, unsigned int ifsr, struct pt_regs *regs)
 	const struct fsr_info *inf = ifsr_info + fsr_fs(ifsr);
 	struct siginfo info;
 
+<<<<<<< HEAD
 #ifdef CONFIG_EMULATE_DOMAIN_MANAGER_V7
 	if (emulate_domain_manager_prefetch_abort(ifsr, addr))
 		return;
 #endif
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	if (!inf->fn(addr, ifsr | FSR_LNX_PF, regs))
 		return;
 

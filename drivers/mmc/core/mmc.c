@@ -259,7 +259,11 @@ static int mmc_read_ext_csd(struct mmc_card *card, u8 *ext_csd)
 	}
 
 	card->ext_csd.rev = ext_csd[EXT_CSD_REV];
+<<<<<<< HEAD
 	if (card->ext_csd.rev > 6) {
+=======
+	if (card->ext_csd.rev > 5) {
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		printk(KERN_ERR "%s: unrecognised EXT_CSD revision %d\n",
 			mmc_hostname(card->host), card->ext_csd.rev);
 		err = -EINVAL;
@@ -359,6 +363,10 @@ static int mmc_read_ext_csd(struct mmc_card *card, u8 *ext_csd)
 		 * card has the Enhanced area enabled.  If so, export enhanced
 		 * area offset and size to user by adding sysfs interface.
 		 */
+<<<<<<< HEAD
+=======
+		card->ext_csd.raw_partition_support = ext_csd[EXT_CSD_PARTITION_SUPPORT];
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		if ((ext_csd[EXT_CSD_PARTITION_SUPPORT] & 0x2) &&
 		    (ext_csd[EXT_CSD_PARTITION_ATTRIBUTE] & 0x1)) {
 			u8 hc_erase_grp_sz =
@@ -405,6 +413,10 @@ static int mmc_read_ext_csd(struct mmc_card *card, u8 *ext_csd)
 	if (card->ext_csd.rev >= 5)
 		card->ext_csd.rel_param = ext_csd[EXT_CSD_WR_REL_PARAM];
 
+<<<<<<< HEAD
+=======
+	card->ext_csd.raw_erased_mem_count = ext_csd[EXT_CSD_ERASED_MEM_CONT];
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	if (ext_csd[EXT_CSD_ERASED_MEM_CONT])
 		card->erased_byte = 0xFF;
 	else
@@ -660,9 +672,12 @@ static int mmc_init_card(struct mmc_host *host, u32 ocr,
 
 		/* Erase size depends on CSD and Extended CSD */
 		mmc_set_erase_size(card);
+<<<<<<< HEAD
 
 		if (card->ext_csd.sectors && (rocr & MMC_CARD_SECTOR_ADDR))
 			mmc_card_set_blockaddr(card);
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	}
 
 	/*
@@ -867,6 +882,7 @@ static void mmc_remove(struct mmc_host *host)
 	BUG_ON(!host->card);
 
 	mmc_remove_card(host->card);
+<<<<<<< HEAD
 
 	mmc_claim_host(host);
 	host->card = NULL;
@@ -879,6 +895,9 @@ static void mmc_remove(struct mmc_host *host)
 static int mmc_alive(struct mmc_host *host)
 {
 	return mmc_send_status(host->card, NULL);
+=======
+	host->card = NULL;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 /*
@@ -896,7 +915,11 @@ static void mmc_detect(struct mmc_host *host)
 	/*
 	 * Just check if our card has been removed.
 	 */
+<<<<<<< HEAD
 	err = _mmc_detect_card_removed(host);
+=======
+	err = mmc_send_status(host->card, NULL);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	mmc_release_host(host);
 
@@ -905,6 +928,10 @@ static void mmc_detect(struct mmc_host *host)
 
 		mmc_claim_host(host);
 		mmc_detach_bus(host);
+<<<<<<< HEAD
+=======
+		mmc_power_off(host);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		mmc_release_host(host);
 	}
 }
@@ -914,20 +941,31 @@ static void mmc_detect(struct mmc_host *host)
  */
 static int mmc_suspend(struct mmc_host *host)
 {
+<<<<<<< HEAD
 	int err = 0;
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	BUG_ON(!host);
 	BUG_ON(!host->card);
 
 	mmc_claim_host(host);
+<<<<<<< HEAD
 	if (mmc_card_can_sleep(host))
 		err = mmc_card_sleep(host);
 	else if (!mmc_host_is_spi(host))
+=======
+	if (!mmc_host_is_spi(host))
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		mmc_deselect_cards(host);
 	host->card->state &= ~MMC_STATE_HIGHSPEED;
 	mmc_release_host(host);
 
+<<<<<<< HEAD
 	return err;
+=======
+	return 0;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 /*
@@ -1000,7 +1038,10 @@ static const struct mmc_bus_ops mmc_ops = {
 	.suspend = NULL,
 	.resume = NULL,
 	.power_restore = mmc_power_restore,
+<<<<<<< HEAD
 	.alive = mmc_alive,
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 };
 
 static const struct mmc_bus_ops mmc_ops_unsafe = {
@@ -1011,7 +1052,10 @@ static const struct mmc_bus_ops mmc_ops_unsafe = {
 	.suspend = mmc_suspend,
 	.resume = mmc_resume,
 	.power_restore = mmc_power_restore,
+<<<<<<< HEAD
 	.alive = mmc_alive,
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 };
 
 static void mmc_attach_bus_ops(struct mmc_host *host)

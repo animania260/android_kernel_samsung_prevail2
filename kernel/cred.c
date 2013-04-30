@@ -385,6 +385,11 @@ int copy_creds(struct task_struct *p, unsigned long clone_flags)
 	struct cred *new;
 	int ret;
 
+<<<<<<< HEAD
+=======
+	p->replacement_session_keyring = NULL;
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	if (
 #ifdef CONFIG_KEYS
 		!p->cred->thread_keyring &&

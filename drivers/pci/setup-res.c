@@ -129,6 +129,7 @@ void pci_disable_bridge_window(struct pci_dev *dev)
 }
 #endif	/* CONFIG_PCI_QUIRKS */
 
+<<<<<<< HEAD
 static int __pci_assign_resource(struct pci_bus *bus, struct pci_dev *dev,
 				 int resno)
 {
@@ -139,6 +140,18 @@ static int __pci_assign_resource(struct pci_bus *bus, struct pci_dev *dev,
 	size = resource_size(res);
 	min = (res->flags & IORESOURCE_IO) ? PCIBIOS_MIN_IO : PCIBIOS_MIN_MEM;
 	align = pci_resource_alignment(dev, res);
+=======
+
+
+static int __pci_assign_resource(struct pci_bus *bus, struct pci_dev *dev,
+		int resno, resource_size_t size, resource_size_t align)
+{
+	struct resource *res = dev->resource + resno;
+	resource_size_t min;
+	int ret;
+
+	min = (res->flags & IORESOURCE_IO) ? PCIBIOS_MIN_IO : PCIBIOS_MIN_MEM;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	/* First, try exact prefetching match.. */
 	ret = pci_bus_alloc_resource(bus, res, size, align, min,
@@ -155,6 +168,7 @@ static int __pci_assign_resource(struct pci_bus *bus, struct pci_dev *dev,
 		ret = pci_bus_alloc_resource(bus, res, size, align, min, 0,
 					     pcibios_align_resource, dev);
 	}
+<<<<<<< HEAD
 
 	if (ret < 0 && dev->fw_addr[resno]) {
 		struct resource *root, *conflict;
@@ -202,10 +216,49 @@ int pci_assign_resource(struct pci_dev *dev, int resno)
 {
 	struct resource *res = dev->resource + resno;
 	resource_size_t align;
+=======
+	return ret;
+}
+
+static int pci_revert_fw_address(struct resource *res, struct pci_dev *dev,
+		int resno, resource_size_t size)
+{
+	struct resource *root, *conflict;
+	resource_size_t start, end;
+	int ret = 0;
+
+	if (res->flags & IORESOURCE_IO)
+		root = &ioport_resource;
+	else
+		root = &iomem_resource;
+
+	start = res->start;
+	end = res->end;
+	res->start = dev->fw_addr[resno];
+	res->end = res->start + size - 1;
+	dev_info(&dev->dev, "BAR %d: trying firmware assignment %pR\n",
+		 resno, res);
+	conflict = request_resource_conflict(root, res);
+	if (conflict) {
+		dev_info(&dev->dev,
+			 "BAR %d: %pR conflicts with %s %pR\n", resno,
+			 res, conflict->name, conflict);
+		res->start = start;
+		res->end = end;
+		ret = 1;
+	}
+	return ret;
+}
+
+static int _pci_assign_resource(struct pci_dev *dev, int resno, int size, resource_size_t min_align)
+{
+	struct resource *res = dev->resource + resno;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	struct pci_bus *bus;
 	int ret;
 	char *type;
 
+<<<<<<< HEAD
 	align = pci_resource_alignment(dev, res);
 	if (!align) {
 		dev_info(&dev->dev, "BAR %d: can't assign %pR "
@@ -222,6 +275,13 @@ int pci_assign_resource(struct pci_dev *dev, int resno)
 		if (bus)
 			continue;
 		break;
+=======
+	bus = dev->bus;
+	while ((ret = __pci_assign_resource(bus, dev, resno, size, min_align))) {
+		if (!bus->parent || !bus->self->transparent)
+			break;
+		bus = bus->parent;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	}
 
 	if (ret) {
@@ -242,6 +302,70 @@ int pci_assign_resource(struct pci_dev *dev, int resno)
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+int pci_reassign_resource(struct pci_dev *dev, int resno, resource_size_t addsize,
+			resource_size_t min_align)
+{
+	struct resource *res = dev->resource + resno;
+	resource_size_t new_size;
+	int ret;
+
+	if (!res->parent) {
+		dev_info(&dev->dev, "BAR %d: can't reassign an unassigned resouce %pR "
+			 "\n", resno, res);
+		return -EINVAL;
+	}
+
+	/* already aligned with min_align */
+	new_size = resource_size(res) + addsize;
+	ret = _pci_assign_resource(dev, resno, new_size, min_align);
+	if (!ret) {
+		res->flags &= ~IORESOURCE_STARTALIGN;
+		dev_info(&dev->dev, "BAR %d: reassigned %pR\n", resno, res);
+		if (resno < PCI_BRIDGE_RESOURCES)
+			pci_update_resource(dev, resno);
+	}
+	return ret;
+}
+
+int pci_assign_resource(struct pci_dev *dev, int resno)
+{
+	struct resource *res = dev->resource + resno;
+	resource_size_t align, size;
+	struct pci_bus *bus;
+	int ret;
+
+	align = pci_resource_alignment(dev, res);
+	if (!align) {
+		dev_info(&dev->dev, "BAR %d: can't assign %pR "
+			 "(bogus alignment)\n", resno, res);
+		return -EINVAL;
+	}
+
+	bus = dev->bus;
+	size = resource_size(res);
+	ret = _pci_assign_resource(dev, resno, size, align);
+
+	/*
+	 * If we failed to assign anything, let's try the address
+	 * where firmware left it.  That at least has a chance of
+	 * working, which is better than just leaving it disabled.
+	 */
+	if (ret < 0 && dev->fw_addr[resno])
+		ret = pci_revert_fw_address(res, dev, resno, size);
+
+	if (!ret) {
+		res->flags &= ~IORESOURCE_STARTALIGN;
+		dev_info(&dev->dev, "BAR %d: assigned %pR\n", resno, res);
+		if (resno < PCI_BRIDGE_RESOURCES)
+			pci_update_resource(dev, resno);
+	}
+	return ret;
+}
+
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 /* Sort resources by alignment */
 void pdev_sort_resources(struct pci_dev *dev, struct resource_list *head)
 {

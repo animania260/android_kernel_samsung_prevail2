@@ -1154,8 +1154,15 @@ static long do_fb_ioctl(struct fb_info *info, unsigned int cmd,
 		event.data = &con2fb;
 		if (!lock_fb_info(info))
 			return -ENODEV;
+<<<<<<< HEAD
 		event.info = info;
 		ret = fb_notifier_call_chain(FB_EVENT_SET_CONSOLE_MAP, &event);
+=======
+		console_lock();
+		event.info = info;
+		ret = fb_notifier_call_chain(FB_EVENT_SET_CONSOLE_MAP, &event);
+		console_unlock();
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		unlock_fb_info(info);
 		break;
 	case FBIOBLANK:
@@ -1169,11 +1176,20 @@ static long do_fb_ioctl(struct fb_info *info, unsigned int cmd,
 		unlock_fb_info(info);
 		break;
 	default:
+<<<<<<< HEAD
+=======
+		if (!lock_fb_info(info))
+			return -ENODEV;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		fb = info->fbops;
 		if (fb->fb_ioctl)
 			ret = fb->fb_ioctl(info, cmd, arg);
 		else
 			ret = -ENOTTY;
+<<<<<<< HEAD
+=======
+		unlock_fb_info(info);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	}
 	return ret;
 }
@@ -1345,15 +1361,22 @@ fb_mmap(struct file *file, struct vm_area_struct * vma)
 {
 	struct fb_info *info = file_fb_info(file);
 	struct fb_ops *fb;
+<<<<<<< HEAD
 	unsigned long off;
+=======
+	unsigned long mmio_pgoff;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	unsigned long start;
 	u32 len;
 
 	if (!info)
 		return -ENODEV;
+<<<<<<< HEAD
 	if (vma->vm_pgoff > (~0UL >> PAGE_SHIFT))
 		return -EINVAL;
 	off = vma->vm_pgoff << PAGE_SHIFT;
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	fb = info->fbops;
 	if (!fb)
 		return -ENODEV;
@@ -1365,6 +1388,7 @@ fb_mmap(struct file *file, struct vm_area_struct * vma)
 		return res;
 	}
 
+<<<<<<< HEAD
 	/* frame buffer memory */
 	start = info->fix.smem_start;
 	len = PAGE_ALIGN((start & ~PAGE_MASK) + info->fix.smem_len);
@@ -1392,6 +1416,26 @@ fb_mmap(struct file *file, struct vm_area_struct * vma)
 			     vma->vm_end - vma->vm_start, vma->vm_page_prot))
 		return -EAGAIN;
 	return 0;
+=======
+	/*
+	 * Ugh. This can be either the frame buffer mapping, or
+	 * if pgoff points past it, the mmio mapping.
+	 */
+	start = info->fix.smem_start;
+	len = info->fix.smem_len;
+	mmio_pgoff = PAGE_ALIGN((start & ~PAGE_MASK) + len) >> PAGE_SHIFT;
+	if (vma->vm_pgoff >= mmio_pgoff) {
+		vma->vm_pgoff -= mmio_pgoff;
+		start = info->fix.mmio_start;
+		len = info->fix.mmio_len;
+	}
+	mutex_unlock(&info->mm_lock);
+
+	vma->vm_page_prot = vm_get_page_prot(vma->vm_flags);
+	fb_pgprotect(file, vma, start);
+
+	return vm_iomap_memory(vma, start, len);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 static int
@@ -1625,7 +1669,13 @@ static int do_register_framebuffer(struct fb_info *fb_info)
 	event.info = fb_info;
 	if (!lock_fb_info(fb_info))
 		return -ENODEV;
+<<<<<<< HEAD
 	fb_notifier_call_chain(FB_EVENT_FB_REGISTERED, &event);
+=======
+	console_lock();
+	fb_notifier_call_chain(FB_EVENT_FB_REGISTERED, &event);
+	console_unlock();
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	unlock_fb_info(fb_info);
 	return 0;
 }
@@ -1641,13 +1691,24 @@ static int do_unregister_framebuffer(struct fb_info *fb_info)
 
 	if (!lock_fb_info(fb_info))
 		return -ENODEV;
+<<<<<<< HEAD
 	event.info = fb_info;
 	ret = fb_notifier_call_chain(FB_EVENT_FB_UNBIND, &event);
+=======
+	console_lock();
+	event.info = fb_info;
+	ret = fb_notifier_call_chain(FB_EVENT_FB_UNBIND, &event);
+	console_unlock();
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	unlock_fb_info(fb_info);
 
 	if (ret)
 		return -EINVAL;
 
+<<<<<<< HEAD
+=======
+	unlink_framebuffer(fb_info);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	if (fb_info->pixmap.addr &&
 	    (fb_info->pixmap.flags & FB_PIXMAP_DEFAULT))
 		kfree(fb_info->pixmap.addr);
@@ -1655,15 +1716,41 @@ static int do_unregister_framebuffer(struct fb_info *fb_info)
 	registered_fb[i] = NULL;
 	num_registered_fb--;
 	fb_cleanup_device(fb_info);
+<<<<<<< HEAD
 	device_destroy(fb_class, MKDEV(FB_MAJOR, i));
 	event.info = fb_info;
 	fb_notifier_call_chain(FB_EVENT_FB_UNREGISTERED, &event);
+=======
+	event.info = fb_info;
+	console_lock();
+	fb_notifier_call_chain(FB_EVENT_FB_UNREGISTERED, &event);
+	console_unlock();
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	/* this may free fb info */
 	put_fb_info(fb_info);
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+int unlink_framebuffer(struct fb_info *fb_info)
+{
+	int i;
+
+	i = fb_info->node;
+	if (i < 0 || i >= FB_MAX || registered_fb[i] != fb_info)
+		return -EINVAL;
+
+	if (fb_info->dev) {
+		device_destroy(fb_class, MKDEV(FB_MAJOR, i));
+		fb_info->dev = NULL;
+	}
+	return 0;
+}
+EXPORT_SYMBOL(unlink_framebuffer);
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 void remove_conflicting_framebuffers(struct apertures_struct *a,
 				     const char *name, bool primary)
 {
@@ -1735,8 +1822,11 @@ void fb_set_suspend(struct fb_info *info, int state)
 {
 	struct fb_event event;
 
+<<<<<<< HEAD
 	if (!lock_fb_info(info))
 		return;
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	event.info = info;
 	if (state) {
 		fb_notifier_call_chain(FB_EVENT_SUSPEND, &event);
@@ -1745,7 +1835,10 @@ void fb_set_suspend(struct fb_info *info, int state)
 		info->state = FBINFO_STATE_RUNNING;
 		fb_notifier_call_chain(FB_EVENT_RESUME, &event);
 	}
+<<<<<<< HEAD
 	unlock_fb_info(info);
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 /**
@@ -1815,11 +1908,16 @@ int fb_new_modelist(struct fb_info *info)
 	err = 1;
 
 	if (!list_empty(&info->modelist)) {
+<<<<<<< HEAD
 		if (!lock_fb_info(info))
 			return -ENODEV;
 		event.info = info;
 		err = fb_notifier_call_chain(FB_EVENT_NEW_MODELIST, &event);
 		unlock_fb_info(info);
+=======
+		event.info = info;
+		err = fb_notifier_call_chain(FB_EVENT_NEW_MODELIST, &event);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	}
 
 	return err;

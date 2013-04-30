@@ -156,10 +156,13 @@ static int ecryptfs_show_options(struct seq_file *m, struct vfsmount *mnt)
 	if (mount_crypt_stat->global_default_cipher_key_size)
 		seq_printf(m, ",ecryptfs_key_bytes=%zd",
 			   mount_crypt_stat->global_default_cipher_key_size);
+<<<<<<< HEAD
 #ifdef CONFIG_WTL_ENCRYPTION_FILTER
 	if (mount_crypt_stat->flags & ECRYPTFS_ENABLE_FILTERING)
 		seq_printf(m, ",ecryptfs_enable_filtering");
 #endif
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	if (mount_crypt_stat->flags & ECRYPTFS_PLAINTEXT_PASSTHROUGH_ENABLED)
 		seq_printf(m, ",ecryptfs_passthrough");
 	if (mount_crypt_stat->flags & ECRYPTFS_XATTR_METADATA_ENABLED)

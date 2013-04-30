@@ -118,9 +118,12 @@ obj-$(CONFIG_SENSORS_W83L785TS)	+= w83l785ts.o
 obj-$(CONFIG_SENSORS_W83L786NG)	+= w83l786ng.o
 obj-$(CONFIG_SENSORS_WM831X)	+= wm831x-hwmon.o
 obj-$(CONFIG_SENSORS_WM8350)	+= wm8350-hwmon.o
+<<<<<<< HEAD
 obj-$(CONFIG_SENSORS_WPCE775X)	+= wpce775x.o
 obj-$(CONFIG_SENSORS_MSM_ADC)	+= msm_adc.o m_adcproc.o
 obj-$(CONFIG_SENSORS_PM8XXX_ADC)	+= pm8xxx-adc.o pm8xxx-adc-scale.o
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 # PMBus drivers
 obj-$(CONFIG_PMBUS)		+= pmbus_core.o

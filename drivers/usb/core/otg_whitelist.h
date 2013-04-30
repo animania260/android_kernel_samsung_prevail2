@@ -92,6 +92,7 @@ static int is_targeted(struct usb_device *dev)
 		if ((id->match_flags & USB_DEVICE_ID_MATCH_DEV_PROTOCOL) &&
 		    (id->bDeviceProtocol != dev->descriptor.bDeviceProtocol))
 			continue;
+<<<<<<< HEAD
 #if defined(CONFIG_USB_PEHCI_HCD) || defined(CONFIG_USB_PEHCI_HCD_MODULE)
 		/*Hub is targeted device,so code execution should reach here */
 		if (USB_CLASS_HUB == dev->descriptor.bDeviceClass) {
@@ -116,6 +117,9 @@ static int is_targeted(struct usb_device *dev)
 			}
 		}
 #endif
+=======
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		return 1;
 	}
 

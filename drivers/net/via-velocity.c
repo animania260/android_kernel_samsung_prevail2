@@ -2513,9 +2513,12 @@ static int velocity_close(struct net_device *dev)
 	if (dev->irq != 0)
 		free_irq(dev->irq, dev);
 
+<<<<<<< HEAD
 	/* Power down the chip */
 	pci_set_power_state(vptr->pdev, PCI_D3hot);
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	velocity_free_rings(vptr);
 
 	vptr->flags &= (~VELOCITY_FLAGS_OPENED);

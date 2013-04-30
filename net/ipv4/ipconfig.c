@@ -252,6 +252,13 @@ static int __init ic_open_devs(void)
 		}
 	}
 
+<<<<<<< HEAD
+=======
+	/* no point in waiting if we could not bring up at least one device */
+	if (!ic_first_dev)
+		goto have_carrier;
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	/* wait for a carrier on at least one device */
 	start = jiffies;
 	while (jiffies - start < msecs_to_jiffies(CONF_CARRIER_TIMEOUT)) {

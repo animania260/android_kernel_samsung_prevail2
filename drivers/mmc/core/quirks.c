@@ -21,6 +21,7 @@
 #define SDIO_DEVICE_ID_TI_WL1271	0x4076
 #endif
 
+<<<<<<< HEAD
 #ifndef SDIO_VENDOR_ID_MSM
 #define SDIO_VENDOR_ID_MSM		0x0070
 #endif
@@ -29,6 +30,8 @@
 #define SDIO_DEVICE_ID_MSM_WCN1314	0x2881
 #endif
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 /*
  * This hook just adds a quirk for all sdio devices
  */
@@ -48,9 +51,12 @@ static const struct mmc_fixup mmc_fixup_methods[] = {
 	SDIO_FIXUP(SDIO_VENDOR_ID_TI, SDIO_DEVICE_ID_TI_WL1271,
 		   remove_quirk, MMC_QUIRK_BROKEN_CLK_GATING),
 
+<<<<<<< HEAD
 	SDIO_FIXUP(SDIO_VENDOR_ID_MSM, SDIO_DEVICE_ID_MSM_WCN1314,
 		   remove_quirk, MMC_QUIRK_BROKEN_CLK_GATING),
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	SDIO_FIXUP(SDIO_VENDOR_ID_TI, SDIO_DEVICE_ID_TI_WL1271,
 		   add_quirk, MMC_QUIRK_NONSTD_FUNC_IF),
 

@@ -849,6 +849,10 @@ int cpdma_chan_stop(struct cpdma_chan *chan)
 
 		next_dma = desc_read(desc, hw_next);
 		chan->head = desc_from_phys(pool, next_dma);
+<<<<<<< HEAD
+=======
+		chan->count--;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		chan->stats.teardown_dequeue++;
 
 		/* issue callback without locks held */

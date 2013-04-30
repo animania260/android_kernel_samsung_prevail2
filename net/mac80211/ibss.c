@@ -940,7 +940,11 @@ int ieee80211_ibss_join(struct ieee80211_sub_if_data *sdata,
 	sdata->u.ibss.state = IEEE80211_IBSS_MLME_SEARCH;
 	sdata->u.ibss.ibss_join_req = jiffies;
 
+<<<<<<< HEAD
 	memcpy(sdata->u.ibss.ssid, params->ssid, IEEE80211_MAX_SSID_LEN);
+=======
+	memcpy(sdata->u.ibss.ssid, params->ssid, params->ssid_len);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	sdata->u.ibss.ssid_len = params->ssid_len;
 
 	mutex_unlock(&sdata->u.ibss.mtx);
@@ -965,10 +969,13 @@ int ieee80211_ibss_leave(struct ieee80211_sub_if_data *sdata)
 
 	mutex_lock(&sdata->u.ibss.mtx);
 
+<<<<<<< HEAD
 	sdata->u.ibss.state = IEEE80211_IBSS_MLME_SEARCH;
 	memset(sdata->u.ibss.bssid, 0, ETH_ALEN);
 	sdata->u.ibss.ssid_len = 0;
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	active_ibss = ieee80211_sta_active_ibss(sdata);
 
 	if (!active_ibss && !is_zero_ether_addr(ifibss->bssid)) {
@@ -989,6 +996,13 @@ int ieee80211_ibss_leave(struct ieee80211_sub_if_data *sdata)
 		}
 	}
 
+<<<<<<< HEAD
+=======
+	ifibss->state = IEEE80211_IBSS_MLME_SEARCH;
+	memset(ifibss->bssid, 0, ETH_ALEN);
+	ifibss->ssid_len = 0;
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	sta_info_flush(sdata->local, sdata);
 
 	/* remove beacon */

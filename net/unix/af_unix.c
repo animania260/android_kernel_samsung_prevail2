@@ -371,7 +371,11 @@ static void unix_sock_destructor(struct sock *sk)
 #endif
 }
 
+<<<<<<< HEAD
 static int unix_release_sock(struct sock *sk, int embrion)
+=======
+static void unix_release_sock(struct sock *sk, int embrion)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 {
 	struct unix_sock *u = unix_sk(sk);
 	struct dentry *dentry;
@@ -444,8 +448,11 @@ static int unix_release_sock(struct sock *sk, int embrion)
 
 	if (unix_tot_inflight)
 		unix_gc();		/* Garbage collect fds */
+<<<<<<< HEAD
 
 	return 0;
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 static void init_peercred(struct sock *sk)
@@ -682,9 +689,16 @@ static int unix_release(struct socket *sock)
 	if (!sk)
 		return 0;
 
+<<<<<<< HEAD
 	sock->sk = NULL;
 
 	return unix_release_sock(sk, 0);
+=======
+	unix_release_sock(sk, 0);
+	sock->sk = NULL;
+
+	return 0;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 static int unix_autobind(struct socket *sock)

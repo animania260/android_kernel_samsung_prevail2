@@ -191,7 +191,12 @@ extern void usbnet_cdc_status(struct usbnet *, struct urb *);
 enum skb_state {
 	illegal = 0,
 	tx_start, tx_done,
+<<<<<<< HEAD
 	rx_start, rx_done, rx_cleanup
+=======
+	rx_start, rx_done, rx_cleanup,
+	unlink_start
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 };
 
 struct skb_data {	/* skb->cb is one of these */

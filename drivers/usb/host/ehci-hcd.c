@@ -451,7 +451,11 @@ static void ehci_shutdown(struct usb_hcd *hcd)
 	spin_unlock_irq(&ehci->lock);
 }
 
+<<<<<<< HEAD
 static void __maybe_unused ehci_port_power (struct ehci_hcd *ehci, int is_on)
+=======
+static void ehci_port_power (struct ehci_hcd *ehci, int is_on)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 {
 	unsigned port;
 
@@ -527,6 +531,7 @@ static void ehci_stop (struct usb_hcd *hcd)
 
 	/* root hub is shut down separately (first, when possible) */
 	spin_lock_irq (&ehci->lock);
+<<<<<<< HEAD
 	if (ehci->async) {
 		/*
 		 * TODO: Observed that ehci->async next ptr is not
@@ -542,6 +547,10 @@ static void ehci_stop (struct usb_hcd *hcd)
 			start_unlink_async(ehci, ehci->async->qh_next.qh);
 		ehci_work (ehci);
 	}
+=======
+	if (ehci->async)
+		ehci_work (ehci);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	spin_unlock_irq (&ehci->lock);
 	ehci_mem_cleanup (ehci);
 
@@ -680,7 +689,11 @@ static int ehci_init(struct usb_hcd *hcd)
 }
 
 /* start HC running; it's halted, ehci_init() has been run (once) */
+<<<<<<< HEAD
 static int __maybe_unused ehci_run (struct usb_hcd *hcd)
+=======
+static int ehci_run (struct usb_hcd *hcd)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 {
 	struct ehci_hcd		*ehci = hcd_to_ehci (hcd);
 	int			retval;
@@ -774,6 +787,38 @@ static int __maybe_unused ehci_run (struct usb_hcd *hcd)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static int __maybe_unused ehci_setup (struct usb_hcd *hcd)
+{
+	struct ehci_hcd *ehci = hcd_to_ehci(hcd);
+	int retval;
+
+	ehci->regs = (void __iomem *)ehci->caps +
+	    HC_LENGTH(ehci, ehci_readl(ehci, &ehci->caps->hc_capbase));
+	dbg_hcs_params(ehci, "reset");
+	dbg_hcc_params(ehci, "reset");
+
+	/* cache this readonly data; minimize chip reads */
+	ehci->hcs_params = ehci_readl(ehci, &ehci->caps->hcs_params);
+
+	ehci->sbrn = HCD_USB2;
+
+	retval = ehci_halt(ehci);
+	if (retval)
+		return retval;
+
+	/* data structure init */
+	retval = ehci_init(hcd);
+	if (retval)
+		return retval;
+
+	ehci_reset(ehci);
+
+	return 0;
+}
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 /*-------------------------------------------------------------------------*/
 
 static irqreturn_t ehci_irq (struct usb_hcd *hcd)
@@ -792,8 +837,18 @@ static irqreturn_t ehci_irq (struct usb_hcd *hcd)
 		goto dead;
 	}
 
+<<<<<<< HEAD
 	/* Shared IRQ? */
 	masked_status = status & INTR_MASK;
+=======
+	/*
+	 * We don't use STS_FLR, but some controllers don't like it to
+	 * remain on, so mask it out along with the other status bits.
+	 */
+	masked_status = status & (INTR_MASK | STS_FLR);
+
+	/* Shared IRQ? */
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	if (!masked_status || unlikely(hcd->state == HC_STATE_HALT)) {
 		spin_unlock(&ehci->lock);
 		return IRQ_NONE;
@@ -844,7 +899,11 @@ static irqreturn_t ehci_irq (struct usb_hcd *hcd)
 		pcd_status = status;
 
 		/* resume root hub? */
+<<<<<<< HEAD
 		if (!(cmd & CMD_RUN))
+=======
+		if (hcd->state == HC_STATE_SUSPENDED)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			usb_hcd_resume_root_hub(hcd);
 
 		/* get per-port change detect bits */
@@ -1128,7 +1187,11 @@ done:
 	spin_unlock_irqrestore (&ehci->lock, flags);
 }
 
+<<<<<<< HEAD
 static void __maybe_unused
+=======
+static void
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 ehci_endpoint_reset(struct usb_hcd *hcd, struct usb_host_endpoint *ep)
 {
 	struct ehci_hcd		*ehci = hcd_to_ehci(hcd);
@@ -1172,8 +1235,12 @@ ehci_endpoint_reset(struct usb_hcd *hcd, struct usb_host_endpoint *ep)
 static int ehci_get_frame (struct usb_hcd *hcd)
 {
 	struct ehci_hcd		*ehci = hcd_to_ehci (hcd);
+<<<<<<< HEAD
 	return (ehci_readl(ehci, &ehci->regs->frame_index) >> 3) %
 		ehci->periodic_size;
+=======
+	return (ehci_read_frame_index(ehci) >> 3) % ehci->periodic_size;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 /*-------------------------------------------------------------------------*/
@@ -1187,6 +1254,7 @@ MODULE_LICENSE ("GPL");
 #define	PCI_DRIVER		ehci_pci_driver
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_PPC_PS3
 #include "ehci-ps3.c"
 #define	PS3_SYSTEM_BUS_DRIVER	ps3_ehci_driver
@@ -1205,100 +1273,189 @@ MODULE_LICENSE ("GPL");
 #ifdef CONFIG_USB_EHCI_FSL
 #include "ehci-fsl.c"
 #define PLATFORM_DRIVER_PRESENT
+=======
+#ifdef CONFIG_USB_EHCI_FSL
+#include "ehci-fsl.c"
+#define	PLATFORM_DRIVER		ehci_fsl_driver
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #endif
 
 #ifdef CONFIG_USB_EHCI_MXC
 #include "ehci-mxc.c"
+<<<<<<< HEAD
 #define PLATFORM_DRIVER_PRESENT
+=======
+#define PLATFORM_DRIVER		ehci_mxc_driver
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #endif
 
 #ifdef CONFIG_USB_EHCI_SH
 #include "ehci-sh.c"
+<<<<<<< HEAD
 #define PLATFORM_DRIVER_PRESENT
+=======
+#define PLATFORM_DRIVER		ehci_hcd_sh_driver
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #endif
 
 #ifdef CONFIG_SOC_AU1200
 #include "ehci-au1xxx.c"
+<<<<<<< HEAD
 #define PLATFORM_DRIVER_PRESENT
+=======
+#define	PLATFORM_DRIVER		ehci_hcd_au1xxx_driver
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #endif
 
 #ifdef CONFIG_USB_EHCI_HCD_OMAP
 #include "ehci-omap.c"
+<<<<<<< HEAD
 #define PLATFORM_DRIVER_PRESENT
+=======
+#define        PLATFORM_DRIVER         ehci_hcd_omap_driver
+#endif
+
+#ifdef CONFIG_PPC_PS3
+#include "ehci-ps3.c"
+#define	PS3_SYSTEM_BUS_DRIVER	ps3_ehci_driver
+#endif
+
+#ifdef CONFIG_USB_EHCI_HCD_PPC_OF
+#include "ehci-ppc-of.c"
+#define OF_PLATFORM_DRIVER	ehci_hcd_ppc_of_driver
+#endif
+
+#ifdef CONFIG_XPS_USB_HCD_XILINX
+#include "ehci-xilinx-of.c"
+#define XILINX_OF_PLATFORM_DRIVER	ehci_hcd_xilinx_of_driver
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #endif
 
 #ifdef CONFIG_PLAT_ORION
 #include "ehci-orion.c"
+<<<<<<< HEAD
 #define PLATFORM_DRIVER_PRESENT
+=======
+#define	PLATFORM_DRIVER		ehci_orion_driver
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #endif
 
 #ifdef CONFIG_ARCH_IXP4XX
 #include "ehci-ixp4xx.c"
+<<<<<<< HEAD
 #define PLATFORM_DRIVER_PRESENT
+=======
+#define	PLATFORM_DRIVER		ixp4xx_ehci_driver
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #endif
 
 #ifdef CONFIG_USB_W90X900_EHCI
 #include "ehci-w90x900.c"
+<<<<<<< HEAD
 #define PLATFORM_DRIVER_PRESENT
+=======
+#define	PLATFORM_DRIVER		ehci_hcd_w90x900_driver
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #endif
 
 #ifdef CONFIG_ARCH_AT91
 #include "ehci-atmel.c"
+<<<<<<< HEAD
 #define PLATFORM_DRIVER_PRESENT
+=======
+#define	PLATFORM_DRIVER		ehci_atmel_driver
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #endif
 
 #ifdef CONFIG_USB_OCTEON_EHCI
 #include "ehci-octeon.c"
+<<<<<<< HEAD
 #define PLATFORM_DRIVER_PRESENT
+=======
+#define PLATFORM_DRIVER		ehci_octeon_driver
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #endif
 
 #ifdef CONFIG_USB_CNS3XXX_EHCI
 #include "ehci-cns3xxx.c"
+<<<<<<< HEAD
 #define PLATFORM_DRIVER_PRESENT
+=======
+#define PLATFORM_DRIVER		cns3xxx_ehci_driver
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #endif
 
 #ifdef CONFIG_ARCH_VT8500
 #include "ehci-vt8500.c"
+<<<<<<< HEAD
 #define PLATFORM_DRIVER_PRESENT
+=======
+#define	PLATFORM_DRIVER		vt8500_ehci_driver
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #endif
 
 #ifdef CONFIG_PLAT_SPEAR
 #include "ehci-spear.c"
+<<<<<<< HEAD
 #define PLATFORM_DRIVER_PRESENT
 #endif
 
 #ifdef CONFIG_USB_EHCI_MSM_72K
 #include "ehci-msm72k.c"
 #define PLATFORM_DRIVER_PRESENT
+=======
+#define PLATFORM_DRIVER		spear_ehci_hcd_driver
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #endif
 
 #ifdef CONFIG_USB_EHCI_MSM
 #include "ehci-msm.c"
+<<<<<<< HEAD
 #define PLATFORM_DRIVER_PRESENT
+=======
+#define PLATFORM_DRIVER		ehci_msm_driver
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #endif
 
 #ifdef CONFIG_USB_EHCI_HCD_PMC_MSP
 #include "ehci-pmcmsp.c"
+<<<<<<< HEAD
 #define PLATFORM_DRIVER_PRESENT
+=======
+#define	PLATFORM_DRIVER		ehci_hcd_msp_driver
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #endif
 
 #ifdef CONFIG_USB_EHCI_TEGRA
 #include "ehci-tegra.c"
+<<<<<<< HEAD
 #define PLATFORM_DRIVER_PRESENT
+=======
+#define PLATFORM_DRIVER		tegra_ehci_driver
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #endif
 
 #ifdef CONFIG_USB_EHCI_S5P
 #include "ehci-s5p.c"
+<<<<<<< HEAD
 #define PLATFORM_DRIVER_PRESENT
+=======
+#define PLATFORM_DRIVER		s5p_ehci_driver
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #endif
 
 #ifdef CONFIG_USB_EHCI_ATH79
 #include "ehci-ath79.c"
+<<<<<<< HEAD
 #define PLATFORM_DRIVER_PRESENT
+=======
+#define PLATFORM_DRIVER		ehci_ath79_driver
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #endif
 
 #ifdef CONFIG_SPARC_LEON
 #include "ehci-grlib.c"
+<<<<<<< HEAD
 #define PLATFORM_DRIVER_PRESENT
 #endif
 
@@ -1308,11 +1465,18 @@ MODULE_LICENSE ("GPL");
 #endif
 
 #if !defined(PCI_DRIVER) && !defined(PLATFORM_DRIVER_PRESENT) && \
+=======
+#define PLATFORM_DRIVER		ehci_grlib_driver
+#endif
+
+#if !defined(PCI_DRIVER) && !defined(PLATFORM_DRIVER) && \
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
     !defined(PS3_SYSTEM_BUS_DRIVER) && !defined(OF_PLATFORM_DRIVER) && \
     !defined(XILINX_OF_PLATFORM_DRIVER)
 #error "missing bus glue for ehci-hcd"
 #endif
 
+<<<<<<< HEAD
 static struct platform_driver *plat_drivers[]  = {
 #ifdef CONFIG_USB_EHCI_FSL
 	&ehci_fsl_driver,
@@ -1400,6 +1564,11 @@ static struct platform_driver *plat_drivers[]  = {
 static int __init ehci_hcd_init(void)
 {
 	int i, retval = 0;
+=======
+static int __init ehci_hcd_init(void)
+{
+	int retval = 0;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	if (usb_disabled())
 		return -ENODEV;
@@ -1424,6 +1593,7 @@ static int __init ehci_hcd_init(void)
 	}
 #endif
 
+<<<<<<< HEAD
 	for (i = 0; i < ARRAY_SIZE(plat_drivers); i++) {
 		retval = platform_driver_register(plat_drivers[i]);
 		if (retval) {
@@ -1432,6 +1602,13 @@ static int __init ehci_hcd_init(void)
 			goto clean0;
 		}
 	}
+=======
+#ifdef PLATFORM_DRIVER
+	retval = platform_driver_register(&PLATFORM_DRIVER);
+	if (retval < 0)
+		goto clean0;
+#endif
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 #ifdef PCI_DRIVER
 	retval = pci_register_driver(&PCI_DRIVER);
@@ -1474,9 +1651,16 @@ clean2:
 	pci_unregister_driver(&PCI_DRIVER);
 clean1:
 #endif
+<<<<<<< HEAD
 	for (i = 0; i < ARRAY_SIZE(plat_drivers); i++)
 		platform_driver_unregister(plat_drivers[i]);
 clean0:
+=======
+#ifdef PLATFORM_DRIVER
+	platform_driver_unregister(&PLATFORM_DRIVER);
+clean0:
+#endif
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #ifdef DEBUG
 	debugfs_remove(ehci_debug_root);
 	ehci_debug_root = NULL;
@@ -1489,17 +1673,26 @@ module_init(ehci_hcd_init);
 
 static void __exit ehci_hcd_cleanup(void)
 {
+<<<<<<< HEAD
 	int i;
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #ifdef XILINX_OF_PLATFORM_DRIVER
 	platform_driver_unregister(&XILINX_OF_PLATFORM_DRIVER);
 #endif
 #ifdef OF_PLATFORM_DRIVER
 	platform_driver_unregister(&OF_PLATFORM_DRIVER);
 #endif
+<<<<<<< HEAD
 
 	for (i = 0; i < ARRAY_SIZE(plat_drivers); i++)
 		platform_driver_unregister(plat_drivers[i]);
 
+=======
+#ifdef PLATFORM_DRIVER
+	platform_driver_unregister(&PLATFORM_DRIVER);
+#endif
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #ifdef PCI_DRIVER
 	pci_unregister_driver(&PCI_DRIVER);
 #endif

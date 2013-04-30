@@ -137,7 +137,10 @@ static const struct bin_table bin_kern_table[] = {
 	{ CTL_INT,	KERN_COMPAT_LOG,		"compat-log" },
 	{ CTL_INT,	KERN_MAX_LOCK_DEPTH,		"max_lock_depth" },
 	{ CTL_INT,	KERN_PANIC_ON_NMI,		"panic_on_unrecovered_nmi" },
+<<<<<<< HEAD
 	{ CTL_INT,	KERN_BOOT_REASON,		"boot_reason" },
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	{}
 };
 
@@ -1195,9 +1198,16 @@ static ssize_t bin_dn_node_address(struct file *file,
 
 		/* Convert the decnet address to binary */
 		result = -EIO;
+<<<<<<< HEAD
 		nodep = strchr(buf, '.') + 1;
 		if (!nodep)
 			goto out;
+=======
+		nodep = strchr(buf, '.');
+		if (!nodep)
+			goto out;
+		++nodep;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 		area = simple_strtoul(buf, NULL, 10);
 		node = simple_strtoul(nodep, NULL, 10);
@@ -1355,7 +1365,11 @@ static ssize_t binary_sysctl(const int *name, int nlen,
 
 	fput(file);
 out_putname:
+<<<<<<< HEAD
 	putname(pathname);
+=======
+	__putname(pathname);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 out:
 	return result;
 }

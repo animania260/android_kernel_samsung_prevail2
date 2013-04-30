@@ -21,6 +21,7 @@ config IOSCHED_DEADLINE
 	  a new point in the service tree and doing a batch of IO from there
 	  in case of expiry.
 
+<<<<<<< HEAD
 config IOSCHED_ROW
 	tristate "ROW I/O scheduler"
 	---help---
@@ -31,6 +32,8 @@ config IOSCHED_ROW
 	  according to queue priority.
 	  Most suitable for mobile devices.
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 config IOSCHED_CFQ
 	tristate "CFQ I/O scheduler"
 	# If BLK_CGROUP is a module, CFQ has to be built as module.
@@ -63,6 +66,7 @@ choice
 	config DEFAULT_DEADLINE
 		bool "Deadline" if IOSCHED_DEADLINE=y
 
+<<<<<<< HEAD
 	config DEFAULT_ROW
 		bool "ROW" if IOSCHED_ROW=y
 		help
@@ -73,6 +77,8 @@ choice
 		  for each queue is defined according to queue priority.
 		  Most suitable for mobile devices.
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	config DEFAULT_CFQ
 		bool "CFQ" if IOSCHED_CFQ=y
 
@@ -84,7 +90,10 @@ endchoice
 config DEFAULT_IOSCHED
 	string
 	default "deadline" if DEFAULT_DEADLINE
+<<<<<<< HEAD
 	default "row" if DEFAULT_ROW
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	default "cfq" if DEFAULT_CFQ
 	default "noop" if DEFAULT_NOOP
 

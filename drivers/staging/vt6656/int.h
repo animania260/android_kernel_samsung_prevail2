@@ -34,7 +34,10 @@
 #include "device.h"
 
 /*---------------------  Export Definitions -------------------------*/
+<<<<<<< HEAD
 #pragma pack(1)
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 typedef struct tagSINTData {
     BYTE    byTSR0;
     BYTE    byPkt0;

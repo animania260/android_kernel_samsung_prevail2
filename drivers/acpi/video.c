@@ -390,6 +390,15 @@ static int __init video_set_bqc_offset(const struct dmi_system_id *d)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static int video_ignore_initial_backlight(const struct dmi_system_id *d)
+{
+	use_bios_initial_backlight = 0;
+	return 0;
+}
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 static struct dmi_system_id video_dmi_table[] __initdata = {
 	/*
 	 * Broken _BQC workaround http://bugzilla.kernel.org/show_bug.cgi?id=13121
@@ -434,6 +443,17 @@ static struct dmi_system_id video_dmi_table[] __initdata = {
 		DMI_MATCH(DMI_PRODUCT_NAME, "Aspire 7720"),
 		},
 	},
+<<<<<<< HEAD
+=======
+	{
+	 .callback = video_ignore_initial_backlight,
+	 .ident = "HP Folio 13-2000",
+	 .matches = {
+		DMI_MATCH(DMI_BOARD_VENDOR, "Hewlett-Packard"),
+		DMI_MATCH(DMI_PRODUCT_NAME, "HP Folio 13 - 2000 Notebook PC"),
+		},
+	},
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	{}
 };
 
@@ -1732,6 +1752,10 @@ static int acpi_video_bus_remove(struct acpi_device *device, int type)
 
 static int __init intel_opregion_present(void)
 {
+<<<<<<< HEAD
+=======
+	int i915 = 0;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #if defined(CONFIG_DRM_I915) || defined(CONFIG_DRM_I915_MODULE)
 	struct pci_dev *dev = NULL;
 	u32 address;
@@ -1744,10 +1768,17 @@ static int __init intel_opregion_present(void)
 		pci_read_config_dword(dev, 0xfc, &address);
 		if (!address)
 			continue;
+<<<<<<< HEAD
 		return 1;
 	}
 #endif
 	return 0;
+=======
+		i915 = 1;
+	}
+#endif
+	return i915;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 int acpi_video_register(void)

@@ -2006,16 +2006,29 @@ static void __exit ax25_exit(void)
 	proc_net_remove(&init_net, "ax25_route");
 	proc_net_remove(&init_net, "ax25");
 	proc_net_remove(&init_net, "ax25_calls");
+<<<<<<< HEAD
 	ax25_rt_free();
 	ax25_uid_free();
 	ax25_dev_free();
 
 	ax25_unregister_sysctl();
 	unregister_netdevice_notifier(&ax25_dev_notifier);
+=======
+
+	unregister_netdevice_notifier(&ax25_dev_notifier);
+	ax25_unregister_sysctl();
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	dev_remove_pack(&ax25_packet_type);
 
 	sock_unregister(PF_AX25);
 	proto_unregister(&ax25_proto);
+<<<<<<< HEAD
+=======
+
+	ax25_rt_free();
+	ax25_uid_free();
+	ax25_dev_free();
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 module_exit(ax25_exit);

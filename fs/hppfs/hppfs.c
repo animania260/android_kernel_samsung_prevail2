@@ -16,6 +16,10 @@
 #include <linux/statfs.h>
 #include <linux/types.h>
 #include <linux/pid_namespace.h>
+<<<<<<< HEAD
+=======
+#include <linux/namei.h>
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #include <asm/uaccess.h>
 #include "os.h"
 

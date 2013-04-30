@@ -1256,6 +1256,14 @@ out:
 	case 0:
 	case -ERESTARTSYS:
 	case -EINTR:
+<<<<<<< HEAD
+=======
+	case -EBUSY:
+		/*
+		 * EBUSY is ok: this just means that another thread
+		 * already did the job.
+		 */
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		return VM_FAULT_NOPAGE;
 	case -ENOMEM:
 		return VM_FAULT_OOM;
@@ -1475,7 +1483,11 @@ i915_gem_mmap_gtt(struct drm_file *file,
 
 	if (obj->base.size > dev_priv->mm.gtt_mappable_end) {
 		ret = -E2BIG;
+<<<<<<< HEAD
 		goto unlock;
+=======
+		goto out;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	}
 
 	if (obj->madv != I915_MADV_WILLNEED) {

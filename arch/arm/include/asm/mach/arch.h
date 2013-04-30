@@ -35,7 +35,10 @@ struct machine_desc {
 					 struct meminfo *);
 	void			(*reserve)(void);/* reserve mem blocks	*/
 	void			(*map_io)(void);/* IO mapping function	*/
+<<<<<<< HEAD
 	void			(*init_very_early)(void);
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	void			(*init_early)(void);
 	void			(*init_irq)(void);
 	struct sys_timer	*timer;		/* system tick timer	*/
@@ -71,6 +74,7 @@ static const struct machine_desc __mach_desc_##_type	\
 #define MACHINE_END				\
 };
 
+<<<<<<< HEAD
 #define DT_MACHINE_START(_name, _namestr)		\
 static const struct machine_desc __mach_desc_##_name	\
  __used							\
@@ -78,4 +82,6 @@ static const struct machine_desc __mach_desc_##_name	\
 	.nr		= ~0,				\
 	.name		= _namestr,
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #endif

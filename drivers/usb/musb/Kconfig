@@ -14,7 +14,11 @@ config USB_MUSB_HDRC
 	select TWL4030_USB if MACH_OMAP_3430SDP
 	select TWL6030_USB if MACH_OMAP_4430SDP || MACH_OMAP4_PANDA
 	select USB_OTG_UTILS
+<<<<<<< HEAD
 	bool 'Inventra Highspeed Dual Role Controller (TI, ADI, ...)'
+=======
+	tristate 'Inventra Highspeed Dual Role Controller (TI, ADI, ...)'
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	help
 	  Say Y here if your system has a dual role high speed USB
 	  controller based on the Mentor Graphics silicon IP.  Then
@@ -30,8 +34,13 @@ config USB_MUSB_HDRC
 
 	  If you do not know what this is, please say N.
 
+<<<<<<< HEAD
 #	  To compile this driver as a module, choose M here; the
 #	  module will be called "musb-hdrc".
+=======
+	  To compile this driver as a module, choose M here; the
+	  module will be called "musb-hdrc".
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 choice
 	prompt "Platform Glue Layer"

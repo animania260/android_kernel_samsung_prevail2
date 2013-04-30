@@ -115,8 +115,11 @@ extern struct resource iomem_resource;
 
 extern struct resource *request_resource_conflict(struct resource *root, struct resource *new);
 extern int request_resource(struct resource *root, struct resource *new);
+<<<<<<< HEAD
 extern struct resource *locate_resource(struct resource *root,
 	struct resource *search);
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 extern int release_resource(struct resource *new);
 void release_child_resources(struct resource *new);
 extern void reserve_region_with_split(struct resource *root,

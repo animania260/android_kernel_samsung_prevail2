@@ -35,7 +35,12 @@ enum mem_cgroup_page_stat_item {
 extern unsigned long mem_cgroup_isolate_pages(unsigned long nr_to_scan,
 					struct list_head *dst,
 					unsigned long *scanned, int order,
+<<<<<<< HEAD
 					int mode, struct zone *z,
+=======
+					isolate_mode_t mode,
+					struct zone *z,
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 					struct mem_cgroup *mem_cont,
 					int active, int file);
 
@@ -119,6 +124,11 @@ struct zone_reclaim_stat*
 mem_cgroup_get_reclaim_stat_from_page(struct page *page);
 extern void mem_cgroup_print_oom_info(struct mem_cgroup *memcg,
 					struct task_struct *p);
+<<<<<<< HEAD
+=======
+extern void mem_cgroup_replace_page_cache(struct page *oldpage,
+					struct page *newpage);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 #ifdef CONFIG_CGROUP_MEM_RES_CTLR_SWAP
 extern int do_swap_account;
@@ -370,6 +380,13 @@ static inline
 void mem_cgroup_count_vm_event(struct mm_struct *mm, enum vm_event_item idx)
 {
 }
+<<<<<<< HEAD
+=======
+static inline void mem_cgroup_replace_page_cache(struct page *oldpage,
+				struct page *newpage)
+{
+}
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #endif /* CONFIG_CGROUP_MEM_CONT */
 
 #if !defined(CONFIG_CGROUP_MEM_RES_CTLR) || !defined(CONFIG_DEBUG_VM)

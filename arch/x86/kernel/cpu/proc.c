@@ -64,12 +64,19 @@ static void show_cpuinfo_misc(struct seq_file *m, struct cpuinfo_x86 *c)
 static int show_cpuinfo(struct seq_file *m, void *v)
 {
 	struct cpuinfo_x86 *c = v;
+<<<<<<< HEAD
 	unsigned int cpu = 0;
 	int i;
 
 #ifdef CONFIG_SMP
 	cpu = c->cpu_index;
 #endif
+=======
+	unsigned int cpu;
+	int i;
+
+	cpu = c->cpu_index;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	seq_printf(m, "processor\t: %u\n"
 		   "vendor_id\t: %s\n"
 		   "cpu family\t: %d\n"

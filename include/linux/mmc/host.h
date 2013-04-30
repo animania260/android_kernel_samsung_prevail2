@@ -12,7 +12,10 @@
 
 #include <linux/leds.h>
 #include <linux/sched.h>
+<<<<<<< HEAD
 #include <linux/wakelock.h>
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 #include <linux/mmc/core.h>
 #include <linux/mmc/pm.h>
@@ -213,6 +216,7 @@ struct mmc_host {
 #define MMC_CAP_MAX_CURRENT_800	(1 << 29)	/* Host max current limit is 800mA */
 #define MMC_CAP_CMD23		(1 << 30)	/* CMD23 supported. */
 
+<<<<<<< HEAD
 	unsigned int		caps2;		/* More host capabilities */
 
 #define MMC_CAP2_BOOTPART_NOACC	(1 << 0)	/* Boot partition no access */
@@ -228,6 +232,19 @@ struct mmc_host {
 	struct mutex		clk_gate_mutex;	/* mutex for clock gating */
 	struct device_attribute clkgate_delay_attr;
 	unsigned long		clkgate_delay;
+=======
+	mmc_pm_flag_t		pm_caps;	/* supported pm features */
+
+#ifdef CONFIG_MMC_CLKGATE
+	int			clk_requests;	/* internal reference counter */
+	unsigned int		clk_delay;	/* number of MCI clk hold cycles */
+	bool			clk_gated;	/* clock gated */
+	struct work_struct	clk_gate_work; /* delayed clock gate */
+	unsigned int		clk_old;	/* old clock value cache */
+	spinlock_t		clk_lock;	/* lock for clk fields */
+	struct mutex		clk_gate_mutex;	/* mutex for clock gating */
+#endif
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	/* host specific block data */
 	unsigned int		max_seg_size;	/* see blk_queue_max_segment_size */
@@ -263,22 +280,34 @@ struct mmc_host {
 
 	wait_queue_head_t	wq;
 	struct task_struct	*claimer;	/* task that has host claimed */
+<<<<<<< HEAD
 	struct task_struct	*suspend_task;
 	int			claim_cnt;	/* "claim" nesting count */
 
 	struct delayed_work	detect;
 	struct wake_lock	detect_wake_lock;
 	int                     detect_change;  /* card detect flag */
+=======
+	int			claim_cnt;	/* "claim" nesting count */
+
+	struct delayed_work	detect;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	const struct mmc_bus_ops *bus_ops;	/* current bus driver */
 	unsigned int		bus_refs;	/* reference counter */
 
+<<<<<<< HEAD
 	unsigned int		bus_resume_flags;
 #define MMC_BUSRESUME_MANUAL_RESUME	(1 << 0)
 #define MMC_BUSRESUME_NEEDS_RESUME	(1 << 1)
 
 	unsigned int		sdio_irqs;
 	struct task_struct	*sdio_irq_thread;
+=======
+	unsigned int		sdio_irqs;
+	struct task_struct	*sdio_irq_thread;
+	bool			sdio_irq_pending;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	atomic_t		sdio_irq_thread_abort;
 
 	mmc_pm_flag_t		pm_flags;	/* requested pm features */
@@ -293,6 +322,7 @@ struct mmc_host {
 
 	struct dentry		*debugfs_root;
 
+<<<<<<< HEAD
 #ifdef CONFIG_MMC_EMBEDDED_SDIO
 	struct {
 		struct sdio_cis			*cis;
@@ -317,6 +347,8 @@ struct mmc_host {
 	} perf;
 	bool perf_enable;
 #endif
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	unsigned long		private[0] ____cacheline_aligned;
 };
 
@@ -325,6 +357,7 @@ extern int mmc_add_host(struct mmc_host *);
 extern void mmc_remove_host(struct mmc_host *);
 extern void mmc_free_host(struct mmc_host *);
 
+<<<<<<< HEAD
 #ifdef CONFIG_MMC_EMBEDDED_SDIO
 extern void mmc_set_embedded_sdio_data(struct mmc_host *host,
 				       struct sdio_cis *cis,
@@ -333,6 +366,8 @@ extern void mmc_set_embedded_sdio_data(struct mmc_host *host,
 				       int num_funcs);
 #endif
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 static inline void *mmc_priv(struct mmc_host *host)
 {
 	return (void *)host->private;
@@ -343,6 +378,7 @@ static inline void *mmc_priv(struct mmc_host *host)
 #define mmc_dev(x)	((x)->parent)
 #define mmc_classdev(x)	(&(x)->class_dev)
 #define mmc_hostname(x)	(dev_name(&(x)->class_dev))
+<<<<<<< HEAD
 #define mmc_bus_needs_resume(host) ((host)->bus_resume_flags & MMC_BUSRESUME_NEEDS_RESUME)
 #define mmc_bus_manual_resume(host) ((host)->bus_resume_flags & MMC_BUSRESUME_MANUAL_RESUME)
 
@@ -355,6 +391,8 @@ static inline void mmc_set_bus_resume_policy(struct mmc_host *host, int manual)
 }
 
 extern int mmc_resume_bus(struct mmc_host *host);
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 extern int mmc_suspend_host(struct mmc_host *);
 extern int mmc_resume_host(struct mmc_host *);
@@ -368,6 +406,10 @@ extern void mmc_request_done(struct mmc_host *, struct mmc_request *);
 static inline void mmc_signal_sdio_irq(struct mmc_host *host)
 {
 	host->ops->enable_sdio_irq(host, 0);
+<<<<<<< HEAD
+=======
+	host->sdio_irq_pending = true;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	wake_up_process(host->sdio_irq_thread);
 }
 
@@ -399,12 +441,16 @@ int mmc_card_can_sleep(struct mmc_host *host);
 int mmc_host_enable(struct mmc_host *host);
 int mmc_host_disable(struct mmc_host *host);
 int mmc_host_lazy_disable(struct mmc_host *host);
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 int mmc_pm_notify(struct notifier_block *notify_block, unsigned long mode,
 		  void *unused);
 #else
 #define mmc_pm_notify NULL
 #endif
+=======
+int mmc_pm_notify(struct notifier_block *notify_block, unsigned long, void *);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 static inline void mmc_set_disable_delay(struct mmc_host *host,
 					 unsigned int disable_delay)
@@ -434,6 +480,7 @@ static inline int mmc_host_cmd23(struct mmc_host *host)
 {
 	return host->caps & MMC_CAP_CMD23;
 }
+<<<<<<< HEAD
 
 static inline int mmc_boot_partition_access(struct mmc_host *host)
 {
@@ -459,5 +506,7 @@ static inline unsigned int mmc_host_clk_rate(struct mmc_host *host)
 	return host->ios.clock;
 }
 #endif
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #endif
 

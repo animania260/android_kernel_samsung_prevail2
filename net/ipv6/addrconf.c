@@ -433,6 +433,13 @@ static struct inet6_dev * ipv6_add_dev(struct net_device *dev)
 	/* Join all-node multicast group */
 	ipv6_dev_mc_inc(dev, &in6addr_linklocal_allnodes);
 
+<<<<<<< HEAD
+=======
+	/* Join all-router multicast group if forwarding is set */
+	if (ndev->cnf.forwarding && dev && (dev->flags & IFF_MULTICAST))
+		ipv6_dev_mc_inc(dev, &in6addr_linklocal_allrouters);
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	return ndev;
 }
 
@@ -488,8 +495,12 @@ static void addrconf_forward_change(struct net *net, __s32 newf)
 	struct net_device *dev;
 	struct inet6_dev *idev;
 
+<<<<<<< HEAD
 	rcu_read_lock();
 	for_each_netdev_rcu(net, dev) {
+=======
+	for_each_netdev(net, dev) {
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		idev = __in6_dev_get(dev);
 		if (idev) {
 			int changed = (!idev->cnf.forwarding) ^ (!newf);
@@ -498,7 +509,10 @@ static void addrconf_forward_change(struct net *net, __s32 newf)
 				dev_forward_change(idev);
 		}
 	}
+<<<<<<< HEAD
 	rcu_read_unlock();
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 static int addrconf_fixup_forwarding(struct ctl_table *table, int *p, int old)
@@ -656,7 +670,11 @@ ipv6_add_addr(struct inet6_dev *idev, const struct in6_addr *addr, int pfxlen,
 	 * layer address of our nexhop router
 	 */
 
+<<<<<<< HEAD
 	if (rt->rt6i_nexthop == NULL)
+=======
+	if (dst_get_neighbour_raw(&rt->dst) == NULL)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		ifa->flags &= ~IFA_F_OPTIMISTIC;
 
 	ifa->idev = idev;
@@ -824,13 +842,20 @@ static int ipv6_create_tempaddr(struct inet6_ifaddr *ifp, struct inet6_ifaddr *i
 {
 	struct inet6_dev *idev = ifp->idev;
 	struct in6_addr addr, *tmpaddr;
+<<<<<<< HEAD
 	unsigned long tmp_prefered_lft, tmp_valid_lft, tmp_tstamp, age;
+=======
+	unsigned long tmp_prefered_lft, tmp_valid_lft, tmp_cstamp, tmp_tstamp, age;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	unsigned long regen_advance;
 	int tmp_plen;
 	int ret = 0;
 	int max_addresses;
 	u32 addr_flags;
+<<<<<<< HEAD
 	unsigned long now = jiffies;
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	write_lock(&idev->lock);
 	if (ift) {
@@ -875,7 +900,11 @@ retry:
 		goto out;
 	}
 	memcpy(&addr.s6_addr[8], idev->rndid, 8);
+<<<<<<< HEAD
 	age = (now - ifp->tstamp) / HZ;
+=======
+	age = (jiffies - ifp->tstamp) / HZ;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	tmp_valid_lft = min_t(__u32,
 			      ifp->valid_lft,
 			      idev->cnf.temp_valid_lft + age);
@@ -885,6 +914,10 @@ retry:
 				 idev->cnf.max_desync_factor);
 	tmp_plen = ifp->prefix_len;
 	max_addresses = idev->cnf.max_addresses;
+<<<<<<< HEAD
+=======
+	tmp_cstamp = ifp->cstamp;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	tmp_tstamp = ifp->tstamp;
 	spin_unlock_bh(&ifp->lock);
 
@@ -929,7 +962,11 @@ retry:
 	ift->ifpub = ifp;
 	ift->valid_lft = tmp_valid_lft;
 	ift->prefered_lft = tmp_prefered_lft;
+<<<<<<< HEAD
 	ift->cstamp = now;
+=======
+	ift->cstamp = tmp_cstamp;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	ift->tstamp = tmp_tstamp;
 	spin_unlock_bh(&ift->lock);
 
@@ -1572,6 +1609,7 @@ static int ipv6_generate_eui64(u8 *eui, struct net_device *dev)
 		return addrconf_ifid_infiniband(eui, dev);
 	case ARPHRD_SIT:
 		return addrconf_ifid_sit(eui, dev);
+<<<<<<< HEAD
 	case ARPHRD_RAWIP: {
 		struct in6_addr lladdr;
 
@@ -1582,6 +1620,8 @@ static int ipv6_generate_eui64(u8 *eui, struct net_device *dev)
 
 		return 0;
 	}
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	}
 	return -1;
 }
@@ -1998,6 +2038,7 @@ ok:
 #ifdef CONFIG_IPV6_PRIVACY
 			read_lock_bh(&in6_dev->lock);
 			/* update all temporary addresses in the list */
+<<<<<<< HEAD
 			list_for_each_entry(ift, &in6_dev->tempaddr_list,
 					    tmp_list) {
 				int age, max_valid, max_prefered;
@@ -2042,6 +2083,27 @@ ok:
 				if (prefered_lft > 0)
 					ift->flags &= ~IFA_F_DEPRECATED;
 
+=======
+			list_for_each_entry(ift, &in6_dev->tempaddr_list, tmp_list) {
+				/*
+				 * When adjusting the lifetimes of an existing
+				 * temporary address, only lower the lifetimes.
+				 * Implementations must not increase the
+				 * lifetimes of an existing temporary address
+				 * when processing a Prefix Information Option.
+				 */
+				if (ifp != ift->ifpub)
+					continue;
+
+				spin_lock(&ift->lock);
+				flags = ift->flags;
+				if (ift->valid_lft > valid_lft &&
+				    ift->valid_lft - valid_lft > (jiffies - ift->tstamp) / HZ)
+					ift->valid_lft = valid_lft + (jiffies - ift->tstamp) / HZ;
+				if (ift->prefered_lft > prefered_lft &&
+				    ift->prefered_lft - prefered_lft > (jiffies - ift->tstamp) / HZ)
+					ift->prefered_lft = prefered_lft + (jiffies - ift->tstamp) / HZ;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 				spin_unlock(&ift->lock);
 				if (!(flags&IFA_F_TENTATIVE))
 					ipv6_ifa_notify(0, ift);
@@ -2049,11 +2111,17 @@ ok:
 
 			if ((create || list_empty(&in6_dev->tempaddr_list)) && in6_dev->cnf.use_tempaddr > 0) {
 				/*
+<<<<<<< HEAD
 				 * When a new public address is created as
 				 * described in [ADDRCONF], also create a new
 				 * temporary address. Also create a temporary
 				 * address if it's enabled but no temporary
 				 * address currently exists.
+=======
+				 * When a new public address is created as described in [ADDRCONF],
+				 * also create a new temporary address. Also create a temporary
+				 * address if it's enabled but no temporary address currently exists.
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 				 */
 				read_unlock_bh(&in6_dev->lock);
 				ipv6_create_tempaddr(ifp, NULL);
@@ -2406,7 +2474,10 @@ static void addrconf_dev_config(struct net_device *dev)
 	    (dev->type != ARPHRD_FDDI) &&
 	    (dev->type != ARPHRD_IEEE802_TR) &&
 	    (dev->type != ARPHRD_ARCNET) &&
+<<<<<<< HEAD
 	    (dev->type != ARPHRD_RAWIP) &&
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	    (dev->type != ARPHRD_INFINIBAND)) {
 		/* Alas, we support only Ethernet autoconfiguration. */
 		return;
@@ -4589,6 +4660,7 @@ static void addrconf_sysctl_unregister(struct inet6_dev *idev)
 
 static int __net_init addrconf_init_net(struct net *net)
 {
+<<<<<<< HEAD
 	int err;
 	struct ipv6_devconf *all, *dflt;
 
@@ -4609,6 +4681,22 @@ static int __net_init addrconf_init_net(struct net *net)
 		dflt->autoconf = ipv6_defaults.autoconf;
 		dflt->disable_ipv6 = ipv6_defaults.disable_ipv6;
 	}
+=======
+	int err = -ENOMEM;
+	struct ipv6_devconf *all, *dflt;
+
+	all = kmemdup(&ipv6_devconf, sizeof(ipv6_devconf), GFP_KERNEL);
+	if (all == NULL)
+		goto err_alloc_all;
+
+	dflt = kmemdup(&ipv6_devconf_dflt, sizeof(ipv6_devconf_dflt), GFP_KERNEL);
+	if (dflt == NULL)
+		goto err_alloc_dflt;
+
+	/* these will be inherited by all namespaces */
+	dflt->autoconf = ipv6_defaults.autoconf;
+	dflt->disable_ipv6 = ipv6_defaults.disable_ipv6;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	net->ipv6.devconf_all = all;
 	net->ipv6.devconf_dflt = dflt;
@@ -4730,16 +4818,32 @@ int __init addrconf_init(void)
 	if (err < 0)
 		goto errout_af;
 
+<<<<<<< HEAD
 	err = __rtnl_register(PF_INET6, RTM_GETLINK, NULL, inet6_dump_ifinfo);
+=======
+	err = __rtnl_register(PF_INET6, RTM_GETLINK, NULL, inet6_dump_ifinfo,
+			      NULL);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	if (err < 0)
 		goto errout;
 
 	/* Only the first call to __rtnl_register can fail */
+<<<<<<< HEAD
 	__rtnl_register(PF_INET6, RTM_NEWADDR, inet6_rtm_newaddr, NULL);
 	__rtnl_register(PF_INET6, RTM_DELADDR, inet6_rtm_deladdr, NULL);
 	__rtnl_register(PF_INET6, RTM_GETADDR, inet6_rtm_getaddr, inet6_dump_ifaddr);
 	__rtnl_register(PF_INET6, RTM_GETMULTICAST, NULL, inet6_dump_ifmcaddr);
 	__rtnl_register(PF_INET6, RTM_GETANYCAST, NULL, inet6_dump_ifacaddr);
+=======
+	__rtnl_register(PF_INET6, RTM_NEWADDR, inet6_rtm_newaddr, NULL, NULL);
+	__rtnl_register(PF_INET6, RTM_DELADDR, inet6_rtm_deladdr, NULL, NULL);
+	__rtnl_register(PF_INET6, RTM_GETADDR, inet6_rtm_getaddr,
+			inet6_dump_ifaddr, NULL);
+	__rtnl_register(PF_INET6, RTM_GETMULTICAST, NULL,
+			inet6_dump_ifmcaddr, NULL);
+	__rtnl_register(PF_INET6, RTM_GETANYCAST, NULL,
+			inet6_dump_ifacaddr, NULL);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	ipv6_addr_label_rtnl_register();
 

@@ -1210,7 +1210,10 @@ static int __pscsi_map_task_SG(
 				bio = NULL;
 			}
 
+<<<<<<< HEAD
 			page++;
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			len -= bytes;
 			data_len -= bytes;
 			off = 0;

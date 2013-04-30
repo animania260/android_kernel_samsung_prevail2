@@ -29,6 +29,7 @@
 #include <asm/entry-macro-multi.S>
 
 /*
+<<<<<<< HEAD
  * Interrupt handling.
  */
 	.macro	irq_handler
@@ -40,6 +41,20 @@
 #else
 	arch_irq_handler_default
 #endif
+=======
+ * Interrupt handling.  Preserves r7, r8, r9
+ */
+	.macro	irq_handler
+#ifdef CONFIG_MULTI_IRQ_HANDLER
+	ldr	r5, =handle_arch_irq
+	mov	r0, sp
+	ldr	r5, [r5]
+	adr	lr, BSYM(9997f)
+	teq	r5, #0
+	movne	pc, r5
+#endif
+	arch_irq_handler_default
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 9997:
 	.endm
 
@@ -495,7 +510,11 @@ __und_usr:
 	blo	__und_usr_unknown
 3:	ldrht	r0, [r4]
 	add	r2, r2, #2			@ r2 is PC + 2, make it PC + 4
+<<<<<<< HEAD
 	orr    	r0, r0, r5, lsl #16
+=======
+	orr	r0, r0, r5, lsl #16
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #else
 	b	__und_usr_unknown
 #endif
@@ -733,6 +752,7 @@ ENTRY(__switch_to)
 	ldr	r7, [r7, #TSK_STACK_CANARY]
 #endif
 #ifdef CONFIG_CPU_USE_DOMAINS
+<<<<<<< HEAD
 #ifdef CONFIG_EMULATE_DOMAIN_MANAGER_V7
 	stmdb	r13!, {r0-r3, lr}
 	mov	r0, r6
@@ -742,6 +762,10 @@ ENTRY(__switch_to)
 	mcr	p15, 0, r6, c3, c0, 0		@ Set domain register
 #endif
 #endif
+=======
+	mcr	p15, 0, r6, c3, c0, 0		@ Set domain register
+#endif
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	mov	r5, r0
 	add	r4, r2, #TI_CPU_SAVE
 	ldr	r0, =thread_notify_head

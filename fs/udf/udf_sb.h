@@ -79,7 +79,11 @@ struct udf_virtual_data {
 struct udf_bitmap {
 	__u32			s_extLength;
 	__u32			s_extPosition;
+<<<<<<< HEAD
 	__u16			s_nr_groups;
+=======
+	int			s_nr_groups;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	struct buffer_head 	**s_block_bitmap;
 };
 

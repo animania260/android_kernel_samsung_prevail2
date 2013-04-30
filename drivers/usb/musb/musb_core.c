@@ -2078,8 +2078,11 @@ musb_init_controller(struct device *dev, int nIrq, void __iomem *ctrl)
 	if (status < 0)
 		goto fail3;
 
+<<<<<<< HEAD
 	pm_runtime_put(musb->controller);
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	status = musb_init_debugfs(musb);
 	if (status < 0)
 		goto fail4;

@@ -67,7 +67,11 @@ struct eth_dev {
 
 	spinlock_t		req_lock;	/* guard {rx,tx}_reqs */
 	struct list_head	tx_reqs, rx_reqs;
+<<<<<<< HEAD
 	unsigned		tx_qlen;
+=======
+	atomic_t		tx_qlen;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	struct sk_buff_head	rx_frames;
 
@@ -484,6 +488,10 @@ static void tx_complete(struct usb_ep *ep, struct usb_request *req)
 	spin_unlock(&dev->req_lock);
 	dev_kfree_skb_any(skb);
 
+<<<<<<< HEAD
+=======
+	atomic_dec(&dev->tx_qlen);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	if (netif_carrier_ok(dev->net))
 		netif_wake_queue(dev->net);
 }
@@ -598,6 +606,7 @@ static netdev_tx_t eth_start_xmit(struct sk_buff *skb,
 	req->length = length;
 
 	/* throttle highspeed IRQ rate back slightly */
+<<<<<<< HEAD
 	if (gadget_is_dualspeed(dev->gadget) &&
 			 (dev->gadget->speed == USB_SPEED_HIGH)) {
 		dev->tx_qlen++;
@@ -610,6 +619,12 @@ static netdev_tx_t eth_start_xmit(struct sk_buff *skb,
 	} else {
 		req->no_interrupt = 0;
 	}
+=======
+	if (gadget_is_dualspeed(dev->gadget))
+		req->no_interrupt = (dev->gadget->speed == USB_SPEED_HIGH)
+			? ((atomic_read(&dev->tx_qlen) % qmult) != 0)
+			: 0;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	retval = usb_ep_queue(in, req, GFP_ATOMIC);
 	switch (retval) {
@@ -618,6 +633,10 @@ static netdev_tx_t eth_start_xmit(struct sk_buff *skb,
 		break;
 	case 0:
 		net->trans_start = jiffies;
+<<<<<<< HEAD
+=======
+		atomic_inc(&dev->tx_qlen);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	}
 
 	if (retval) {
@@ -643,7 +662,11 @@ static void eth_start(struct eth_dev *dev, gfp_t gfp_flags)
 	rx_fill(dev, gfp_flags);
 
 	/* and open the tx floodgates */
+<<<<<<< HEAD
 	dev->tx_qlen = 0;
+=======
+	atomic_set(&dev->tx_qlen, 0);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	netif_wake_queue(dev->net);
 }
 
@@ -771,6 +794,7 @@ static struct device_type gadget_type = {
  */
 int gether_setup(struct usb_gadget *g, u8 ethaddr[ETH_ALEN])
 {
+<<<<<<< HEAD
 	return gether_setup_name(g, ethaddr, "usb");
 }
 
@@ -791,6 +815,8 @@ int gether_setup(struct usb_gadget *g, u8 ethaddr[ETH_ALEN])
 int gether_setup_name(struct usb_gadget *g, u8 ethaddr[ETH_ALEN],
 		const char *netname)
 {
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	struct eth_dev		*dev;
 	struct net_device	*net;
 	int			status;
@@ -813,7 +839,11 @@ int gether_setup_name(struct usb_gadget *g, u8 ethaddr[ETH_ALEN],
 
 	/* network device setup */
 	dev->net = net;
+<<<<<<< HEAD
 	snprintf(net->name, sizeof(net->name), "%s%%d", netname);
+=======
+	strcpy(net->name, "usb%d");
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	if (get_ether_addr(dev_addr, net->dev_addr))
 		dev_warn(&g->dev,
@@ -829,12 +859,15 @@ int gether_setup_name(struct usb_gadget *g, u8 ethaddr[ETH_ALEN],
 
 	SET_ETHTOOL_OPS(net, &ops);
 
+<<<<<<< HEAD
 	/* two kinds of host-initiated state changes:
 	 *  - iff DATA transfer is active, carrier is "on"
 	 *  - tx queueing enabled if open *and* carrier is "on"
 	 */
 	netif_carrier_off(net);
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	dev->gadget = g;
 	SET_NETDEV_DEV(net, &g->dev);
 	SET_NETDEV_DEVTYPE(net, &gadget_type);
@@ -848,6 +881,15 @@ int gether_setup_name(struct usb_gadget *g, u8 ethaddr[ETH_ALEN],
 		INFO(dev, "HOST MAC %pM\n", dev->host_mac);
 
 		the_dev = dev;
+<<<<<<< HEAD
+=======
+
+		/* two kinds of host-initiated state changes:
+		 *  - iff DATA transfer is active, carrier is "on"
+		 *  - tx queueing enabled if open *and* carrier is "on"
+		 */
+		netif_carrier_off(net);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	}
 
 	return status;
@@ -969,6 +1011,10 @@ void gether_disconnect(struct gether *link)
 	struct eth_dev		*dev = link->ioport;
 	struct usb_request	*req;
 
+<<<<<<< HEAD
+=======
+	WARN_ON(!dev);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	if (!dev)
 		return;
 

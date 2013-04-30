@@ -19,14 +19,20 @@
 #include <linux/platform_device.h>
 #include <linux/spinlock.h>
 #include <linux/uaccess.h>
+<<<<<<< HEAD
 #include <linux/irq.h>
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 #include <asm/cputype.h>
 #include <asm/irq.h>
 #include <asm/irq_regs.h>
 #include <asm/pmu.h>
 #include <asm/stacktrace.h>
+<<<<<<< HEAD
 #include <linux/cpu_pm.h>
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 static struct platform_device *pmu_device;
 
@@ -79,6 +85,7 @@ struct arm_pmu {
 					 struct hw_perf_event *hwc);
 	u32		(*read_counter)(int idx);
 	void		(*write_counter)(int idx, u32 val);
+<<<<<<< HEAD
 	int             (*set_event_filter) (struct hw_perf_event *evt,
 			struct perf_event_attr *attr);
 	void		(*start)(void);
@@ -90,6 +97,15 @@ struct arm_pmu {
 	const unsigned	(*event_map)[PERF_COUNT_HW_MAX];
 	int	(*request_pmu_irq)(int irq, irq_handler_t *irq_h);
 	void	(*free_pmu_irq)(int irq);
+=======
+	void		(*start)(void);
+	void		(*stop)(void);
+	void		(*reset)(void *);
+	const unsigned	(*cache_map)[PERF_COUNT_HW_CACHE_MAX]
+				    [PERF_COUNT_HW_CACHE_OP_MAX]
+				    [PERF_COUNT_HW_CACHE_RESULT_MAX];
+	const unsigned	(*event_map)[PERF_COUNT_HW_MAX];
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	u32		raw_event_mask;
 	int		num_events;
 	u64		max_period;
@@ -245,6 +261,10 @@ armpmu_read(struct perf_event *event)
 	/* Don't read disabled counters! */
 	if (hwc->idx < 0)
 		return;
+<<<<<<< HEAD
+=======
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	armpmu_event_update(event, hwc, hwc->idx, 0);
 }
 
@@ -394,6 +414,7 @@ static irqreturn_t armpmu_platform_irq(int irq, void *dev)
 }
 
 static int
+<<<<<<< HEAD
 armpmu_generic_request_irq(int irq, irq_handler_t *handle_irq)
 {
 	return request_irq(irq, *handle_irq,
@@ -409,6 +430,8 @@ armpmu_generic_free_irq(int irq)
 }
 
 static int
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 armpmu_reserve_hardware(void)
 {
 	struct arm_pmu_platdata *plat;
@@ -439,8 +462,14 @@ armpmu_reserve_hardware(void)
 		if (irq < 0)
 			continue;
 
+<<<<<<< HEAD
 		err = armpmu->request_pmu_irq(irq, &handle_irq);
 
+=======
+		err = request_irq(irq, handle_irq,
+				  IRQF_DISABLED | IRQF_NOBALANCING,
+				  "armpmu", NULL);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		if (err) {
 			pr_warning("unable to request IRQ%d for ARM perf "
 				"counters\n", irq);
@@ -451,8 +480,13 @@ armpmu_reserve_hardware(void)
 	if (err) {
 		for (i = i - 1; i >= 0; --i) {
 			irq = platform_get_irq(pmu_device, i);
+<<<<<<< HEAD
 
 			armpmu->free_pmu_irq(irq);
+=======
+			if (irq >= 0)
+				free_irq(irq, NULL);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		}
 		release_pmu(pmu_device);
 		pmu_device = NULL;
@@ -468,7 +502,12 @@ armpmu_release_hardware(void)
 
 	for (i = pmu_device->num_resources - 1; i >= 0; --i) {
 		irq = platform_get_irq(pmu_device, i);
+<<<<<<< HEAD
 		armpmu->free_pmu_irq(irq);
+=======
+		if (irq >= 0)
+			free_irq(irq, NULL);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	}
 	armpmu->stop();
 
@@ -476,6 +515,7 @@ armpmu_release_hardware(void)
 	pmu_device = NULL;
 }
 
+<<<<<<< HEAD
 static int
 event_requires_mode_exclusion(struct perf_event_attr *attr)
 {
@@ -483,6 +523,8 @@ event_requires_mode_exclusion(struct perf_event_attr *attr)
 		attr->exclude_kernel || attr->exclude_hv;
 }
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 static atomic_t active_events = ATOMIC_INIT(0);
 static DEFINE_MUTEX(pmu_reserve_mutex);
 
@@ -519,6 +561,20 @@ __hw_perf_event_init(struct perf_event *event)
 		return mapping;
 	}
 
+<<<<<<< HEAD
+=======
+	/*
+	 * Check whether we need to exclude the counter from certain modes.
+	 * The ARM performance counters are on all of the time so if someone
+	 * has asked us for some excludes then we have to fail.
+	 */
+	if (event->attr.exclude_kernel || event->attr.exclude_user ||
+	    event->attr.exclude_hv || event->attr.exclude_idle) {
+		pr_debug("ARM performance counters do not support "
+			 "mode exclusion\n");
+		return -EPERM;
+	}
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	/*
 	 * We don't assign an index until we actually place the event onto
@@ -534,6 +590,7 @@ __hw_perf_event_init(struct perf_event *event)
 	 * the event mapping and the counter to use. The counter to use is
 	 * also the indx and the config_base is the event type.
 	 */
+<<<<<<< HEAD
 	hwc->config_base = 0;
 	hwc->config = 0;
 	hwc->event_base = 0;
@@ -551,6 +608,15 @@ __hw_perf_event_init(struct perf_event *event)
 	if (!hwc->sample_period) {
 		hwc->sample_period  = armpmu->max_period;
 		hwc->last_period = hwc->sample_period;
+=======
+	hwc->config_base	    = (unsigned long)mapping;
+	hwc->config		    = 0;
+	hwc->event_base		    = 0;
+
+	if (!hwc->sample_period) {
+		hwc->sample_period  = armpmu->max_period;
+		hwc->last_period    = hwc->sample_period;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		local64_set(&hwc->period_left, hwc->sample_period);
 	}
 
@@ -633,6 +699,7 @@ static void armpmu_disable(struct pmu *pmu)
 		armpmu->stop();
 }
 
+<<<<<<< HEAD
 static void armpmu_update_counters(void)
 {
 	int idx;
@@ -651,6 +718,8 @@ static void armpmu_update_counters(void)
 	}
 }
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 static struct pmu pmu = {
 	.pmu_enable	= armpmu_enable,
 	.pmu_disable	= armpmu_disable,
@@ -666,6 +735,7 @@ static struct pmu pmu = {
 #include "perf_event_xscale.c"
 #include "perf_event_v6.c"
 #include "perf_event_v7.c"
+<<<<<<< HEAD
 #include "perf_event_msm.c"
 #include "perf_event_msm_l2.c"
 #include "perf_event_msm_krait.c"
@@ -695,6 +765,8 @@ static int perf_cpu_pm_notifier(struct notifier_block *self, unsigned long cmd,
 static struct notifier_block perf_cpu_pm_notifier_block = {
 	.notifier_call = perf_cpu_pm_notifier,
 };
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 /*
  * Ensure the PMU has sane values out of reset.
@@ -733,12 +805,15 @@ init_hw_perf_events(void)
 		case 0xC090:	/* Cortex-A9 */
 			armpmu = armv7_a9_pmu_init();
 			break;
+<<<<<<< HEAD
 		case 0xC050:	/* Cortex-A5 */
 			armpmu = armv7_a5_pmu_init();
 			break;
 		case 0xC0F0:	/* Cortex-A15 */
 			armpmu = armv7_a15_pmu_init();
 			break;
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		}
 	/* Intel CPUs [xscale]. */
 	} else if (0x69 == implementor) {
@@ -751,6 +826,7 @@ init_hw_perf_events(void)
 			armpmu = xscale2pmu_init();
 			break;
 		}
+<<<<<<< HEAD
 	/* Qualcomm CPUs */
 	} else if (0x51 == implementor) {
 		switch (part_number) {
@@ -767,6 +843,8 @@ init_hw_perf_events(void)
 			krait_l2_pmu_init();
 			break;
 		}
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	}
 
 	if (armpmu) {
@@ -778,8 +856,11 @@ init_hw_perf_events(void)
 
 	perf_pmu_register(&pmu, "cpu", PERF_TYPE_RAW);
 
+<<<<<<< HEAD
 	cpu_pm_register_notifier(&perf_cpu_pm_notifier_block);
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	return 0;
 }
 early_initcall(init_hw_perf_events);

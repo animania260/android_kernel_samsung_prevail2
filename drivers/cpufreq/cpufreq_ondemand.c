@@ -22,9 +22,12 @@
 #include <linux/tick.h>
 #include <linux/ktime.h>
 #include <linux/sched.h>
+<<<<<<< HEAD
 #include <linux/input.h>
 #include <linux/workqueue.h>
 #include <linux/slab.h>
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 /*
  * dbs is used in this file as a shortform for demandbased switching
@@ -40,7 +43,10 @@
 #define MICRO_FREQUENCY_MIN_SAMPLE_RATE		(10000)
 #define MIN_FREQUENCY_UP_THRESHOLD		(11)
 #define MAX_FREQUENCY_UP_THRESHOLD		(100)
+<<<<<<< HEAD
 #define MIN_FREQUENCY_DOWN_DIFFERENTIAL		(1)
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 /*
  * The polling frequency of this governor depends on the capability of
@@ -60,9 +66,12 @@ static unsigned int min_sampling_rate;
 #define MIN_LATENCY_MULTIPLIER			(100)
 #define TRANSITION_LATENCY_LIMIT		(10 * 1000 * 1000)
 
+<<<<<<< HEAD
 #define POWERSAVE_BIAS_MAXLEVEL			(1000)
 #define POWERSAVE_BIAS_MINLEVEL			(-1000)
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 static void do_dbs_timer(struct work_struct *work);
 static int cpufreq_governor_dbs(struct cpufreq_policy *policy,
 				unsigned int event);
@@ -103,9 +112,12 @@ struct cpu_dbs_info_s {
 };
 static DEFINE_PER_CPU(struct cpu_dbs_info_s, od_cpu_dbs_info);
 
+<<<<<<< HEAD
 static inline void dbs_timer_init(struct cpu_dbs_info_s *dbs_info);
 static inline void dbs_timer_exit(struct cpu_dbs_info_s *dbs_info);
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 static unsigned int dbs_enable;	/* number of CPUs using this policy */
 
 /*
@@ -113,17 +125,24 @@ static unsigned int dbs_enable;	/* number of CPUs using this policy */
  */
 static DEFINE_MUTEX(dbs_mutex);
 
+<<<<<<< HEAD
 static struct workqueue_struct *input_wq;
 
 static DEFINE_PER_CPU(struct work_struct, dbs_refresh_work);
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 static struct dbs_tuners {
 	unsigned int sampling_rate;
 	unsigned int up_threshold;
 	unsigned int down_differential;
 	unsigned int ignore_nice;
 	unsigned int sampling_down_factor;
+<<<<<<< HEAD
 	int          powersave_bias;
+=======
+	unsigned int powersave_bias;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	unsigned int io_is_busy;
 } dbs_tuners_ins = {
 	.up_threshold = DEF_FREQUENCY_UP_THRESHOLD,
@@ -185,11 +204,18 @@ static unsigned int powersave_bias_target(struct cpufreq_policy *policy,
 					  unsigned int freq_next,
 					  unsigned int relation)
 {
+<<<<<<< HEAD
 	unsigned int freq_req, freq_avg;
 	unsigned int freq_hi, freq_lo;
 	unsigned int index = 0;
 	unsigned int jiffies_total, jiffies_hi, jiffies_lo;
 	int freq_reduc;
+=======
+	unsigned int freq_req, freq_reduc, freq_avg;
+	unsigned int freq_hi, freq_lo;
+	unsigned int index = 0;
+	unsigned int jiffies_total, jiffies_hi, jiffies_lo;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	struct cpu_dbs_info_s *dbs_info = &per_cpu(od_cpu_dbs_info,
 						   policy->cpu);
 
@@ -232,6 +258,7 @@ static unsigned int powersave_bias_target(struct cpufreq_policy *policy,
 	return freq_hi;
 }
 
+<<<<<<< HEAD
 static int ondemand_powersave_bias_setspeed(struct cpufreq_policy *policy,
 					    struct cpufreq_policy *altpolicy,
 					    int level)
@@ -252,6 +279,8 @@ static int ondemand_powersave_bias_setspeed(struct cpufreq_policy *policy,
 	return 0;
 }
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 static void ondemand_powersave_bias_init_cpu(int cpu)
 {
 	struct cpu_dbs_info_s *dbs_info = &per_cpu(od_cpu_dbs_info, cpu);
@@ -287,6 +316,7 @@ static ssize_t show_##file_name						\
 show_one(sampling_rate, sampling_rate);
 show_one(io_is_busy, io_is_busy);
 show_one(up_threshold, up_threshold);
+<<<<<<< HEAD
 show_one(down_differential, down_differential);
 show_one(sampling_down_factor, sampling_down_factor);
 show_one(ignore_nice_load, ignore_nice);
@@ -296,6 +326,11 @@ static ssize_t show_powersave_bias
 {
 	return snprintf(buf, PAGE_SIZE, "%d\n", dbs_tuners_ins.powersave_bias);
 }
+=======
+show_one(sampling_down_factor, sampling_down_factor);
+show_one(ignore_nice_load, ignore_nice);
+show_one(powersave_bias, powersave_bias);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 static ssize_t store_sampling_rate(struct kobject *a, struct attribute *b,
 				   const char *buf, size_t count)
@@ -337,6 +372,7 @@ static ssize_t store_up_threshold(struct kobject *a, struct attribute *b,
 	return count;
 }
 
+<<<<<<< HEAD
 static ssize_t store_down_differential(struct kobject *a, struct attribute *b,
 		const char *buf, size_t count)
 {
@@ -354,6 +390,8 @@ static ssize_t store_down_differential(struct kobject *a, struct attribute *b,
 	return count;
 }
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 static ssize_t store_sampling_down_factor(struct kobject *a,
 			struct attribute *b, const char *buf, size_t count)
 {
@@ -410,16 +448,23 @@ static ssize_t store_ignore_nice_load(struct kobject *a, struct attribute *b,
 static ssize_t store_powersave_bias(struct kobject *a, struct attribute *b,
 				    const char *buf, size_t count)
 {
+<<<<<<< HEAD
 	int input  = 0;
 	int bypass = 0;
 	int ret, cpu, reenable_timer;
 	struct cpu_dbs_info_s *dbs_info;
 
 	ret = sscanf(buf, "%d", &input);
+=======
+	unsigned int input;
+	int ret;
+	ret = sscanf(buf, "%u", &input);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	if (ret != 1)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	if (input >= POWERSAVE_BIAS_MAXLEVEL) {
 		input  = POWERSAVE_BIAS_MAXLEVEL;
 		bypass = 1;
@@ -479,13 +524,23 @@ static ssize_t store_powersave_bias(struct kobject *a, struct attribute *b,
 		}
 	}
 
+=======
+	if (input > 1000)
+		input = 1000;
+
+	dbs_tuners_ins.powersave_bias = input;
+	ondemand_powersave_bias_init();
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	return count;
 }
 
 define_one_global_rw(sampling_rate);
 define_one_global_rw(io_is_busy);
 define_one_global_rw(up_threshold);
+<<<<<<< HEAD
 define_one_global_rw(down_differential);
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 define_one_global_rw(sampling_down_factor);
 define_one_global_rw(ignore_nice_load);
 define_one_global_rw(powersave_bias);
@@ -494,7 +549,10 @@ static struct attribute *dbs_attributes[] = {
 	&sampling_rate_min.attr,
 	&sampling_rate.attr,
 	&up_threshold.attr,
+<<<<<<< HEAD
 	&down_differential.attr,
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	&sampling_down_factor.attr,
 	&ignore_nice_load.attr,
 	&powersave_bias.attr,
@@ -736,6 +794,7 @@ static int should_io_be_busy(void)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void dbs_refresh_callback(struct work_struct *unused)
 {
 	struct cpufreq_policy *policy;
@@ -830,6 +889,8 @@ static struct input_handler dbs_input_handler = {
 	.id_table	= dbs_ids,
 };
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 static int cpufreq_governor_dbs(struct cpufreq_policy *policy,
 				   unsigned int event)
 {
@@ -889,6 +950,7 @@ static int cpufreq_governor_dbs(struct cpufreq_policy *policy,
 				    latency * LATENCY_MULTIPLIER);
 			dbs_tuners_ins.io_is_busy = should_io_be_busy();
 		}
+<<<<<<< HEAD
 #ifndef CONFIG_SEC_DVFS
 		if (!cpu)
 			rc = input_register_handler(&dbs_input_handler);
@@ -902,6 +964,12 @@ static int cpufreq_governor_dbs(struct cpufreq_policy *policy,
 					NULL,
 					dbs_tuners_ins.powersave_bias))
 			dbs_timer_init(this_dbs_info);
+=======
+		mutex_unlock(&dbs_mutex);
+
+		mutex_init(&this_dbs_info->timer_mutex);
+		dbs_timer_init(this_dbs_info);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		break;
 
 	case CPUFREQ_GOV_STOP:
@@ -910,6 +978,7 @@ static int cpufreq_governor_dbs(struct cpufreq_policy *policy,
 		mutex_lock(&dbs_mutex);
 		mutex_destroy(&this_dbs_info->timer_mutex);
 		dbs_enable--;
+<<<<<<< HEAD
 		/* If device is being removed, policy is no longer
 		 * valid. */
 		this_dbs_info->cur_policy = NULL;
@@ -917,6 +986,8 @@ static int cpufreq_governor_dbs(struct cpufreq_policy *policy,
 		if (!cpu)
 			input_unregister_handler(&dbs_input_handler);
 #endif
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		mutex_unlock(&dbs_mutex);
 		if (!dbs_enable)
 			sysfs_remove_group(cpufreq_global_kobject,
@@ -932,11 +1003,14 @@ static int cpufreq_governor_dbs(struct cpufreq_policy *policy,
 		else if (policy->min > this_dbs_info->cur_policy->cur)
 			__cpufreq_driver_target(this_dbs_info->cur_policy,
 				policy->min, CPUFREQ_RELATION_L);
+<<<<<<< HEAD
 		else if (dbs_tuners_ins.powersave_bias != 0)
 			ondemand_powersave_bias_setspeed(
 				this_dbs_info->cur_policy,
 				policy,
 				dbs_tuners_ins.powersave_bias);
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		mutex_unlock(&this_dbs_info->timer_mutex);
 		break;
 	}
@@ -947,7 +1021,10 @@ static int __init cpufreq_gov_dbs_init(void)
 {
 	cputime64_t wall;
 	u64 idle_time;
+<<<<<<< HEAD
 	unsigned int i;
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	int cpu = get_cpu();
 
 	idle_time = get_cpu_idle_time_us(cpu, &wall);
@@ -969,6 +1046,7 @@ static int __init cpufreq_gov_dbs_init(void)
 			MIN_SAMPLING_RATE_RATIO * jiffies_to_usecs(10);
 	}
 
+<<<<<<< HEAD
 	input_wq = create_workqueue("iewq");
 	if (!input_wq) {
 		printk(KERN_ERR "Failed to create iewq workqueue\n");
@@ -978,13 +1056,18 @@ static int __init cpufreq_gov_dbs_init(void)
 		INIT_WORK(&per_cpu(dbs_refresh_work, i), dbs_refresh_callback);
 	}
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	return cpufreq_register_governor(&cpufreq_gov_ondemand);
 }
 
 static void __exit cpufreq_gov_dbs_exit(void)
 {
 	cpufreq_unregister_governor(&cpufreq_gov_ondemand);
+<<<<<<< HEAD
 	destroy_workqueue(input_wq);
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 

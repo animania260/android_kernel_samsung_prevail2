@@ -562,6 +562,12 @@ int rt2x00queue_write_tx_frame(struct data_queue *queue, struct sk_buff *skb,
 	u8 rate_idx, rate_flags;
 	int ret = 0;
 
+<<<<<<< HEAD
+=======
+	/*
+	 * That function must be called with bh disabled.
+	 */
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	spin_lock(&queue->tx_lock);
 
 	entry = rt2x00queue_get_entry(queue, Q_INDEX);

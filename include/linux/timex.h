@@ -266,7 +266,11 @@ static inline int ntp_synced(void)
 /* Returns how long ticks are at present, in ns / 2^NTP_SCALE_SHIFT. */
 extern u64 tick_length;
 
+<<<<<<< HEAD
 extern void second_overflow(void);
+=======
+extern int second_overflow(unsigned long secs);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 extern void update_ntp_one_tick(void);
 extern int do_adjtimex(struct timex *);
 extern void hardpps(const struct timespec *, const struct timespec *);

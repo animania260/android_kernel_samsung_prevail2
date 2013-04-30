@@ -1269,10 +1269,15 @@ static int pcmcia_bus_add(struct pcmcia_socket *skt)
 
 static int pcmcia_bus_early_resume(struct pcmcia_socket *skt)
 {
+<<<<<<< HEAD
 	if (!verify_cis_cache(skt)) {
 		pcmcia_put_socket(skt);
 		return 0;
 	}
+=======
+	if (!verify_cis_cache(skt))
+		return 0;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	dev_dbg(&skt->dev, "cis mismatch - different card\n");
 

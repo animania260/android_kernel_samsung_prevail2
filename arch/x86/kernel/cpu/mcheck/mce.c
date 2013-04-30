@@ -122,9 +122,13 @@ void mce_setup(struct mce *m)
 	m->time = get_seconds();
 	m->cpuvendor = boot_cpu_data.x86_vendor;
 	m->cpuid = cpuid_eax(1);
+<<<<<<< HEAD
 #ifdef CONFIG_SMP
 	m->socketid = cpu_data(m->extcpu).phys_proc_id;
 #endif
+=======
+	m->socketid = cpu_data(m->extcpu).phys_proc_id;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	m->apicid = cpu_data(m->extcpu).initial_apicid;
 	rdmsrl(MSR_IA32_MCG_CAP, m->mcgcap);
 }
@@ -453,6 +457,16 @@ static inline void mce_get_rip(struct mce *m, struct pt_regs *regs)
 	if (regs && (m->mcgstatus & (MCG_STATUS_RIPV|MCG_STATUS_EIPV))) {
 		m->ip = regs->ip;
 		m->cs = regs->cs;
+<<<<<<< HEAD
+=======
+		/*
+		 * When in VM86 mode make the cs look like ring 3
+		 * always. This is a lie, but it's better than passing
+		 * the additional vm86 bit around everywhere.
+		 */
+		if (v8086_mode(regs))
+			m->cs |= 3;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	} else {
 		m->ip = 0;
 		m->cs = 0;
@@ -990,6 +1004,10 @@ void do_machine_check(struct pt_regs *regs, long error_code)
 		 */
 		add_taint(TAINT_MACHINE_CHECK);
 
+<<<<<<< HEAD
+=======
+		mce_get_rip(&m, regs);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		severity = mce_severity(&m, tolerant, NULL);
 
 		/*
@@ -1028,7 +1046,10 @@ void do_machine_check(struct pt_regs *regs, long error_code)
 		if (severity == MCE_AO_SEVERITY && mce_usable_address(&m))
 			mce_ring_add(m.addr >> PAGE_SHIFT);
 
+<<<<<<< HEAD
 		mce_get_rip(&m, regs);
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		mce_log(&m);
 
 		if (severity > worst) {

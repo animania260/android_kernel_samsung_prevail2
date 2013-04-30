@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
    BlueZ - Bluetooth protocol stack for Linux
    Copyright (C) 2011 Nokia Corporation and/or its subsidiary(-ies).
@@ -22,6 +23,8 @@
 #ifdef CONFIG_BT_MGMT
 #include "smp_mgmt.h"
 #else
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #ifndef __SMP_H
 #define __SMP_H
 
@@ -40,6 +43,7 @@ struct smp_cmd_pairing {
 	__u8	resp_key_dist;
 } __packed;
 
+<<<<<<< HEAD
 #define SMP_IO_DISPLAY_ONLY	0x00
 #define SMP_IO_DISPLAY_YESNO	0x01
 #define SMP_IO_KEYBOARD_ONLY	0x02
@@ -57,6 +61,8 @@ struct smp_cmd_pairing {
 #define SMP_AUTH_BONDING	0x01
 #define SMP_AUTH_MITM		0x04
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #define SMP_CMD_PAIRING_CONFIRM	0x03
 struct smp_cmd_pairing_confirm {
 	__u8	confirm_val[16];
@@ -114,6 +120,7 @@ struct smp_cmd_security_req {
 #define SMP_UNSPECIFIED		0x08
 #define SMP_REPEATED_ATTEMPTS		0x09
 
+<<<<<<< HEAD
 #define SMP_MIN_ENC_KEY_SIZE		7
 #define SMP_MAX_ENC_KEY_SIZE		16
 
@@ -125,3 +132,6 @@ int smp_distribute_keys(struct l2cap_conn *conn, __u8 force);
 #endif /* __SMP_H */
 
 #endif /* BT_MGMT */
+=======
+#endif /* __SMP_H */
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y

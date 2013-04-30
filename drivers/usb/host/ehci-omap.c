@@ -321,7 +321,11 @@ static const struct hc_driver ehci_omap_hc_driver = {
 	.clear_tt_buffer_complete = ehci_clear_tt_buffer_complete,
 };
 
+<<<<<<< HEAD
 MODULE_ALIAS("platform:omap-ehci");
+=======
+MODULE_ALIAS("platform:ehci-omap");
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 MODULE_AUTHOR("Texas Instruments, Inc.");
 MODULE_AUTHOR("Felipe Balbi <felipe.balbi@nokia.com>");
 

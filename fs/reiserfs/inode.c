@@ -1568,8 +1568,15 @@ struct dentry *reiserfs_fh_to_dentry(struct super_block *sb, struct fid *fid,
 			reiserfs_warning(sb, "reiserfs-13077",
 				"nfsd/reiserfs, fhtype=%d, len=%d - odd",
 				fh_type, fh_len);
+<<<<<<< HEAD
 		fh_type = 5;
 	}
+=======
+		fh_type = fh_len;
+	}
+	if (fh_len < 2)
+		return NULL;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	return reiserfs_get_dentry(sb, fid->raw[0], fid->raw[1],
 		(fh_type == 3 || fh_type >= 5) ? fid->raw[2] : 0);
@@ -1578,6 +1585,11 @@ struct dentry *reiserfs_fh_to_dentry(struct super_block *sb, struct fid *fid,
 struct dentry *reiserfs_fh_to_parent(struct super_block *sb, struct fid *fid,
 		int fh_len, int fh_type)
 {
+<<<<<<< HEAD
+=======
+	if (fh_type > fh_len)
+		fh_type = fh_len;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	if (fh_type < 4)
 		return NULL;
 
@@ -1779,8 +1791,14 @@ int reiserfs_new_inode(struct reiserfs_transaction_handle *th,
 
 	BUG_ON(!th->t_trans_id);
 
+<<<<<<< HEAD
 	dquot_initialize(inode);
 	err = dquot_alloc_inode(inode);
+=======
+	reiserfs_write_unlock(inode->i_sb);
+	err = dquot_alloc_inode(inode);
+	reiserfs_write_lock(inode->i_sb);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	if (err)
 		goto out_end_trans;
 	if (!dir->i_nlink) {
@@ -1976,8 +1994,15 @@ int reiserfs_new_inode(struct reiserfs_transaction_handle *th,
 
       out_end_trans:
 	journal_end(th, th->t_super, th->t_blocks_allocated);
+<<<<<<< HEAD
 	/* Drop can be outside and it needs more credits so it's better to have it outside */
 	dquot_drop(inode);
+=======
+	reiserfs_write_unlock(inode->i_sb);
+	/* Drop can be outside and it needs more credits so it's better to have it outside */
+	dquot_drop(inode);
+	reiserfs_write_lock(inode->i_sb);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	inode->i_flags |= S_NOQUOTA;
 	make_bad_inode(inode);
 
@@ -3101,10 +3126,16 @@ int reiserfs_setattr(struct dentry *dentry, struct iattr *attr)
 	/* must be turned off for recursive notify_change calls */
 	ia_valid = attr->ia_valid &= ~(ATTR_KILL_SUID|ATTR_KILL_SGID);
 
+<<<<<<< HEAD
 	depth = reiserfs_write_lock_once(inode->i_sb);
 	if (is_quota_modification(inode, attr))
 		dquot_initialize(inode);
 
+=======
+	if (is_quota_modification(inode, attr))
+		dquot_initialize(inode);
+	depth = reiserfs_write_lock_once(inode->i_sb);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	if (attr->ia_valid & ATTR_SIZE) {
 		/* version 2 items will be caught by the s_maxbytes check
 		 ** done for us in vmtruncate
@@ -3165,7 +3196,13 @@ int reiserfs_setattr(struct dentry *dentry, struct iattr *attr)
 		error = journal_begin(&th, inode->i_sb, jbegin_count);
 		if (error)
 			goto out;
+<<<<<<< HEAD
 		error = dquot_transfer(inode, attr);
+=======
+		reiserfs_write_unlock_once(inode->i_sb, depth);
+		error = dquot_transfer(inode, attr);
+		depth = reiserfs_write_lock_once(inode->i_sb);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		if (error) {
 			journal_end(&th, inode->i_sb, jbegin_count);
 			goto out;

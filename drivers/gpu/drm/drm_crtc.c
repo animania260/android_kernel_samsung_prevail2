@@ -1866,6 +1866,13 @@ int drm_mode_dirtyfb_ioctl(struct drm_device *dev,
 	}
 
 	if (num_clips && clips_ptr) {
+<<<<<<< HEAD
+=======
+		if (num_clips < 0 || num_clips > DRM_MODE_FB_DIRTY_MAX_CLIPS) {
+			ret = -EINVAL;
+			goto out_err1;
+		}
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		clips = kzalloc(num_clips * sizeof(*clips), GFP_KERNEL);
 		if (!clips) {
 			ret = -ENOMEM;

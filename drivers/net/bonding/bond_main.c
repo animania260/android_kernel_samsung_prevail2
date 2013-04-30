@@ -77,6 +77,10 @@
 #include <net/route.h>
 #include <net/net_namespace.h>
 #include <net/netns/generic.h>
+<<<<<<< HEAD
+=======
+#include <net/pkt_sched.h>
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #include "bonding.h"
 #include "bond_3ad.h"
 #include "bond_alb.h"
@@ -388,8 +392,11 @@ struct vlan_entry *bond_next_vlan(struct bonding *bond, struct vlan_entry *curr)
 	return next;
 }
 
+<<<<<<< HEAD
 #define bond_queue_mapping(skb) (*(u16 *)((skb)->cb))
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 /**
  * bond_dev_queue_xmit - Prepare skb for xmit.
  *
@@ -403,7 +410,13 @@ int bond_dev_queue_xmit(struct bonding *bond, struct sk_buff *skb,
 	skb->dev = slave_dev;
 	skb->priority = 1;
 
+<<<<<<< HEAD
 	skb->queue_mapping = bond_queue_mapping(skb);
+=======
+	BUILD_BUG_ON(sizeof(skb->queue_mapping) !=
+		     sizeof(qdisc_skb_cb(skb)->bond_queue_mapping));
+	skb->queue_mapping = qdisc_skb_cb(skb)->bond_queue_mapping;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	if (unlikely(netpoll_tx_running(slave_dev)))
 		bond_netpoll_send_skb(bond_get_slave_by_dev(bond, slave_dev), skb);
@@ -1438,6 +1451,11 @@ static void bond_compute_features(struct bonding *bond)
 	struct net_device *bond_dev = bond->dev;
 	u32 vlan_features = BOND_VLAN_FEATURES;
 	unsigned short max_hard_header_len = ETH_HLEN;
+<<<<<<< HEAD
+=======
+	unsigned int gso_max_size = GSO_MAX_SIZE;
+	u16 gso_max_segs = GSO_MAX_SEGS;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	int i;
 
 	read_lock(&bond->lock);
@@ -1451,11 +1469,22 @@ static void bond_compute_features(struct bonding *bond)
 
 		if (slave->dev->hard_header_len > max_hard_header_len)
 			max_hard_header_len = slave->dev->hard_header_len;
+<<<<<<< HEAD
+=======
+
+		gso_max_size = min(gso_max_size, slave->dev->gso_max_size);
+		gso_max_segs = min(gso_max_segs, slave->dev->gso_max_segs);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	}
 
 done:
 	bond_dev->vlan_features = vlan_features;
 	bond_dev->hard_header_len = max_hard_header_len;
+<<<<<<< HEAD
+=======
+	bond_dev->gso_max_segs = gso_max_segs;
+	netif_set_gso_max_size(bond_dev, gso_max_size);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	read_unlock(&bond->lock);
 
@@ -1500,6 +1529,11 @@ static rx_handler_result_t bond_handle_frame(struct sk_buff **pskb)
 	struct sk_buff *skb = *pskb;
 	struct slave *slave;
 	struct bonding *bond;
+<<<<<<< HEAD
+=======
+	void (*recv_probe)(struct sk_buff *, struct bonding *,
+				struct slave *);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	skb = skb_share_check(skb, GFP_ATOMIC);
 	if (unlikely(!skb))
@@ -1513,11 +1547,20 @@ static rx_handler_result_t bond_handle_frame(struct sk_buff **pskb)
 	if (bond->params.arp_interval)
 		slave->dev->last_rx = jiffies;
 
+<<<<<<< HEAD
 	if (bond->recv_probe) {
 		struct sk_buff *nskb = skb_clone(skb, GFP_ATOMIC);
 
 		if (likely(nskb)) {
 			bond->recv_probe(nskb, bond, slave);
+=======
+	recv_probe = ACCESS_ONCE(bond->recv_probe);
+	if (recv_probe) {
+		struct sk_buff *nskb = skb_clone(skb, GFP_ATOMIC);
+
+		if (likely(nskb)) {
+			recv_probe(nskb, bond, slave);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			dev_kfree_skb(nskb);
 		}
 	}
@@ -1902,7 +1945,11 @@ int bond_enslave(struct net_device *bond_dev, struct net_device *slave_dev)
 				 "but new slave device does not support netpoll.\n",
 				 bond_dev->name);
 			res = -EBUSY;
+<<<<<<< HEAD
 			goto err_close;
+=======
+			goto err_detach;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		}
 	}
 #endif
@@ -1911,7 +1958,11 @@ int bond_enslave(struct net_device *bond_dev, struct net_device *slave_dev)
 
 	res = bond_create_slave_symlinks(bond_dev, slave_dev);
 	if (res)
+<<<<<<< HEAD
 		goto err_close;
+=======
+		goto err_detach;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	res = netdev_rx_handler_register(slave_dev, bond_handle_frame,
 					 new_slave);
@@ -1932,6 +1983,14 @@ int bond_enslave(struct net_device *bond_dev, struct net_device *slave_dev)
 err_dest_symlinks:
 	bond_destroy_slave_symlinks(bond_dev, slave_dev);
 
+<<<<<<< HEAD
+=======
+err_detach:
+	write_lock_bh(&bond->lock);
+	bond_detach_slave(bond, new_slave);
+	write_unlock_bh(&bond->lock);
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 err_close:
 	dev_close(slave_dev);
 
@@ -2001,12 +2060,19 @@ int bond_release(struct net_device *bond_dev, struct net_device *slave_dev)
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
+=======
+	write_unlock_bh(&bond->lock);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	/* unregister rx_handler early so bond_handle_frame wouldn't be called
 	 * for this slave anymore.
 	 */
 	netdev_rx_handler_unregister(slave_dev);
+<<<<<<< HEAD
 	write_unlock_bh(&bond->lock);
 	synchronize_net();
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	write_lock_bh(&bond->lock);
 
 	if (!bond->params.fail_over_mac) {
@@ -3068,7 +3134,15 @@ static void bond_ab_arp_commit(struct bonding *bond, int delta_in_ticks)
 					   trans_start + delta_in_ticks)) ||
 			    bond->curr_active_slave != slave) {
 				slave->link = BOND_LINK_UP;
+<<<<<<< HEAD
 				bond->current_arp_slave = NULL;
+=======
+				if (bond->current_arp_slave) {
+					bond_set_slave_inactive_flags(
+						bond->current_arp_slave);
+					bond->current_arp_slave = NULL;
+				}
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 				pr_info("%s: link status definitely up for interface %s.\n",
 					bond->dev->name, slave->dev->name);
@@ -4228,7 +4302,11 @@ static u16 bond_select_queue(struct net_device *dev, struct sk_buff *skb)
 	/*
 	 * Save the original txq to restore before passing to the driver
 	 */
+<<<<<<< HEAD
 	bond_queue_mapping(skb) = skb->queue_mapping;
+=======
+	qdisc_skb_cb(skb)->bond_queue_mapping = skb->queue_mapping;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	if (unlikely(txq >= dev->real_num_tx_queues)) {
 		do {

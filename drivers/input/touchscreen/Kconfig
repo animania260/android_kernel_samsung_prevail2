@@ -56,6 +56,7 @@ config TOUCHSCREEN_AD7877
 	  module will be called ad7877.
 
 config TOUCHSCREEN_AD7879
+<<<<<<< HEAD
 	tristate
 	default n
 
@@ -72,6 +73,8 @@ config TOUCHSCREEN_ATMEL_MAXTOUCH
          module will be called maXTouch.
 
 config TOUCHSCREEN_AD7879
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	tristate "Analog Devices AD7879-1/AD7889-1 touchscreen interface"
 	help
 	  Say Y here if you want to support a touchscreen interface using
@@ -276,6 +279,7 @@ config TOUCHSCREEN_MAX11801
 	  To compile this driver as a module, choose M here: the
 	  module will be called max11801_ts.
 
+<<<<<<< HEAD
 config TOUCHSCREEN_MMS136
 	tristate "Melfas MMS136 Touchscreen"
 	depends on I2C
@@ -294,10 +298,19 @@ config TOUCHSCREEN_MMS128
 	help
 	  Say Y here if you have Melfas MMS128 series I2C touchscreen,
 	   connected to your system.
+=======
+config TOUCHSCREEN_MCS5000
+	tristate "MELFAS MCS-5000 touchscreen"
+	depends on I2C
+	help
+	  Say Y here if you have the MELFAS MCS-5000 touchscreen controller
+	  chip in your system.
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	  If unsure, say N.
 
 	  To compile this driver as a module, choose M here: the
+<<<<<<< HEAD
 	  module will be called mms_ts.
 
 config TOUCHSCREEN_FTK
@@ -311,6 +324,9 @@ config TOUCHSCREEN_FTK
 	  To compile this driver as a module, choose M here: the
 	  module will be called STM_ts.
 
+=======
+	  module will be called mcs5000_ts.
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 config TOUCHSCREEN_MTOUCH
 	tristate "MicroTouch serial touchscreens"
@@ -403,6 +419,7 @@ config TOUCHSCREEN_PENMOUNT
 	  To compile this driver as a module, choose M here: the
 	  module will be called penmount.
 
+<<<<<<< HEAD
 config TOUCHSCREEN_MSM
 	bool "Qualcomm MSM touchscreen controller"
 	depends on ARCH_MSM7X30 && MARIMBA_TSADC
@@ -412,6 +429,8 @@ config TOUCHSCREEN_MSM
 	  connected to the TSSC touchscreen controller on a
 	  Qualcomm MSM/QSD based SoC.
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 config TOUCHSCREEN_MIGOR
 	tristate "Renesas MIGO-R touchscreen"
 	depends on SH_MIGOR && I2C
@@ -432,6 +451,7 @@ config TOUCHSCREEN_TNETV107X
 	  To compile this driver as a module, choose M here: the
 	  module will be called tnetv107x-ts.
 
+<<<<<<< HEAD
 config TOUCHSCREEN_SYNAPTICS_I2C_RMI
 	tristate "Synaptics i2c touchscreen"
 	depends on I2C
@@ -450,6 +470,8 @@ config SYNA_MULTI_TOUCH
 	depends on TOUCHSCREEN_SYNAPTICS_RMI4_I2C
 	default y
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 config TOUCHSCREEN_TOUCHRIGHT
 	tristate "Touchright serial touchscreen"
 	select SERIO
@@ -740,6 +762,7 @@ config TOUCHSCREEN_TSC2007
 	  To compile this driver as a module, choose M here: the
 	  module will be called tsc2007.
 
+<<<<<<< HEAD
 config TOUCHSCREEN_MSM_LEGACY
 	default n
 	tristate "MSM Touchscreen"
@@ -761,6 +784,8 @@ config ANDROID_TOUCHSCREEN_MSM_HACKS
 	  to Android framework to receive adjusted x, y co-ordinates
 	  until proper calibration framework is in place.
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 config TOUCHSCREEN_W90X900
 	tristate "W90P910 touchscreen driver"
 	depends on HAVE_CLK
@@ -814,6 +839,7 @@ config TOUCHSCREEN_TPS6507X
 	  To compile this driver as a module, choose M here: the
 	  module will be called tps6507x_ts.
 
+<<<<<<< HEAD
 config TOUCHSCREEN_CY8C_TS
 	tristate "Cypress TMA300-TMG200 based touchscreens"
 	depends on I2C
@@ -856,4 +882,6 @@ config TOUCHSCREEN_MELFAS_FIRMWARE_UPDATE
 	default n
 	help
 	  Say Y here to enable the touchscreen firmware update.
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 endif

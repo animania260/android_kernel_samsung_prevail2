@@ -6,4 +6,7 @@ header-y += hdsp.h
 header-y += hdspm.h
 header-y += sb16_csp.h
 header-y += sfnt_info.h
+<<<<<<< HEAD
 header-y += tlv.h
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y

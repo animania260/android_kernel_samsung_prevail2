@@ -117,6 +117,11 @@ io_mapping_unmap(void __iomem *vaddr)
 
 #else
 
+<<<<<<< HEAD
+=======
+#include <linux/uaccess.h>
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 /* this struct isn't actually defined anywhere */
 struct io_mapping;
 
@@ -138,12 +143,20 @@ static inline void __iomem *
 io_mapping_map_atomic_wc(struct io_mapping *mapping,
 			 unsigned long offset)
 {
+<<<<<<< HEAD
+=======
+	pagefault_disable();
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	return ((char __force __iomem *) mapping) + offset;
 }
 
 static inline void
 io_mapping_unmap_atomic(void __iomem *vaddr)
 {
+<<<<<<< HEAD
+=======
+	pagefault_enable();
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 /* Non-atomic map/unmap */

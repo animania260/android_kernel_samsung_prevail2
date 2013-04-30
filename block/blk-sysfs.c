@@ -200,6 +200,11 @@ queue_store_##name(struct request_queue *q, const char *page, size_t count) \
 	unsigned long val;						\
 	ssize_t ret;							\
 	ret = queue_var_store(&val, page, count);			\
+<<<<<<< HEAD
+=======
+	if (ret < 0)							\
+		 return ret;						\
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	if (neg)							\
 		val = !val;						\
 									\

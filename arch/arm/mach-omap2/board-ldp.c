@@ -199,12 +199,26 @@ static void __init omap_ldp_init_early(void)
 	omap2_init_common_devices(NULL, NULL);
 }
 
+<<<<<<< HEAD
+=======
+static struct twl4030_usb_data ldp_usb_data = {
+	.usb_mode	= T2_USB_MODE_ULPI,
+};
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 static struct twl4030_gpio_platform_data ldp_gpio_data = {
 	.gpio_base	= OMAP_MAX_GPIO_LINES,
 	.irq_base	= TWL4030_GPIO_IRQ_BASE,
 	.irq_end	= TWL4030_GPIO_IRQ_END,
 };
 
+<<<<<<< HEAD
+=======
+static struct twl4030_madc_platform_data ldp_madc_data = {
+	.irq_line	= 1,
+};
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 static struct regulator_consumer_supply ldp_vmmc1_supply = {
 	.supply			= "vmmc",
 };
@@ -245,7 +259,16 @@ static struct regulator_init_data ldp_vaux1 = {
 };
 
 static struct twl4030_platform_data ldp_twldata = {
+<<<<<<< HEAD
 	/* platform_data for children goes here */
+=======
+	.irq_base	= TWL4030_IRQ_BASE,
+	.irq_end	= TWL4030_IRQ_END,
+
+	/* platform_data for children goes here */
+	.madc		= &ldp_madc_data,
+	.usb		= &ldp_usb_data,
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	.vmmc1		= &ldp_vmmc1,
 	.vaux1		= &ldp_vaux1,
 	.gpio		= &ldp_gpio_data,
@@ -254,8 +277,11 @@ static struct twl4030_platform_data ldp_twldata = {
 
 static int __init omap_i2c_init(void)
 {
+<<<<<<< HEAD
 	omap3_pmic_get_config(&ldp_twldata,
 			  TWL_COMMON_PDATA_USB | TWL_COMMON_PDATA_MADC, 0);
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	omap3_pmic_init("twl4030", &ldp_twldata);
 	omap_register_i2c_bus(2, 400, NULL, 0);
 	omap_register_i2c_bus(3, 400, NULL, 0);

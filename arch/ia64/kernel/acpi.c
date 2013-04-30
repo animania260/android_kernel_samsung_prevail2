@@ -429,22 +429,40 @@ static u32 __devinitdata pxm_flag[PXM_FLAG_LEN];
 static struct acpi_table_slit __initdata *slit_table;
 cpumask_t early_cpu_possible_map = CPU_MASK_NONE;
 
+<<<<<<< HEAD
 static int get_processor_proximity_domain(struct acpi_srat_cpu_affinity *pa)
+=======
+static int __init
+get_processor_proximity_domain(struct acpi_srat_cpu_affinity *pa)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 {
 	int pxm;
 
 	pxm = pa->proximity_domain_lo;
+<<<<<<< HEAD
 	if (ia64_platform_is("sn2"))
+=======
+	if (ia64_platform_is("sn2") || acpi_srat_revision >= 2)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		pxm += pa->proximity_domain_hi[0] << 8;
 	return pxm;
 }
 
+<<<<<<< HEAD
 static int get_memory_proximity_domain(struct acpi_srat_mem_affinity *ma)
+=======
+static int __init
+get_memory_proximity_domain(struct acpi_srat_mem_affinity *ma)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 {
 	int pxm;
 
 	pxm = ma->proximity_domain;
+<<<<<<< HEAD
 	if (!ia64_platform_is("sn2"))
+=======
+	if (!ia64_platform_is("sn2") && acpi_srat_revision <= 1)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		pxm &= 0xff;
 
 	return pxm;

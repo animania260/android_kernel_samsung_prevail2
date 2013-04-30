@@ -1308,7 +1308,11 @@ ENTRY(xen_failsafe_callback)
 	CFI_RESTORE r11
 	addq $0x30,%rsp
 	CFI_ADJUST_CFA_OFFSET -0x30
+<<<<<<< HEAD
 	pushq_cfi $0
+=======
+	pushq_cfi $-1 /* orig_ax = -1 => not a system call */
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	SAVE_ALL
 	jmp error_exit
 	CFI_ENDPROC

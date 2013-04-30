@@ -38,7 +38,11 @@ trap "rm -f $tmp" 0 1 2 3 15
 
 # Check if we can link to ncurses
 check() {
+<<<<<<< HEAD
         $cc -xc - -o $tmp 2>/dev/null <<'EOF'
+=======
+        $cc -x c - -o $tmp 2>/dev/null <<'EOF'
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #include CURSES_LOC
 main() {}
 EOF

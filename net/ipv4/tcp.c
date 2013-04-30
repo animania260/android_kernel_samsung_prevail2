@@ -266,15 +266,21 @@
 #include <linux/crypto.h>
 #include <linux/time.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <linux/uid_stat.h>
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 #include <net/icmp.h>
 #include <net/tcp.h>
 #include <net/xfrm.h>
 #include <net/ip.h>
+<<<<<<< HEAD
 #include <net/ip6_route.h>
 #include <net/ipv6.h>
 #include <net/transp_v6.h>
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #include <net/netdma.h>
 #include <net/sock.h>
 
@@ -485,6 +491,7 @@ int tcp_ioctl(struct sock *sk, int cmd, unsigned long arg)
 			 !tp->urg_data ||
 			 before(tp->urg_seq, tp->copied_seq) ||
 			 !before(tp->urg_seq, tp->rcv_nxt)) {
+<<<<<<< HEAD
 			struct sk_buff *skb;
 
 			answ = tp->rcv_nxt - tp->copied_seq;
@@ -493,6 +500,14 @@ int tcp_ioctl(struct sock *sk, int cmd, unsigned long arg)
 			skb = skb_peek_tail(&sk->sk_receive_queue);
 			if (answ && skb)
 				answ -= tcp_hdr(skb)->fin;
+=======
+
+			answ = tp->rcv_nxt - tp->copied_seq;
+
+			/* Subtract 1, if FIN was received */
+			if (answ && sock_flag(sk, SOCK_DONE))
+				answ--;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		} else
 			answ = tp->urg_seq - tp->copied_seq;
 		release_sock(sk);
@@ -743,7 +758,13 @@ static unsigned int tcp_xmit_size_goal(struct sock *sk, u32 mss_now,
 			   old_size_goal + mss_now > xmit_size_goal)) {
 			xmit_size_goal = old_size_goal;
 		} else {
+<<<<<<< HEAD
 			tp->xmit_size_goal_segs = xmit_size_goal / mss_now;
+=======
+			tp->xmit_size_goal_segs =
+				min_t(u16, xmit_size_goal / mss_now,
+				      sk->sk_gso_max_segs);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			xmit_size_goal = tp->xmit_size_goal_segs * mss_now;
 		}
 	}
@@ -854,8 +875,12 @@ new_segment:
 wait_for_sndbuf:
 		set_bit(SOCK_NOSPACE, &sk->sk_socket->flags);
 wait_for_memory:
+<<<<<<< HEAD
 		if (copied)
 			tcp_push(sk, flags & ~MSG_MORE, mss_now, TCP_NAGLE_PUSH);
+=======
+		tcp_push(sk, flags & ~MSG_MORE, mss_now, TCP_NAGLE_PUSH);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 		if ((err = sk_stream_wait_memory(sk, &timeo)) != 0)
 			goto do_error;
@@ -864,7 +889,11 @@ wait_for_memory:
 	}
 
 out:
+<<<<<<< HEAD
 	if (copied)
+=======
+	if (copied && !(flags & MSG_SENDPAGE_NOTLAST))
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		tcp_push(sk, flags, mss_now, tp->nonagle);
 	return copied;
 
@@ -1116,9 +1145,12 @@ out:
 	if (copied)
 		tcp_push(sk, flags, mss_now, tp->nonagle);
 	release_sock(sk);
+<<<<<<< HEAD
 
 	if (copied > 0)
 		uid_stat_tcp_snd(current_uid(), copied);
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	return copied;
 
 do_fault:
@@ -1395,11 +1427,16 @@ int tcp_read_sock(struct sock *sk, read_descriptor_t *desc,
 	tcp_rcv_space_adjust(sk);
 
 	/* Clean up data we have read: This will do ACK frames. */
+<<<<<<< HEAD
 	if (copied > 0) {
 		tcp_cleanup_rbuf(sk, copied);
 		uid_stat_tcp_rcv(current_uid(), copied);
 	}
 
+=======
+	if (copied > 0)
+		tcp_cleanup_rbuf(sk, copied);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	return copied;
 }
 EXPORT_SYMBOL(tcp_read_sock);
@@ -1601,8 +1638,19 @@ int tcp_recvmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *msg,
 		}
 
 #ifdef CONFIG_NET_DMA
+<<<<<<< HEAD
 		if (tp->ucopy.dma_chan)
 			dma_async_memcpy_issue_pending(tp->ucopy.dma_chan);
+=======
+		if (tp->ucopy.dma_chan) {
+			if (tp->rcv_wnd == 0 &&
+			    !skb_queue_empty(&sk->sk_async_wait_queue)) {
+				tcp_service_net_dma(sk, true);
+				tcp_cleanup_rbuf(sk, copied);
+			} else
+				dma_async_memcpy_issue_pending(tp->ucopy.dma_chan);
+		}
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #endif
 		if (copied >= target) {
 			/* Do not sleep, just process backlog. */
@@ -1781,9 +1829,12 @@ skip_copy:
 	tcp_cleanup_rbuf(sk, copied);
 
 	release_sock(sk);
+<<<<<<< HEAD
 
 	if (copied > 0)
 		uid_stat_tcp_rcv(current_uid(), copied);
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	return copied;
 
 out:
@@ -1792,8 +1843,11 @@ out:
 
 recv_urg:
 	err = tcp_recv_urg(sk, msg, len, flags);
+<<<<<<< HEAD
 	if (err > 0)
 		uid_stat_tcp_rcv(current_uid(), err);
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	goto out;
 }
 EXPORT_SYMBOL(tcp_recvmsg);
@@ -2410,7 +2464,14 @@ static int do_tcp_setsockopt(struct sock *sk, int level,
 		/* Cap the max timeout in ms TCP will retry/retrans
 		 * before giving up and aborting (ETIMEDOUT) a connection.
 		 */
+<<<<<<< HEAD
 		icsk->icsk_user_timeout = msecs_to_jiffies(val);
+=======
+		if (val < 0)
+			err = -EINVAL;
+		else
+			icsk->icsk_user_timeout = msecs_to_jiffies(val);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		break;
 	default:
 		err = -ENOPROTOOPT;
@@ -2506,6 +2567,7 @@ void tcp_get_info(struct sock *sk, struct tcp_info *info)
 	info->tcpi_rcv_space = tp->rcvq_space.space;
 
 	info->tcpi_total_retrans = tp->total_retrans;
+<<<<<<< HEAD
 
 	/*
 	* Expose reference count for socket.
@@ -2515,6 +2577,8 @@ void tcp_get_info(struct sock *sk, struct tcp_info *info)
 		if (NULL != filep)
 			info->tcpi_count = atomic_read(&filep->f_count);
 	}
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 EXPORT_SYMBOL_GPL(tcp_get_info);
 
@@ -3245,7 +3309,11 @@ void __init tcp_init(void)
 {
 	struct sk_buff *skb = NULL;
 	unsigned long limit;
+<<<<<<< HEAD
 	int i, max_share, cnt;
+=======
+	int i, max_rshare, max_wshare, cnt;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	unsigned long jiffy = jiffies;
 
 	BUILD_BUG_ON(sizeof(struct tcp_skb_cb) > sizeof(skb->cb));
@@ -3309,6 +3377,7 @@ void __init tcp_init(void)
 
 	/* Set per-socket limits to no more than 1/128 the pressure threshold */
 	limit = ((unsigned long)sysctl_tcp_mem[1]) << (PAGE_SHIFT - 7);
+<<<<<<< HEAD
 	max_share = min(4UL*1024*1024, limit);
 
 	sysctl_tcp_wmem[0] = SK_MEM_QUANTUM;
@@ -3318,6 +3387,18 @@ void __init tcp_init(void)
 	sysctl_tcp_rmem[0] = SK_MEM_QUANTUM;
 	sysctl_tcp_rmem[1] = 87380;
 	sysctl_tcp_rmem[2] = max(87380, max_share);
+=======
+	max_wshare = min(4UL*1024*1024, limit);
+	max_rshare = min(6UL*1024*1024, limit);
+
+	sysctl_tcp_wmem[0] = SK_MEM_QUANTUM;
+	sysctl_tcp_wmem[1] = 16*1024;
+	sysctl_tcp_wmem[2] = max(64*1024, max_wshare);
+
+	sysctl_tcp_rmem[0] = SK_MEM_QUANTUM;
+	sysctl_tcp_rmem[1] = 87380;
+	sysctl_tcp_rmem[2] = max(87380, max_rshare);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	printk(KERN_INFO "TCP: Hash tables configured "
 	       "(established %u bind %u)\n",
@@ -3334,6 +3415,7 @@ void __init tcp_init(void)
 	tcp_secret_retiring = &tcp_secret_two;
 	tcp_secret_secondary = &tcp_secret_two;
 }
+<<<<<<< HEAD
 
 static int tcp_is_local(struct net *net, __be32 addr) {
 	struct rtable *rt;
@@ -3438,3 +3520,5 @@ restart:
 
 	return 0;
 }
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y

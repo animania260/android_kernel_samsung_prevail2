@@ -36,7 +36,11 @@ static char led_state;
 static short hw_led_state;
 static short saved_state;
 
+<<<<<<< HEAD
 static DEFINE_RAW_SPINLOCK(leds_lock);
+=======
+static DEFINE_SPINLOCK(leds_lock);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 short sequoia_read(int addr) {
   outw(addr,0x24);
@@ -52,7 +56,11 @@ static void sequoia_leds_event(led_event_t evt)
 {
 	unsigned long flags;
 
+<<<<<<< HEAD
 	raw_spin_lock_irqsave(&leds_lock, flags);
+=======
+	spin_lock_irqsave(&leds_lock, flags);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	hw_led_state = sequoia_read(0x09);
 
@@ -144,7 +152,11 @@ static void sequoia_leds_event(led_event_t evt)
 	if  (led_state & LED_STATE_ENABLED)
 		sequoia_write(hw_led_state,0x09);
 
+<<<<<<< HEAD
 	raw_spin_unlock_irqrestore(&leds_lock, flags);
+=======
+	spin_unlock_irqrestore(&leds_lock, flags);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 static int __init leds_init(void)

@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2010-2011, Code Aurora Forum. All rights reserved.
+=======
+/* Copyright (c) 2010, Code Aurora Forum. All rights reserved.
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -9,40 +13,73 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
+<<<<<<< HEAD
  */
+=======
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ *
+ */
+#define pr_fmt(fmt) "%s: " fmt, __func__
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #include <linux/bitmap.h>
 #include <linux/bitops.h>
 #include <linux/gpio.h>
 #include <linux/init.h>
 #include <linux/interrupt.h>
+<<<<<<< HEAD
 #include <linux/irq.h>
 #include <linux/io.h>
 #include <linux/module.h>
 #include <linux/spinlock.h>
 #include <linux/syscore_ops.h>
+=======
+#include <linux/io.h>
+#include <linux/irq.h>
+#include <linux/module.h>
+#include <linux/platform_device.h>
+#include <linux/spinlock.h>
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 #include <asm/mach/irq.h>
 
 #include <mach/msm_iomap.h>
+<<<<<<< HEAD
 #include <mach/gpiomux.h>
 #include <mach/mpm.h>
+=======
+#include "gpiomux.h"
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 /* Bits of interest in the GPIO_IN_OUT register.
  */
 enum {
+<<<<<<< HEAD
 	GPIO_IN_BIT  = 0,
 	GPIO_OUT_BIT = 1
+=======
+	GPIO_IN  = 0,
+	GPIO_OUT = 1
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 };
 
 /* Bits of interest in the GPIO_INTR_STATUS register.
  */
 enum {
+<<<<<<< HEAD
 	INTR_STATUS_BIT = 0,
+=======
+	INTR_STATUS = 0,
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 };
 
 /* Bits of interest in the GPIO_CFG register.
  */
 enum {
+<<<<<<< HEAD
 	GPIO_OE_BIT = 9,
 };
 
@@ -121,6 +158,12 @@ struct irq_chip msm_gpio_irq_extn = {
 };
 
 /*
+=======
+	GPIO_OE = 9,
+};
+
+/* Bits of interest in the GPIO_INTR_CFG register.
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
  * When a GPIO triggers, two separate decisions are made, controlled
  * by two separate flags.
  *
@@ -132,6 +175,7 @@ struct irq_chip msm_gpio_irq_extn = {
  * If INTR_ENABLE is set and INTR_RAW_STATUS_EN is NOT set, an interrupt
  * can be triggered but the status register will not reflect it.
  */
+<<<<<<< HEAD
 #define INTR_RAW_STATUS_EN BIT(INTR_RAW_STATUS_EN_BIT)
 #define INTR_ENABLE        BIT(INTR_ENABLE_BIT)
 #define INTR_DECT_CTL_EDGE BIT(INTR_DECT_CTL_BIT)
@@ -139,6 +183,24 @@ struct irq_chip msm_gpio_irq_extn = {
 
 #define GPIO_INTR_CFG_SU(gpio)    (MSM_TLMM_BASE + 0x0400 + (0x04 * (gpio)))
 #define DIR_CONN_INTR_CFG_SU(irq) (MSM_TLMM_BASE + 0x0700 + (0x04 * (irq)))
+=======
+enum {
+	INTR_ENABLE        = 0,
+	INTR_POL_CTL       = 1,
+	INTR_DECT_CTL      = 2,
+	INTR_RAW_STATUS_EN = 3,
+};
+
+/* Codes of interest in GPIO_INTR_CFG_SU.
+ */
+enum {
+	TARGET_PROC_SCORPION = 4,
+	TARGET_PROC_NONE     = 7,
+};
+
+
+#define GPIO_INTR_CFG_SU(gpio)    (MSM_TLMM_BASE + 0x0400 + (0x04 * (gpio)))
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #define GPIO_CONFIG(gpio)         (MSM_TLMM_BASE + 0x1000 + (0x10 * (gpio)))
 #define GPIO_IN_OUT(gpio)         (MSM_TLMM_BASE + 0x1004 + (0x10 * (gpio)))
 #define GPIO_INTR_CFG(gpio)       (MSM_TLMM_BASE + 0x1008 + (0x10 * (gpio)))
@@ -149,7 +211,11 @@ struct irq_chip msm_gpio_irq_extn = {
  *
  * @enabled_irqs: a bitmap used to optimize the summary-irq handler.  By
  * keeping track of which gpios are unmasked as irq sources, we avoid
+<<<<<<< HEAD
  * having to do __raw_readl calls on hundreds of iomapped registers each time
+=======
+ * having to do readl calls on hundreds of iomapped registers each time
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
  * the summary interrupt fires in order to locate the active interrupts.
  *
  * @wake_irqs: a bitmap for tracking which interrupt lines are enabled
@@ -162,9 +228,15 @@ struct irq_chip msm_gpio_irq_extn = {
  */
 struct msm_gpio_dev {
 	struct gpio_chip gpio_chip;
+<<<<<<< HEAD
 	DECLARE_BITMAP(enabled_irqs, NR_MSM_GPIOS);
 	DECLARE_BITMAP(wake_irqs, NR_MSM_GPIOS);
 	DECLARE_BITMAP(dual_edge_irqs, NR_MSM_GPIOS);
+=======
+	DECLARE_BITMAP(enabled_irqs, NR_GPIO_IRQS);
+	DECLARE_BITMAP(wake_irqs, NR_GPIO_IRQS);
+	DECLARE_BITMAP(dual_edge_irqs, NR_GPIO_IRQS);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 };
 
 static DEFINE_SPINLOCK(tlmm_lock);
@@ -176,26 +248,43 @@ static inline struct msm_gpio_dev *to_msm_gpio_dev(struct gpio_chip *chip)
 
 static inline void set_gpio_bits(unsigned n, void __iomem *reg)
 {
+<<<<<<< HEAD
 	__raw_writel(__raw_readl(reg) | n, reg);
 }
 
 static inline void clr_gpio_bits(unsigned n, void __iomem *reg)
 {
 	__raw_writel(__raw_readl(reg) & ~n, reg);
+=======
+	writel(readl(reg) | n, reg);
+}
+
+static inline void clear_gpio_bits(unsigned n, void __iomem *reg)
+{
+	writel(readl(reg) & ~n, reg);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 static int msm_gpio_get(struct gpio_chip *chip, unsigned offset)
 {
+<<<<<<< HEAD
 	int rc;
 	rc = __raw_readl(GPIO_IN_OUT(offset)) & BIT(GPIO_IN_BIT);
 	mb();
 	return rc;
+=======
+	return readl(GPIO_IN_OUT(offset)) & BIT(GPIO_IN);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 static void msm_gpio_set(struct gpio_chip *chip, unsigned offset, int val)
 {
+<<<<<<< HEAD
 	__raw_writel(val ? BIT(GPIO_OUT_BIT) : 0, GPIO_IN_OUT(offset));
 	mb();
+=======
+	writel(val ? BIT(GPIO_OUT) : 0, GPIO_IN_OUT(offset));
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 static int msm_gpio_direction_input(struct gpio_chip *chip, unsigned offset)
@@ -203,8 +292,12 @@ static int msm_gpio_direction_input(struct gpio_chip *chip, unsigned offset)
 	unsigned long irq_flags;
 
 	spin_lock_irqsave(&tlmm_lock, irq_flags);
+<<<<<<< HEAD
 	clr_gpio_bits(BIT(GPIO_OE_BIT), GPIO_CONFIG(offset));
 	mb();
+=======
+	clear_gpio_bits(BIT(GPIO_OE), GPIO_CONFIG(offset));
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	spin_unlock_irqrestore(&tlmm_lock, irq_flags);
 	return 0;
 }
@@ -217,12 +310,17 @@ static int msm_gpio_direction_output(struct gpio_chip *chip,
 
 	spin_lock_irqsave(&tlmm_lock, irq_flags);
 	msm_gpio_set(chip, offset, val);
+<<<<<<< HEAD
 	set_gpio_bits(BIT(GPIO_OE_BIT), GPIO_CONFIG(offset));
 	mb();
+=======
+	set_gpio_bits(BIT(GPIO_OE), GPIO_CONFIG(offset));
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	spin_unlock_irqrestore(&tlmm_lock, irq_flags);
 	return 0;
 }
 
+<<<<<<< HEAD
 static int msm_gpio_to_irq(struct gpio_chip *chip, unsigned offset)
 {
 	return MSM_GPIO_TO_INT(offset - chip->base);
@@ -241,13 +339,38 @@ static int msm_gpio_request(struct gpio_chip *chip, unsigned offset)
 static void msm_gpio_free(struct gpio_chip *chip, unsigned offset)
 {
 	msm_gpiomux_put(chip->base + offset);
+=======
+static int msm_gpio_request(struct gpio_chip *chip, unsigned offset)
+{
+	return msm_gpiomux_get(chip->base + offset);
+}
+
+static void msm_gpio_free(struct gpio_chip *chip, unsigned offset)
+{
+	msm_gpiomux_put(chip->base + offset);
+}
+
+static int msm_gpio_to_irq(struct gpio_chip *chip, unsigned offset)
+{
+	return MSM_GPIO_TO_INT(chip->base + offset);
+}
+
+static inline int msm_irq_to_gpio(struct gpio_chip *chip, unsigned irq)
+{
+	return irq - MSM_GPIO_TO_INT(chip->base);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 static struct msm_gpio_dev msm_gpio = {
 	.gpio_chip = {
+<<<<<<< HEAD
 		.label		  = "msmgpio",
 		.base             = 0,
 		.ngpio            = NR_MSM_GPIOS,
+=======
+		.base             = 0,
+		.ngpio            = NR_GPIO_IRQS,
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		.direction_input  = msm_gpio_direction_input,
 		.direction_output = msm_gpio_direction_output,
 		.get              = msm_gpio_get,
@@ -258,6 +381,7 @@ static struct msm_gpio_dev msm_gpio = {
 	},
 };
 
+<<<<<<< HEAD
 static void switch_mpm_config(struct irq_data *d, unsigned val)
 {
 	/* switch the configuration in the mpm as well */
@@ -270,6 +394,8 @@ static void switch_mpm_config(struct irq_data *d, unsigned val)
 		msm_gpio_irq_extn.irq_set_type(d, IRQF_TRIGGER_RISING);
 }
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 /* For dual-edge interrupts in software, since the hardware has no
  * such support:
  *
@@ -290,12 +416,17 @@ static void switch_mpm_config(struct irq_data *d, unsigned val)
  *
  * Algorithm comes from Google's msmgpio driver, see mach-msm/gpio.c.
  */
+<<<<<<< HEAD
 static void msm_gpio_update_dual_edge_pos(struct irq_data *d, unsigned gpio)
+=======
+static void msm_gpio_update_dual_edge_pos(unsigned gpio)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 {
 	int loop_limit = 100;
 	unsigned val, val2, intstat;
 
 	do {
+<<<<<<< HEAD
 		val = __raw_readl(GPIO_IN_OUT(gpio)) & BIT(GPIO_IN_BIT);
 		if (val)
 			clr_gpio_bits(INTR_POL_CTL_HI, GPIO_INTR_CFG(gpio));
@@ -312,12 +443,28 @@ static void msm_gpio_update_dual_edge_pos(struct irq_data *d, unsigned gpio)
 	pr_err("%s: dual-edge irq failed to stabilize, "
 	       "interrupts dropped. %#08x != %#08x\n",
 	       __func__, val, val2);
+=======
+		val = readl(GPIO_IN_OUT(gpio)) & BIT(GPIO_IN);
+		if (val)
+			clear_gpio_bits(BIT(INTR_POL_CTL), GPIO_INTR_CFG(gpio));
+		else
+			set_gpio_bits(BIT(INTR_POL_CTL), GPIO_INTR_CFG(gpio));
+		val2 = readl(GPIO_IN_OUT(gpio)) & BIT(GPIO_IN);
+		intstat = readl(GPIO_INTR_STATUS(gpio)) & BIT(INTR_STATUS);
+		if (intstat || val == val2)
+			return;
+	} while (loop_limit-- > 0);
+	pr_err("dual-edge irq failed to stabilize, "
+	       "interrupts dropped. %#08x != %#08x\n",
+	       val, val2);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 static void msm_gpio_irq_ack(struct irq_data *d)
 {
 	int gpio = msm_irq_to_gpio(&msm_gpio.gpio_chip, d->irq);
 
+<<<<<<< HEAD
 	__raw_writel(BIT(INTR_STATUS_BIT), GPIO_INTR_STATUS(gpio));
 	if (test_bit(gpio, msm_gpio.dual_edge_irqs))
 		msm_gpio_update_dual_edge_pos(d, gpio);
@@ -328,6 +475,11 @@ static void __msm_gpio_irq_mask(unsigned int gpio)
 {
 	__raw_writel(TARGET_PROC_NONE, GPIO_INTR_CFG_SU(gpio));
 	clr_gpio_bits(INTR_RAW_STATUS_EN | INTR_ENABLE, GPIO_INTR_CFG(gpio));
+=======
+	writel(BIT(INTR_STATUS), GPIO_INTR_STATUS(gpio));
+	if (test_bit(gpio, msm_gpio.dual_edge_irqs))
+		msm_gpio_update_dual_edge_pos(gpio);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 static void msm_gpio_irq_mask(struct irq_data *d)
@@ -336,6 +488,7 @@ static void msm_gpio_irq_mask(struct irq_data *d)
 	unsigned long irq_flags;
 
 	spin_lock_irqsave(&tlmm_lock, irq_flags);
+<<<<<<< HEAD
 	__msm_gpio_irq_mask(gpio);
 	__clear_bit(gpio, msm_gpio.enabled_irqs);
 	mb();
@@ -350,6 +503,12 @@ static void __msm_gpio_irq_unmask(unsigned int gpio)
 {
 	set_gpio_bits(INTR_RAW_STATUS_EN | INTR_ENABLE, GPIO_INTR_CFG(gpio));
 	__raw_writel(TARGET_PROC_SCORPION, GPIO_INTR_CFG_SU(gpio));
+=======
+	writel(TARGET_PROC_NONE, GPIO_INTR_CFG_SU(gpio));
+	clear_gpio_bits(INTR_RAW_STATUS_EN | INTR_ENABLE, GPIO_INTR_CFG(gpio));
+	__clear_bit(gpio, msm_gpio.enabled_irqs);
+	spin_unlock_irqrestore(&tlmm_lock, irq_flags);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 static void msm_gpio_irq_unmask(struct irq_data *d)
@@ -359,6 +518,7 @@ static void msm_gpio_irq_unmask(struct irq_data *d)
 
 	spin_lock_irqsave(&tlmm_lock, irq_flags);
 	__set_bit(gpio, msm_gpio.enabled_irqs);
+<<<<<<< HEAD
 	__msm_gpio_irq_unmask(gpio);
 	mb();
 	spin_unlock_irqrestore(&tlmm_lock, irq_flags);
@@ -371,6 +531,11 @@ static void msm_gpio_irq_disable(struct irq_data *d)
 {
 	if (msm_gpio_irq_extn.irq_disable)
 		msm_gpio_irq_extn.irq_disable(d);
+=======
+	set_gpio_bits(INTR_RAW_STATUS_EN | INTR_ENABLE, GPIO_INTR_CFG(gpio));
+	writel(TARGET_PROC_SCORPION, GPIO_INTR_CFG_SU(gpio));
+	spin_unlock_irqrestore(&tlmm_lock, irq_flags);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 static int msm_gpio_irq_set_type(struct irq_data *d, unsigned int flow_type)
@@ -381,22 +546,34 @@ static int msm_gpio_irq_set_type(struct irq_data *d, unsigned int flow_type)
 
 	spin_lock_irqsave(&tlmm_lock, irq_flags);
 
+<<<<<<< HEAD
 	bits = __raw_readl(GPIO_INTR_CFG(gpio));
 
 	if (flow_type & IRQ_TYPE_EDGE_BOTH) {
 		bits |= INTR_DECT_CTL_EDGE;
+=======
+	bits = readl(GPIO_INTR_CFG(gpio));
+
+	if (flow_type & IRQ_TYPE_EDGE_BOTH) {
+		bits |= BIT(INTR_DECT_CTL);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		__irq_set_handler_locked(d->irq, handle_edge_irq);
 		if ((flow_type & IRQ_TYPE_EDGE_BOTH) == IRQ_TYPE_EDGE_BOTH)
 			__set_bit(gpio, msm_gpio.dual_edge_irqs);
 		else
 			__clear_bit(gpio, msm_gpio.dual_edge_irqs);
 	} else {
+<<<<<<< HEAD
 		bits &= ~INTR_DECT_CTL_EDGE;
+=======
+		bits &= ~BIT(INTR_DECT_CTL);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		__irq_set_handler_locked(d->irq, handle_level_irq);
 		__clear_bit(gpio, msm_gpio.dual_edge_irqs);
 	}
 
 	if (flow_type & (IRQ_TYPE_EDGE_RISING | IRQ_TYPE_LEVEL_HIGH))
+<<<<<<< HEAD
 		bits |= INTR_POL_CTL_HI;
 	else
 		bits &= ~INTR_POL_CTL_HI;
@@ -412,6 +589,19 @@ static int msm_gpio_irq_set_type(struct irq_data *d, unsigned int flow_type)
 	if (msm_gpio_irq_extn.irq_set_type)
 		msm_gpio_irq_extn.irq_set_type(d, flow_type);
 
+=======
+		bits |= BIT(INTR_POL_CTL);
+	else
+		bits &= ~BIT(INTR_POL_CTL);
+
+	writel(bits, GPIO_INTR_CFG(gpio));
+
+	if ((flow_type & IRQ_TYPE_EDGE_BOTH) == IRQ_TYPE_EDGE_BOTH)
+		msm_gpio_update_dual_edge_pos(gpio);
+
+	spin_unlock_irqrestore(&tlmm_lock, irq_flags);
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	return 0;
 }
 
@@ -421,24 +611,40 @@ static int msm_gpio_irq_set_type(struct irq_data *d, unsigned int flow_type)
  * which have been set as summary IRQ lines and which are triggered,
  * and to call their interrupt handlers.
  */
+<<<<<<< HEAD
 static irqreturn_t msm_summary_irq_handler(int irq, void *data)
 {
 	unsigned long i;
 	struct irq_desc *desc = irq_to_desc(irq);
+=======
+static void msm_summary_irq_handler(unsigned int irq, struct irq_desc *desc)
+{
+	unsigned long i;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	struct irq_chip *chip = irq_desc_get_chip(desc);
 
 	chained_irq_enter(chip, desc);
 
+<<<<<<< HEAD
 	for (i = find_first_bit(msm_gpio.enabled_irqs, NR_MSM_GPIOS);
 	     i < NR_MSM_GPIOS;
 	     i = find_next_bit(msm_gpio.enabled_irqs, NR_MSM_GPIOS, i + 1)) {
 		if (__raw_readl(GPIO_INTR_STATUS(i)) & BIT(INTR_STATUS_BIT))
+=======
+	for (i = find_first_bit(msm_gpio.enabled_irqs, NR_GPIO_IRQS);
+	     i < NR_GPIO_IRQS;
+	     i = find_next_bit(msm_gpio.enabled_irqs, NR_GPIO_IRQS, i + 1)) {
+		if (readl(GPIO_INTR_STATUS(i)) & BIT(INTR_STATUS))
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			generic_handle_irq(msm_gpio_to_irq(&msm_gpio.gpio_chip,
 							   i));
 	}
 
 	chained_irq_exit(chip, desc);
+<<<<<<< HEAD
 	return IRQ_HANDLED;
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 static int msm_gpio_irq_set_wake(struct irq_data *d, unsigned int on)
@@ -446,6 +652,7 @@ static int msm_gpio_irq_set_wake(struct irq_data *d, unsigned int on)
 	int gpio = msm_irq_to_gpio(&msm_gpio.gpio_chip, d->irq);
 
 	if (on) {
+<<<<<<< HEAD
 		if (bitmap_empty(msm_gpio.wake_irqs, NR_MSM_GPIOS))
 			irq_set_irq_wake(TLMM_MSM_SUMMARY_IRQ, 1);
 		set_bit(gpio, msm_gpio.wake_irqs);
@@ -458,6 +665,17 @@ static int msm_gpio_irq_set_wake(struct irq_data *d, unsigned int on)
 	if (msm_gpio_irq_extn.irq_set_wake)
 		msm_gpio_irq_extn.irq_set_wake(d, on);
 
+=======
+		if (bitmap_empty(msm_gpio.wake_irqs, NR_GPIO_IRQS))
+			irq_set_irq_wake(TLMM_SCSS_SUMMARY_IRQ, 1);
+		set_bit(gpio, msm_gpio.wake_irqs);
+	} else {
+		clear_bit(gpio, msm_gpio.wake_irqs);
+		if (bitmap_empty(msm_gpio.wake_irqs, NR_GPIO_IRQS))
+			irq_set_irq_wake(TLMM_SCSS_SUMMARY_IRQ, 0);
+	}
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	return 0;
 }
 
@@ -468,6 +686,7 @@ static struct irq_chip msm_gpio_irq_chip = {
 	.irq_ack	= msm_gpio_irq_ack,
 	.irq_set_type	= msm_gpio_irq_set_type,
 	.irq_set_wake	= msm_gpio_irq_set_wake,
+<<<<<<< HEAD
 	.irq_disable	= msm_gpio_irq_disable,
 };
 
@@ -479,6 +698,18 @@ static int __devinit msm_gpio_probe(void)
 	bitmap_zero(msm_gpio.enabled_irqs, NR_MSM_GPIOS);
 	bitmap_zero(msm_gpio.wake_irqs, NR_MSM_GPIOS);
 	bitmap_zero(msm_gpio.dual_edge_irqs, NR_MSM_GPIOS);
+=======
+};
+
+static int __devinit msm_gpio_probe(struct platform_device *dev)
+{
+	int i, irq, ret;
+
+	bitmap_zero(msm_gpio.enabled_irqs, NR_GPIO_IRQS);
+	bitmap_zero(msm_gpio.wake_irqs, NR_GPIO_IRQS);
+	bitmap_zero(msm_gpio.dual_edge_irqs, NR_GPIO_IRQS);
+	msm_gpio.gpio_chip.label = dev->name;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	ret = gpiochip_add(&msm_gpio.gpio_chip);
 	if (ret < 0)
 		return ret;
@@ -490,6 +721,7 @@ static int __devinit msm_gpio_probe(void)
 		set_irq_flags(irq, IRQF_VALID);
 	}
 
+<<<<<<< HEAD
 	ret = request_irq(TLMM_MSM_SUMMARY_IRQ, msm_summary_irq_handler,
 			IRQF_TRIGGER_HIGH, "msmgpio", NULL);
 	if (ret) {
@@ -501,17 +733,30 @@ static int __devinit msm_gpio_probe(void)
 }
 
 static int __devexit msm_gpio_remove(void)
+=======
+	irq_set_chained_handler(TLMM_SCSS_SUMMARY_IRQ,
+				msm_summary_irq_handler);
+	return 0;
+}
+
+static int __devexit msm_gpio_remove(struct platform_device *dev)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 {
 	int ret = gpiochip_remove(&msm_gpio.gpio_chip);
 
 	if (ret < 0)
 		return ret;
 
+<<<<<<< HEAD
 	irq_set_handler(TLMM_MSM_SUMMARY_IRQ, NULL);
+=======
+	irq_set_handler(TLMM_SCSS_SUMMARY_IRQ, NULL);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 static int msm_gpio_suspend(void)
 {
@@ -583,17 +828,51 @@ static int __init msm_gpio_init(void)
 	msm_gpio_probe();
 	register_syscore_ops(&msm_gpio_syscore_ops);
 	return 0;
+=======
+static struct platform_driver msm_gpio_driver = {
+	.probe = msm_gpio_probe,
+	.remove = __devexit_p(msm_gpio_remove),
+	.driver = {
+		.name = "msmgpio",
+		.owner = THIS_MODULE,
+	},
+};
+
+static struct platform_device msm_device_gpio = {
+	.name = "msmgpio",
+	.id   = -1,
+};
+
+static int __init msm_gpio_init(void)
+{
+	int rc;
+
+	rc = platform_driver_register(&msm_gpio_driver);
+	if (!rc) {
+		rc = platform_device_register(&msm_device_gpio);
+		if (rc)
+			platform_driver_unregister(&msm_gpio_driver);
+	}
+
+	return rc;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 static void __exit msm_gpio_exit(void)
 {
+<<<<<<< HEAD
 	unregister_syscore_ops(&msm_gpio_syscore_ops);
 	msm_gpio_remove();
+=======
+	platform_device_unregister(&msm_device_gpio);
+	platform_driver_unregister(&msm_gpio_driver);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 postcore_initcall(msm_gpio_init);
 module_exit(msm_gpio_exit);
 
+<<<<<<< HEAD
 static void msm_tlmm_set_field(const struct tlmm_field_cfg *configs,
 			       unsigned id, unsigned width, unsigned val)
 {
@@ -677,3 +956,9 @@ MODULE_AUTHOR("Gregory Bean <gbean@codeaurora.org>");
 MODULE_DESCRIPTION("Driver for Qualcomm MSM TLMMv2 SoC GPIOs");
 MODULE_LICENSE("GPL v2");
 MODULE_ALIAS("sysdev:msmgpio");
+=======
+MODULE_AUTHOR("Gregory Bean <gbean@codeaurora.org>");
+MODULE_DESCRIPTION("Driver for Qualcomm MSM TLMMv2 SoC GPIOs");
+MODULE_LICENSE("GPL v2");
+MODULE_ALIAS("platform:msmgpio");
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y

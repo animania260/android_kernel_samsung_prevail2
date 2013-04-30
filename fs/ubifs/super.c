@@ -1583,6 +1583,15 @@ static int ubifs_remount_rw(struct ubifs_info *c)
 	c->remounting_rw = 1;
 	c->ro_mount = 0;
 
+<<<<<<< HEAD
+=======
+	if (c->space_fixup) {
+		err = ubifs_fixup_free_space(c);
+		if (err)
+			return err;
+	}
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	err = check_free_space(c);
 	if (err)
 		goto out;
@@ -1699,12 +1708,15 @@ static int ubifs_remount_rw(struct ubifs_info *c)
 		err = dbg_check_space_info(c);
 	}
 
+<<<<<<< HEAD
 	if (c->space_fixup) {
 		err = ubifs_fixup_free_space(c);
 		if (err)
 			goto out;
 	}
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	mutex_unlock(&c->umount_mutex);
 	return err;
 

@@ -296,7 +296,11 @@ _copy_to_pages(struct page **pages, size_t pgbase, const char *p, size_t len)
  * Copies data into an arbitrary memory location from an array of pages
  * The copy is assumed to be non-overlapping.
  */
+<<<<<<< HEAD
 static void
+=======
+void
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 _copy_from_pages(char *p, struct page **pages, size_t pgbase, size_t len)
 {
 	struct page **pgfrom;
@@ -324,6 +328,10 @@ _copy_from_pages(char *p, struct page **pages, size_t pgbase, size_t len)
 
 	} while ((len -= copy) != 0);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(_copy_from_pages);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 /*
  * xdr_shrink_bufhead

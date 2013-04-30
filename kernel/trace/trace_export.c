@@ -150,7 +150,11 @@ ftrace_define_fields_##name(struct ftrace_event_call *event_call)	\
 #define __dynamic_array(type, item)
 
 #undef F_printk
+<<<<<<< HEAD
 #define F_printk(fmt, args...) #fmt ", "  __stringify(args)
+=======
+#define F_printk(fmt, args...) __stringify(fmt) ", "  __stringify(args)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 #undef FTRACE_ENTRY
 #define FTRACE_ENTRY(call, struct_name, etype, tstruct, print)		\

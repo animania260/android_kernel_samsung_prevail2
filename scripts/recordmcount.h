@@ -462,7 +462,11 @@ __has_rel_mcount(Elf_Shdr const *const relhdr,  /* is SHT_REL or SHT_RELA */
 		succeed_file();
 	}
 	if (w(txthdr->sh_type) != SHT_PROGBITS ||
+<<<<<<< HEAD
 	    !(w(txthdr->sh_flags) & SHF_EXECINSTR))
+=======
+	    !(_w(txthdr->sh_flags) & SHF_EXECINSTR))
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		return NULL;
 	return txtname;
 }

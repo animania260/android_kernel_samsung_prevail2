@@ -91,9 +91,12 @@ static void __uart_start(struct tty_struct *tty)
 	struct uart_state *state = tty->driver_data;
 	struct uart_port *port = state->uart_port;
 
+<<<<<<< HEAD
 	if (port->ops->wake_peer)
 		port->ops->wake_peer(port);
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	if (!uart_circ_empty(&state->xmit) && state->xmit.buf &&
 	    !tty->stopped && !tty->hw_stopped)
 		port->ops->start_tx(port);
@@ -1267,7 +1270,11 @@ static void uart_close(struct tty_struct *tty, struct file *filp)
 	uport = state->uart_port;
 	port = &state->port;
 
+<<<<<<< HEAD
 	pr_warn("uart_close(%d) called : start\n", uport->line);
+=======
+	pr_debug("uart_close(%d) called\n", uport->line);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	mutex_lock(&port->mutex);
 	spin_lock_irqsave(&port->lock, flags);
@@ -1324,7 +1331,10 @@ static void uart_close(struct tty_struct *tty, struct file *filp)
 	 */
 	if (port->flags & ASYNC_INITIALIZED) {
 		unsigned long flags;
+<<<<<<< HEAD
 		pr_warn("port->flags : 0x%lX\n", port->flags);
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		spin_lock_irqsave(&uport->lock, flags);
 		uport->ops->stop_rx(uport);
 		spin_unlock_irqrestore(&uport->lock, flags);
@@ -1365,8 +1375,11 @@ static void uart_close(struct tty_struct *tty, struct file *filp)
 
 done:
 	mutex_unlock(&port->mutex);
+<<<<<<< HEAD
 
 	pr_warn("uart_close() called : end\n");
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 static void __uart_wait_until_sent(struct uart_port *port, int timeout)
@@ -2008,11 +2021,15 @@ int uart_resume_port(struct uart_driver *drv, struct uart_port *uport)
 		 */
 		if (port->tty && port->tty->termios && termios.c_cflag == 0)
 			termios = *(port->tty->termios);
+<<<<<<< HEAD
 		/*
 		 * As we need to set the uart clock rate back to 7.3 MHz.
 		 * We need this change.
 		 *
 		 */
+=======
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		if (console_suspend_enabled)
 			uart_change_pm(state, 0);
 		uport->ops->set_termios(uport, &termios, NULL);
@@ -2335,6 +2352,10 @@ void uart_unregister_driver(struct uart_driver *drv)
 	tty_unregister_driver(p);
 	put_tty_driver(p);
 	kfree(drv->state);
+<<<<<<< HEAD
+=======
+	drv->state = NULL;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	drv->tty_driver = NULL;
 }
 

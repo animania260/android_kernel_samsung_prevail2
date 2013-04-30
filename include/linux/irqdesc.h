@@ -38,7 +38,10 @@ struct timer_rand_state;
  */
 struct irq_desc {
 	struct irq_data		irq_data;
+<<<<<<< HEAD
 	struct timer_rand_state *timer_rand_state;
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	unsigned int __percpu	*kstat_irqs;
 	irq_flow_handler_t	handle_irq;
 #ifdef CONFIG_IRQ_PREFLOW_FASTEOI
@@ -53,7 +56,10 @@ struct irq_desc {
 	unsigned long		last_unhandled;	/* Aging timer for unhandled count */
 	unsigned int		irqs_unhandled;
 	raw_spinlock_t		lock;
+<<<<<<< HEAD
 	struct cpumask		*percpu_enabled;
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #ifdef CONFIG_SMP
 	const struct cpumask	*affinity_hint;
 	struct irq_affinity_notify *affinity_notify;
@@ -67,7 +73,10 @@ struct irq_desc {
 #ifdef CONFIG_PROC_FS
 	struct proc_dir_entry	*dir;
 #endif
+<<<<<<< HEAD
 	struct module		*owner;
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	const char		*name;
 } ____cacheline_internodealigned_in_smp;
 

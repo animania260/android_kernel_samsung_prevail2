@@ -153,12 +153,17 @@ ENTRY(v4wt_flush_kern_dcache_area)
  *	- start  - virtual start address
  *	- end	 - virtual end address
  */
+<<<<<<< HEAD
 ENTRY(v4wt_dma_inv_range)
+=======
+v4wt_dma_inv_range:
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	bic	r0, r0, #CACHE_DLINESIZE - 1
 1:	mcr	p15, 0, r0, c7, c6, 1		@ invalidate D entry
 	add	r0, r0, #CACHE_DLINESIZE
 	cmp	r0, r1
 	blo	1b
+<<<<<<< HEAD
 	/* FALLTHROUGH */
 
 /*
@@ -170,6 +175,8 @@ ENTRY(v4wt_dma_inv_range)
  *	- end	 - virtual end address
  */
 ENTRY(v4wt_dma_clean_range)
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	mov	pc, lr
 
 /*
@@ -219,7 +226,10 @@ ENTRY(v4wt_cache_fns)
 	.long	v4wt_flush_kern_dcache_area
 	.long	v4wt_dma_map_area
 	.long	v4wt_dma_unmap_area
+<<<<<<< HEAD
 	.long	v4wt_dma_inv_range
 	.long	v4wt_dma_clean_range
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	.long	v4wt_dma_flush_range
 	.size	v4wt_cache_fns, . - v4wt_cache_fns

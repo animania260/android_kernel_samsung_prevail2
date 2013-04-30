@@ -146,7 +146,10 @@ static void __cpuinit init_amd_k6(struct cpuinfo_x86 *c)
 
 static void __cpuinit amd_k7_smp_check(struct cpuinfo_x86 *c)
 {
+<<<<<<< HEAD
 #ifdef CONFIG_SMP
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	/* calling is from identify_secondary_cpu() ? */
 	if (!c->cpu_index)
 		return;
@@ -190,7 +193,10 @@ static void __cpuinit amd_k7_smp_check(struct cpuinfo_x86 *c)
 
 valid_k7:
 	;
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 static void __cpuinit init_amd_k7(struct cpuinfo_x86 *c)
@@ -556,6 +562,37 @@ static void __cpuinit init_amd(struct cpuinfo_x86 *c)
 		}
 	}
 
+<<<<<<< HEAD
+=======
+	/*
+	 * The way access filter has a performance penalty on some workloads.
+	 * Disable it on the affected CPUs.
+	 */
+	if ((c->x86 == 0x15) &&
+	    (c->x86_model >= 0x02) && (c->x86_model < 0x20)) {
+		u64 val;
+
+		if (!rdmsrl_safe(0xc0011021, &val) && !(val & 0x1E)) {
+			val |= 0x1E;
+			checking_wrmsrl(0xc0011021, val);
+		}
+	}
+
+	/*
+	 * The way access filter has a performance penalty on some workloads.
+	 * Disable it on the affected CPUs.
+	 */
+	if ((c->x86 == 0x15) &&
+	    (c->x86_model >= 0x02) && (c->x86_model < 0x20)) {
+		u64 val;
+
+		if (!rdmsrl_safe(0xc0011021, &val) && !(val & 0x1E)) {
+			val |= 0x1E;
+			checking_wrmsrl(0xc0011021, val);
+		}
+	}
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	cpu_detect_cache_sizes(c);
 
 	/* Multi core CPU? */
@@ -704,7 +741,11 @@ cpu_dev_register(amd_cpu_dev);
  */
 
 const int amd_erratum_400[] =
+<<<<<<< HEAD
 	AMD_OSVW_ERRATUM(1, AMD_MODEL_RANGE(0x0f, 0x4, 0x2, 0xff, 0xf),
+=======
+	AMD_OSVW_ERRATUM(1, AMD_MODEL_RANGE(0xf, 0x41, 0x2, 0xff, 0xf),
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			    AMD_MODEL_RANGE(0x10, 0x2, 0x1, 0xff, 0xf));
 EXPORT_SYMBOL_GPL(amd_erratum_400);
 

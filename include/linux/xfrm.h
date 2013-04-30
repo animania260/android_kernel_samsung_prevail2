@@ -84,6 +84,11 @@ struct xfrm_replay_state {
 	__u32	bitmap;
 };
 
+<<<<<<< HEAD
+=======
+#define XFRMA_REPLAY_ESN_MAX	4096
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 struct xfrm_replay_state_esn {
 	unsigned int	bmp_len;
 	__u32		oseq;

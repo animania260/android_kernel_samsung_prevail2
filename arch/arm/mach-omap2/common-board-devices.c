@@ -20,15 +20,45 @@
  *
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/i2c.h>
+#include <linux/i2c/twl.h>
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #include <linux/gpio.h>
 #include <linux/spi/spi.h>
 #include <linux/spi/ads7846.h>
 
+<<<<<<< HEAD
+=======
+#include <plat/i2c.h>
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #include <plat/mcspi.h>
 #include <plat/nand.h>
 
 #include "common-board-devices.h"
 
+<<<<<<< HEAD
+=======
+static struct i2c_board_info __initdata pmic_i2c_board_info = {
+	.addr		= 0x48,
+	.flags		= I2C_CLIENT_WAKE,
+};
+
+void __init omap_pmic_init(int bus, u32 clkrate,
+			   const char *pmic_type, int pmic_irq,
+			   struct twl4030_platform_data *pmic_data)
+{
+	strncpy(pmic_i2c_board_info.type, pmic_type,
+		sizeof(pmic_i2c_board_info.type));
+	pmic_i2c_board_info.irq = pmic_irq;
+	pmic_i2c_board_info.platform_data = pmic_data;
+
+	omap_register_i2c_bus(bus, clkrate, &pmic_i2c_board_info, 1);
+}
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #if defined(CONFIG_TOUCHSCREEN_ADS7846) || \
 	defined(CONFIG_TOUCHSCREEN_ADS7846_MODULE)
 static struct omap2_mcspi_device_config ads7846_mcspi_config = {

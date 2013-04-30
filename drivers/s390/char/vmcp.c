@@ -13,6 +13,10 @@
 
 #include <linux/fs.h>
 #include <linux/init.h>
+<<<<<<< HEAD
+=======
+#include <linux/compat.h>
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #include <linux/kernel.h>
 #include <linux/miscdevice.h>
 #include <linux/slab.h>

@@ -1848,15 +1848,19 @@ static void atl1e_free_irq(struct atl1e_adapter *adapter)
 	struct net_device *netdev = adapter->netdev;
 
 	free_irq(adapter->pdev->irq, netdev);
+<<<<<<< HEAD
 
 	if (adapter->have_msi)
 		pci_disable_msi(adapter->pdev);
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 static int atl1e_request_irq(struct atl1e_adapter *adapter)
 {
 	struct pci_dev    *pdev   = adapter->pdev;
 	struct net_device *netdev = adapter->netdev;
+<<<<<<< HEAD
 	int flags = 0;
 	int err = 0;
 
@@ -1879,6 +1883,15 @@ static int atl1e_request_irq(struct atl1e_adapter *adapter)
 			   "Unable to allocate interrupt Error: %d\n", err);
 		if (adapter->have_msi)
 			pci_disable_msi(adapter->pdev);
+=======
+	int err = 0;
+
+	err = request_irq(pdev->irq, atl1e_intr, IRQF_SHARED,
+			  netdev->name, netdev);
+	if (err) {
+		netdev_dbg(adapter->netdev,
+			   "Unable to allocate interrupt Error: %d\n", err);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		return err;
 	}
 	netdev_dbg(adapter->netdev, "atl1e_request_irq OK\n");

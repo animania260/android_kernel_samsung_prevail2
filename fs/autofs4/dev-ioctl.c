@@ -376,7 +376,11 @@ static int autofs_dev_ioctl_setpipefd(struct file *fp,
 			err = -EBADF;
 			goto out;
 		}
+<<<<<<< HEAD
 		if (!pipe->f_op || !pipe->f_op->write) {
+=======
+		if (autofs_prepare_pipe(pipe) < 0) {
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			err = -EPIPE;
 			fput(pipe);
 			goto out;

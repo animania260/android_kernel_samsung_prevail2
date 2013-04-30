@@ -163,7 +163,11 @@
  *	 7:2	register number
  *  
  */
+<<<<<<< HEAD
 static DEFINE_RAW_SPINLOCK(v3_lock);
+=======
+static DEFINE_SPINLOCK(v3_lock);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 #define PCI_BUS_NONMEM_START	0x00000000
 #define PCI_BUS_NONMEM_SIZE	SZ_256M
@@ -284,7 +288,11 @@ static int v3_read_config(struct pci_bus *bus, unsigned int devfn, int where,
 	unsigned long flags;
 	u32 v;
 
+<<<<<<< HEAD
 	raw_spin_lock_irqsave(&v3_lock, flags);
+=======
+	spin_lock_irqsave(&v3_lock, flags);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	addr = v3_open_config_window(bus, devfn, where);
 
 	switch (size) {
@@ -302,7 +310,11 @@ static int v3_read_config(struct pci_bus *bus, unsigned int devfn, int where,
 	}
 
 	v3_close_config_window();
+<<<<<<< HEAD
 	raw_spin_unlock_irqrestore(&v3_lock, flags);
+=======
+	spin_unlock_irqrestore(&v3_lock, flags);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	*val = v;
 	return PCIBIOS_SUCCESSFUL;
@@ -314,7 +326,11 @@ static int v3_write_config(struct pci_bus *bus, unsigned int devfn, int where,
 	unsigned long addr;
 	unsigned long flags;
 
+<<<<<<< HEAD
 	raw_spin_lock_irqsave(&v3_lock, flags);
+=======
+	spin_lock_irqsave(&v3_lock, flags);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	addr = v3_open_config_window(bus, devfn, where);
 
 	switch (size) {
@@ -335,7 +351,11 @@ static int v3_write_config(struct pci_bus *bus, unsigned int devfn, int where,
 	}
 
 	v3_close_config_window();
+<<<<<<< HEAD
 	raw_spin_unlock_irqrestore(&v3_lock, flags);
+=======
+	spin_unlock_irqrestore(&v3_lock, flags);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	return PCIBIOS_SUCCESSFUL;
 }
@@ -510,7 +530,11 @@ void __init pci_v3_preinit(void)
 	hook_fault_code(8, v3_pci_fault, SIGBUS, 0, "external abort on non-linefetch");
 	hook_fault_code(10, v3_pci_fault, SIGBUS, 0, "external abort on non-linefetch");
 
+<<<<<<< HEAD
 	raw_spin_lock_irqsave(&v3_lock, flags);
+=======
+	spin_lock_irqsave(&v3_lock, flags);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	/*
 	 * Unlock V3 registers, but only if they were previously locked.
@@ -583,7 +607,11 @@ void __init pci_v3_preinit(void)
 		printk(KERN_ERR "PCI: unable to grab PCI error "
 		       "interrupt: %d\n", ret);
 
+<<<<<<< HEAD
 	raw_spin_unlock_irqrestore(&v3_lock, flags);
+=======
+	spin_unlock_irqrestore(&v3_lock, flags);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 void __init pci_v3_postinit(void)

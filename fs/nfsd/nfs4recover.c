@@ -88,7 +88,11 @@ nfs4_make_rec_clidname(char *dname, struct xdr_netobj *clname)
 	struct xdr_netobj cksum;
 	struct hash_desc desc;
 	struct scatterlist sg;
+<<<<<<< HEAD
 	__be32 status = nfserr_resource;
+=======
+	__be32 status = nfserr_jukebox;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	dprintk("NFSD: nfs4_make_rec_clidname for %.*s\n",
 			clname->len, clname->data);

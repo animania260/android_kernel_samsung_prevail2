@@ -1477,6 +1477,10 @@ static int ite_probe(struct pnp_dev *pdev, const struct pnp_device_id
 	rdev = rc_allocate_device();
 	if (!rdev)
 		goto failure;
+<<<<<<< HEAD
+=======
+	itdev->rdev = rdev;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	ret = -ENODEV;
 
@@ -1519,6 +1523,7 @@ static int ite_probe(struct pnp_dev *pdev, const struct pnp_device_id
 	/* initialize raw event */
 	init_ir_raw_event(&itdev->rawir);
 
+<<<<<<< HEAD
 	ret = -EBUSY;
 	/* now claim resources */
 	if (!request_region(itdev->cir_addr,
@@ -1529,6 +1534,8 @@ static int ite_probe(struct pnp_dev *pdev, const struct pnp_device_id
 			ITE_DRIVER_NAME, (void *)itdev))
 		goto failure;
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	/* set driver data into the pnp device */
 	pnp_set_drvdata(pdev, itdev);
 	itdev->pdev = pdev;
@@ -1604,11 +1611,27 @@ static int ite_probe(struct pnp_dev *pdev, const struct pnp_device_id
 	rdev->driver_name = ITE_DRIVER_NAME;
 	rdev->map_name = RC_MAP_RC6_MCE;
 
+<<<<<<< HEAD
+=======
+	ret = -EBUSY;
+	/* now claim resources */
+	if (!request_region(itdev->cir_addr,
+				dev_desc->io_region_size, ITE_DRIVER_NAME))
+		goto failure;
+
+	if (request_irq(itdev->cir_irq, ite_cir_isr, IRQF_SHARED,
+			ITE_DRIVER_NAME, (void *)itdev))
+		goto failure;
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	ret = rc_register_device(rdev);
 	if (ret)
 		goto failure;
 
+<<<<<<< HEAD
 	itdev->rdev = rdev;
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	ite_pr(KERN_NOTICE, "driver has been successfully loaded\n");
 
 	return 0;

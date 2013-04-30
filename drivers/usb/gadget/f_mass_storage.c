@@ -312,10 +312,14 @@ static const char fsg_string_interface[] = "Mass Storage";
 
 #include "storage_common.c"
 
+<<<<<<< HEAD
 #ifdef CONFIG_USB_CSW_HACK
 static int write_error_after_csw_sent;
 static int csw_hack_sent;
 #endif
+=======
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 /*-------------------------------------------------------------------------*/
 
 struct fsg_dev;
@@ -472,7 +476,10 @@ static inline struct fsg_dev *fsg_from_func(struct usb_function *f)
 }
 
 typedef void (*fsg_routine_t)(struct fsg_dev *);
+<<<<<<< HEAD
 static int send_status(struct fsg_common *common);
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 static int exception_in_progress(struct fsg_common *common)
 {
@@ -629,7 +636,11 @@ static int fsg_setup(struct usb_function *f,
 		if (ctrl->bRequestType !=
 		    (USB_DIR_OUT | USB_TYPE_CLASS | USB_RECIP_INTERFACE))
 			break;
+<<<<<<< HEAD
 		if (w_value != 0)
+=======
+		if (w_index != fsg->interface_number || w_value != 0)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			return -EDOM;
 
 		/*
@@ -644,7 +655,11 @@ static int fsg_setup(struct usb_function *f,
 		if (ctrl->bRequestType !=
 		    (USB_DIR_IN | USB_TYPE_CLASS | USB_RECIP_INTERFACE))
 			break;
+<<<<<<< HEAD
 		if (w_value != 0)
+=======
+		if (w_index != fsg->interface_number || w_value != 0)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			return -EDOM;
 		VDBG(fsg, "get max LUN\n");
 		*(u8 *)req->buf = fsg->common->nluns - 1;
@@ -751,9 +766,12 @@ static int do_read(struct fsg_common *common)
 	unsigned int		amount;
 	unsigned int		partial_page;
 	ssize_t			nread;
+<<<<<<< HEAD
 #ifdef CONFIG_USB_MSC_PROFILING
 	ktime_t			start, diff;
 #endif
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	/*
 	 * Get the starting Logical Block Address and check that it's
@@ -828,20 +846,27 @@ static int do_read(struct fsg_common *common)
 
 		/* Perform the read */
 		file_offset_tmp = file_offset;
+<<<<<<< HEAD
 
 #ifdef CONFIG_USB_MSC_PROFILING
 		start = ktime_get();
 #endif
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		nread = vfs_read(curlun->filp,
 				 (char __user *)bh->buf,
 				 amount, &file_offset_tmp);
 		VLDBG(curlun, "file read %u @ %llu -> %d\n", amount,
+<<<<<<< HEAD
 		     (unsigned long long) file_offset, (int) nread);
 #ifdef CONFIG_USB_MSC_PROFILING
 		diff = ktime_sub(ktime_get(), start);
 		curlun->perf.rbytes += nread;
 		curlun->perf.rtime = ktime_add(curlun->perf.rtime, diff);
 #endif
+=======
+		      (unsigned long long)file_offset, (int)nread);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		if (signal_pending(current))
 			return -EINTR;
 
@@ -897,6 +922,7 @@ static int do_write(struct fsg_common *common)
 	ssize_t			nwritten;
 	int			rc;
 
+<<<<<<< HEAD
 #ifdef CONFIG_USB_CSW_HACK
 	int			i;
 #endif
@@ -904,6 +930,8 @@ static int do_write(struct fsg_common *common)
 #ifdef CONFIG_USB_MSC_PROFILING
 	ktime_t			start, diff;
 #endif
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	if (curlun->ro) {
 		curlun->sense_data = SS_WRITE_PROTECTED;
 		return -EINVAL;
@@ -1017,6 +1045,7 @@ static int do_write(struct fsg_common *common)
 		bh = common->next_buffhd_to_drain;
 		if (bh->state == BUF_STATE_EMPTY && !get_some_more)
 			break;			/* We stopped early */
+<<<<<<< HEAD
 #ifdef CONFIG_USB_CSW_HACK
 		/*
 		 * If the csw packet is already submmitted to the hardware,
@@ -1028,6 +1057,9 @@ static int do_write(struct fsg_common *common)
 #else
 		if (bh->state == BUF_STATE_FULL) {
 #endif
+=======
+		if (bh->state == BUF_STATE_FULL) {
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			smp_rmb();
 			common->next_buffhd_to_drain = bh->next;
 			bh->state = BUF_STATE_EMPTY;
@@ -1051,20 +1083,26 @@ static int do_write(struct fsg_common *common)
 
 			/* Perform the write */
 			file_offset_tmp = file_offset;
+<<<<<<< HEAD
 #ifdef CONFIG_USB_MSC_PROFILING
 			start = ktime_get();
 #endif
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			nwritten = vfs_write(curlun->filp,
 					     (char __user *)bh->buf,
 					     amount, &file_offset_tmp);
 			VLDBG(curlun, "file write %u @ %llu -> %d\n", amount,
 			      (unsigned long long)file_offset, (int)nwritten);
+<<<<<<< HEAD
 #ifdef CONFIG_USB_MSC_PROFILING
 			diff = ktime_sub(ktime_get(), start);
 			curlun->perf.wbytes += nwritten;
 			curlun->perf.wtime =
 					ktime_add(curlun->perf.wtime, diff);
 #endif
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			if (signal_pending(current))
 				return -EINTR;		/* Interrupted! */
 
@@ -1087,6 +1125,7 @@ static int do_write(struct fsg_common *common)
 				curlun->sense_data = SS_WRITE_ERROR;
 				curlun->sense_data_info = file_offset >> 9;
 				curlun->info_valid = 1;
+<<<<<<< HEAD
 #ifdef CONFIG_USB_CSW_HACK
 				write_error_after_csw_sent = 1;
 				goto write_error;
@@ -1117,6 +1156,11 @@ write_error:
 				}
 			}
 #endif
+=======
+				break;
+			}
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			/* Did the host decide to stop early? */
 			if (bh->outreq->actual != bh->outreq->length) {
 				common->short_packet_received = 1;
@@ -1577,7 +1621,12 @@ static int do_prevent_allow(struct fsg_common *common)
 		curlun->sense_data = SS_INVALID_FIELD_IN_CDB;
 		return -EINVAL;
 	}
+<<<<<<< HEAD
 	if (!curlun->nofua && curlun->prevent_medium_removal && !prevent)
+=======
+
+	if (curlun->prevent_medium_removal && !prevent)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		fsg_lun_fsync_sub(curlun);
 	curlun->prevent_medium_removal = prevent;
 	return 0;
@@ -1858,6 +1907,7 @@ static int send_status(struct fsg_common *common)
 	csw->Signature = cpu_to_le32(USB_BULK_CS_SIG);
 	csw->Tag = common->tag;
 	csw->Residue = cpu_to_le32(common->residue);
+<<<<<<< HEAD
 #ifdef CONFIG_USB_CSW_HACK
 	/* Since csw is being sent early, before
 	 * writing on to storage media, need to set
@@ -1871,6 +1921,8 @@ static int send_status(struct fsg_common *common)
 #else
 	csw->Residue = cpu_to_le32(common->residue);
 #endif
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	csw->Status = status;
 
 	bh->inreq->length = USB_BULK_CS_WRAP_LEN;
@@ -2268,7 +2320,11 @@ unknown_cmnd:
 		common->data_size_from_cmnd = 0;
 		sprintf(unknown, "Unknown x%02x", common->cmnd[0]);
 		reply = check_command(common, common->cmnd_size,
+<<<<<<< HEAD
 				      DATA_DIR_UNKNOWN, 0xff, 0, unknown);
+=======
+				      DATA_DIR_UNKNOWN, ~0, 0, unknown);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		if (reply == 0) {
 			common->curlun->sense_data = SS_INVALID_COMMAND;
 			reply = -EINVAL;
@@ -2430,6 +2486,10 @@ static int alloc_request(struct fsg_common *common, struct usb_ep *ep,
 /* Reset interface setting and re-init endpoint state (toggle etc). */
 static int do_set_interface(struct fsg_common *common, struct fsg_dev *new_fsg)
 {
+<<<<<<< HEAD
+=======
+	const struct usb_endpoint_descriptor *d;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	struct fsg_dev *fsg;
 	int i, rc = 0;
 
@@ -2454,6 +2514,18 @@ reset:
 			}
 		}
 
+<<<<<<< HEAD
+=======
+		/* Disable the endpoints */
+		if (fsg->bulk_in_enabled) {
+			usb_ep_disable(fsg->bulk_in);
+			fsg->bulk_in_enabled = 0;
+		}
+		if (fsg->bulk_out_enabled) {
+			usb_ep_disable(fsg->bulk_out);
+			fsg->bulk_out_enabled = 0;
+		}
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 		common->fsg = NULL;
 		wake_up(&common->fsg_wait);
@@ -2466,6 +2538,25 @@ reset:
 	common->fsg = new_fsg;
 	fsg = common->fsg;
 
+<<<<<<< HEAD
+=======
+	/* Enable the endpoints */
+	d = fsg_ep_desc(common->gadget,
+			&fsg_fs_bulk_in_desc, &fsg_hs_bulk_in_desc);
+	rc = enable_endpoint(common, fsg->bulk_in, d);
+	if (rc)
+		goto reset;
+	fsg->bulk_in_enabled = 1;
+
+	d = fsg_ep_desc(common->gadget,
+			&fsg_fs_bulk_out_desc, &fsg_hs_bulk_out_desc);
+	rc = enable_endpoint(common, fsg->bulk_out, d);
+	if (rc)
+		goto reset;
+	fsg->bulk_out_enabled = 1;
+	common->bulk_out_maxpacket = le16_to_cpu(d->wMaxPacketSize);
+	clear_bit(IGNORE_BULK_OUT, &fsg->atomic_bitflags);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	/* Allocate the requests */
 	for (i = 0; i < FSG_NUM_BUFFERS; ++i) {
@@ -2495,6 +2586,7 @@ reset:
 static int fsg_set_alt(struct usb_function *f, unsigned intf, unsigned alt)
 {
 	struct fsg_dev *fsg = fsg_from_func(f);
+<<<<<<< HEAD
 	struct fsg_common *common = fsg->common;
 	const struct usb_endpoint_descriptor *d;
 	int rc;
@@ -2518,6 +2610,8 @@ static int fsg_set_alt(struct usb_function *f, unsigned intf, unsigned alt)
 	fsg->bulk_out_enabled = 1;
 	common->bulk_out_maxpacket = le16_to_cpu(d->wMaxPacketSize);
 	clear_bit(IGNORE_BULK_OUT, &fsg->atomic_bitflags);
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	fsg->common->new_fsg = fsg;
 	raise_exception(fsg->common, FSG_STATE_CONFIG_CHANGE);
 	return USB_GADGET_DELAYED_STATUS;
@@ -2526,6 +2620,7 @@ static int fsg_set_alt(struct usb_function *f, unsigned intf, unsigned alt)
 static void fsg_disable(struct usb_function *f)
 {
 	struct fsg_dev *fsg = fsg_from_func(f);
+<<<<<<< HEAD
 
 	/* Disable the endpoints */
 	if (fsg->bulk_in_enabled) {
@@ -2538,6 +2633,8 @@ static void fsg_disable(struct usb_function *f)
 		fsg->bulk_out_enabled = 0;
 		fsg->bulk_out->driver_data = NULL;
 	}
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	fsg->common->new_fsg = NULL;
 	raise_exception(fsg->common, FSG_STATE_CONFIG_CHANGE);
 }
@@ -2744,6 +2841,7 @@ static int fsg_main_thread(void *common_)
 			common->state = FSG_STATE_STATUS_PHASE;
 		spin_unlock_irq(&common->lock);
 
+<<<<<<< HEAD
 #ifdef CONFIG_USB_CSW_HACK
 		/* Since status is already sent for write scsi command,
 		 * need to skip sending status once again if it is a
@@ -2754,6 +2852,8 @@ static int fsg_main_thread(void *common_)
 			continue;
 		}
 #endif
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		if (send_status(common))
 			continue;
 
@@ -2794,9 +2894,13 @@ static int fsg_main_thread(void *common_)
 static DEVICE_ATTR(ro, 0644, fsg_show_ro, fsg_store_ro);
 static DEVICE_ATTR(nofua, 0644, fsg_show_nofua, fsg_store_nofua);
 static DEVICE_ATTR(file, 0644, fsg_show_file, fsg_store_file);
+<<<<<<< HEAD
 #ifdef CONFIG_USB_MSC_PROFILING
 static DEVICE_ATTR(perf, 0644, fsg_show_perf, fsg_store_perf);
 #endif
+=======
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 /****************************** FSG COMMON ******************************/
 
@@ -2881,7 +2985,10 @@ static struct fsg_common *fsg_common_init(struct fsg_common *common,
 		curlun->ro = lcfg->cdrom || lcfg->ro;
 		curlun->initially_ro = curlun->ro;
 		curlun->removable = lcfg->removable;
+<<<<<<< HEAD
 		curlun->nofua = lcfg->nofua;
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		curlun->dev.release = fsg_lun_release;
 		curlun->dev.parent = &gadget->dev;
 		/* curlun->dev.driver = &fsg_driver.driver; XXX */
@@ -2909,12 +3016,16 @@ static struct fsg_common *fsg_common_init(struct fsg_common *common,
 		rc = device_create_file(&curlun->dev, &dev_attr_nofua);
 		if (rc)
 			goto error_luns;
+<<<<<<< HEAD
 #ifdef CONFIG_USB_MSC_PROFILING
 		rc = device_create_file(&curlun->dev, &dev_attr_perf);
 		if (rc)
 			dev_err(&gadget->dev, "failed to create sysfs entry:"
 				"(dev_attr_perf) error: %d\n", rc);
 #endif
+=======
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		if (lcfg->filename) {
 			rc = fsg_lun_open(curlun, lcfg->filename);
 			if (rc)
@@ -3043,9 +3154,12 @@ static void fsg_common_release(struct kref *ref)
 
 		/* In error recovery common->nluns may be zero. */
 		for (; i; --i, ++lun) {
+<<<<<<< HEAD
 #ifdef CONFIG_USB_MSC_PROFILING
 			device_remove_file(&lun->dev, &dev_attr_perf);
 #endif
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			device_remove_file(&lun->dev, &dev_attr_nofua);
 			device_remove_file(&lun->dev, &dev_attr_ro);
 			device_remove_file(&lun->dev, &dev_attr_file);
@@ -3163,7 +3277,11 @@ static int fsg_bind_config(struct usb_composite_dev *cdev,
 	if (unlikely(!fsg))
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	fsg->function.name        = "mass_storage";
+=======
+	fsg->function.name        = FSG_DRIVER_DESC;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	fsg->function.strings     = fsg_strings_array;
 	fsg->function.bind        = fsg_bind;
 	fsg->function.unbind      = fsg_unbind;

@@ -122,6 +122,12 @@ static int repsep_snprintf(char *bf, size_t size, const char *fmt, ...)
 		}
 	}
 	va_end(ap);
+<<<<<<< HEAD
+=======
+
+	if (n >= (int)size)
+		return size - 1;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	return n;
 }
 

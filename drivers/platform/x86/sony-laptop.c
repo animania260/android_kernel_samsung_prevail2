@@ -127,7 +127,11 @@ MODULE_PARM_DESC(minor,
 		 "default is -1 (automatic)");
 #endif
 
+<<<<<<< HEAD
 static int kbd_backlight;	/* = 1 */
+=======
+static int kbd_backlight = 1;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 module_param(kbd_backlight, int, 0444);
 MODULE_PARM_DESC(kbd_backlight,
 		 "set this to 0 to disable keyboard backlight, "

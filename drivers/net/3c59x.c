@@ -1842,7 +1842,11 @@ vortex_timer(unsigned long data)
 		ok = 1;
 	}
 
+<<<<<<< HEAD
 	if (!netif_carrier_ok(dev))
+=======
+	if (dev->flags & IFF_SLAVE || !netif_carrier_ok(dev))
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		next_tick = 5*HZ;
 
 	if (vp->medialock)

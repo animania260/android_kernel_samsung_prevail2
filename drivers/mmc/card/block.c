@@ -126,7 +126,15 @@ static struct mmc_blk_data *mmc_blk_get(struct gendisk *disk)
 
 static inline int mmc_get_devidx(struct gendisk *disk)
 {
+<<<<<<< HEAD
 	int devidx = disk->first_minor / perdev_minors;
+=======
+	int devmaj = MAJOR(disk_devt(disk));
+	int devidx = MINOR(disk_devt(disk)) / perdev_minors;
+
+	if (!devmaj)
+		devidx = disk->first_minor / perdev_minors;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	return devidx;
 }
 
@@ -247,6 +255,12 @@ static struct mmc_blk_ioc_data *mmc_blk_ioctl_copy_from_user(
 		goto idata_err;
 	}
 
+<<<<<<< HEAD
+=======
+	if (!idata->buf_bytes)
+		return idata;
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	idata->buf = kzalloc(idata->buf_bytes, GFP_KERNEL);
 	if (!idata->buf) {
 		err = -ENOMEM;
@@ -293,6 +307,7 @@ static int mmc_blk_ioctl_cmd(struct block_device *bdev,
 	if (IS_ERR(idata))
 		return PTR_ERR(idata);
 
+<<<<<<< HEAD
 	cmd.opcode = idata->ic.opcode;
 	cmd.arg = idata->ic.arg;
 	cmd.flags = idata->ic.flags;
@@ -312,6 +327,8 @@ static int mmc_blk_ioctl_cmd(struct block_device *bdev,
 	mrq.cmd = &cmd;
 	mrq.data = &data;
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	md = mmc_blk_get(bdev->bd_disk);
 	if (!md) {
 		err = -EINVAL;
@@ -324,6 +341,51 @@ static int mmc_blk_ioctl_cmd(struct block_device *bdev,
 		goto cmd_done;
 	}
 
+<<<<<<< HEAD
+=======
+	cmd.opcode = idata->ic.opcode;
+	cmd.arg = idata->ic.arg;
+	cmd.flags = idata->ic.flags;
+
+	if (idata->buf_bytes) {
+		data.sg = &sg;
+		data.sg_len = 1;
+		data.blksz = idata->ic.blksz;
+		data.blocks = idata->ic.blocks;
+
+		sg_init_one(data.sg, idata->buf, idata->buf_bytes);
+
+		if (idata->ic.write_flag)
+			data.flags = MMC_DATA_WRITE;
+		else
+			data.flags = MMC_DATA_READ;
+
+		/* data.flags must already be set before doing this. */
+		mmc_set_data_timeout(&data, card);
+
+		/* Allow overriding the timeout_ns for empirical tuning. */
+		if (idata->ic.data_timeout_ns)
+			data.timeout_ns = idata->ic.data_timeout_ns;
+
+		if ((cmd.flags & MMC_RSP_R1B) == MMC_RSP_R1B) {
+			/*
+			 * Pretend this is a data transfer and rely on the
+			 * host driver to compute timeout.  When all host
+			 * drivers support cmd.cmd_timeout for R1B, this
+			 * can be changed to:
+			 *
+			 *     mrq.data = NULL;
+			 *     cmd.cmd_timeout = idata->ic.cmd_timeout_ms;
+			 */
+			data.timeout_ns = idata->ic.cmd_timeout_ms * 1000000;
+		}
+
+		mrq.data = &data;
+	}
+
+	mrq.cmd = &cmd;
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	mmc_claim_host(card->host);
 
 	if (idata->ic.is_acmd) {
@@ -332,6 +394,7 @@ static int mmc_blk_ioctl_cmd(struct block_device *bdev,
 			goto cmd_rel_host;
 	}
 
+<<<<<<< HEAD
 	/* data.flags must already be set before doing this. */
 	mmc_set_data_timeout(&data, card);
 	/* Allow overriding the timeout_ns for empirical tuning. */
@@ -350,6 +413,8 @@ static int mmc_blk_ioctl_cmd(struct block_device *bdev,
 		data.timeout_ns = idata->ic.cmd_timeout_ms * 1000000;
 	}
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	mmc_wait_for_req(card->host, &mrq);
 
 	if (cmd.error) {
@@ -463,6 +528,10 @@ static u32 mmc_sd_num_wr_blocks(struct mmc_card *card)
 	struct mmc_request mrq = {0};
 	struct mmc_command cmd = {0};
 	struct mmc_data data = {0};
+<<<<<<< HEAD
+=======
+	unsigned int timeout_us;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	struct scatterlist sg;
 
@@ -482,12 +551,30 @@ static u32 mmc_sd_num_wr_blocks(struct mmc_card *card)
 	cmd.arg = 0;
 	cmd.flags = MMC_RSP_SPI_R1 | MMC_RSP_R1 | MMC_CMD_ADTC;
 
+<<<<<<< HEAD
+=======
+	data.timeout_ns = card->csd.tacc_ns * 100;
+	data.timeout_clks = card->csd.tacc_clks * 100;
+
+	timeout_us = data.timeout_ns / 1000;
+	timeout_us += data.timeout_clks * 1000 /
+		(card->host->ios.clock / 1000);
+
+	if (timeout_us > 100000) {
+		data.timeout_ns = 100000000;
+		data.timeout_clks = 0;
+	}
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	data.blksz = 4;
 	data.blocks = 1;
 	data.flags = MMC_DATA_READ;
 	data.sg = &sg;
 	data.sg_len = 1;
+<<<<<<< HEAD
 	mmc_set_data_timeout(&data, card);
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	mrq.cmd = &cmd;
 	mrq.data = &data;
@@ -509,6 +596,7 @@ static u32 mmc_sd_num_wr_blocks(struct mmc_card *card)
 	return result;
 }
 
+<<<<<<< HEAD
 static int send_stop(struct mmc_card *card, u32 *status)
 {
 	struct mmc_command cmd = {0};
@@ -523,6 +611,9 @@ static int send_stop(struct mmc_card *card, u32 *status)
 }
 
 static int get_card_status(struct mmc_card *card, u32 *status, int retries)
+=======
+static u32 get_card_status(struct mmc_card *card, struct request *req)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 {
 	struct mmc_command cmd = {0};
 	int err;
@@ -531,6 +622,7 @@ static int get_card_status(struct mmc_card *card, u32 *status, int retries)
 	if (!mmc_host_is_spi(card->host))
 		cmd.arg = card->rca << 16;
 	cmd.flags = MMC_RSP_SPI_R2 | MMC_RSP_R1 | MMC_CMD_AC;
+<<<<<<< HEAD
 	err = mmc_wait_for_cmd(card->host, &cmd, retries);
 	if (err == 0)
 		*status = cmd.resp[0];
@@ -678,6 +770,13 @@ static int mmc_blk_cmd_recovery(struct mmc_card *card, struct request *req,
 		brq->stop.error = 0;
 	}
 	return ERR_CONTINUE;
+=======
+	err = mmc_wait_for_cmd(card->host, &cmd, 0);
+	if (err)
+		printk(KERN_ERR "%s: error %d sending status command",
+		       req->rq_disk->disk_name, err);
+	return cmd.resp[0];
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 static int mmc_blk_issue_discard_rq(struct mmc_queue *mq, struct request *req)
@@ -808,6 +907,7 @@ static inline void mmc_apply_rel_rw(struct mmc_blk_request *brq,
 	}
 }
 
+<<<<<<< HEAD
 #define CMD_ERRORS							\
 	(R1_OUT_OF_RANGE |	/* Command argument out of range */	\
 	 R1_ADDRESS_ERROR |	/* Misaligned address */		\
@@ -816,12 +916,18 @@ static inline void mmc_apply_rel_rw(struct mmc_blk_request *brq,
 	 R1_CC_ERROR |		/* Card controller error */		\
 	 R1_ERROR)		/* General/unknown error */
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 static int mmc_blk_issue_rw_rq(struct mmc_queue *mq, struct request *req)
 {
 	struct mmc_blk_data *md = mq->data;
 	struct mmc_card *card = md->queue.card;
 	struct mmc_blk_request brq;
+<<<<<<< HEAD
 	int ret = 1, disable_multi = 0, retry = 0;
+=======
+	int ret = 1, disable_multi = 0;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	/*
 	 * Reliable writes are used to implement Forced Unit Access and
@@ -833,7 +939,12 @@ static int mmc_blk_issue_rw_rq(struct mmc_queue *mq, struct request *req)
 		(md->flags & MMC_BLK_REL_WR);
 
 	do {
+<<<<<<< HEAD
 		u32 readcmd, writecmd;
+=======
+		struct mmc_command cmd = {0};
+		u32 readcmd, writecmd, status = 0;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 		memset(&brq, 0, sizeof(struct mmc_blk_request));
 		brq.mrq.cmd = &brq.cmd;
@@ -950,6 +1061,7 @@ static int mmc_blk_issue_rw_rq(struct mmc_queue *mq, struct request *req)
 		mmc_queue_bounce_post(mq);
 
 		/*
+<<<<<<< HEAD
 		 * sbc.error indicates a problem with the set block count
 		 * command.  No data will have been transferred.
 		 *
@@ -992,6 +1104,64 @@ static int mmc_blk_issue_rw_rq(struct mmc_queue *mq, struct request *req)
 			u32 status;
 			do {
 				int err = get_card_status(card, &status, 5);
+=======
+		 * Check for errors here, but don't jump to cmd_err
+		 * until later as we need to wait for the card to leave
+		 * programming mode even when things go wrong.
+		 */
+		if (brq.sbc.error || brq.cmd.error ||
+		    brq.data.error || brq.stop.error) {
+			if (brq.data.blocks > 1 && rq_data_dir(req) == READ) {
+				/* Redo read one sector at a time */
+				printk(KERN_WARNING "%s: retrying using single "
+				       "block read\n", req->rq_disk->disk_name);
+				disable_multi = 1;
+				continue;
+			}
+			status = get_card_status(card, req);
+		}
+
+		if (brq.sbc.error) {
+			printk(KERN_ERR "%s: error %d sending SET_BLOCK_COUNT "
+			       "command, response %#x, card status %#x\n",
+			       req->rq_disk->disk_name, brq.sbc.error,
+			       brq.sbc.resp[0], status);
+		}
+
+		if (brq.cmd.error) {
+			printk(KERN_ERR "%s: error %d sending read/write "
+			       "command, response %#x, card status %#x\n",
+			       req->rq_disk->disk_name, brq.cmd.error,
+			       brq.cmd.resp[0], status);
+		}
+
+		if (brq.data.error) {
+			if (brq.data.error == -ETIMEDOUT && brq.mrq.stop)
+				/* 'Stop' response contains card status */
+				status = brq.mrq.stop->resp[0];
+			printk(KERN_ERR "%s: error %d transferring data,"
+			       " sector %u, nr %u, card status %#x\n",
+			       req->rq_disk->disk_name, brq.data.error,
+			       (unsigned)blk_rq_pos(req),
+			       (unsigned)blk_rq_sectors(req), status);
+		}
+
+		if (brq.stop.error) {
+			printk(KERN_ERR "%s: error %d sending stop command, "
+			       "response %#x, card status %#x\n",
+			       req->rq_disk->disk_name, brq.stop.error,
+			       brq.stop.resp[0], status);
+		}
+
+		if (!mmc_host_is_spi(card->host) && rq_data_dir(req) != READ) {
+			do {
+				int err;
+
+				cmd.opcode = MMC_SEND_STATUS;
+				cmd.arg = card->rca << 16;
+				cmd.flags = MMC_RSP_R1 | MMC_CMD_AC;
+				err = mmc_wait_for_cmd(card->host, &cmd, 5);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 				if (err) {
 					printk(KERN_ERR "%s: error %d requesting status\n",
 					       req->rq_disk->disk_name, err);
@@ -1002,6 +1172,7 @@ static int mmc_blk_issue_rw_rq(struct mmc_queue *mq, struct request *req)
 				 * so make sure to check both the busy
 				 * indication and the card state.
 				 */
+<<<<<<< HEAD
 			} while (!(status & R1_READY_FOR_DATA) ||
 				 (R1_CURRENT_STATE(status) == R1_STATE_PRG));
 		}
@@ -1022,6 +1193,22 @@ static int mmc_blk_issue_rw_rq(struct mmc_queue *mq, struct request *req)
 					continue;
 				}
 
+=======
+			} while (!(cmd.resp[0] & R1_READY_FOR_DATA) ||
+				(R1_CURRENT_STATE(cmd.resp[0]) == 7));
+
+#if 0
+			if (cmd.resp[0] & ~0x00000900)
+				printk(KERN_ERR "%s: status = %08x\n",
+				       req->rq_disk->disk_name, cmd.resp[0]);
+			if (mmc_decode_status(cmd.resp))
+				goto cmd_err;
+#endif
+		}
+
+		if (brq.cmd.error || brq.stop.error || brq.data.error) {
+			if (rq_data_dir(req) == READ) {
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 				/*
 				 * After an error, we redo I/O one sector at a
 				 * time, so we only reach here after trying to
@@ -1031,9 +1218,14 @@ static int mmc_blk_issue_rw_rq(struct mmc_queue *mq, struct request *req)
 				ret = __blk_end_request(req, -EIO, brq.data.blksz);
 				spin_unlock_irq(&md->lock);
 				continue;
+<<<<<<< HEAD
 			} else {
 				goto cmd_err;
 			}
+=======
+			}
+			goto cmd_err;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		}
 
 		/*
@@ -1070,10 +1262,14 @@ static int mmc_blk_issue_rw_rq(struct mmc_queue *mq, struct request *req)
 		spin_unlock_irq(&md->lock);
 	}
 
+<<<<<<< HEAD
  cmd_abort:
 	spin_lock_irq(&md->lock);
 	if (mmc_card_removed(card))
 		req->cmd_flags |= REQ_QUIET;
+=======
+	spin_lock_irq(&md->lock);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	while (ret)
 		ret = __blk_end_request(req, -EIO, blk_rq_cur_bytes(req));
 	spin_unlock_irq(&md->lock);
@@ -1081,15 +1277,19 @@ static int mmc_blk_issue_rw_rq(struct mmc_queue *mq, struct request *req)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int
 mmc_blk_set_blksize(struct mmc_blk_data *md, struct mmc_card *card);
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 static int mmc_blk_issue_rq(struct mmc_queue *mq, struct request *req)
 {
 	int ret;
 	struct mmc_blk_data *md = mq->data;
 	struct mmc_card *card = md->queue.card;
 
+<<<<<<< HEAD
 #ifdef CONFIG_MMC_BLOCK_DEFERRED_RESUME
 	if (mmc_bus_needs_resume(card->host)) {
 		mmc_resume_bus(card->host);
@@ -1097,6 +1297,8 @@ static int mmc_blk_issue_rq(struct mmc_queue *mq, struct request *req)
 	}
 #endif
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	mmc_claim_host(card->host);
 	ret = mmc_blk_part_switch(card, md);
 	if (ret) {
@@ -1188,9 +1390,14 @@ static struct mmc_blk_data *mmc_blk_alloc_req(struct mmc_card *card,
 	md->disk->fops = &mmc_bdops;
 	md->disk->private_data = md;
 	md->disk->queue = md->queue.queue;
+<<<<<<< HEAD
 	md->disk->driverfs_dev = &card->dev;
 	set_disk_ro(md->disk, md->read_only || default_ro);
 	md->disk->flags = GENHD_FL_EXT_DEVT;
+=======
+	md->disk->driverfs_dev = parent;
+	set_disk_ro(md->disk, md->read_only || default_ro);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	/*
 	 * As discussed on lkml, GENHD_FL_REMOVABLE should:
@@ -1290,7 +1497,11 @@ static int mmc_blk_alloc_parts(struct mmc_card *card, struct mmc_blk_data *md)
 	if (!mmc_card_mmc(card))
 		return 0;
 
+<<<<<<< HEAD
 	if (card->ext_csd.boot_size && mmc_boot_partition_access(card->host)) {
+=======
+	if (card->ext_csd.boot_size) {
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		ret = mmc_blk_alloc_part(card, md, EXT_CSD_PART_CONFIG_ACC_BOOT0,
 					 card->ext_csd.boot_size >> 9,
 					 true,
@@ -1313,9 +1524,12 @@ mmc_blk_set_blksize(struct mmc_blk_data *md, struct mmc_card *card)
 {
 	int err;
 
+<<<<<<< HEAD
 	if (mmc_card_blockaddr(card) || mmc_card_ddr_mode(card))
 		return 0;
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	mmc_claim_host(card->host);
 	err = mmc_set_blocklen(card, 512);
 	mmc_release_host(card->host);
@@ -1433,9 +1647,12 @@ static int mmc_blk_probe(struct mmc_card *card)
 	mmc_set_drvdata(card, md);
 	mmc_fixup_device(card, blk_fixups);
 
+<<<<<<< HEAD
 #ifdef CONFIG_MMC_BLOCK_DEFERRED_RESUME
 	mmc_set_bus_resume_policy(card->host, 1);
 #endif
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	if (mmc_add_disk(md))
 		goto out;
 
@@ -1461,6 +1678,7 @@ static void mmc_blk_remove(struct mmc_card *card)
 	mmc_release_host(card->host);
 	mmc_blk_remove_req(md);
 	mmc_set_drvdata(card, NULL);
+<<<<<<< HEAD
 #ifdef CONFIG_MMC_BLOCK_DEFERRED_RESUME
 	mmc_set_bus_resume_policy(card->host, 0);
 #endif
@@ -1468,6 +1686,12 @@ static void mmc_blk_remove(struct mmc_card *card)
 
 #ifdef CONFIG_PM
 static int mmc_blk_suspend(struct mmc_card *card)
+=======
+}
+
+#ifdef CONFIG_PM
+static int mmc_blk_suspend(struct mmc_card *card, pm_message_t state)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 {
 	struct mmc_blk_data *part_md;
 	struct mmc_blk_data *md = mmc_get_drvdata(card);
@@ -1487,9 +1711,13 @@ static int mmc_blk_resume(struct mmc_card *card)
 	struct mmc_blk_data *md = mmc_get_drvdata(card);
 
 	if (md) {
+<<<<<<< HEAD
 #ifndef CONFIG_MMC_BLOCK_DEFERRED_RESUME
 		mmc_blk_set_blksize(md, card);
 #endif
+=======
+		mmc_blk_set_blksize(md, card);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 		/*
 		 * Resume involves the card going into idle state,

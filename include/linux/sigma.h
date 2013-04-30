@@ -24,7 +24,11 @@ struct sigma_firmware {
 struct sigma_firmware_header {
 	unsigned char magic[7];
 	u8 version;
+<<<<<<< HEAD
 	u32 crc;
+=======
+	__le32 crc;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 };
 
 enum {
@@ -40,19 +44,28 @@ enum {
 struct sigma_action {
 	u8 instr;
 	u8 len_hi;
+<<<<<<< HEAD
 	u16 len;
 	u16 addr;
+=======
+	__le16 len;
+	__be16 addr;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	unsigned char payload[];
 };
 
 static inline u32 sigma_action_len(struct sigma_action *sa)
 {
+<<<<<<< HEAD
 	return (sa->len_hi << 16) | sa->len;
 }
 
 static inline size_t sigma_action_size(struct sigma_action *sa, u32 payload_len)
 {
 	return sizeof(*sa) + payload_len + (payload_len % 2);
+=======
+	return (sa->len_hi << 16) | le16_to_cpu(sa->len);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 extern int process_sigma_firmware(struct i2c_client *client, const char *name);

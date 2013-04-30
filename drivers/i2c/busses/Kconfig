@@ -445,6 +445,7 @@ config I2C_MPC
 	  This driver can also be built as a module.  If so, the module
 	  will be called i2c-mpc.
 
+<<<<<<< HEAD
 config I2C_MSM
 	tristate "MSM"
 	depends on I2C && (ARCH_MSM || ARCH_QSD)
@@ -471,6 +472,8 @@ config I2C_SSBI
           Note that SSBI is not an I2C device, but is functionally related
           enough such that it is able to leverages the I2C framework.
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 config I2C_MV64XXX
 	tristate "Marvell mv64xxx I2C Controller"
 	depends on (MV64X60 || PLAT_ORION) && EXPERIMENTAL

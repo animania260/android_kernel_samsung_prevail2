@@ -280,6 +280,10 @@ static int __devinit wl1251_spi_probe(struct spi_device *spi)
 
 	wl->use_eeprom = pdata->use_eeprom;
 
+<<<<<<< HEAD
+=======
+	irq_set_status_flags(wl->irq, IRQ_NOAUTOEN);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	ret = request_irq(wl->irq, wl1251_irq, 0, DRIVER_NAME, wl);
 	if (ret < 0) {
 		wl1251_error("request_irq() failed: %d", ret);
@@ -288,8 +292,11 @@ static int __devinit wl1251_spi_probe(struct spi_device *spi)
 
 	irq_set_irq_type(wl->irq, IRQ_TYPE_EDGE_RISING);
 
+<<<<<<< HEAD
 	disable_irq(wl->irq);
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	ret = wl1251_init_ieee80211(wl);
 	if (ret)
 		goto out_irq;

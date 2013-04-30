@@ -22,7 +22,10 @@
 #include <linux/slab.h>
 #include <linux/errno.h>
 #include <linux/iommu.h>
+<<<<<<< HEAD
 #include <linux/scatterlist.h>
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 static struct iommu_ops *iommu_ops;
 
@@ -40,19 +43,30 @@ bool iommu_found(void)
 }
 EXPORT_SYMBOL_GPL(iommu_found);
 
+<<<<<<< HEAD
 struct iommu_domain *iommu_domain_alloc(int flags)
+=======
+struct iommu_domain *iommu_domain_alloc(void)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 {
 	struct iommu_domain *domain;
 	int ret;
 
+<<<<<<< HEAD
 	if (!iommu_found())
 		return NULL;
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	domain = kmalloc(sizeof(*domain), GFP_KERNEL);
 	if (!domain)
 		return NULL;
 
+<<<<<<< HEAD
 	ret = iommu_ops->domain_init(domain, flags);
+=======
+	ret = iommu_ops->domain_init(domain);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	if (ret)
 		goto out_free;
 
@@ -67,9 +81,12 @@ EXPORT_SYMBOL_GPL(iommu_domain_alloc);
 
 void iommu_domain_free(struct iommu_domain *domain)
 {
+<<<<<<< HEAD
 	if (!iommu_found())
 		return;
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	iommu_ops->domain_destroy(domain);
 	kfree(domain);
 }
@@ -77,18 +94,24 @@ EXPORT_SYMBOL_GPL(iommu_domain_free);
 
 int iommu_attach_device(struct iommu_domain *domain, struct device *dev)
 {
+<<<<<<< HEAD
 	if (!iommu_found())
 		return -ENODEV;
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	return iommu_ops->attach_dev(domain, dev);
 }
 EXPORT_SYMBOL_GPL(iommu_attach_device);
 
 void iommu_detach_device(struct iommu_domain *domain, struct device *dev)
 {
+<<<<<<< HEAD
 	if (!iommu_found())
 		return;
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	iommu_ops->detach_dev(domain, dev);
 }
 EXPORT_SYMBOL_GPL(iommu_detach_device);
@@ -96,9 +119,12 @@ EXPORT_SYMBOL_GPL(iommu_detach_device);
 phys_addr_t iommu_iova_to_phys(struct iommu_domain *domain,
 			       unsigned long iova)
 {
+<<<<<<< HEAD
 	if (!iommu_found())
 		return 0;
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	return iommu_ops->iova_to_phys(domain, iova);
 }
 EXPORT_SYMBOL_GPL(iommu_iova_to_phys);
@@ -106,9 +132,12 @@ EXPORT_SYMBOL_GPL(iommu_iova_to_phys);
 int iommu_domain_has_cap(struct iommu_domain *domain,
 			 unsigned long cap)
 {
+<<<<<<< HEAD
 	if (!iommu_found())
 		return -ENODEV;
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	return iommu_ops->domain_has_cap(domain, cap);
 }
 EXPORT_SYMBOL_GPL(iommu_domain_has_cap);
@@ -119,9 +148,12 @@ int iommu_map(struct iommu_domain *domain, unsigned long iova,
 	unsigned long invalid_mask;
 	size_t size;
 
+<<<<<<< HEAD
 	if (!iommu_found())
 		return -ENODEV;
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	size         = 0x1000UL << gfp_order;
 	invalid_mask = size - 1;
 
@@ -136,9 +168,12 @@ int iommu_unmap(struct iommu_domain *domain, unsigned long iova, int gfp_order)
 	unsigned long invalid_mask;
 	size_t size;
 
+<<<<<<< HEAD
 	if (!iommu_found())
 		return -ENODEV;
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	size         = 0x1000UL << gfp_order;
 	invalid_mask = size - 1;
 
@@ -147,6 +182,7 @@ int iommu_unmap(struct iommu_domain *domain, unsigned long iova, int gfp_order)
 	return iommu_ops->unmap(domain, iova, gfp_order);
 }
 EXPORT_SYMBOL_GPL(iommu_unmap);
+<<<<<<< HEAD
 
 int iommu_map_range(struct iommu_domain *domain, unsigned int iova,
 		    struct scatterlist *sg, unsigned int len, int prot)
@@ -180,3 +216,5 @@ phys_addr_t iommu_get_pt_base_addr(struct iommu_domain *domain)
 	return iommu_ops->get_pt_base_addr(domain);
 }
 EXPORT_SYMBOL_GPL(iommu_get_pt_base_addr);
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y

@@ -1803,10 +1803,20 @@ static ssize_t pktgen_thread_write(struct file *file,
 			return -EFAULT;
 		i += len;
 		mutex_lock(&pktgen_thread_lock);
+<<<<<<< HEAD
 		pktgen_add_device(t, f);
 		mutex_unlock(&pktgen_thread_lock);
 		ret = count;
 		sprintf(pg_result, "OK: add_device=%s", f);
+=======
+		ret = pktgen_add_device(t, f);
+		mutex_unlock(&pktgen_thread_lock);
+		if (!ret) {
+			ret = count;
+			sprintf(pg_result, "OK: add_device=%s", f);
+		} else
+			sprintf(pg_result, "ERROR: can not add device %s", f);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		goto out;
 	}
 
@@ -1932,7 +1942,11 @@ static int pktgen_device_event(struct notifier_block *unused,
 {
 	struct net_device *dev = ptr;
 
+<<<<<<< HEAD
 	if (!net_eq(dev_net(dev), &init_net))
+=======
+	if (!net_eq(dev_net(dev), &init_net) || pktgen_exiting)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		return NOTIFY_DONE;
 
 	/* It is OK that we do not hold the group lock right now,
@@ -2932,7 +2946,11 @@ static struct sk_buff *fill_packet_ipv6(struct net_device *odev,
 		  sizeof(struct ipv6hdr) - sizeof(struct udphdr) -
 		  pkt_dev->pkt_overhead;
 
+<<<<<<< HEAD
 	if (datalen < sizeof(struct pktgen_hdr)) {
+=======
+	if (datalen < 0 || datalen < sizeof(struct pktgen_hdr)) {
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		datalen = sizeof(struct pktgen_hdr);
 		if (net_ratelimit())
 			pr_info("increased datalen to %d\n", datalen);
@@ -3755,12 +3773,26 @@ static void __exit pg_cleanup(void)
 {
 	struct pktgen_thread *t;
 	struct list_head *q, *n;
+<<<<<<< HEAD
+=======
+	LIST_HEAD(list);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	/* Stop all interfaces & threads */
 	pktgen_exiting = true;
 
+<<<<<<< HEAD
 	list_for_each_safe(q, n, &pktgen_threads) {
 		t = list_entry(q, struct pktgen_thread, th_list);
+=======
+	mutex_lock(&pktgen_thread_lock);
+	list_splice_init(&pktgen_threads, &list);
+	mutex_unlock(&pktgen_thread_lock);
+
+	list_for_each_safe(q, n, &list) {
+		t = list_entry(q, struct pktgen_thread, th_list);
+		list_del(&t->th_list);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		kthread_stop(t->tsk);
 		kfree(t);
 	}

@@ -18,7 +18,11 @@ int drm_get_usb_dev(struct usb_interface *interface,
 
 	usbdev = interface_to_usbdev(interface);
 	dev->usbdev = usbdev;
+<<<<<<< HEAD
 	dev->dev = &usbdev->dev;
+=======
+	dev->dev = &interface->dev;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	mutex_lock(&drm_global_mutex);
 

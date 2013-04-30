@@ -26,7 +26,10 @@ extern int cmd_list(int argc, const char **argv, const char *prefix);
 extern int cmd_record(int argc, const char **argv, const char *prefix);
 extern int cmd_report(int argc, const char **argv, const char *prefix);
 extern int cmd_stat(int argc, const char **argv, const char *prefix);
+<<<<<<< HEAD
 extern int cmd_periodic(int argc, const char **argv, const char *prefix);
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 extern int cmd_timechart(int argc, const char **argv, const char *prefix);
 extern int cmd_top(int argc, const char **argv, const char *prefix);
 extern int cmd_script(int argc, const char **argv, const char *prefix);

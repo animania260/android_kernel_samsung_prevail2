@@ -5,12 +5,20 @@
  *  Digital Audio (PCM) abstract layer
  *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
  *                   Abramo Bagnara <abramo@alsa-project.org>
+<<<<<<< HEAD
  *  Copyright (c) 2011, Code Aurora Forum. All rights reserved.
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
  *
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
+<<<<<<< HEAD
  *   the Free Software Foundation; only version 2 of the License.
+=======
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
  *
  *   This program is distributed in the hope that it will be useful,
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -413,7 +421,10 @@ struct snd_pcm_substream {
 #endif
 	/* misc flags */
 	unsigned int hw_opened: 1;
+<<<<<<< HEAD
 	unsigned int hw_no_buffer: 1; /* substream may not have a buffer */
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 };
 
 #define SUBSTREAM_BUSY(substream) ((substream)->ref_count > 0)

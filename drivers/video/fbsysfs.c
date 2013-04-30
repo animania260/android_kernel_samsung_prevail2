@@ -175,6 +175,11 @@ static ssize_t store_modes(struct device *device,
 	if (i * sizeof(struct fb_videomode) != count)
 		return -EINVAL;
 
+<<<<<<< HEAD
+=======
+	if (!lock_fb_info(fb_info))
+		return -ENODEV;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	console_lock();
 	list_splice(&fb_info->modelist, &old_list);
 	fb_videomode_to_modelist((const struct fb_videomode *)buf, i,
@@ -186,6 +191,10 @@ static ssize_t store_modes(struct device *device,
 		fb_destroy_modelist(&old_list);
 
 	console_unlock();
+<<<<<<< HEAD
+=======
+	unlock_fb_info(fb_info);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	return 0;
 }
@@ -399,9 +408,18 @@ static ssize_t store_fbstate(struct device *device,
 
 	state = simple_strtoul(buf, &last, 0);
 
+<<<<<<< HEAD
 	console_lock();
 	fb_set_suspend(fb_info, (int)state);
 	console_unlock();
+=======
+	if (!lock_fb_info(fb_info))
+		return -ENODEV;
+	console_lock();
+	fb_set_suspend(fb_info, (int)state);
+	console_unlock();
+	unlock_fb_info(fb_info);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	return count;
 }

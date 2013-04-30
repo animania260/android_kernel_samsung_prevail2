@@ -8,6 +8,7 @@
  * Version 2.  See the file COPYING for more details.
  */
 
+<<<<<<< HEAD
 #ifndef __GENALLOC_H__
 #define __GENALLOC_H__
 
@@ -37,6 +38,33 @@ gen_pool_alloc(struct gen_pool *pool, size_t size)
 
 void gen_pool_free(struct gen_pool *pool, unsigned long addr, size_t size);
 
+=======
+
+#ifndef __GENALLOC_H__
+#define __GENALLOC_H__
+/*
+ *  General purpose special memory pool descriptor.
+ */
+struct gen_pool {
+	rwlock_t lock;
+	struct list_head chunks;	/* list of chunks in this pool */
+	int min_alloc_order;		/* minimum allocation order */
+};
+
+/*
+ *  General purpose special memory pool chunk descriptor.
+ */
+struct gen_pool_chunk {
+	spinlock_t lock;
+	struct list_head next_chunk;	/* next chunk in pool */
+	phys_addr_t phys_addr;		/* physical starting address of memory chunk */
+	unsigned long start_addr;	/* starting address of memory chunk */
+	unsigned long end_addr;		/* ending address of memory chunk */
+	unsigned long bits[0];		/* bitmap for allocating memory chunk */
+};
+
+extern struct gen_pool *gen_pool_create(int, int);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 extern phys_addr_t gen_pool_virt_to_phys(struct gen_pool *pool, unsigned long);
 extern int gen_pool_add_virt(struct gen_pool *, unsigned long, phys_addr_t,
 			     size_t, int);
@@ -52,9 +80,19 @@ extern int gen_pool_add_virt(struct gen_pool *, unsigned long, phys_addr_t,
  *
  * Returns 0 on success or a -ve errno on failure.
  */
+<<<<<<< HEAD
 static inline int __must_check gen_pool_add(struct gen_pool *pool, unsigned long addr,
+=======
+static inline int gen_pool_add(struct gen_pool *pool, unsigned long addr,
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			       size_t size, int nid)
 {
 	return gen_pool_add_virt(pool, addr, -1, size, nid);
 }
+<<<<<<< HEAD
+=======
+extern void gen_pool_destroy(struct gen_pool *);
+extern unsigned long gen_pool_alloc(struct gen_pool *, size_t);
+extern void gen_pool_free(struct gen_pool *, unsigned long, size_t);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #endif /* __GENALLOC_H__ */

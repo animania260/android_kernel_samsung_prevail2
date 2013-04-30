@@ -99,6 +99,7 @@ config CPU_FREQ_DEFAULT_GOV_CONSERVATIVE
 	  Be aware that not all cpufreq drivers support the conservative
 	  governor. If unsure have a look at the help section of the
 	  driver. Fallback governor will be the performance governor.
+<<<<<<< HEAD
 
 
 config CPU_FREQ_DEFAULT_GOV_LAGFREE
@@ -155,6 +156,8 @@ config CPU_FREQ_DEFAULT_GOV_LULZACTIVEQ
 	bool "lulzactiveq"
 	select CPU_FREQ_GOV_LULZACTIVEQ
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 endchoice
 
 config CPU_FREQ_GOV_PERFORMANCE
@@ -212,6 +215,7 @@ config CPU_FREQ_GOV_ONDEMAND
 
 	  If in doubt, say N.
 
+<<<<<<< HEAD
 config CPU_FREQ_GOV_INTERACTIVE
 	tristate "'interactive' cpufreq policy governor"
 	help
@@ -229,6 +233,8 @@ config CPU_FREQ_GOV_INTERACTIVE
 
 	  If in doubt, say N.
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 config CPU_FREQ_GOV_CONSERVATIVE
 	tristate "'conservative' cpufreq governor"
 	depends on CPU_FREQ
@@ -252,6 +258,7 @@ config CPU_FREQ_GOV_CONSERVATIVE
 
 	  If in doubt, say N.
 
+<<<<<<< HEAD
 config CPU_FREQ_GOV_INTERACTIVE
 	tristate "'interactive' cpufreq policy governor"
 	help
@@ -448,6 +455,8 @@ config SEC_DVFS
 	default n
 	depends on CPU_FREQ
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 menu "x86 CPU frequency scaling drivers"
 depends on X86
 source "drivers/cpufreq/Kconfig.x86"

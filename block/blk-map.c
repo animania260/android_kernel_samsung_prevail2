@@ -204,10 +204,18 @@ int blk_rq_map_user_iov(struct request_queue *q, struct request *rq,
 		if (!iov[i].iov_len)
 			return -EINVAL;
 
+<<<<<<< HEAD
 		if (uaddr & queue_dma_alignment(q)) {
 			unaligned = 1;
 			break;
 		}
+=======
+		/*
+		 * Keep going so we check length of all segments
+		 */
+		if (uaddr & queue_dma_alignment(q))
+			unaligned = 1;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	}
 
 	if (unaligned || (q->dma_pad_mask & len) || map_data)

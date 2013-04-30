@@ -39,12 +39,15 @@
 #include <linux/magic.h>
 #include "ecryptfs_kernel.h"
 
+<<<<<<< HEAD
 
 #ifdef CONFIG_WTL_ENCRYPTION_FILTER
 #include <linux/ctype.h>
 #endif
 
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 /**
  * Module parameter that defines the ecryptfs_verbosity level.
  */
@@ -182,9 +185,12 @@ enum { ecryptfs_opt_sig, ecryptfs_opt_ecryptfs_sig,
        ecryptfs_opt_fn_cipher, ecryptfs_opt_fn_cipher_key_bytes,
        ecryptfs_opt_unlink_sigs, ecryptfs_opt_mount_auth_tok_only,
        ecryptfs_opt_check_dev_ruid,
+<<<<<<< HEAD
 #ifdef CONFIG_WTL_ENCRYPTION_FILTER
 	ecryptfs_opt_enable_filtering,
 #endif
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
        ecryptfs_opt_err };
 
 static const match_table_t tokens = {
@@ -202,9 +208,12 @@ static const match_table_t tokens = {
 	{ecryptfs_opt_unlink_sigs, "ecryptfs_unlink_sigs"},
 	{ecryptfs_opt_mount_auth_tok_only, "ecryptfs_mount_auth_tok_only"},
 	{ecryptfs_opt_check_dev_ruid, "ecryptfs_check_dev_ruid"},
+<<<<<<< HEAD
 #ifdef CONFIG_WTL_ENCRYPTION_FILTER
 	{ecryptfs_opt_enable_filtering, "ecryptfs_enable_filtering=%s"},
 #endif
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	{ecryptfs_opt_err, NULL}
 };
 
@@ -245,6 +254,7 @@ static void ecryptfs_init_mount_crypt_stat(
 	mutex_init(&mount_crypt_stat->global_auth_tok_list_mutex);
 	mount_crypt_stat->flags |= ECRYPTFS_MOUNT_CRYPT_STAT_INITIALIZED;
 }
+<<<<<<< HEAD
 #ifdef CONFIG_WTL_ENCRYPTION_FILTER
 
 static int parse_enc_file_filter_parms(
@@ -296,6 +306,9 @@ static int parse_enc_filter_parms(
 	return 0;
 }
 #endif
+=======
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 /**
  * ecryptfs_parse_options
  * @sb: The ecryptfs super block
@@ -341,6 +354,10 @@ static int ecryptfs_parse_options(struct ecryptfs_sb_info *sbi, char *options,
 	char *fnek_src;
 	char *cipher_key_bytes_src;
 	char *fn_cipher_key_bytes_src;
+<<<<<<< HEAD
+=======
+	u8 cipher_code;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	*check_ruid = 0;
 
@@ -451,6 +468,7 @@ static int ecryptfs_parse_options(struct ecryptfs_sb_info *sbi, char *options,
 		case ecryptfs_opt_check_dev_ruid:
 			*check_ruid = 1;
 			break;
+<<<<<<< HEAD
 #ifdef CONFIG_WTL_ENCRYPTION_FILTER
 		case ecryptfs_opt_enable_filtering:
 			rc = parse_enc_filter_parms(mount_crypt_stat,
@@ -464,6 +482,8 @@ static int ecryptfs_parse_options(struct ecryptfs_sb_info *sbi, char *options,
 			mount_crypt_stat->flags |= ECRYPTFS_ENABLE_FILTERING;
 			break;
 #endif
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		case ecryptfs_opt_err:
 		default:
 			printk(KERN_WARNING
@@ -495,6 +515,21 @@ static int ecryptfs_parse_options(struct ecryptfs_sb_info *sbi, char *options,
 	    && !fn_cipher_key_bytes_set)
 		mount_crypt_stat->global_default_fn_cipher_key_bytes =
 			mount_crypt_stat->global_default_cipher_key_size;
+<<<<<<< HEAD
+=======
+
+	cipher_code = ecryptfs_code_for_cipher_string(
+		mount_crypt_stat->global_default_cipher_name,
+		mount_crypt_stat->global_default_cipher_key_size);
+	if (!cipher_code) {
+		ecryptfs_printk(KERN_ERR,
+				"eCryptfs doesn't support cipher: %s",
+				mount_crypt_stat->global_default_cipher_name);
+		rc = -EINVAL;
+		goto out;
+	}
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	mutex_lock(&key_tfm_list_mutex);
 	if (!ecryptfs_tfm_exists(mount_crypt_stat->global_default_cipher_name,
 				 NULL)) {
@@ -580,7 +615,10 @@ static struct dentry *ecryptfs_mount(struct file_system_type *fs_type, int flags
 		goto out;
 	}
 
+<<<<<<< HEAD
 	s->s_flags = flags;
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	rc = bdi_setup_and_register(&sbi->bdi, "ecryptfs", BDI_CAP_MAP_COPY);
 	if (rc)
 		goto out1;
@@ -616,6 +654,18 @@ static struct dentry *ecryptfs_mount(struct file_system_type *fs_type, int flags
 	}
 
 	ecryptfs_set_superblock_lower(s, path.dentry->d_sb);
+<<<<<<< HEAD
+=======
+
+	/**
+	 * Set the POSIX ACL flag based on whether they're enabled in the lower
+	 * mount. Force a read-only eCryptfs mount if the lower mount is ro.
+	 * Allow a ro eCryptfs mount even when the lower mount is rw.
+	 */
+	s->s_flags = flags & ~MS_POSIXACL;
+	s->s_flags |= path.dentry->d_sb->s_flags & (MS_RDONLY | MS_POSIXACL);
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	s->s_maxbytes = path.dentry->d_sb->s_maxbytes;
 	s->s_blocksize = path.dentry->d_sb->s_blocksize;
 	s->s_magic = ECRYPTFS_SUPER_MAGIC;
@@ -933,7 +983,10 @@ static void __exit ecryptfs_exit(void)
 	ecryptfs_free_kmem_caches();
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 MODULE_AUTHOR("Michael A. Halcrow <mhalcrow@us.ibm.com>");
 MODULE_DESCRIPTION("eCryptfs");
 

@@ -1190,7 +1190,11 @@ static const struct driver_info smsc95xx_info = {
 	.rx_fixup	= smsc95xx_rx_fixup,
 	.tx_fixup	= smsc95xx_tx_fixup,
 	.status		= smsc95xx_status,
+<<<<<<< HEAD
 	.flags		= FLAG_ETHER | FLAG_SEND_ZLP,
+=======
+	.flags		= FLAG_ETHER | FLAG_SEND_ZLP | FLAG_LINK_INTR,
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 };
 
 static const struct usb_device_id products[] = {

@@ -546,8 +546,12 @@ static int i2c_pnx_controller_suspend(struct platform_device *pdev,
 {
 	struct i2c_pnx_algo_data *alg_data = platform_get_drvdata(pdev);
 
+<<<<<<< HEAD
 	/* FIXME: shouldn't this be clk_disable? */
 	clk_enable(alg_data->clk);
+=======
+	clk_disable(alg_data->clk);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	return 0;
 }

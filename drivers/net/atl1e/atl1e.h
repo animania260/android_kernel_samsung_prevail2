@@ -439,7 +439,10 @@ struct atl1e_adapter {
 	struct atl1e_hw        hw;
 	struct atl1e_hw_stats  hw_stats;
 
+<<<<<<< HEAD
 	bool have_msi;
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	u32 wol;
 	u16 link_speed;
 	u16 link_duplex;

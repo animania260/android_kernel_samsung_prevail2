@@ -242,8 +242,11 @@ static inline struct thread_info *current_thread_info(void)
  * ever touches our thread-synchronous status, so we don't
  * have to worry about atomic accesses.
  */
+<<<<<<< HEAD
 #define TS_USEDFPU		0x0001	/* FPU was used by this task
 					   this quantum (SMP) */
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #define TS_COMPAT		0x0002	/* 32bit syscall active (64BIT)*/
 #define TS_POLLING		0x0004	/* idle task polling need_resched,
 					   skip sending interrupt */

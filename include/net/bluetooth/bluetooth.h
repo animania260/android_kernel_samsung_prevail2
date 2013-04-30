@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /*
+=======
+/* 
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
    BlueZ - Bluetooth protocol stack for Linux
    Copyright (C) 2000-2001 Qualcomm Incorporated
 
@@ -12,6 +16,7 @@
    OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT OF THIRD PARTY RIGHTS.
    IN NO EVENT SHALL THE COPYRIGHT HOLDER(S) AND AUTHOR(S) BE LIABLE FOR ANY
+<<<<<<< HEAD
    CLAIM, OR ANY SPECIAL INDIRECT OR CONSEQUENTIAL DAMAGES, OR ANY DAMAGES
    WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
    ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
@@ -24,6 +29,18 @@
 #ifdef CONFIG_BT_MGMT
 #include "bluetooth_mgmt.h"
 #else
+=======
+   CLAIM, OR ANY SPECIAL INDIRECT OR CONSEQUENTIAL DAMAGES, OR ANY DAMAGES 
+   WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN 
+   ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF 
+   OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+   ALL LIABILITY, INCLUDING LIABILITY FOR INFRINGEMENT OF ANY PATENTS, 
+   COPYRIGHTS, TRADEMARKS OR OTHER RIGHTS, RELATING TO USE OF THIS 
+   SOFTWARE IS DISCLAIMED.
+*/
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #ifndef __BLUETOOTH_H
 #define __BLUETOOTH_H
 
@@ -58,7 +75,10 @@
 #define BT_SECURITY	4
 struct bt_security {
 	__u8 level;
+<<<<<<< HEAD
 	__u8 key_size;
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 };
 #define BT_SECURITY_SDP		0
 #define BT_SECURITY_LOW		1
@@ -72,6 +92,7 @@ struct bt_security {
 #define BT_FLUSHABLE_OFF	0
 #define BT_FLUSHABLE_ON		1
 
+<<<<<<< HEAD
 #define BT_POWER	9
 struct bt_power {
 	__u8 force_active;
@@ -85,6 +106,11 @@ int bt_printk(const char *level, const char *fmt, ...);
 #define BT_INFO(fmt, arg...)   bt_printk(KERN_INFO, pr_fmt(fmt), ##arg)
 #define BT_ERR(fmt, arg...)    bt_printk(KERN_ERR, pr_fmt(fmt), ##arg)
 #define BT_DBG(fmt, arg...)    pr_debug(fmt "\n", ##arg)
+=======
+#define BT_INFO(fmt, arg...) printk(KERN_INFO "Bluetooth: " fmt "\n" , ## arg)
+#define BT_ERR(fmt, arg...)  printk(KERN_ERR "%s: " fmt "\n" , __func__ , ## arg)
+#define BT_DBG(fmt, arg...)  pr_debug("%s: " fmt "\n" , __func__ , ## arg)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 /* Connection and socket states */
 enum {
@@ -143,8 +169,12 @@ int  bt_sock_register(int proto, const struct net_proto_family *ops);
 int  bt_sock_unregister(int proto);
 void bt_sock_link(struct bt_sock_list *l, struct sock *s);
 void bt_sock_unlink(struct bt_sock_list *l, struct sock *s);
+<<<<<<< HEAD
 int  bt_sock_recvmsg(struct kiocb *iocb, struct socket *sock,
 				struct msghdr *msg, size_t len, int flags);
+=======
+int  bt_sock_recvmsg(struct kiocb *iocb, struct socket *sock, struct msghdr *msg, size_t len, int flags);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 int  bt_sock_stream_recvmsg(struct kiocb *iocb, struct socket *sock,
 			struct msghdr *msg, size_t len, int flags);
 uint bt_sock_poll(struct file * file, struct socket *sock, poll_table *wait);
@@ -164,7 +194,10 @@ struct bt_skb_cb {
 	__u8 retries;
 	__u8 sar;
 	unsigned short channel;
+<<<<<<< HEAD
 	__u8 force_active;
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 };
 #define bt_cb(skb) ((struct bt_skb_cb *)((skb)->cb))
 
@@ -179,8 +212,13 @@ static inline struct sk_buff *bt_skb_alloc(unsigned int len, gfp_t how)
 	return skb;
 }
 
+<<<<<<< HEAD
 static inline struct sk_buff *bt_skb_send_alloc(struct sock *sk,
 					unsigned long len, int nb, int *err)
+=======
+static inline struct sk_buff *bt_skb_send_alloc(struct sock *sk, unsigned long len, 
+							int nb, int *err)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 {
 	struct sk_buff *skb;
 
@@ -210,7 +248,11 @@ out:
 	return NULL;
 }
 
+<<<<<<< HEAD
 int bt_to_errno(__u16 code);
+=======
+int bt_err(__u16 code);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 extern int hci_sock_init(void);
 extern void hci_sock_cleanup(void);
@@ -249,5 +291,8 @@ static inline void sco_exit(void)
 #endif
 
 #endif /* __BLUETOOTH_H */
+<<<<<<< HEAD
 
 #endif /*BT_MGMT*/
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y

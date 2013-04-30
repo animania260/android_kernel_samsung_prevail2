@@ -157,7 +157,11 @@ const char *snd_hda_get_jack_type(u32 cfg)
 		"Line Out", "Speaker", "HP Out", "CD",
 		"SPDIF Out", "Digital Out", "Modem Line", "Modem Hand",
 		"Line In", "Aux", "Mic", "Telephony",
+<<<<<<< HEAD
 		"SPDIF In", "Digitial In", "Reserved", "Other"
+=======
+		"SPDIF In", "Digital In", "Reserved", "Other"
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	};
 
 	return jack_types[(cfg & AC_DEFCFG_DEVICE)
@@ -1328,7 +1332,11 @@ void snd_hda_codec_setup_stream(struct hda_codec *codec, hda_nid_t nid,
 		for (i = 0; i < c->cvt_setups.used; i++) {
 			p = snd_array_elem(&c->cvt_setups, i);
 			if (!p->active && p->stream_tag == stream_tag &&
+<<<<<<< HEAD
 			    get_wcaps_type(get_wcaps(codec, p->nid)) == type)
+=======
+			    get_wcaps_type(get_wcaps(c, p->nid)) == type)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 				p->dirty = 1;
 		}
 	}
@@ -1651,7 +1659,15 @@ static void put_vol_mute(struct hda_codec *codec, struct hda_amp_info *info,
 	parm = ch ? AC_AMP_SET_RIGHT : AC_AMP_SET_LEFT;
 	parm |= direction == HDA_OUTPUT ? AC_AMP_SET_OUTPUT : AC_AMP_SET_INPUT;
 	parm |= index << AC_AMP_SET_INDEX_SHIFT;
+<<<<<<< HEAD
 	parm |= val;
+=======
+	if ((val & HDA_AMP_MUTE) && !(info->amp_caps & AC_AMPCAP_MUTE) &&
+	    (info->amp_caps & AC_AMPCAP_MIN_MUTE))
+		; /* set the zero value as a fake mute */
+	else
+		parm |= val;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	snd_hda_codec_write(codec, nid, 0, AC_VERB_SET_AMP_GAIN_MUTE, parm);
 	info->vol[ch] = val;
 }
@@ -1918,7 +1934,11 @@ int snd_hda_mixer_amp_tlv(struct snd_kcontrol *kcontrol, int op_flag,
 	val1 = -((caps & AC_AMPCAP_OFFSET) >> AC_AMPCAP_OFFSET_SHIFT);
 	val1 += ofs;
 	val1 = ((int)val1) * ((int)val2);
+<<<<<<< HEAD
 	if (min_mute)
+=======
+	if (min_mute || (caps & AC_AMPCAP_MIN_MUTE))
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		val2 |= TLV_DB_SCALE_MUTE;
 	if (put_user(SNDRV_CTL_TLVT_DB_SCALE, _tlv))
 		return -EFAULT;
@@ -2187,6 +2207,42 @@ int snd_hda_codec_reset(struct hda_codec *codec)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+typedef int (*map_slave_func_t)(void *, struct snd_kcontrol *);
+
+/* apply the function to all matching slave ctls in the mixer list */
+static int map_slaves(struct hda_codec *codec, const char * const *slaves,
+		      map_slave_func_t func, void *data)
+{
+	struct hda_nid_item *items;
+	const char * const *s;
+	int i, err;
+
+	items = codec->mixers.list;
+	for (i = 0; i < codec->mixers.used; i++) {
+		struct snd_kcontrol *sctl = items[i].kctl;
+		if (!sctl || !sctl->id.name ||
+		    sctl->id.iface != SNDRV_CTL_ELEM_IFACE_MIXER)
+			continue;
+		for (s = slaves; *s; s++) {
+			if (!strcmp(sctl->id.name, *s)) {
+				err = func(data, sctl);
+				if (err)
+					return err;
+				break;
+			}
+		}
+	}
+	return 0;
+}
+
+static int check_slave_present(void *data, struct snd_kcontrol *sctl)
+{
+	return 1;
+}
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 /**
  * snd_hda_add_vmaster - create a virtual master control and add slaves
  * @codec: HD-audio codec
@@ -2207,12 +2263,19 @@ int snd_hda_add_vmaster(struct hda_codec *codec, char *name,
 			unsigned int *tlv, const char * const *slaves)
 {
 	struct snd_kcontrol *kctl;
+<<<<<<< HEAD
 	const char * const *s;
 	int err;
 
 	for (s = slaves; *s && !snd_hda_find_mixer_ctl(codec, *s); s++)
 		;
 	if (!*s) {
+=======
+	int err;
+
+	err = map_slaves(codec, slaves, check_slave_present, NULL);
+	if (err != 1) {
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		snd_printdd("No slave found for %s\n", name);
 		return 0;
 	}
@@ -2223,6 +2286,7 @@ int snd_hda_add_vmaster(struct hda_codec *codec, char *name,
 	if (err < 0)
 		return err;
 
+<<<<<<< HEAD
 	for (s = slaves; *s; s++) {
 		struct snd_kcontrol *sctl;
 		int i = 0;
@@ -2240,6 +2304,12 @@ int snd_hda_add_vmaster(struct hda_codec *codec, char *name,
 			i++;
 		}
 	}
+=======
+	err = map_slaves(codec, slaves, (map_slave_func_t)snd_ctl_add_slave,
+			 kctl);
+	if (err < 0)
+		return err;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	return 0;
 }
 EXPORT_SYMBOL_HDA(snd_hda_add_vmaster);
@@ -2603,7 +2673,11 @@ static unsigned int convert_to_spdif_status(unsigned short val)
 	if (val & AC_DIG1_PROFESSIONAL)
 		sbits |= IEC958_AES0_PROFESSIONAL;
 	if (sbits & IEC958_AES0_PROFESSIONAL) {
+<<<<<<< HEAD
 		if (sbits & AC_DIG1_EMPHASIS)
+=======
+		if (val & AC_DIG1_EMPHASIS)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			sbits |= IEC958_AES0_PRO_EMPHASIS_5015;
 	} else {
 		if (val & AC_DIG1_EMPHASIS)

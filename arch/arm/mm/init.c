@@ -121,6 +121,7 @@ void show_mem(unsigned int filter)
 			else
 				shared += page_count(page) - 1;
 			page++;
+<<<<<<< HEAD
 #ifdef CONFIG_SPARSEMEM
 			pfn1++;
 			if (!(pfn1 % PAGES_PER_SECTION))
@@ -129,6 +130,9 @@ void show_mem(unsigned int filter)
 #else
 		} while (page < end);
 #endif
+=======
+		} while (page < end);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	}
 
 	printk("%d pages of RAM\n", total);
@@ -232,6 +236,7 @@ static void __init arm_adjust_dma_zone(unsigned long *size, unsigned long *hole,
 }
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_ARCH_POPULATES_NODE_MAP
 static void __init arm_bootmem_free_apnm(unsigned long max_low,
 	unsigned long max_high)
@@ -255,6 +260,8 @@ static void __init arm_bootmem_free_apnm(unsigned long max_low,
 }
 
 #else
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 static void __init arm_bootmem_free(unsigned long min, unsigned long max_low,
 	unsigned long max_high)
 {
@@ -312,7 +319,10 @@ static void __init arm_bootmem_free(unsigned long min, unsigned long max_low,
 
 	free_area_init_node(0, zone_size, min, zhole_size);
 }
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 #ifdef CONFIG_HAVE_ARCH_PFN_VALID
 int pfn_valid(unsigned long pfn)
@@ -329,12 +339,20 @@ static void arm_memory_present(void)
 #else
 static void arm_memory_present(void)
 {
+<<<<<<< HEAD
 	struct meminfo *mi = &meminfo;
 	int i;
 	for_each_bank(i, mi) {
 		memory_present(0, bank_pfn_start(&mi->bank[i]),
 				bank_pfn_end(&mi->bank[i]));
 	}
+=======
+	struct memblock_region *reg;
+
+	for_each_memblock(memory, reg)
+		memory_present(0, memblock_region_memory_base_pfn(reg),
+			       memblock_region_memory_end_pfn(reg));
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 #endif
 
@@ -345,6 +363,7 @@ static int __init meminfo_cmp(const void *_a, const void *_b)
 	return cmp < 0 ? -1 : cmp > 0 ? 1 : 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_DONT_MAP_HOLE_AFTER_MEMBANK0
 unsigned long membank0_size;
 EXPORT_SYMBOL(membank0_size);
@@ -363,13 +382,19 @@ void __init find_membank0_hole(void)
 }
 #endif
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 void __init arm_memblock_init(struct meminfo *mi, struct machine_desc *mdesc)
 {
 	int i;
 
+<<<<<<< HEAD
 #ifndef CONFIG_DONT_MAP_HOLE_AFTER_MEMBANK0
 	sort(&meminfo.bank, meminfo.nr_banks, sizeof(meminfo.bank[0]), meminfo_cmp, NULL);
 #endif
+=======
+	sort(&meminfo.bank, meminfo.nr_banks, sizeof(meminfo.bank[0]), meminfo_cmp, NULL);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	memblock_init();
 	for (i = 0; i < mi->nr_banks; i++)
@@ -414,6 +439,7 @@ void __init arm_memblock_init(struct meminfo *mi, struct machine_desc *mdesc)
 	memblock_dump_all();
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_MEMORY_HOTPLUG_SPARSE
 int _early_pfn_valid(unsigned long pfn)
 {
@@ -436,6 +462,8 @@ int _early_pfn_valid(unsigned long pfn)
 EXPORT_SYMBOL(_early_pfn_valid);
 #endif
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 void __init bootmem_init(void)
 {
 	unsigned long min, max_low, max_high;
@@ -457,16 +485,22 @@ void __init bootmem_init(void)
 	 */
 	sparse_init();
 
+<<<<<<< HEAD
 #ifdef CONFIG_ARCH_POPULATES_NODE_MAP
 	arm_bootmem_free_apnm(max_low, max_high);
 #else
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	/*
 	 * Now free the memory - free_area_init_node needs
 	 * the sparse mem_map arrays initialized by sparse_init()
 	 * for memmap_init_zone(), otherwise all PFNs are invalid.
 	 */
 	arm_bootmem_free(min, max_low, max_high);
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	high_memory = __va(((phys_addr_t)max_low << PAGE_SHIFT) - 1) + 1;
 
@@ -500,6 +534,7 @@ static inline int free_area(unsigned long pfn, unsigned long end, char *s)
 	return pages;
 }
 
+<<<<<<< HEAD
 /*
  * Poison init memory with an undefined instruction (ARM) or a branch to an
  * undefined instruction (Thumb).
@@ -511,6 +546,8 @@ static inline void poison_init_mem(void *s, size_t count)
 		*p++ = 0xe7fddef0;
 }
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 static inline void
 free_memmap(unsigned long start_pfn, unsigned long end_pfn)
 {
@@ -539,10 +576,14 @@ free_memmap(unsigned long start_pfn, unsigned long end_pfn)
 }
 
 /*
+<<<<<<< HEAD
  * The mem_map array can get very big.  Free as much of the unused portion of
  * the mem_map that we are allowed to. The page migration code moves pages
  * in blocks that are rounded per the MAX_ORDER_NR_PAGES definition, so we
  * can't free mem_map entries that may be dereferenced in this manner.
+=======
+ * The mem_map array can get very big.  Free the unused area of the memory map.
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
  */
 static void __init free_unused_memmap(struct meminfo *mi)
 {
@@ -556,8 +597,12 @@ static void __init free_unused_memmap(struct meminfo *mi)
 	for_each_bank(i, mi) {
 		struct membank *bank = &mi->bank[i];
 
+<<<<<<< HEAD
 		bank_start = round_down(bank_pfn_start(bank),
 					MAX_ORDER_NR_PAGES);
+=======
+		bank_start = bank_pfn_start(bank);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 #ifdef CONFIG_SPARSEMEM
 		/*
@@ -581,8 +626,17 @@ static void __init free_unused_memmap(struct meminfo *mi)
 		if (prev_bank_end && prev_bank_end < bank_start)
 			free_memmap(prev_bank_end, bank_start);
 
+<<<<<<< HEAD
 		prev_bank_end = round_up(bank_pfn_end(bank),
 					 MAX_ORDER_NR_PAGES);
+=======
+		/*
+		 * Align up here since the VM subsystem insists that the
+		 * memmap entries are valid from the bank end aligned to
+		 * MAX_ORDER_NR_PAGES.
+		 */
+		prev_bank_end = ALIGN(bank_pfn_end(bank), MAX_ORDER_NR_PAGES);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	}
 
 #ifdef CONFIG_SPARSEMEM
@@ -657,9 +711,12 @@ void __init mem_init(void)
 	extern u32 dtcm_end;
 	extern u32 itcm_end;
 #endif
+<<<<<<< HEAD
 #ifdef CONFIG_FIX_MOVABLE_ZONE
 	struct zone *zone;
 #endif
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	max_mapnr   = pfn_to_page(max_pfn + PHYS_PFN_OFFSET) - mem_map;
 
@@ -695,6 +752,7 @@ void __init mem_init(void)
 			else if (!page_count(page))
 				free_pages++;
 			page++;
+<<<<<<< HEAD
 #ifdef CONFIG_SPARSEMEM
 			pfn1++;
 			if (!(pfn1 % PAGES_PER_SECTION))
@@ -712,6 +770,10 @@ void __init mem_init(void)
 							zone->spanned_pages;
 	}
 #endif
+=======
+		} while (page < end);
+	}
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	/*
 	 * Since our memory may not be contiguous, calculate the
@@ -815,16 +877,23 @@ void __init mem_init(void)
 
 void free_initmem(void)
 {
+<<<<<<< HEAD
 	unsigned long reclaimed_initmem;
 #ifdef CONFIG_HAVE_TCM
 	extern char __tcm_start, __tcm_end;
 
 	poison_init_mem(&__tcm_start, &__tcm_end - &__tcm_start);
+=======
+#ifdef CONFIG_HAVE_TCM
+	extern char __tcm_start, __tcm_end;
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	totalram_pages += free_area(__phys_to_pfn(__pa(&__tcm_start)),
 				    __phys_to_pfn(__pa(&__tcm_end)),
 				    "TCM link");
 #endif
 
+<<<<<<< HEAD
 	if (!machine_is_integrator() && !machine_is_cintegrator()) {
 		poison_init_mem(__init_begin, __init_end - __init_begin);
 		reclaimed_initmem = free_area(__phys_to_pfn(__pa(__init_begin)),
@@ -864,12 +933,21 @@ int arch_physical_low_power_memory(u64 start, u64 size)
 }
 #endif
 
+=======
+	if (!machine_is_integrator() && !machine_is_cintegrator())
+		totalram_pages += free_area(__phys_to_pfn(__pa(__init_begin)),
+					    __phys_to_pfn(__pa(__init_end)),
+					    "init");
+}
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #ifdef CONFIG_BLK_DEV_INITRD
 
 static int keep_initrd;
 
 void free_initrd_mem(unsigned long start, unsigned long end)
 {
+<<<<<<< HEAD
 	unsigned long reclaimed_initrd_mem;
 	if (!keep_initrd) {
 		poison_init_mem((void *)start, PAGE_ALIGN(end) - start);
@@ -881,6 +959,12 @@ void free_initrd_mem(unsigned long start, unsigned long end)
 		total_unmovable_pages += reclaimed_initrd_mem;
 #endif
 	}
+=======
+	if (!keep_initrd)
+		totalram_pages += free_area(__phys_to_pfn(__pa(start)),
+					    __phys_to_pfn(__pa(end)),
+					    "initrd");
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 static int __init keepinitrd_setup(char *__unused)

@@ -23,7 +23,20 @@
 
 void __iomem *__msm_ioremap(unsigned long phys_addr, size_t size, unsigned int mtype);
 
+<<<<<<< HEAD
 #define __io(a)         __typesafe_io(a)
 #define __mem_pci(a)    (a)
 
+=======
+#define __io(a)		__typesafe_io(a)
+#define __mem_pci(a)    (a)
+
+void msm_map_qsd8x50_io(void);
+void msm_map_msm7x30_io(void);
+void msm_map_msm8x60_io(void);
+void msm_map_msm8960_io(void);
+
+extern unsigned int msm_shared_ram_phys;
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #endif

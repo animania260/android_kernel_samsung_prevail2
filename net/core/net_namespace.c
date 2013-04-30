@@ -24,11 +24,34 @@ static DEFINE_MUTEX(net_mutex);
 LIST_HEAD(net_namespace_list);
 EXPORT_SYMBOL_GPL(net_namespace_list);
 
+<<<<<<< HEAD
 struct net init_net;
+=======
+struct net init_net = {
+	.dev_base_head = LIST_HEAD_INIT(init_net.dev_base_head),
+};
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 EXPORT_SYMBOL(init_net);
 
 #define INITIAL_NET_GEN_PTRS	13 /* +1 for len +2 for rcu_head */
 
+<<<<<<< HEAD
+=======
+static unsigned int max_gen_ptrs = INITIAL_NET_GEN_PTRS;
+
+static struct net_generic *net_alloc_generic(void)
+{
+	struct net_generic *ng;
+	size_t generic_size = offsetof(struct net_generic, ptr[max_gen_ptrs]);
+
+	ng = kzalloc(generic_size, GFP_KERNEL);
+	if (ng)
+		ng->len = max_gen_ptrs;
+
+	return ng;
+}
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 static int net_assign_generic(struct net *net, int id, void *data)
 {
 	struct net_generic *ng, *old_ng;
@@ -42,8 +65,12 @@ static int net_assign_generic(struct net *net, int id, void *data)
 	if (old_ng->len >= id)
 		goto assign;
 
+<<<<<<< HEAD
 	ng = kzalloc(sizeof(struct net_generic) +
 			id * sizeof(void *), GFP_KERNEL);
+=======
+	ng = net_alloc_generic();
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	if (ng == NULL)
 		return -ENOMEM;
 
@@ -58,7 +85,10 @@ static int net_assign_generic(struct net *net, int id, void *data)
 	 * the old copy for kfree after a grace period.
 	 */
 
+<<<<<<< HEAD
 	ng->len = id;
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	memcpy(&ng->ptr, &old_ng->ptr, old_ng->len * sizeof(void*));
 
 	rcu_assign_pointer(net->gen, ng);
@@ -70,6 +100,7 @@ assign:
 
 static int ops_init(const struct pernet_operations *ops, struct net *net)
 {
+<<<<<<< HEAD
 	int err;
 	if (ops->id && ops->size) {
 		void *data = kzalloc(ops->size, GFP_KERNEL);
@@ -85,6 +116,31 @@ static int ops_init(const struct pernet_operations *ops, struct net *net)
 	if (ops->init)
 		return ops->init(net);
 	return 0;
+=======
+	int err = -ENOMEM;
+	void *data = NULL;
+
+	if (ops->id && ops->size) {
+		data = kzalloc(ops->size, GFP_KERNEL);
+		if (!data)
+			goto out;
+
+		err = net_assign_generic(net, *ops->id, data);
+		if (err)
+			goto cleanup;
+	}
+	err = 0;
+	if (ops->init)
+		err = ops->init(net);
+	if (!err)
+		return 0;
+
+cleanup:
+	kfree(data);
+
+out:
+	return err;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 static void ops_free(const struct pernet_operations *ops, struct net *net)
@@ -159,6 +215,7 @@ out_undo:
 	goto out;
 }
 
+<<<<<<< HEAD
 static struct net_generic *net_alloc_generic(void)
 {
 	struct net_generic *ng;
@@ -171,6 +228,8 @@ static struct net_generic *net_alloc_generic(void)
 
 	return ng;
 }
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 #ifdef CONFIG_NET_NS
 static struct kmem_cache *net_cachep;
@@ -446,12 +505,16 @@ static void __unregister_pernet_operations(struct pernet_operations *ops)
 static int __register_pernet_operations(struct list_head *list,
 					struct pernet_operations *ops)
 {
+<<<<<<< HEAD
 	int err = 0;
 	err = ops_init(ops, &init_net);
 	if (err)
 		ops_free(ops, &init_net);
 	return err;
 	
+=======
+	return ops_init(ops, &init_net);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 static void __unregister_pernet_operations(struct pernet_operations *ops)
@@ -481,6 +544,10 @@ again:
 			}
 			return error;
 		}
+<<<<<<< HEAD
+=======
+		max_gen_ptrs = max_t(unsigned int, max_gen_ptrs, *ops->id);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	}
 	error = __register_pernet_operations(list, ops);
 	if (error) {

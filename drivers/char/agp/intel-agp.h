@@ -211,6 +211,10 @@
 #define PCI_DEVICE_ID_INTEL_G41_HB          0x2E30
 #define PCI_DEVICE_ID_INTEL_G41_IG          0x2E32
 #define PCI_DEVICE_ID_INTEL_IRONLAKE_D_HB	    0x0040
+<<<<<<< HEAD
+=======
+#define PCI_DEVICE_ID_INTEL_IRONLAKE_D2_HB	    0x0069
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #define PCI_DEVICE_ID_INTEL_IRONLAKE_D_IG	    0x0042
 #define PCI_DEVICE_ID_INTEL_IRONLAKE_M_HB	    0x0044
 #define PCI_DEVICE_ID_INTEL_IRONLAKE_MA_HB	    0x0062

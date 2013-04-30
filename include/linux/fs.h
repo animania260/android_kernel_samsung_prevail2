@@ -523,6 +523,10 @@ enum positive_aop_returns {
 struct page;
 struct address_space;
 struct writeback_control;
+<<<<<<< HEAD
+=======
+enum migrate_mode;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 struct iov_iter {
 	const struct iovec *iov;
@@ -607,9 +611,18 @@ struct address_space_operations {
 			loff_t offset, unsigned long nr_segs);
 	int (*get_xip_mem)(struct address_space *, pgoff_t, int,
 						void **, unsigned long *);
+<<<<<<< HEAD
 	/* migrate the contents of a page to the specified target */
 	int (*migratepage) (struct address_space *,
 			struct page *, struct page *);
+=======
+	/*
+	 * migrate the contents of a page to the specified target. If sync
+	 * is false, it must not block.
+	 */
+	int (*migratepage) (struct address_space *,
+			struct page *, struct page *, enum migrate_mode);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	int (*launder_page) (struct page *);
 	int (*is_partially_uptodate) (struct page *, read_descriptor_t *,
 					unsigned long);
@@ -969,6 +982,10 @@ struct file {
 #ifdef CONFIG_EPOLL
 	/* Used by fs/eventpoll.c to link all the hooks to this file */
 	struct list_head	f_ep_links;
+<<<<<<< HEAD
+=======
+	struct list_head	f_tfile_llink;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #endif /* #ifdef CONFIG_EPOLL */
 	struct address_space	*f_mapping;
 #ifdef CONFIG_DEBUG_WRITECOUNT
@@ -1869,7 +1886,10 @@ extern int register_filesystem(struct file_system_type *);
 extern int unregister_filesystem(struct file_system_type *);
 extern struct vfsmount *kern_mount_data(struct file_system_type *, void *data);
 #define kern_mount(type) kern_mount_data(type, NULL)
+<<<<<<< HEAD
 extern void kern_unmount(struct vfsmount *mnt);
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 extern int may_umount_tree(struct vfsmount *);
 extern int may_umount(struct vfsmount *);
 extern long do_mount(char *, char *, char *, unsigned long, void *);
@@ -1883,6 +1903,10 @@ extern int fd_statfs(int, struct kstatfs *);
 extern int statfs_by_dentry(struct dentry *, struct kstatfs *);
 extern int freeze_super(struct super_block *super);
 extern int thaw_super(struct super_block *super);
+<<<<<<< HEAD
+=======
+extern bool our_mnt(struct vfsmount *mnt);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 extern int current_umask(void);
 
@@ -2028,6 +2052,10 @@ extern void unregister_blkdev(unsigned int, const char *);
 extern struct block_device *bdget(dev_t);
 extern struct block_device *bdgrab(struct block_device *bdev);
 extern void bd_set_size(struct block_device *, loff_t size);
+<<<<<<< HEAD
+=======
+extern sector_t blkdev_max_block(struct block_device *bdev);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 extern void bd_forget(struct inode *inode);
 extern void bdput(struct block_device *);
 extern void invalidate_bdev(struct block_device *);
@@ -2277,8 +2305,12 @@ extern void __iget(struct inode * inode);
 extern void iget_failed(struct inode *);
 extern void end_writeback(struct inode *);
 extern void __destroy_inode(struct inode *);
+<<<<<<< HEAD
 extern struct inode *new_inode_pseudo(struct super_block *sb);
 extern struct inode *new_inode(struct super_block *sb);
+=======
+extern struct inode *new_inode(struct super_block *);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 extern void free_inode_nonrcu(struct inode *inode);
 extern int should_remove_suid(struct dentry *);
 extern int file_remove_suid(struct file *);
@@ -2477,7 +2509,12 @@ extern int generic_check_addressable(unsigned, u64);
 
 #ifdef CONFIG_MIGRATION
 extern int buffer_migrate_page(struct address_space *,
+<<<<<<< HEAD
 				struct page *, struct page *);
+=======
+				struct page *, struct page *,
+				enum migrate_mode);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #else
 #define buffer_migrate_page NULL
 #endif

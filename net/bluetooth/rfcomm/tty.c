@@ -471,7 +471,11 @@ static int rfcomm_get_dev_list(void __user *arg)
 
 	size = sizeof(*dl) + dev_num * sizeof(*di);
 
+<<<<<<< HEAD
 	dl = kmalloc(size, GFP_KERNEL);
+=======
+	dl = kzalloc(size, GFP_KERNEL);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	if (!dl)
 		return -ENOMEM;
 

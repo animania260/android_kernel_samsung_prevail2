@@ -343,7 +343,11 @@ static inline void vpac270_uhc_init(void) {}
 /******************************************************************************
  * USB Gadget
  ******************************************************************************/
+<<<<<<< HEAD
 #if defined(CONFIG_USB_GADGET_PXA27X)||defined(CONFIG_USB_GADGET_PXA27X_MODULE)
+=======
+#if defined(CONFIG_USB_PXA27X)||defined(CONFIG_USB_PXA27X_MODULE)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 static struct gpio_vbus_mach_info vpac270_gpio_vbus_info = {
 	.gpio_vbus		= GPIO41_VPAC270_UDC_DETECT,
 	.gpio_pullup		= -1,

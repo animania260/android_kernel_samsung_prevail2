@@ -1047,7 +1047,11 @@ void __mark_inode_dirty(struct inode *inode, int flags)
 	if ((inode->i_state & flags) == flags)
 		return;
 
+<<<<<<< HEAD
 	if (unlikely(block_dump > 1))
+=======
+	if (unlikely(block_dump))
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		block_dump___mark_inode_dirty(inode);
 
 	spin_lock(&inode->i_lock);

@@ -467,7 +467,11 @@ static struct socket *sock_alloc(void)
 	struct inode *inode;
 	struct socket *sock;
 
+<<<<<<< HEAD
 	inode = new_inode_pseudo(sock_mnt->mnt_sb);
+=======
+	inode = new_inode(sock_mnt->mnt_sb);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	if (!inode)
 		return NULL;
 
@@ -791,9 +795,15 @@ static ssize_t sock_sendpage(struct file *file, struct page *page,
 
 	sock = file->private_data;
 
+<<<<<<< HEAD
 	flags = !(file->f_flags & O_NONBLOCK) ? 0 : MSG_DONTWAIT;
 	if (more)
 		flags |= MSG_MORE;
+=======
+	flags = (file->f_flags & O_NONBLOCK) ? MSG_DONTWAIT : 0;
+	/* more is a combination of MSG_MORE and MSG_SENDPAGE_NOTLAST */
+	flags |= more;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	return kernel_sendpage(sock, page, offset, size, flags);
 }
@@ -2645,6 +2655,10 @@ static int dev_ifconf(struct net *net, struct compat_ifconf __user *uifc32)
 	if (copy_from_user(&ifc32, uifc32, sizeof(struct compat_ifconf)))
 		return -EFAULT;
 
+<<<<<<< HEAD
+=======
+	memset(&ifc, 0, sizeof(ifc));
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	if (ifc32.ifcbuf == 0) {
 		ifc32.ifc_len = 0;
 		ifc.ifc_len = 0;

@@ -307,6 +307,14 @@ static ssize_t store_enabled(struct netconsole_target *nt,
 		return err;
 	if (enabled < 0 || enabled > 1)
 		return -EINVAL;
+<<<<<<< HEAD
+=======
+	if (enabled == nt->enabled) {
+		printk(KERN_INFO "netconsole: network logging has already %s\n",
+				nt->enabled ? "started" : "stopped");
+		return -EINVAL;
+	}
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	if (enabled) {	/* 1 */
 
@@ -625,6 +633,10 @@ static int netconsole_netdev_event(struct notifier_block *this,
 		goto done;
 
 	spin_lock_irqsave(&target_list_lock, flags);
+<<<<<<< HEAD
+=======
+restart:
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	list_for_each_entry(nt, &target_list, list) {
 		netconsole_target_get(nt);
 		if (nt->np.dev == dev) {
@@ -637,6 +649,7 @@ static int netconsole_netdev_event(struct notifier_block *this,
 			case NETDEV_UNREGISTER:
 				/*
 				 * rtnl_lock already held
+<<<<<<< HEAD
 				 */
 				if (nt->np.dev) {
 					spin_unlock_irqrestore(
@@ -652,6 +665,19 @@ static int netconsole_netdev_event(struct notifier_block *this,
 				nt->enabled = 0;
 				stopped = true;
 				break;
+=======
+				 * we might sleep in __netpoll_cleanup()
+				 */
+				spin_unlock_irqrestore(&target_list_lock, flags);
+				__netpoll_cleanup(&nt->np);
+				spin_lock_irqsave(&target_list_lock, flags);
+				dev_put(nt->np.dev);
+				nt->np.dev = NULL;
+				nt->enabled = 0;
+				stopped = true;
+				netconsole_target_put(nt);
+				goto restart;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			}
 		}
 		netconsole_target_put(nt);

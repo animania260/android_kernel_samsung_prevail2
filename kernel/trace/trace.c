@@ -649,7 +649,11 @@ __update_max_tr(struct trace_array *tr, struct task_struct *tsk, int cpu)
 void
 update_max_tr(struct trace_array *tr, struct task_struct *tsk, int cpu)
 {
+<<<<<<< HEAD
 	struct ring_buffer *buf = tr->buffer;
+=======
+	struct ring_buffer *buf;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	if (trace_stop_count)
 		return;
@@ -661,6 +665,10 @@ update_max_tr(struct trace_array *tr, struct task_struct *tsk, int cpu)
 	}
 	arch_spin_lock(&ftrace_max_lock);
 
+<<<<<<< HEAD
+=======
+	buf = tr->buffer;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	tr->buffer = max_tr.buffer;
 	max_tr.buffer = buf;
 
@@ -2432,10 +2440,18 @@ tracing_cpumask_write(struct file *filp, const char __user *ubuf,
 		if (cpumask_test_cpu(cpu, tracing_cpumask) &&
 				!cpumask_test_cpu(cpu, tracing_cpumask_new)) {
 			atomic_inc(&global_trace.data[cpu]->disabled);
+<<<<<<< HEAD
+=======
+			ring_buffer_record_disable_cpu(global_trace.buffer, cpu);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		}
 		if (!cpumask_test_cpu(cpu, tracing_cpumask) &&
 				cpumask_test_cpu(cpu, tracing_cpumask_new)) {
 			atomic_dec(&global_trace.data[cpu]->disabled);
+<<<<<<< HEAD
+=======
+			ring_buffer_record_enable_cpu(global_trace.buffer, cpu);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		}
 	}
 	arch_spin_unlock(&ftrace_max_lock);
@@ -2524,11 +2540,33 @@ static int set_tracer_option(struct tracer *trace, char *cmp, int neg)
 	return -EINVAL;
 }
 
+<<<<<<< HEAD
 static void set_tracer_flags(unsigned int mask, int enabled)
 {
 	/* do nothing if flag is already set */
 	if (!!(trace_flags & mask) == !!enabled)
 		return;
+=======
+/* Some tracers require overwrite to stay enabled */
+int trace_keep_overwrite(struct tracer *tracer, u32 mask, int set)
+{
+	if (tracer->enabled && (mask & TRACE_ITER_OVERWRITE) && !set)
+		return -1;
+
+	return 0;
+}
+
+int set_tracer_flag(unsigned int mask, int enabled)
+{
+	/* do nothing if flag is already set */
+	if (!!(trace_flags & mask) == !!enabled)
+		return 0;
+
+	/* Give the tracer a chance to approve the change */
+	if (current_trace->flag_changed)
+		if (current_trace->flag_changed(current_trace, mask, !!enabled))
+			return -EINVAL;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	if (enabled)
 		trace_flags |= mask;
@@ -2540,6 +2578,11 @@ static void set_tracer_flags(unsigned int mask, int enabled)
 
 	if (mask == TRACE_ITER_OVERWRITE)
 		ring_buffer_change_overwrite(global_trace.buffer, enabled);
+<<<<<<< HEAD
+=======
+
+	return 0;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 static ssize_t
@@ -2549,7 +2592,11 @@ tracing_trace_options_write(struct file *filp, const char __user *ubuf,
 	char buf[64];
 	char *cmp;
 	int neg = 0;
+<<<<<<< HEAD
 	int ret;
+=======
+	int ret = -ENODEV;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	int i;
 
 	if (cnt >= sizeof(buf))
@@ -2566,14 +2613,23 @@ tracing_trace_options_write(struct file *filp, const char __user *ubuf,
 		cmp += 2;
 	}
 
+<<<<<<< HEAD
 	for (i = 0; trace_options[i]; i++) {
 		if (strcmp(cmp, trace_options[i]) == 0) {
 			set_tracer_flags(1 << i, !neg);
+=======
+	mutex_lock(&trace_types_lock);
+
+	for (i = 0; trace_options[i]; i++) {
+		if (strcmp(cmp, trace_options[i]) == 0) {
+			ret = set_tracer_flag(1 << i, !neg);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			break;
 		}
 	}
 
 	/* If no option could be set, test the specific tracer options */
+<<<<<<< HEAD
 	if (!trace_options[i]) {
 		mutex_lock(&trace_types_lock);
 		ret = set_tracer_option(current_trace, cmp, neg);
@@ -2581,6 +2637,15 @@ tracing_trace_options_write(struct file *filp, const char __user *ubuf,
 		if (ret)
 			return ret;
 	}
+=======
+	if (!trace_options[i])
+		ret = set_tracer_option(current_trace, cmp, neg);
+
+	mutex_unlock(&trace_types_lock);
+
+	if (ret < 0)
+		return ret;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	*ppos += cnt;
 
@@ -2878,6 +2943,12 @@ static int tracing_set_tracer(const char *buf)
 		goto out;
 
 	trace_branch_disable();
+<<<<<<< HEAD
+=======
+
+	current_trace->enabled = false;
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	if (current_trace && current_trace->reset)
 		current_trace->reset(tr);
 	if (current_trace && current_trace->use_max_tr) {
@@ -2907,6 +2978,10 @@ static int tracing_set_tracer(const char *buf)
 			goto out;
 	}
 
+<<<<<<< HEAD
+=======
+	current_trace->enabled = true;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	trace_branch_enable(tr);
  out:
 	mutex_unlock(&trace_types_lock);
@@ -3704,8 +3779,11 @@ tracing_buffers_read(struct file *filp, char __user *ubuf,
 	if (info->read < PAGE_SIZE)
 		goto read;
 
+<<<<<<< HEAD
 	info->read = 0;
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	trace_access_lock(info->cpu);
 	ret = ring_buffer_read_page(info->tr->buffer,
 				    &info->spare,
@@ -3715,6 +3793,11 @@ tracing_buffers_read(struct file *filp, char __user *ubuf,
 	if (ret < 0)
 		return 0;
 
+<<<<<<< HEAD
+=======
+	info->read = 0;
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 read:
 	size = PAGE_SIZE - info->read;
 	if (size > count)
@@ -4177,7 +4260,17 @@ trace_options_core_write(struct file *filp, const char __user *ubuf, size_t cnt,
 
 	if (val != 0 && val != 1)
 		return -EINVAL;
+<<<<<<< HEAD
 	set_tracer_flags(1 << index, val);
+=======
+
+	mutex_lock(&trace_types_lock);
+	ret = set_tracer_flag(1 << index, val);
+	mutex_unlock(&trace_types_lock);
+
+	if (ret < 0)
+		return ret;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	*ppos += cnt;
 

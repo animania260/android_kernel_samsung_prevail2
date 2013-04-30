@@ -44,11 +44,14 @@
     doing the mount will be allowed to access the filesystem */
 #define FUSE_ALLOW_OTHER         (1 << 1)
 
+<<<<<<< HEAD
 /** If the FUSE_HANDLE_RT_CLASS flag is given,
     then fuse handle RT class I/O in different request queue  */
 #define FUSE_HANDLE_RT_CLASS   (1 << 2)
 
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 /** List of active connections */
 extern struct list_head fuse_conn_list;
 
@@ -87,6 +90,12 @@ struct fuse_inode {
 	    preserve the original mode */
 	mode_t orig_i_mode;
 
+<<<<<<< HEAD
+=======
+	/** 64 bit inode number */
+	u64 orig_ino;
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	/** Version of last attribute change */
 	u64 attr_version;
 
@@ -347,10 +356,17 @@ struct fuse_conn {
 	unsigned max_write;
 
 	/** Readers of the connection are waiting on this */
+<<<<<<< HEAD
 	wait_queue_head_t waitq[2];
 
 	/** The list of pending requests */
 	struct list_head pending[2];
+=======
+	wait_queue_head_t waitq;
+
+	/** The list of pending requests */
+	struct list_head pending;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	/** The list of requests being processed */
 	struct list_head processing;
@@ -380,7 +396,11 @@ struct fuse_conn {
 	struct list_head bg_queue;
 
 	/** Pending interrupts */
+<<<<<<< HEAD
 	struct list_head interrupts[2];
+=======
+	struct list_head interrupts;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	/** Queue of pending forgets */
 	struct fuse_forget_link forget_list_head;

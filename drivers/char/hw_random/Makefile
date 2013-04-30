@@ -20,4 +20,7 @@ obj-$(CONFIG_HW_RANDOM_MXC_RNGA) += mxc-rnga.o
 obj-$(CONFIG_HW_RANDOM_OCTEON) += octeon-rng.o
 obj-$(CONFIG_HW_RANDOM_NOMADIK) += nomadik-rng.o
 obj-$(CONFIG_HW_RANDOM_PICOXCELL) += picoxcell-rng.o
+<<<<<<< HEAD
 obj-$(CONFIG_HW_RANDOM_MSM) += msm_rng.o
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y

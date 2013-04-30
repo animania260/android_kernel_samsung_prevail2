@@ -2584,8 +2584,15 @@ bed:
 				    NULL, NULL, NULL);
 
 		/* Check if the we got some results */
+<<<<<<< HEAD
 		if (!self->cachedaddr)
 			return -EAGAIN;		/* Didn't find any devices */
+=======
+		if (!self->cachedaddr) {
+			err = -EAGAIN;		/* Didn't find any devices */
+			goto out;
+		}
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		daddr = self->cachedaddr;
 		/* Cleanup */
 		self->cachedaddr = 0;

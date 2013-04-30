@@ -38,6 +38,7 @@ netdev_tx_t br_dev_xmit(struct sk_buff *skb, struct net_device *dev)
 	}
 #endif
 
+<<<<<<< HEAD
 	BR_INPUT_SKB_CB(skb)->brdev = dev;
 
 	skb_reset_mac_header(skb);
@@ -49,6 +50,18 @@ netdev_tx_t br_dev_xmit(struct sk_buff *skb, struct net_device *dev)
 	brstats->tx_bytes += skb->len;
 	u64_stats_update_end(&brstats->syncp);
 
+=======
+	u64_stats_update_begin(&brstats->syncp);
+	brstats->tx_packets++;
+	brstats->tx_bytes += skb->len;
+	u64_stats_update_end(&brstats->syncp);
+
+	BR_INPUT_SKB_CB(skb)->brdev = dev;
+
+	skb_reset_mac_header(skb);
+	skb_pull(skb, ETH_HLEN);
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	rcu_read_lock();
 	if (is_broadcast_ether_addr(dest))
 		br_flood_deliver(br, skb);
@@ -92,7 +105,10 @@ static int br_dev_open(struct net_device *dev)
 {
 	struct net_bridge *br = netdev_priv(dev);
 
+<<<<<<< HEAD
 	netif_carrier_off(dev);
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	netdev_update_features(dev);
 	netif_start_queue(dev);
 	br_stp_enable_bridge(br);
@@ -109,8 +125,11 @@ static int br_dev_stop(struct net_device *dev)
 {
 	struct net_bridge *br = netdev_priv(dev);
 
+<<<<<<< HEAD
 	netif_carrier_off(dev);
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	br_stp_disable_bridge(br);
 	br_multicast_stop(br);
 

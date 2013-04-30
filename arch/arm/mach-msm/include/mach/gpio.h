@@ -1,6 +1,10 @@
 /*
  * Copyright (C) 2007 Google, Inc.
+<<<<<<< HEAD
  * Copyright (c) 2009-2011, Code Aurora Forum. All rights reserved.
+=======
+ * Copyright (c) 2009-2010, Code Aurora Forum. All rights reserved.
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
  * Author: Mike Lockwood <lockwood@android.com>
  *
  * This software is licensed under the terms of the GNU General Public
@@ -16,6 +20,7 @@
 #ifndef __ASM_ARCH_MSM_GPIO_H
 #define __ASM_ARCH_MSM_GPIO_H
 
+<<<<<<< HEAD
 #ifdef CONFIG_ARCH_MSM8X60
 #define ARCH_NR_GPIOS 512
 #endif
@@ -237,5 +242,13 @@ static inline int msm_gpio_install_direct_irq(unsigned gpio, unsigned irq,
 	return -ENOSYS;
 }
 #endif
+=======
+#include <asm-generic/gpio.h>
+
+#define gpio_get_value  __gpio_get_value
+#define gpio_set_value  __gpio_set_value
+#define gpio_cansleep   __gpio_cansleep
+#define gpio_to_irq     __gpio_to_irq
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 #endif /* __ASM_ARCH_MSM_GPIO_H */

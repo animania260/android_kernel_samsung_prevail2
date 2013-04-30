@@ -485,6 +485,14 @@ static int rfcomm_sock_accept(struct socket *sock, struct socket *newsock, int f
 
 	lock_sock(sk);
 
+<<<<<<< HEAD
+=======
+	if (sk->sk_state != BT_LISTEN) {
+		err = -EBADFD;
+		goto done;
+	}
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	if (sk->sk_type != SOCK_STREAM) {
 		err = -EINVAL;
 		goto done;
@@ -496,6 +504,7 @@ static int rfcomm_sock_accept(struct socket *sock, struct socket *newsock, int f
 
 	/* Wait for an incoming connection. (wake-one). */
 	add_wait_queue_exclusive(sk_sleep(sk), &wait);
+<<<<<<< HEAD
 	while (1) {
 		set_current_state(TASK_INTERRUPTIBLE);
 
@@ -510,6 +519,21 @@ static int rfcomm_sock_accept(struct socket *sock, struct socket *newsock, int f
 
 		if (!timeo) {
 			err = -EAGAIN;
+=======
+	while (!(nsk = bt_accept_dequeue(sk, newsock))) {
+		set_current_state(TASK_INTERRUPTIBLE);
+		if (!timeo) {
+			err = -EAGAIN;
+			break;
+		}
+
+		release_sock(sk);
+		timeo = schedule_timeout(timeo);
+		lock_sock(sk);
+
+		if (sk->sk_state != BT_LISTEN) {
+			err = -EBADFD;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			break;
 		}
 
@@ -517,12 +541,17 @@ static int rfcomm_sock_accept(struct socket *sock, struct socket *newsock, int f
 			err = sock_intr_errno(timeo);
 			break;
 		}
+<<<<<<< HEAD
 
 		release_sock(sk);
 		timeo = schedule_timeout(timeo);
 		lock_sock(sk);
 	}
 	__set_current_state(TASK_RUNNING);
+=======
+	}
+	set_current_state(TASK_RUNNING);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	remove_wait_queue(sk_sleep(sk), &wait);
 
 	if (err)
@@ -544,6 +573,10 @@ static int rfcomm_sock_getname(struct socket *sock, struct sockaddr *addr, int *
 
 	BT_DBG("sock %p, sk %p", sock, sk);
 
+<<<<<<< HEAD
+=======
+	memset(sa, 0, sizeof(*sa));
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	sa->rc_family  = AF_BLUETOOTH;
 	sa->rc_channel = rfcomm_pi(sk)->channel;
 	if (peer)
@@ -679,8 +712,12 @@ static int rfcomm_sock_setsockopt(struct socket *sock, int level, int optname, c
 {
 	struct sock *sk = sock->sk;
 	struct bt_security sec;
+<<<<<<< HEAD
 	int err = 0;
 	size_t len;
+=======
+	int len, err = 0;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	u32 opt;
 
 	BT_DBG("sk %p", sk);
@@ -742,6 +779,10 @@ static int rfcomm_sock_setsockopt(struct socket *sock, int level, int optname, c
 static int rfcomm_sock_getsockopt_old(struct socket *sock, int optname, char __user *optval, int __user *optlen)
 {
 	struct sock *sk = sock->sk;
+<<<<<<< HEAD
+=======
+	struct sock *l2cap_sk;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	struct rfcomm_conninfo cinfo;
 	struct l2cap_conn *conn = l2cap_pi(sk)->chan->conn;
 	int len, err = 0;
@@ -786,6 +827,10 @@ static int rfcomm_sock_getsockopt_old(struct socket *sock, int optname, char __u
 			break;
 		}
 
+<<<<<<< HEAD
+=======
+		l2cap_sk = rfcomm_pi(sk)->dlc->session->sock->sk;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 		memset(&cinfo, 0, sizeof(cinfo));
 		cinfo.hci_handle = conn->hcon->handle;

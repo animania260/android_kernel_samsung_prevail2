@@ -41,6 +41,10 @@ static inline void *net_generic(const struct net *net, int id)
 	ptr = ng->ptr[id - 1];
 	rcu_read_unlock();
 
+<<<<<<< HEAD
+=======
+	BUG_ON(!ptr);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	return ptr;
 }
 #endif

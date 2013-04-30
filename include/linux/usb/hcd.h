@@ -178,7 +178,11 @@ struct usb_hcd {
 	 * this structure.
 	 */
 	unsigned long hcd_priv[0]
+<<<<<<< HEAD
 			__attribute__ ((aligned(sizeof(unsigned long))));
+=======
+			__attribute__ ((aligned(sizeof(s64))));
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 };
 
 /* 2.4 does this a bit differently ... */
@@ -379,6 +383,7 @@ extern struct usb_hcd *usb_create_shared_hcd(const struct hc_driver *driver,
 extern struct usb_hcd *usb_get_hcd(struct usb_hcd *hcd);
 extern void usb_put_hcd(struct usb_hcd *hcd);
 extern int usb_hcd_is_primary_hcd(struct usb_hcd *hcd);
+<<<<<<< HEAD
 #ifdef CONFIG_USB
 extern int usb_add_hcd(struct usb_hcd *hcd,
 		unsigned int irqnum, unsigned long irqflags);
@@ -391,6 +396,11 @@ usb_add_hcd(struct usb_hcd *hcd, unsigned int irqnum, unsigned long irqflags)
 }
 static inline void usb_remove_hcd(struct usb_hcd *hcd) {}
 #endif
+=======
+extern int usb_add_hcd(struct usb_hcd *hcd,
+		unsigned int irqnum, unsigned long irqflags);
+extern void usb_remove_hcd(struct usb_hcd *hcd);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 struct platform_device;
 extern void usb_hcd_platform_shutdown(struct platform_device *dev);

@@ -33,6 +33,7 @@ void vfp_support_entry(void);
 void vfp_null_entry(void);
 
 void (*vfp_vector)(void) = vfp_null_entry;
+<<<<<<< HEAD
 
 /*
  * The pointer to the vfpstate structure of the thread which currently
@@ -40,6 +41,9 @@ void (*vfp_vector)(void) = vfp_null_entry;
  * context is invalid.
  */
 union vfp_state *vfp_current_hw_state[NR_CPUS];
+=======
+union vfp_state *last_VFP_context[NR_CPUS];
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 /*
  * Dual-use variable.
@@ -63,12 +67,21 @@ static void vfp_thread_flush(struct thread_info *thread)
 
 	/*
 	 * Disable VFP to ensure we initialize it first.  We must ensure
+<<<<<<< HEAD
 	 * that the modification of vfp_current_hw_state[] and hardware disable
 	 * are done for the same CPU and without preemption.
 	 */
 	cpu = get_cpu();
 	if (vfp_current_hw_state[cpu] == vfp)
 		vfp_current_hw_state[cpu] = NULL;
+=======
+	 * that the modification of last_VFP_context[] and hardware disable
+	 * are done for the same CPU and without preemption.
+	 */
+	cpu = get_cpu();
+	if (last_VFP_context[cpu] == vfp)
+		last_VFP_context[cpu] = NULL;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	fmxr(FPEXC, fmrx(FPEXC) & ~FPEXC_EN);
 	put_cpu();
 }
@@ -79,8 +92,13 @@ static void vfp_thread_exit(struct thread_info *thread)
 	union vfp_state *vfp = &thread->vfpstate;
 	unsigned int cpu = get_cpu();
 
+<<<<<<< HEAD
 	if (vfp_current_hw_state[cpu] == vfp)
 		vfp_current_hw_state[cpu] = NULL;
+=======
+	if (last_VFP_context[cpu] == vfp)
+		last_VFP_context[cpu] = NULL;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	put_cpu();
 }
 
@@ -135,9 +153,15 @@ static int vfp_notifier(struct notifier_block *self, unsigned long cmd, void *v)
 		 * case the thread migrates to a different CPU. The
 		 * restoring is done lazily.
 		 */
+<<<<<<< HEAD
 		if ((fpexc & FPEXC_EN) && vfp_current_hw_state[cpu]) {
 			vfp_save_state(vfp_current_hw_state[cpu], fpexc);
 			vfp_current_hw_state[cpu]->hard.cpu = cpu;
+=======
+		if ((fpexc & FPEXC_EN) && last_VFP_context[cpu]) {
+			vfp_save_state(last_VFP_context[cpu], fpexc);
+			last_VFP_context[cpu]->hard.cpu = cpu;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		}
 		/*
 		 * Thread migration, just force the reloading of the
@@ -145,7 +169,11 @@ static int vfp_notifier(struct notifier_block *self, unsigned long cmd, void *v)
 		 * contain stale data.
 		 */
 		if (thread->vfpstate.hard.cpu != cpu)
+<<<<<<< HEAD
 			vfp_current_hw_state[cpu] = NULL;
+=======
+			last_VFP_context[cpu] = NULL;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #endif
 
 		/*
@@ -375,7 +403,11 @@ void VFP_bounce(u32 trigger, u32 fpexc, struct pt_regs *regs)
 	 * If there isn't a second FP instruction, exit now. Note that
 	 * the FPEXC.FP2V bit is valid only if FPEXC.EX is 1.
 	 */
+<<<<<<< HEAD
 	if (fpexc ^ (FPEXC_EX | FPEXC_FP2V))
+=======
+	if ((fpexc & (FPEXC_EX | FPEXC_FP2V)) != (FPEXC_EX | FPEXC_FP2V))
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		goto exit;
 
 	/*
@@ -403,6 +435,7 @@ static void vfp_enable(void *unused)
 	set_copro_access(access | CPACC_FULL(10) | CPACC_FULL(11));
 }
 
+<<<<<<< HEAD
 int vfp_flush_context(void)
 {
 	unsigned long flags;
@@ -442,6 +475,32 @@ int vfp_flush_context(void)
 }
 
 void vfp_reinit(void)
+=======
+#ifdef CONFIG_PM
+#include <linux/syscore_ops.h>
+
+static int vfp_pm_suspend(void)
+{
+	struct thread_info *ti = current_thread_info();
+	u32 fpexc = fmrx(FPEXC);
+
+	/* if vfp is on, then save state for resumption */
+	if (fpexc & FPEXC_EN) {
+		printk(KERN_DEBUG "%s: saving vfp state\n", __func__);
+		vfp_save_state(&ti->vfpstate, fpexc);
+
+		/* disable, just in case */
+		fmxr(FPEXC, fmrx(FPEXC) & ~FPEXC_EN);
+	}
+
+	/* clear any information we had about last context state */
+	memset(last_VFP_context, 0, sizeof(last_VFP_context));
+
+	return 0;
+}
+
+static void vfp_pm_resume(void)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 {
 	/* ensure we have access to the vfp */
 	vfp_enable(NULL);
@@ -450,6 +509,7 @@ void vfp_reinit(void)
 	fmxr(FPEXC, fmrx(FPEXC) & ~FPEXC_EN);
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 #include <linux/syscore_ops.h>
 
@@ -465,6 +525,8 @@ static void vfp_pm_resume(void)
 	vfp_reinit();
 }
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 static struct syscore_ops vfp_pm_syscore_ops = {
 	.suspend	= vfp_pm_suspend,
 	.resume		= vfp_pm_resume,
@@ -487,7 +549,11 @@ void vfp_sync_hwstate(struct thread_info *thread)
 	 * If the thread we're interested in is the current owner of the
 	 * hardware VFP state, then we need to save its state.
 	 */
+<<<<<<< HEAD
 	if (vfp_current_hw_state[cpu] == &thread->vfpstate) {
+=======
+	if (last_VFP_context[cpu] == &thread->vfpstate) {
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		u32 fpexc = fmrx(FPEXC);
 
 		/*
@@ -509,7 +575,11 @@ void vfp_flush_hwstate(struct thread_info *thread)
 	 * If the thread we're interested in is the current owner of the
 	 * hardware VFP state, then we need to save its state.
 	 */
+<<<<<<< HEAD
 	if (vfp_current_hw_state[cpu] == &thread->vfpstate) {
+=======
+	if (last_VFP_context[cpu] == &thread->vfpstate) {
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		u32 fpexc = fmrx(FPEXC);
 
 		fmxr(FPEXC, fpexc & ~FPEXC_EN);
@@ -518,7 +588,11 @@ void vfp_flush_hwstate(struct thread_info *thread)
 		 * Set the context to NULL to force a reload the next time
 		 * the thread uses the VFP.
 		 */
+<<<<<<< HEAD
 		vfp_current_hw_state[cpu] = NULL;
+=======
+		last_VFP_context[cpu] = NULL;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	}
 
 #ifdef CONFIG_SMP
@@ -550,7 +624,11 @@ static int vfp_hotplug(struct notifier_block *b, unsigned long action,
 {
 	if (action == CPU_DYING || action == CPU_DYING_FROZEN) {
 		unsigned int cpu = (long)hcpu;
+<<<<<<< HEAD
 		vfp_current_hw_state[cpu] = NULL;
+=======
+		last_VFP_context[cpu] = NULL;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	} else if (action == CPU_STARTING || action == CPU_STARTING_FROZEN)
 		vfp_enable(NULL);
 	return NOTIFY_OK;
@@ -611,6 +689,7 @@ static int __init vfp_init(void)
 			elf_hwcap |= HWCAP_VFPv3;
 
 			/*
+<<<<<<< HEAD
 			 * Check for VFPv3 D16. CPUs in this configuration
 			 * only have 16 x 64bit registers.
 			 */
@@ -618,6 +697,19 @@ static int __init vfp_init(void)
 				elf_hwcap |= HWCAP_VFPv3D16;
 		}
 #endif
+=======
+			 * Check for VFPv3 D16 and VFPv4 D16.  CPUs in
+			 * this configuration only have 16 x 64bit
+			 * registers.
+			 */
+			if (((fmrx(MVFR0) & MVFR0_A_SIMD_MASK)) == 1)
+				elf_hwcap |= HWCAP_VFPv3D16; /* also v4-D16 */
+			else
+				elf_hwcap |= HWCAP_VFPD32;
+		}
+#endif
+#ifdef CONFIG_NEON
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		/*
 		 * Check for the presence of the Advanced SIMD
 		 * load/store instructions, integer and single
@@ -625,6 +717,7 @@ static int __init vfp_init(void)
 		 * for NEON if the hardware has the MVFR registers.
 		 */
 		if ((read_cpuid_id() & 0x000f0000) == 0x000f0000) {
+<<<<<<< HEAD
 #ifdef CONFIG_NEON
 			if ((fmrx(MVFR1) & 0x000fff00) == 0x00011100)
 				elf_hwcap |= HWCAP_NEON;
@@ -634,6 +727,12 @@ static int __init vfp_init(void)
 			    (read_cpuid_id() & 0xff00fc00) == 0x51000400)
 				elf_hwcap |= HWCAP_VFPv4;
 		}
+=======
+			if ((fmrx(MVFR1) & 0x000fff00) == 0x00011100)
+				elf_hwcap |= HWCAP_NEON;
+		}
+#endif
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	}
 	return 0;
 }

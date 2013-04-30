@@ -23,7 +23,11 @@
 
 #include <asm/mach/dma.h>
 
+<<<<<<< HEAD
 DEFINE_RAW_SPINLOCK(dma_spin_lock);
+=======
+DEFINE_SPINLOCK(dma_spin_lock);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 EXPORT_SYMBOL(dma_spin_lock);
 
 static dma_t *dma_chan[MAX_DMA_CHANNELS];

@@ -544,7 +544,11 @@ config USB_LANGWELL
 	select USB_GADGET_SELECTED
 
 config USB_GADGET_EG20T
+<<<<<<< HEAD
 	boolean "Intel EG20T PCH/OKI SEMICONDUCTOR ML7213 IOH UDC"
+=======
+	tristate "Intel EG20T PCH/OKI SEMICONDUCTOR IOH(ML7213/ML7831) UDC"
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	depends on PCI
 	select USB_GADGET_DUALSPEED
 	help
@@ -562,8 +566,14 @@ config USB_GADGET_EG20T
 
 	  This driver also can be used for OKI SEMICONDUCTOR's ML7213 which is
 	  for IVI(In-Vehicle Infotainment) use.
+<<<<<<< HEAD
 	  ML7213 is companion chip for Intel Atom E6xx series.
 	  ML7213 is completely compatible for Intel EG20T PCH.
+=======
+	  ML7831 is for general purpose use.
+	  ML7213/ML7831 is companion chip for Intel Atom E6xx series.
+	  ML7213/ML7831 is completely compatible for Intel EG20T PCH.
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 config USB_EG20T
 	tristate
@@ -598,6 +608,7 @@ config USB_CI13XXX_MSM
 # LAST -- dummy/emulated controller
 #
 
+<<<<<<< HEAD
 config USB_GADGET_MSM_72K
 	boolean "MSM 72K Device Controller"
 	depends on ARCH_MSM
@@ -616,6 +627,8 @@ config USB_MSM_72K
 	default USB_GADGET
 	select USB_GADGET_SELECTED
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 config USB_GADGET_DUMMY_HCD
 	boolean "Dummy HCD (DEVELOPMENT)"
 	depends on USB=y || (USB=m && USB_GADGET=m)
@@ -953,6 +966,7 @@ config USB_G_PRINTER
 	  For more information, see Documentation/usb/gadget_printer.txt
 	  which includes sample code for accessing the device file.
 
+<<<<<<< HEAD
 config USB_G_ANDROID
 	boolean "Android Gadget"
 	depends on SWITCH
@@ -988,6 +1002,8 @@ config USB_DUN_SUPPORT
 	  It uses misc register.
 	  Support fops : open, close, release, read, poll, llseek, ioctl
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 config USB_CDC_COMPOSITE
 	tristate "CDC Composite Device (Ethernet and ACM)"
 	depends on NET
@@ -1109,6 +1125,7 @@ config USB_G_WEBCAM
 
 endchoice
 
+<<<<<<< HEAD
 config USB_CSW_HACK
 	boolean "USB Mass storage csw hack Feature"
 	default y
@@ -1195,4 +1212,6 @@ config USB_ANDROID_RMNET_CTRL_SMD
 	 transfers. This option enables only control interface.
 	 Data interface used is BAM.
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 endif # USB_GADGET

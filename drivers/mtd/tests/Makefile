@@ -6,4 +6,7 @@ obj-$(CONFIG_MTD_TESTS) += mtd_stresstest.o
 obj-$(CONFIG_MTD_TESTS) += mtd_subpagetest.o
 obj-$(CONFIG_MTD_TESTS) += mtd_torturetest.o
 obj-$(CONFIG_MTD_TESTS) += mtd_nandecctest.o
+<<<<<<< HEAD
 obj-$(CONFIG_MTD_TESTS) += mtd_erasepart.o
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y

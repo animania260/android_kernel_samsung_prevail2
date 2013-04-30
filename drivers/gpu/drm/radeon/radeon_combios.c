@@ -620,8 +620,13 @@ static struct radeon_i2c_bus_rec combios_setup_i2c_bus(struct radeon_device *rde
 		i2c.y_data_mask = 0x80;
 	} else {
 		/* default masks for ddc pads */
+<<<<<<< HEAD
 		i2c.mask_clk_mask = RADEON_GPIO_EN_1;
 		i2c.mask_data_mask = RADEON_GPIO_EN_0;
+=======
+		i2c.mask_clk_mask = RADEON_GPIO_MASK_1;
+		i2c.mask_data_mask = RADEON_GPIO_MASK_0;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		i2c.a_clk_mask = RADEON_GPIO_A_1;
 		i2c.a_data_mask = RADEON_GPIO_A_0;
 		i2c.en_clk_mask = RADEON_GPIO_EN_1;
@@ -958,6 +963,18 @@ struct radeon_encoder_primary_dac *radeon_combios_get_primary_dac_info(struct
 			found = 1;
 	}
 
+<<<<<<< HEAD
+=======
+	/* quirks */
+	/* Radeon 9100 (R200) */
+	if ((dev->pdev->device == 0x514D) &&
+	    (dev->pdev->subsystem_vendor == 0x174B) &&
+	    (dev->pdev->subsystem_device == 0x7149)) {
+		/* vbios value is bad, use the default */
+		found = 0;
+	}
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	if (!found) /* fallback to defaults */
 		radeon_legacy_get_primary_dac_info_from_table(rdev, p_dac);
 
@@ -2338,6 +2355,17 @@ bool radeon_get_legacy_connector_info_from_bios(struct drm_device *dev)
 								   1),
 								  ATOM_DEVICE_CRT1_SUPPORT);
 				}
+<<<<<<< HEAD
+=======
+				/* RV100 board with external TDMS bit mis-set.
+				 * Actually uses internal TMDS, clear the bit.
+				 */
+				if (dev->pdev->device == 0x5159 &&
+				    dev->pdev->subsystem_vendor == 0x1014 &&
+				    dev->pdev->subsystem_device == 0x029A) {
+					tmp &= ~(1 << 4);
+				}
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 				if ((tmp >> 4) & 0x1) {
 					devices |= ATOM_DEVICE_DFP2_SUPPORT;
 					radeon_add_legacy_encoder(dev,

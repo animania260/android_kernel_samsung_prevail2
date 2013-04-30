@@ -68,7 +68,11 @@ do_proc_get_root(struct rpc_clnt *client, struct nfs_fh *fhandle,
 	nfs_fattr_init(info->fattr);
 	status = rpc_call_sync(client, &msg, 0);
 	dprintk("%s: reply fsinfo: %d\n", __func__, status);
+<<<<<<< HEAD
 	if (!(info->fattr->valid & NFS_ATTR_FATTR)) {
+=======
+	if (status == 0 && !(info->fattr->valid & NFS_ATTR_FATTR)) {
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		msg.rpc_proc = &nfs3_procedures[NFS3PROC_GETATTR];
 		msg.rpc_resp = info->fattr;
 		status = rpc_call_sync(client, &msg, 0);
@@ -633,7 +637,11 @@ nfs3_proc_readdir(struct dentry *dentry, struct rpc_cred *cred,
 		  u64 cookie, struct page **pages, unsigned int count, int plus)
 {
 	struct inode		*dir = dentry->d_inode;
+<<<<<<< HEAD
 	__be32			*verf = NFS_COOKIEVERF(dir);
+=======
+	__be32			*verf = NFS_I(dir)->cookieverf;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	struct nfs3_readdirargs	arg = {
 		.fh		= NFS_FH(dir),
 		.cookie		= cookie,
@@ -853,6 +861,10 @@ const struct nfs_rpc_ops nfs_v3_clientops = {
 	.dentry_ops	= &nfs_dentry_operations,
 	.dir_inode_ops	= &nfs3_dir_inode_operations,
 	.file_inode_ops	= &nfs3_file_inode_operations,
+<<<<<<< HEAD
+=======
+	.file_ops	= &nfs_file_operations,
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	.getroot	= nfs3_proc_get_root,
 	.getattr	= nfs3_proc_getattr,
 	.setattr	= nfs3_proc_setattr,

@@ -23,14 +23,21 @@
 #include <linux/slab.h>
 #include <linux/suspend.h>
 #include <linux/syscore_ops.h>
+<<<<<<< HEAD
+=======
+#include <linux/ftrace.h>
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #include <trace/events/power.h>
 
 #include "power.h"
 
 const char *const pm_states[PM_SUSPEND_MAX] = {
+<<<<<<< HEAD
 #ifdef CONFIG_EARLYSUSPEND
 	[PM_SUSPEND_ON]		= "on",
 #endif
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	[PM_SUSPEND_STANDBY]	= "standby",
 	[PM_SUSPEND_MEM]	= "mem",
 };
@@ -213,6 +220,10 @@ int suspend_devices_and_enter(suspend_state_t state)
 			goto Close;
 	}
 	suspend_console();
+<<<<<<< HEAD
+=======
+	ftrace_stop();
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	suspend_test_start();
 	error = dpm_suspend_start(PMSG_SUSPEND);
 	if (error) {
@@ -229,6 +240,10 @@ int suspend_devices_and_enter(suspend_state_t state)
 	suspend_test_start();
 	dpm_resume_end(PMSG_RESUME);
 	suspend_test_finish("resume devices");
+<<<<<<< HEAD
+=======
+	ftrace_start();
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	resume_console();
  Close:
 	if (suspend_ops->end)
@@ -276,7 +291,13 @@ int enter_state(suspend_state_t state)
 	if (!mutex_trylock(&pm_mutex))
 		return -EBUSY;
 
+<<<<<<< HEAD
 	suspend_sys_sync_queue();
+=======
+	printk(KERN_INFO "PM: Syncing filesystems ... ");
+	sys_sync();
+	printk("done.\n");
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	pr_debug("PM: Preparing system for %s sleep\n", pm_states[state]);
 	error = suspend_prepare();
@@ -308,7 +329,11 @@ int enter_state(suspend_state_t state)
  */
 int pm_suspend(suspend_state_t state)
 {
+<<<<<<< HEAD
 	if (state > PM_SUSPEND_ON && state <= PM_SUSPEND_MAX)
+=======
+	if (state > PM_SUSPEND_ON && state < PM_SUSPEND_MAX)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		return enter_state(state);
 	return -EINVAL;
 }

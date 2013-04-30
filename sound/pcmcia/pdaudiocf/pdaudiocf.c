@@ -223,7 +223,11 @@ static int pdacf_config(struct pcmcia_device *link)
 	if (ret)
 		goto failed;
 
+<<<<<<< HEAD
 	ret = pcmcia_request_exclusive_irq(link, pdacf_interrupt);
+=======
+	ret = pcmcia_request_irq(link, pdacf_interrupt);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	if (ret)
 		goto failed;
 

@@ -1032,6 +1032,7 @@ static int fd_wait_for_completion(unsigned long delay, timeout_fn function)
 	return 0;
 }
 
+<<<<<<< HEAD
 static DEFINE_SPINLOCK(floppy_hlt_lock);
 static int hlt_disabled;
 static void floppy_disable_hlt(void)
@@ -1063,6 +1064,8 @@ static void floppy_enable_hlt(void)
 	spin_unlock_irqrestore(&floppy_hlt_lock, flags);
 }
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 static void setup_DMA(void)
 {
 	unsigned long f;
@@ -1107,7 +1110,10 @@ static void setup_DMA(void)
 	fd_enable_dma();
 	release_dma_lock(f);
 #endif
+<<<<<<< HEAD
 	floppy_disable_hlt();
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 static void show_floppy(void);
@@ -1709,7 +1715,10 @@ irqreturn_t floppy_interrupt(int irq, void *dev_id)
 	fd_disable_dma();
 	release_dma_lock(f);
 
+<<<<<<< HEAD
 	floppy_enable_hlt();
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	do_floppy = NULL;
 	if (fdc >= N_FDC || FDCS->address == -1) {
 		/* we don't even know which FDC is the culprit */
@@ -1858,8 +1867,11 @@ static void floppy_shutdown(unsigned long data)
 		show_floppy();
 	cancel_activity();
 
+<<<<<<< HEAD
 	floppy_enable_hlt();
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	flags = claim_dma_lock();
 	fd_disable_dma();
 	release_dma_lock(flags);
@@ -4198,6 +4210,10 @@ static int __init floppy_init(void)
 
 		disks[dr]->queue = blk_init_queue(do_fd_request, &floppy_lock);
 		if (!disks[dr]->queue) {
+<<<<<<< HEAD
+=======
+			put_disk(disks[dr]);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			err = -ENOMEM;
 			goto out_put_disk;
 		}
@@ -4504,7 +4520,10 @@ static void floppy_release_irq_and_dma(void)
 #if N_FDC > 1
 	set_dor(1, ~8, 0);
 #endif
+<<<<<<< HEAD
 	floppy_enable_hlt();
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	if (floppy_track_buffer && max_buffer_sectors) {
 		tmpsize = max_buffer_sectors * 1024;

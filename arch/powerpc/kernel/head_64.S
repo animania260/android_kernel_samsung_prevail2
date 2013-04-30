@@ -425,7 +425,11 @@ _STATIC(__after_prom_start)
 	tovirt(r6,r6)			/* on booke, we already run at PAGE_OFFSET */
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_CRASH_DUMP
+=======
+#ifdef CONFIG_RELOCATABLE
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 /*
  * Check if the kernel has to be running as relocatable kernel based on the
  * variable __run_at_load, if it is set the kernel is treated as relocatable

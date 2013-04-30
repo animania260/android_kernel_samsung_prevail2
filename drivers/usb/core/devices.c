@@ -624,7 +624,11 @@ static ssize_t usb_device_read(struct file *file, char __user *buf,
 	/* print devices for all busses */
 	list_for_each_entry(bus, &usb_bus_list, bus_list) {
 		/* recurse through all children of the root hub */
+<<<<<<< HEAD
 		if (!bus->root_hub)
+=======
+		if (!bus_to_hcd(bus)->rh_registered)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 			continue;
 		usb_lock_device(bus->root_hub);
 		ret = usb_device_dump(&buf, &nbytes, &skip_bytes, ppos,

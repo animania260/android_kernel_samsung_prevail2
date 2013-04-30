@@ -28,7 +28,10 @@
 #include <asm/irq.h>
 #include <asm/timer.h>
 #include <asm/nmi.h>
+<<<<<<< HEAD
 #include <asm/compat.h>
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #include <asm/smp.h>
 #include "entry.h"
 

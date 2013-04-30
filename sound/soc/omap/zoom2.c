@@ -32,7 +32,11 @@
 #include <plat/mcbsp.h>
 
 /* Register descriptions for twl4030 codec part */
+<<<<<<< HEAD
 #include <linux/mfd/twl4030-audio.h>
+=======
+#include <linux/mfd/twl4030-codec.h>
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 #include "omap-mcbsp.h"
 #include "omap-pcm.h"

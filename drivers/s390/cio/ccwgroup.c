@@ -87,6 +87,15 @@ static void __ccwgroup_remove_cdev_refs(struct ccwgroup_device *gdev)
 	}
 }
 
+<<<<<<< HEAD
+=======
+static ssize_t ccwgroup_online_store(struct device *dev,
+				     struct device_attribute *attr,
+				     const char *buf, size_t count);
+static ssize_t ccwgroup_online_show(struct device *dev,
+				    struct device_attribute *attr,
+				    char *buf);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 /*
  * Provide an 'ungroup' attribute so the user can remove group devices no
  * longer needed or accidentially created. Saves memory :)
@@ -134,6 +143,23 @@ out:
 }
 
 static DEVICE_ATTR(ungroup, 0200, NULL, ccwgroup_ungroup_store);
+<<<<<<< HEAD
+=======
+static DEVICE_ATTR(online, 0644, ccwgroup_online_show, ccwgroup_online_store);
+
+static struct attribute *ccwgroup_attrs[] = {
+	&dev_attr_online.attr,
+	&dev_attr_ungroup.attr,
+	NULL,
+};
+static struct attribute_group ccwgroup_attr_group = {
+	.attrs = ccwgroup_attrs,
+};
+static const struct attribute_group *ccwgroup_attr_groups[] = {
+	&ccwgroup_attr_group,
+	NULL,
+};
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 static void
 ccwgroup_release (struct device *dev)
@@ -293,11 +319,16 @@ int ccwgroup_create_from_string(struct device *root, unsigned int creator_id,
 	}
 
 	dev_set_name(&gdev->dev, "%s", dev_name(&gdev->cdev[0]->dev));
+<<<<<<< HEAD
 
+=======
+	gdev->dev.groups = ccwgroup_attr_groups;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	rc = device_add(&gdev->dev);
 	if (rc)
 		goto error;
 	get_device(&gdev->dev);
+<<<<<<< HEAD
 	rc = device_create_file(&gdev->dev, &dev_attr_ungroup);
 
 	if (rc) {
@@ -305,13 +336,18 @@ int ccwgroup_create_from_string(struct device *root, unsigned int creator_id,
 		goto error;
 	}
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	rc = __ccwgroup_create_symlinks(gdev);
 	if (!rc) {
 		mutex_unlock(&gdev->reg_mutex);
 		put_device(&gdev->dev);
 		return 0;
 	}
+<<<<<<< HEAD
 	device_remove_file(&gdev->dev, &dev_attr_ungroup);
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	device_unregister(&gdev->dev);
 error:
 	for (i = 0; i < num_devices; i++)
@@ -423,7 +459,11 @@ ccwgroup_online_store (struct device *dev, struct device_attribute *attr, const 
 	int ret;
 
 	if (!dev->driver)
+<<<<<<< HEAD
 		return -ENODEV;
+=======
+		return -EINVAL;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	gdev = to_ccwgroupdev(dev);
 	gdrv = to_ccwgroupdrv(dev->driver);
@@ -456,8 +496,11 @@ ccwgroup_online_show (struct device *dev, struct device_attribute *attr, char *b
 	return sprintf(buf, online ? "1\n" : "0\n");
 }
 
+<<<<<<< HEAD
 static DEVICE_ATTR(online, 0644, ccwgroup_online_show, ccwgroup_online_store);
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 static int
 ccwgroup_probe (struct device *dev)
 {
@@ -469,12 +512,16 @@ ccwgroup_probe (struct device *dev)
 	gdev = to_ccwgroupdev(dev);
 	gdrv = to_ccwgroupdrv(dev->driver);
 
+<<<<<<< HEAD
 	if ((ret = device_create_file(dev, &dev_attr_online)))
 		return ret;
 
 	ret = gdrv->probe ? gdrv->probe(gdev) : -ENODEV;
 	if (ret)
 		device_remove_file(dev, &dev_attr_online);
+=======
+	ret = gdrv->probe ? gdrv->probe(gdev) : -ENODEV;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	return ret;
 }
@@ -485,9 +532,12 @@ ccwgroup_remove (struct device *dev)
 	struct ccwgroup_device *gdev;
 	struct ccwgroup_driver *gdrv;
 
+<<<<<<< HEAD
 	device_remove_file(dev, &dev_attr_online);
 	device_remove_file(dev, &dev_attr_ungroup);
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	if (!dev->driver)
 		return 0;
 

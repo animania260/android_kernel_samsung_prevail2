@@ -1537,6 +1537,10 @@
 #define PCI_DEVICE_ID_RICOH_RL5C476	0x0476
 #define PCI_DEVICE_ID_RICOH_RL5C478	0x0478
 #define PCI_DEVICE_ID_RICOH_R5C822	0x0822
+<<<<<<< HEAD
+=======
+#define PCI_DEVICE_ID_RICOH_R5CE822	0xe822
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #define PCI_DEVICE_ID_RICOH_R5CE823	0xe823
 #define PCI_DEVICE_ID_RICOH_R5C832	0x0832
 #define PCI_DEVICE_ID_RICOH_R5C843	0x0843
@@ -1818,7 +1822,10 @@
 #define PCI_DEVICE_ID_SIIG_8S_20x_650	0x2081
 #define PCI_DEVICE_ID_SIIG_8S_20x_850	0x2082
 #define PCI_SUBDEVICE_ID_SIIG_QUARTET_SERIAL	0x2050
+<<<<<<< HEAD
 #define PCI_SUBDEVICE_ID_SIIG_DUAL_SERIAL	0x2530
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 #define PCI_VENDOR_ID_RADISYS		0x1331
 
@@ -2390,6 +2397,11 @@
 
 #define PCI_VENDOR_ID_AZWAVE		0x1a3b
 
+<<<<<<< HEAD
+=======
+#define PCI_VENDOR_ID_ASMEDIA		0x1b21
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #define PCI_VENDOR_ID_TEKRAM		0x1de1
 #define PCI_DEVICE_ID_TEKRAM_DC290	0xdc29
 

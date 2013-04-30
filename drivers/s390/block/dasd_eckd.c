@@ -18,12 +18,19 @@
 #include <linux/hdreg.h>	/* HDIO_GETGEO			    */
 #include <linux/bio.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/compat.h>
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #include <linux/init.h>
 
 #include <asm/debug.h>
 #include <asm/idals.h>
 #include <asm/ebcdic.h>
+<<<<<<< HEAD
 #include <asm/compat.h>
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #include <asm/io.h>
 #include <asm/uaccess.h>
 #include <asm/cio.h>

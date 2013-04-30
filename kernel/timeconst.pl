@@ -369,10 +369,15 @@ if ($hz eq '--can') {
 		die "Usage: $0 HZ\n";
 	}
 
+<<<<<<< HEAD
 	@val = @{$canned_values{$hz}};
 	if (!defined(@val)) {
 		@val = compute_values($hz);
 	}
+=======
+	$cv = $canned_values{$hz};
+	@val = defined($cv) ? @$cv : compute_values($hz);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	output($hz, @val);
 }
 exit 0;

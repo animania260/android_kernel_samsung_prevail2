@@ -259,7 +259,11 @@ wraperr:
 	return err;
 }
 
+<<<<<<< HEAD
 static const struct usb_device_id id_table[] __devinitconst = {
+=======
+static const struct usb_device_id id_table[] = {
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	{ USB_DEVICE(EMI62_VENDOR_ID, EMI62_PRODUCT_ID) },
 	{ }                                             /* Terminating entry */
 };

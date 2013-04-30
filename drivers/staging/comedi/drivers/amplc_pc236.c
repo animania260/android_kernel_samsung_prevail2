@@ -470,7 +470,11 @@ static int pc236_detach(struct comedi_device *dev)
 {
 	printk(KERN_DEBUG "comedi%d: %s: detach\n", dev->minor,
 	       PC236_DRIVER_NAME);
+<<<<<<< HEAD
 	if (devpriv)
+=======
+	if (dev->iobase)
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		pc236_intr_disable(dev);
 
 	if (dev->irq)

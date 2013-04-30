@@ -21,6 +21,10 @@ static bool should_merge(struct fsnotify_event *old, struct fsnotify_event *new)
 			if ((old->path.mnt == new->path.mnt) &&
 			    (old->path.dentry == new->path.dentry))
 				return true;
+<<<<<<< HEAD
+=======
+			break;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		case (FSNOTIFY_EVENT_NONE):
 			return true;
 		default:

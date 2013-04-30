@@ -129,6 +129,7 @@ config DEBUG_S3C_UART
 	  The uncompressor code port configuration is now handled
 	  by CONFIG_S3C_LOWLEVEL_UART_PORT.
 
+<<<<<<< HEAD
 menuconfig SEC_DEBUG
 	bool "Samsung TN Ramdump Feature"
 	default n
@@ -174,4 +175,6 @@ config PID_IN_CONTEXTIDR
 	  additional instructions during context switch. Say Y here only if you
 	  are planning to use hardware trace tools with this kernel.
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 endmenu

@@ -40,6 +40,11 @@ int hfs_mac2asc(struct super_block *sb, char *out, const struct hfs_name *in)
 
 	src = in->name;
 	srclen = in->len;
+<<<<<<< HEAD
+=======
+	if (srclen > HFS_NAMELEN)
+		srclen = HFS_NAMELEN;
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	dst = out;
 	dstlen = HFS_MAX_NAMELEN;
 	if (nls_io) {

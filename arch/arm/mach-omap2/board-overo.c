@@ -264,6 +264,17 @@ static struct omap_dss_board_info overo_dss_data = {
 	.default_device	= &overo_dvi_device,
 };
 
+<<<<<<< HEAD
+=======
+static struct regulator_consumer_supply overo_vdda_dac_supply =
+	REGULATOR_SUPPLY("vdda_dac", "omapdss_venc");
+
+static struct regulator_consumer_supply overo_vdds_dsi_supply[] = {
+	REGULATOR_SUPPLY("vdds_dsi", "omapdss"),
+	REGULATOR_SUPPLY("vdds_dsi", "omapdss_dsi1"),
+};
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 static struct mtd_partition overo_nand_partitions[] = {
 	{
 		.name           = "xloader",
@@ -425,6 +436,13 @@ static struct twl4030_gpio_platform_data overo_gpio_data = {
 	.setup		= overo_twl_gpio_setup,
 };
 
+<<<<<<< HEAD
+=======
+static struct twl4030_usb_data overo_usb_data = {
+	.usb_mode	= T2_USB_MODE_ULPI,
+};
+
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 static struct regulator_init_data overo_vmmc1 = {
 	.constraints = {
 		.min_uV			= 1850000,
@@ -439,18 +457,69 @@ static struct regulator_init_data overo_vmmc1 = {
 	.consumer_supplies	= &overo_vmmc1_supply,
 };
 
+<<<<<<< HEAD
 static struct twl4030_platform_data overo_twldata = {
 	.gpio		= &overo_gpio_data,
 	.vmmc1		= &overo_vmmc1,
+=======
+/* VDAC for DSS driving S-Video (8 mA unloaded, max 65 mA) */
+static struct regulator_init_data overo_vdac = {
+	.constraints = {
+		.min_uV			= 1800000,
+		.max_uV			= 1800000,
+		.valid_modes_mask	= REGULATOR_MODE_NORMAL
+					| REGULATOR_MODE_STANDBY,
+		.valid_ops_mask		= REGULATOR_CHANGE_MODE
+					| REGULATOR_CHANGE_STATUS,
+	},
+	.num_consumer_supplies	= 1,
+	.consumer_supplies	= &overo_vdda_dac_supply,
+};
+
+/* VPLL2 for digital video outputs */
+static struct regulator_init_data overo_vpll2 = {
+	.constraints = {
+		.name			= "VDVI",
+		.min_uV			= 1800000,
+		.max_uV			= 1800000,
+		.valid_modes_mask	= REGULATOR_MODE_NORMAL
+					| REGULATOR_MODE_STANDBY,
+		.valid_ops_mask		= REGULATOR_CHANGE_MODE
+					| REGULATOR_CHANGE_STATUS,
+	},
+	.num_consumer_supplies	= ARRAY_SIZE(overo_vdds_dsi_supply),
+	.consumer_supplies	= overo_vdds_dsi_supply,
+};
+
+static struct twl4030_codec_audio_data overo_audio_data;
+
+static struct twl4030_codec_data overo_codec_data = {
+	.audio_mclk = 26000000,
+	.audio = &overo_audio_data,
+};
+
+static struct twl4030_platform_data overo_twldata = {
+	.irq_base	= TWL4030_IRQ_BASE,
+	.irq_end	= TWL4030_IRQ_END,
+	.gpio		= &overo_gpio_data,
+	.usb		= &overo_usb_data,
+	.codec		= &overo_codec_data,
+	.vmmc1		= &overo_vmmc1,
+	.vdac		= &overo_vdac,
+	.vpll2		= &overo_vpll2,
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 };
 
 static int __init overo_i2c_init(void)
 {
+<<<<<<< HEAD
 	omap3_pmic_get_config(&overo_twldata,
 			TWL_COMMON_PDATA_USB | TWL_COMMON_PDATA_AUDIO,
 			TWL_COMMON_REGULATOR_VDAC | TWL_COMMON_REGULATOR_VPLL2);
 	overo_twldata.vpll2->constraints.name = "VDVI";
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	omap3_pmic_init("tps65950", &overo_twldata);
 	/* i2c2 pins are used for gpio */
 	omap_register_i2c_bus(3, 400, NULL, 0);

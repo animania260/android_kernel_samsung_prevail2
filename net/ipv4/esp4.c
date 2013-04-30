@@ -457,6 +457,7 @@ static u32 esp4_get_mtu(struct xfrm_state *x, int mtu)
 	struct esp_data *esp = x->data;
 	u32 blksize = ALIGN(crypto_aead_blocksize(esp->aead), 4);
 	u32 align = max_t(u32, blksize, esp->padlen);
+<<<<<<< HEAD
 	u32 rem;
 
 	mtu -= x->props.header_len + crypto_aead_authsize(esp->aead);
@@ -479,6 +480,24 @@ static u32 esp4_get_mtu(struct xfrm_state *x, int mtu)
 	}
 
 	return mtu - 2;
+=======
+	unsigned int net_adj;
+
+	switch (x->props.mode) {
+	case XFRM_MODE_TRANSPORT:
+	case XFRM_MODE_BEET:
+		net_adj = sizeof(struct iphdr);
+		break;
+	case XFRM_MODE_TUNNEL:
+		net_adj = 0;
+		break;
+	default:
+		BUG();
+	}
+
+	return ((mtu - x->props.header_len - crypto_aead_authsize(esp->aead) -
+		 net_adj) & ~(align - 1)) + (net_adj - 2);
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 }
 
 static void esp4_err(struct sk_buff *skb, u32 info)

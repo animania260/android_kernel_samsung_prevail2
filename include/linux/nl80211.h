@@ -161,6 +161,7 @@
  * @NL80211_CMD_SET_BEACON: set the beacon on an access point interface
  *	using the %NL80211_ATTR_BEACON_INTERVAL, %NL80211_ATTR_DTIM_PERIOD,
  *	%NL80211_ATTR_BEACON_HEAD and %NL80211_ATTR_BEACON_TAIL attributes.
+<<<<<<< HEAD
  *	Following attributes are provided for drivers that generate full Beacon
  *	and Probe Response frames internally: %NL80211_ATTR_SSID,
  *	%NL80211_ATTR_HIDDEN_SSID, %NL80211_ATTR_CIPHERS_PAIRWISE,
@@ -168,6 +169,8 @@
  *	%NL80211_ATTR_AKM_SUITES, %NL80211_ATTR_PRIVACY,
  *	%NL80211_ATTR_AUTH_TYPE, %NL80211_ATTR_IE, %NL80211_ATTR_IE_PROBE_RESP,
  *	%NL80211_ATTR_IE_ASSOC_RESP.
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
  * @NL80211_CMD_NEW_BEACON: add a new beacon to an access point interface,
  *	parameters are like for %NL80211_CMD_SET_BEACON.
  * @NL80211_CMD_DEL_BEACON: remove the beacon, stop sending it
@@ -752,12 +755,17 @@ enum nl80211_commands {
  *
  * @NL80211_ATTR_MAX_NUM_SCAN_SSIDS: number of SSIDs you can scan with
  *	a single scan request, a wiphy attribute.
+<<<<<<< HEAD
  * @NL80211_ATTR_MAX_NUM_SCHED_SCAN_SSIDS: number of SSIDs you can
  *	scan with a single scheduled scan request, a wiphy attribute.
  * @NL80211_ATTR_MAX_SCAN_IE_LEN: maximum length of information elements
  *	that can be added to a scan request
  * @NL80211_ATTR_MAX_SCHED_SCAN_IE_LEN: maximum length of information
  *	elements that can be added to a scheduled scan request
+=======
+ * @NL80211_ATTR_MAX_SCAN_IE_LEN: maximum length of information elements
+ *	that can be added to a scan request
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
  *
  * @NL80211_ATTR_SCAN_FREQUENCIES: nested attribute with frequencies (in MHz)
  * @NL80211_ATTR_SCAN_SSIDS: nested attribute with SSIDs, leave out for passive
@@ -838,6 +846,7 @@ enum nl80211_commands {
  * @NL80211_ATTR_STATUS_CODE: StatusCode for the %NL80211_CMD_CONNECT
  *	event (u16)
  * @NL80211_ATTR_PRIVACY: Flag attribute, used with connect(), indicating
+<<<<<<< HEAD
  *	that protected APs should be used. This is also used with NEW_BEACON to
  *	indicate that the BSS is to use protection.
  *
@@ -852,6 +861,20 @@ enum nl80211_commands {
  *	(a u32 with flags from &enum nl80211_wpa_versions).
  * @NL80211_ATTR_AKM_SUITES: Used with CONNECT, ASSOCIATE, and NEW_BEACON to
  *	indicate which key management algorithm(s) to use (an array of u32).
+=======
+ *	that protected APs should be used.
+ *
+ * @NL80211_ATTR_CIPHERS_PAIRWISE: Used with CONNECT and ASSOCIATE to
+ *	indicate which unicast key ciphers will be used with the connection
+ *	(an array of u32).
+ * @NL80211_ATTR_CIPHER_GROUP: Used with CONNECT and ASSOCIATE to indicate
+ *	which group key cipher will be used with the connection (a u32).
+ * @NL80211_ATTR_WPA_VERSIONS: Used with CONNECT and ASSOCIATE to indicate
+ *	which WPA version(s) the AP we want to associate with is using
+ *	(a u32 with flags from &enum nl80211_wpa_versions).
+ * @NL80211_ATTR_AKM_SUITES: Used with CONNECT and ASSOCIATE to indicate
+ *	which key management algorithm(s) to use (an array of u32).
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
  *
  * @NL80211_ATTR_REQ_IE: (Re)association request information elements as
  *	sent out by the card, for ROAM and successful CONNECT events.
@@ -1009,6 +1032,7 @@ enum nl80211_commands {
  *	are managed in software: interfaces of these types aren't subject to
  *	any restrictions in their number or combinations.
  *
+<<<<<<< HEAD
  * @%NL80211_ATTR_REKEY_DATA: nested attribute containing the information
  *	necessary for GTK rekeying in the device, see &enum nl80211_rekey_data.
  *
@@ -1081,6 +1105,8 @@ enum nl80211_commands {
  *      This attribute holds a bitmap of the supported protocols for
  *      offloading (see &enum nl80211_probe_resp_offload_support_attr).
  *
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
  * @NL80211_ATTR_MAX: highest attribute number currently defined
  * @__NL80211_ATTR_AFTER_LAST: internal use
  */
@@ -1279,6 +1305,7 @@ enum nl80211_attrs {
 	NL80211_ATTR_INTERFACE_COMBINATIONS,
 	NL80211_ATTR_SOFTWARE_IFTYPES,
 
+<<<<<<< HEAD
 	NL80211_ATTR_REKEY_DATA,
 
 	NL80211_ATTR_MAX_NUM_SCHED_SCAN_SSIDS,
@@ -1316,6 +1343,8 @@ enum nl80211_attrs {
 
 	NL80211_ATTR_PROBE_RESP_OFFLOAD,
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	/* add attributes here, update the policy in nl80211.c */
 
 	__NL80211_ATTR_AFTER_LAST,
@@ -2483,6 +2512,7 @@ enum nl80211_plink_state {
 	MAX_NL80211_PLINK_STATES = NUM_NL80211_PLINK_STATES - 1
 };
 
+<<<<<<< HEAD
 /**
  * enum nl80211_hidden_ssid - values for %NL80211_ATTR_HIDDEN_SSID
  * @NL80211_HIDDEN_SSID_NOT_IN_USE: do not hide SSID (i.e., broadcast it in
@@ -2529,4 +2559,6 @@ enum nl80211_probe_resp_offload_support_attr {
 };
 
 
+=======
+>>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 #endif /* __LINUX_NL80211_H */

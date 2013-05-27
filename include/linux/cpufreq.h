@@ -24,10 +24,6 @@
 
 #define CPUFREQ_NAME_LEN 16
 
-#ifdef CONFIG_CPU_FREQ_GOV_BADASS_GPU_CONTROL
-/* Badass gpu state detection */
-extern bool gpu_busy_state;
-#endif
 
 /*********************************************************************
  *                     CPUFREQ NOTIFIER INTERFACE                    *
@@ -343,8 +339,12 @@ enum {
 	NON_BOOT_CPU = 1
 };
 
-#define MAX_FREQ_LIMIT		1804800
-#define MIN_FREQ_LIMIT 245760
+#ifdef CONFIG_MACH_ICON
+#define MAX_FREQ_LIMIT		1401600
+#else
+#define MAX_FREQ_LIMIT		1024000
+#endif
+#define MIN_FREQ_LIMIT 122880
 
 #define MAX_TOUCH_LIMIT		806400
 #define MAX_UNICPU_LIMIT	806400
@@ -404,18 +404,9 @@ extern struct cpufreq_governor cpufreq_gov_ondemand;
 #elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_CONSERVATIVE)
 extern struct cpufreq_governor cpufreq_gov_conservative;
 #define CPUFREQ_DEFAULT_GOVERNOR	(&cpufreq_gov_conservative)
-#elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_LAGFREE)
-extern struct cpufreq_governor cpufreq_gov_lagfree;
-#define CPUFREQ_DEFAULT_GOVERNOR        (&cpufreq_gov_lagfree)
 #elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_INTERACTIVE)
 extern struct cpufreq_governor cpufreq_gov_interactive;
 #define CPUFREQ_DEFAULT_GOVERNOR	(&cpufreq_gov_interactive)
-#elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_LAZY)
-extern struct cpufreq_governor cpufreq_gov_lazy;
-#define CPUFREQ_DEFAULT_GOVERNOR  (&cpufreq_gov_lazy)
-#elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_BADASS)
-extern struct cpufreq_governor cpufreq_gov_badass;
-#define CPUFREQ_DEFAULT_GOVERNOR	(&cpufreq_gov_badass)
 #endif
 
 

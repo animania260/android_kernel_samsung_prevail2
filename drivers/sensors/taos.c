@@ -235,8 +235,9 @@ light_raw_data_show(struct device *dev, struct device_attribute *attr,
 		  char *buf)
 {
 	struct taos_data *taos = dev_get_drvdata(dev);
-	int lux = taos_get_lux(taos);
-	return snprintf(buf, PAGE_SIZE, "%d\n", lux);
+
+	return snprintf(buf, PAGE_SIZE, "%d, %d\n",
+		taos->cleardata, taos->irdata);
 }
 static ssize_t
 proximity_enable_show(struct device *dev, struct device_attribute *attr,
@@ -262,10 +263,12 @@ light_enable_store(struct device *dev, struct device_attribute *attr,
 			if (taos->pdata->power_en)
 				taos->pdata->power_en(1);
 			taos_on(taos, TAOS_LIGHT);
+			taos->light_enable = ON;
 		} else if (value == 0 && taos->light_enable == ON) {
 			taos_off(taos, TAOS_LIGHT);
 			if (taos->pdata->power_en)
 				taos->pdata->power_en(0);
+			taos->light_enable = OFF;
 		}
 	}
 
@@ -307,6 +310,7 @@ proximity_enable_store(struct device *dev, struct device_attribute *attr,
 						 (CMD_REG | CMD_SPL_FN |
 						  CMD_PROXALS_INTCLR));
 			taos_on(taos, TAOS_PROXIMITY);
+			taos->proximity_enable = ON;
 			input_report_abs(taos->prox_input_dev, ABS_DISTANCE,
 					  !(taos->proximity_value));
 			input_sync(taos->prox_input_dev);
@@ -319,6 +323,7 @@ proximity_enable_store(struct device *dev, struct device_attribute *attr,
 				taos->pdata->power_en(0);
 			if (taos->pdata->power_led)
 				taos->pdata->power_led(0);
+			taos->proximity_enable = OFF;
 			printk(KERN_INFO
 				"[TAOS_PROXIMITY] Temporary : Power OFF\n");
 		}
@@ -918,11 +923,13 @@ int taos_get_lux(struct taos_data *taos)
 		(CMD_REG | ALS_CHAN0LO));
 	irdata = i2c_smbus_read_word_data(taos->client,
 		(CMD_REG | ALS_CHAN1LO));
+	taos->cleardata = cleardata;
+	taos->irdata = irdata;
 
 #ifdef CONFIG_MACH_ICON
-	CPL = (integration_time * als_gain * 1000) / 91;
-	Lux1 = (int)((1000 * cleardata - 1920 * irdata) / CPL);
-	Lux2 = (int)((600 * cleardata - 1056 * irdata) / CPL);
+	CPL = (integration_time * als_gain * 1000) / 100;
+	Lux1 = (int)((1000 * cleardata - 1790 * irdata) / CPL);
+	Lux2 = (int)((622 * cleardata - 1050 * irdata) / CPL);
 #else
 	CPL = (integration_time * als_gain * 1000) / 140;
 	Lux1 = (int)((1000 * cleardata - 1900 * irdata) / CPL);
@@ -1103,7 +1110,6 @@ void taos_on(struct taos_data *taos, int type)
 			printk(KERN_INFO
 				"[TAOS] register wakeup source failed\n");
 		}
-		taos->proximity_enable = ON;
 		taos->taos_prx_status = TAOS_PRX_OPENED;
 		printk(KERN_INFO
 			"[TAOS_PROXIMITY] %s: timer start for prox sensor\n",
@@ -1117,7 +1123,6 @@ void taos_on(struct taos_data *taos, int type)
 		taos->light_polling_time =
 		    ktime_add_us(taos->light_polling_time, 200000);
 		taos_light_enable(taos);
-		taos->light_enable = ON;
 		msleep(50);
 		taos->taos_als_status = TAOS_ALS_OPENED;
 	}
@@ -1141,7 +1146,6 @@ void taos_off(struct taos_data *taos, int type)
 			"[TAOS] %s: disable irq for proximity\n", __func__);
 		disable_irq(taos->irq);
 		disable_irq_wake(taos->irq);
-		taos->proximity_enable = OFF;
 		taos->taos_prx_status = TAOS_PRX_CLOSED;
 		/* wonjun initialize proximity_value*/
 		taos->proximity_value = 0;
@@ -1150,7 +1154,6 @@ void taos_off(struct taos_data *taos, int type)
 		printk(KERN_INFO
 			"[TAOS] %s: timer cancel for light sensor\n", __func__);
 		taos_light_disable(taos);
-		taos->light_enable = OFF;
 		taos->taos_als_status = TAOS_ALS_CLOSED;
 	}
 	if (taos->taos_prx_status == TAOS_PRX_CLOSED
@@ -1328,6 +1331,8 @@ taos_opt_probe(struct i2c_client *client, const struct i2c_device_id *id)
 	}
 	/* maintain power-down mode before using sensor */
 	taos_off(taos, TAOS_ALL);
+	taos->proximity_enable = OFF;
+	taos->light_enable = OFF;
 	if (taos->pdata->power_en)
 		taos->pdata->power_en(0);
 	else

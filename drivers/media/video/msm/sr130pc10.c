@@ -738,6 +738,7 @@ static int cam_hw_init()
 	struct vreg *vreg_L8;
 
 #ifdef CONFIG_MACH_ICON
+	msm_camio_clk_rate_set(24000000);	/*MCLK*/
 	msm_camio_camif_pad_reg_reset();
 	mdelay(10);
 

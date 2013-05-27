@@ -57,3 +57,4 @@ obj-$(CONFIG_SR130PC10) += sr130pc10.o
 obj-$(CONFIG_SR030PC30) += sr030pc30.o
 obj-$(CONFIG_MT9D113) += mt9d113.o mt9d113_reg.o
 obj-$(CONFIG_FB_MSM_WRITEBACK_MSM_PANEL) += wfd/
+obj-$(CONFIG_MSM_V4L2_VIDEO_OVERLAY_DEVICE) += msm_v4l2_video.o

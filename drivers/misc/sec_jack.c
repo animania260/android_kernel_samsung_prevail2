@@ -85,7 +85,9 @@
 #include <linux/gpio.h>
 
 #include <mach/hardware.h>
-
+#ifdef CONFIG_MACH_ICON
+#include <linux/pm_qos_params.h>
+#endif
 #define FEATURE_ADC_READ
 
 #ifdef FEATURE_ADC_READ
@@ -145,6 +147,10 @@ struct adc_range *adc_range;
 #endif
 #endif
 
+#ifdef CONFIG_MACH_ICON
+static struct pm_qos_request_list jack_qos_req;
+static int sec_jack_pm_qos;
+#endif
 
 static struct workqueue_struct *g_earbutton_work_queue;
 static void earbutton_work(struct work_struct *work);
@@ -409,6 +415,13 @@ static void remove_headset(void)
 	hrtimer_cancel(&hi->btn_timer);
 	hrtimer_cancel(&hi->irq_delay_timer);
 	hi->btn_irq_available = 0;
+#ifdef CONFIG_MACH_ICON
+	if (sec_jack_pm_qos) {
+		msleep(1500);
+		pm_qos_update_request(&jack_qos_req, PM_QOS_DEFAULT_VALUE);
+		sec_jack_pm_qos = 0;
+	}
+#endif
 }
 
 static void insert_headset(void)
@@ -430,20 +443,38 @@ static void insert_headset(void)
 #ifdef FEATURE_ADC_READ
 	adc = ear_get_adc();
 	printk(KERN_INFO"adc : %d\n", adc);
-	if (adc >= adc_range[1].start && adc <= adc_range[1].end)
+	if (adc >= adc_range[1].start && adc <= adc_range[1].end) {
 		state |= BIT_HEADSET;
-	else if (adc >= adc_range[2].start && adc <= adc_range[2].end) {
+#ifdef CONFIG_MACH_ICON
+		if (!sec_jack_pm_qos) {
+			pm_qos_update_request(&jack_qos_req, 499);
+			sec_jack_pm_qos = 1;
+		}
+#endif
+	} else if (adc >= adc_range[2].start && adc <= adc_range[2].end) {
 		if (recheck_jack == true) {
 			remove_headset();
 			recheck_jack = false;
 			return;
 		}
 		state |= BIT_HEADSET;
+#ifdef CONFIG_MACH_ICON
+		if (!sec_jack_pm_qos) {
+			pm_qos_update_request(&jack_qos_req, 499);
+			sec_jack_pm_qos = 1;
+		}
+#endif
 	}
 	else if (adc >= adc_range[0].start && adc <= adc_range[0].end) {
 		state |= BIT_HEADSET_NO_MIC;
 	gpio_set_value_cansleep(PM8058_GPIO_PM_TO_SYS(GPIO_POPUP_SW_EN), 0);
 	gpio_set_value(MSM_GPIO_EAR_MICBIAS_EN, 0);
+#ifdef CONFIG_MACH_ICON
+	if (sec_jack_pm_qos) {
+		pm_qos_update_request(&jack_qos_req, PM_QOS_DEFAULT_VALUE);
+		sec_jack_pm_qos = 0;
+	}
+#endif
 	}
 #else
 	state |= BIT_HEADSET;
@@ -477,6 +508,13 @@ static void earbutton_work(struct work_struct *work)
 	printk("adc : %d, earbutton_pressed : %d", adc , earbutton_pressed);
 	atomic_set(&hi->btn_state, earbutton_pressed);
 	if (earbutton_pressed == 1) {
+#ifdef CONFIG_MACH_ICON
+		if (adc >= adc_range[5].start && adc <= adc_range[5].end)
+			hi->pressed_btn = KEY_VOLUMEDOWN;
+		else if (adc >= adc_range[4].start && adc <= adc_range[4].end)
+			hi->pressed_btn = KEY_VOLUMEUP;
+		else
+#endif
 		if (adc >= adc_range[3].start && adc <= adc_range[3].end)
 			hi->pressed_btn = KEY_MEDIA;
 		else
@@ -782,6 +820,11 @@ static int h2w_probe(struct platform_device *pdev)
 				dev_attr_reselect_jack.attr.name);
 #endif
 
+#ifdef CONFIG_MACH_ICON
+	pm_qos_add_request(&jack_qos_req,
+		PM_QOS_CPU_DMA_LATENCY, PM_QOS_DEFAULT_VALUE);
+	sec_jack_pm_qos = 0;
+#endif
 
 /*****************************************************************/
 /* JACK_S_35 GPIO setting*/

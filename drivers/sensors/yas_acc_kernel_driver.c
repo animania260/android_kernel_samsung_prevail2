@@ -193,6 +193,7 @@ struct yas_acc_private_data {
 #ifdef CONFIG_YAS_ACC_MULTI_SUPPORT
 	int used_chip;
 #endif
+	int log_cnt;
 };
 
 static struct yas_acc_private_data *yas_acc_private_data;
@@ -1351,6 +1352,12 @@ static void yas_acc_work_func(struct work_struct *work)
 	input_sync(data->input);
 #endif
 
+	if (data->log_cnt == 50) {
+		pr_err("%s: %d, %d, %d\n", __func__, accel.xyz.v[0],
+			accel.xyz.v[1], accel.xyz.v[2]);
+		data->log_cnt = 0;
+	}
+	data->log_cnt = data->log_cnt + 1;
 	mutex_lock(&data->data_mutex);
 	data->last = accel;
 	mutex_unlock(&data->data_mutex);
@@ -1504,7 +1511,7 @@ static int yas_acc_probe(struct i2c_client *client,
 #if DEBUG
 	mutex_init(&data->suspend_mutex);
 #endif
-
+	data->log_cnt = 0;
 	/* Setup i2c client */
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C)) {
 		err = -ENODEV;

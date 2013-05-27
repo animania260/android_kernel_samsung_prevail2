@@ -30,6 +30,14 @@
 #define	AE_OFSETVAL 3000	/*for tuning // max 5.1times*/
 #define	AE_MAXDIFF 4500	/*for tuning // max =< 5000*/
 #define GLOWLIGHT_DEFAULT 0x002C	/*for tuning*/
+#define GLOWLIGHT_EV_P4		0x003B
+#define GLOWLIGHT_EV_P3		0x0038
+#define GLOWLIGHT_EV_P2		0x0035
+#define GLOWLIGHT_EV_P1		0x0031
+#define GLOWLIGHT_EV_M1		0x0028
+#define GLOWLIGHT_EV_M2		0x0023
+#define GLOWLIGHT_EV_M3		0x001D
+#define GLOWLIGHT_EV_M4		0x0015
 #define GLOWLIGHT_ISO50 0xB52A		/*for tuning*/
 #define GLOWLIGHT_ISO100 0x9DBA	/*for tuning*/
 #define GLOWLIGHT_ISO200 0x864A	/*for tuning*/

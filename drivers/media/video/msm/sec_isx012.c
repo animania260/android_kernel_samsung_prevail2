@@ -685,6 +685,98 @@ static int isx012_write_regs_from_sd(char *name)
 }
 #endif
 
+void isx012_get_LuxValue(void)
+{
+	int err = -1;
+	unsigned short read_val = 0;
+
+	err = isx012_i2c_read(0x01A5, &read_val);
+	if (err < 0)
+		cam_err(" i2c read returned error, %d", err);
+
+	isx012_ctrl->lux = 0x00FF & read_val;
+	CAM_DEBUG(" Lux = %d", isx012_ctrl->lux);
+}
+
+void isx012_get_LowLightCondition_Normal(void)
+{
+	CAM_DEBUG("EV value is %d", isx012_ctrl->setting.brightness);
+
+	switch (isx012_ctrl->setting.brightness) {
+	case EV_MINUS_4:
+		CAM_DEBUG(" EV_M4");
+		if (isx012_ctrl->lux >= GLOWLIGHT_EV_M4)
+			gLowLight_check = 1;
+		else
+			gLowLight_check = 0;
+		break;
+
+	case EV_MINUS_3:
+		CAM_DEBUG(" EV_M3");
+		if (isx012_ctrl->lux >= GLOWLIGHT_EV_M3)
+			gLowLight_check = 1;
+		else
+			gLowLight_check = 0;
+		break;
+
+	case EV_MINUS_2:
+		CAM_DEBUG(" EV_M2");
+		if (isx012_ctrl->lux >= GLOWLIGHT_EV_M2)
+			gLowLight_check = 1;
+		else
+			gLowLight_check = 0;
+		break;
+
+	case EV_MINUS_1:
+		CAM_DEBUG(" EV_M1");
+		if (isx012_ctrl->lux >= GLOWLIGHT_EV_M1)
+			gLowLight_check = 1;
+		else
+			gLowLight_check = 0;
+		break;
+
+	case EV_PLUS_1:
+		CAM_DEBUG(" EV_P1");
+		if (isx012_ctrl->lux >= GLOWLIGHT_EV_P1)
+			gLowLight_check = 1;
+		else
+			gLowLight_check = 0;
+		break;
+
+	case EV_PLUS_2:
+		CAM_DEBUG(" EV_P2");
+		if (isx012_ctrl->lux >= GLOWLIGHT_EV_P2)
+			gLowLight_check = 1;
+		else
+			gLowLight_check = 0;
+		break;
+
+	case EV_PLUS_3:
+		CAM_DEBUG(" EV_P3");
+		if (isx012_ctrl->lux >= GLOWLIGHT_EV_P3)
+			gLowLight_check = 1;
+		else
+			gLowLight_check = 0;
+		break;
+
+	case EV_PLUS_4:
+		CAM_DEBUG(" EV_P4");
+		if (isx012_ctrl->lux >= GLOWLIGHT_EV_P4)
+			gLowLight_check = 1;
+		else
+			gLowLight_check = 0;
+		break;
+
+	default:
+		CAM_DEBUG(" default");
+		if (isx012_ctrl->lux >= GLOWLIGHT_DEFAULT)
+			gLowLight_check = 1;
+		else
+			gLowLight_check = 0;
+		break;
+	}
+}
+
 static int isx012_get_LowLightCondition()
 {
 	int err = -1;
@@ -693,21 +785,10 @@ static int isx012_get_LowLightCondition()
 	unsigned int LowLight_value = 0;
 	unsigned int ldata_temp = 0, hdata_temp = 0;
 
+	isx012_get_LuxValue();
+
 	if (isx012_ctrl->setting.iso == 0) {	/*auto iso*/
-		CAM_DEBUG("[%s:%d] auto iso %d\n",
-			__func__, __LINE__, isx012_ctrl->setting.iso);
-		err = isx012_i2c_read_multi(0x01A5, r_data2, 2);
-
-		if (err < 0)
-			CAM_DEBUG(
-			"[%s:%d] isx012_get_LowLightCondition() returned error, %d\n",
-			__func__, __LINE__, err);
-
-		LowLight_value = r_data2[0];
-		if (LowLight_value >= gGLOWLIGHT_DEFAULT)
-			gLowLight_check = 1;
-		else
-			gLowLight_check = 0;
+		isx012_get_LowLightCondition_Normal();
 	} else {	/*manual iso*/
 		CAM_DEBUG("[%s:%d] manual iso %d\n",
 			__func__, __LINE__, isx012_ctrl->setting.iso);

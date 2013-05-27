@@ -135,32 +135,37 @@
 
 int charging_boot;
 EXPORT_SYMBOL(charging_boot);
-
-#define MSM_PMEM_SF_SIZE	0x1700000
-#ifdef CONFIG_FB_MSM_TRIPLE_BUFFER
-#define MSM_FB_PRIM_BUF_SIZE   (480 * 800 * 4 * 3) /* 4bpp * 3 Pages */
-#else
-#define MSM_FB_PRIM_BUF_SIZE   (480 * 800 * 4 * 2) /* 4bpp * 2 Pages */
-#endif
-
-#ifdef CONFIG_FB_MSM_HDMI_ADV7520_PANEL
-#define MSM_FB_EXT_BUF_SIZE (1280 * 720 * 2 * 1) /* 2 bpp x 1 page */
-#else
-#define MSM_FB_EXT_BUF_SIZE    0
-#endif
-
 #ifdef CONFIG_FB_MSM_OVERLAY0_WRITEBACK
 /* width x height x 3 bpp x 2 frame buffer */
-#define MSM_FB_OVERLAY0_WRITEBACK_SIZE roundup((480 * 800 * 3 * 2), 4096)
+#define MSM_FB_OVERLAY0_WRITEBACK_SIZE (480 * 800 * 3 * 2)+2048
 #else
 #define MSM_FB_OVERLAY0_WRITEBACK_SIZE  0
 #endif
 
-#define MSM_FB_SIZE roundup(MSM_FB_PRIM_BUF_SIZE + MSM_FB_EXT_BUF_SIZE, 4096)
-#define MSM_PMEM_ADSP_SIZE      0x1F00000 /*0x1E00000*/
+#define MSM_PMEM_SF_SIZE	0x1700000
+#ifdef CONFIG_FB_MSM_TRIPLE_BUFFER
+#define MSM_FB_SIZE            480*800*3*4  /*0x780000*/
+#else
+#define MSM_FB_SIZE            0x500000
+#endif
+/*
+ * Reserve space for double buffered full screen
+ * res V4L2 video overlay - i.e. 1280x720x1.5x2
+ */
+#define MSM_V4L2_VIDEO_OVERLAY_BUF_SIZE 2764800
+#define MSM_PMEM_ADSP_SIZE     0x3800000 /*0x2400000, 0x21B4000,0x1F00000,0x1E00000*/
 #define MSM_FLUID_PMEM_ADSP_SIZE	0x2800000
 #define PMEM_KERNEL_EBI0_SIZE   0x600000
 #define MSM_PMEM_AUDIO_SIZE     0x200000
+
+#ifdef CONFIG_ION_MSM
+static struct platform_device ion_dev;
+#define MSM_ION_AUDIO_SIZE	(MSM_PMEM_AUDIO_SIZE + PMEM_KERNEL_EBI0_SIZE)
+#define MSM_ION_SF_SIZE		MSM_PMEM_SF_SIZE
+#define MSM_ION_WB_SIZE		MSM_FB_OVERLAY0_WRITEBACK_SIZE
+#define MSM_ION_HEAP_NUM	5
+#endif
+
 
 /* Vol key up  down macros */
 #define PMIC_GPIO_VOLUME_DOWN	36
@@ -1371,7 +1376,7 @@ static struct platform_device msm_camera_sensor_mt9e013 = {
 
 #ifdef CONFIG_VX6953
 static struct msm_camera_sensor_platform_info vx6953_sensor_7630_info = {
-	.mount_angle = 0
+	.mount_angle = 180
 };
 
 static struct msm_camera_sensor_flash_data flash_vx6953 = {
@@ -1406,7 +1411,7 @@ static struct msm_camera_sensor_flash_src msm_flash_src_current_driver = {
 	.flash_sr_type = MSM_CAMERA_FLASH_SRC_CURRENT_DRIVER,
 	._fsrc.current_driver_src.low_current = 210,
 	._fsrc.current_driver_src.high_current = 700,
-	._fsrc.current_driver_src.driver_channel = &pm8058_fluid_leds_data,
+	._fsrc.current_driver_src.driver_channel = &pm8058_icon_leds_data,
 };
 
 static struct msm_camera_sensor_flash_data flash_sn12m0pz = {
@@ -3594,6 +3599,12 @@ static void fsa9485_usb_cdp_cb(bool attached)
 {
 	pr_info("fsa9485_usb_cdp_cb attached %d\n", attached);
 
+	set_cable_status = attached ? CABLE_TYPE_CDP : CABLE_TYPE_NONE;
+	if (charger_callbacks && charger_callbacks->set_cable)
+		charger_callbacks->set_cable(charger_callbacks,
+					     set_cable_status);
+
+	pr_info("%s set_cable_status = %d\n", __func__, set_cable_status);
 }
 
 static void fsa9485_charger_cb(bool attached)
@@ -4138,6 +4149,7 @@ static struct platform_device touchscreen_i2c_gpio_device = {
 		},
 };
 
+static struct regulator *mddi_ldo12;
 #ifdef CONFIG_TOUCHSCREEN_FTK
 static struct regulator *regulator_touch;
 static struct regulator *regulator_touchio;
@@ -4147,6 +4159,15 @@ int ftk_vdd_on(bool onoff)
 
 	if (system_rev == 0)
 		return 0;
+
+	mddi_ldo12 = regulator_get(NULL, "ldo12");
+	ret = regulator_set_voltage(mddi_ldo12, 1800000, 1800000);
+	if(ret) {
+		printk(KERN_ERR "%s: LDO12 set level failed %d\n", __func__,
+						ret);
+	} else {
+		printk(KERN_INFO "%s: LDO12 set level success\n", __func__);
+	}
 
 	regulator_touch = regulator_get(NULL, "wlan2");
 	ret = regulator_set_voltage(regulator_touch, 2800000, 2800000);
@@ -4170,6 +4191,15 @@ int ftk_vdd_on(bool onoff)
 			   "level success\n", __func__);
 	}
 	if (onoff) {
+		ret = regulator_enable(mddi_ldo12);
+		if (ret) {
+			printk(KERN_INFO "%s: LDO12 regulator "
+				"enable failed (%d)\n", __func__, ret);
+			return 1;
+		} else {
+			printk(KERN_INFO "%s: LDO12 enable success!\n",
+							__func__);
+		}
 
 		ret = regulator_enable(regulator_touch);
 		if (ret) {
@@ -4193,6 +4223,17 @@ int ftk_vdd_on(bool onoff)
 				"enable success!\n", __func__);
 		}
 	} else {
+
+		ret = regulator_disable(mddi_ldo12);
+		if (ret) {
+			printk(KERN_INFO "%s: LDO12 regulator"
+				" disable failed (%d)\n", __func__, ret);
+			return 1;
+		} else {
+			printk(KERN_INFO "%s: LDO12 disable success!\n",
+					__func__);
+		}
+
 		ret = regulator_disable(regulator_touch);
 		if (ret) {
 			printk(KERN_ERR "%s: vreg_touch disable"
@@ -5247,6 +5288,14 @@ static struct resource msm_fb_resources[] = {
 	 }
 };
 
+#ifdef CONFIG_MSM_V4L2_VIDEO_OVERLAY_DEVICE
+static struct resource msm_v4l2_video_overlay_resources[] = {
+	{
+	   .flags = IORESOURCE_DMA,
+	}
+};
+#endif
+
 #if defined(CONFIG_SAMSUNG_LCDC_AUTO_DETECT)
 /*
 * The function of "mdp_polarity()" is working for set the polarity
@@ -5345,6 +5394,16 @@ static struct platform_device msm_fb_device = {
 		.platform_data = &msm_fb_pdata,
 		}
 };
+
+#ifdef CONFIG_MSM_V4L2_VIDEO_OVERLAY_DEVICE
+
+static struct platform_device msm_v4l2_video_overlay_device = {
+	.name   = "msm_v4l2_overlay_pd",
+	.id     = 0,
+	.num_resources  = ARRAY_SIZE(msm_v4l2_video_overlay_resources),
+	.resource       = msm_v4l2_video_overlay_resources,
+};
+#endif
 
 static struct platform_device msm_migrate_pages_device = {
 	.name = "msm_migrate_pages",
@@ -5543,15 +5602,13 @@ static struct pm8xxx_gpio_init_info pmic_quickvx_clk_gpio = {
 };
 
 static struct regulator *mddi_ldo20;
-static struct regulator *mddi_ldo12;
 static struct regulator *mddi_ldo16;
 static struct regulator *mddi_ldo6;
 static struct regulator *mddi_lcd;
 
 static int display_common_init(void)
 {
-	struct regulator_bulk_data regs[2] = {
-		{.supply = "ldo12", .min_uV = 1800000, .max_uV = 1800000},
+	struct regulator_bulk_data regs[1] = {
 		{.supply = "ldo15", .min_uV = 2800000, .max_uV = 2800000},
 	};
 
@@ -5570,8 +5627,7 @@ static int display_common_init(void)
 		goto put_regs;
 	}
 
-	mddi_ldo12 = regs[0].consumer;
-	mddi_lcd = regs[1].consumer;	/*ldo15 */
+	mddi_lcd = regs[0].consumer;	/*ldo15 */
 
 	return rc;
 
@@ -5602,14 +5658,6 @@ static int display_common_power(int on)
 	}
 
 	if (on) {
-
-		rc = regulator_enable(mddi_ldo12);
-		if (rc) {
-			pr_err("%s: LDO12 regulator enable failed (%d)\n",
-			       __func__, rc);
-			return rc;
-		}
-
 		rc = regulator_enable(mddi_lcd);
 		if (rc) {
 			pr_err("%s: LCD regulator enable failed (%d)\n",
@@ -5627,23 +5675,13 @@ static int display_common_power(int on)
 		}
 */
 	} else {
-/*
 		rc = regulator_disable(mddi_lcd);
 		if (rc) {
 			pr_err("%s: LCD regulator disable failed (%d)\n",
 			       __func__, rc);
 			return rc;
 		}
-*/
 		/*mdelay(5); *//* ensure power is stable */
-/*
-		rc = regulator_disable(mddi_ldo12);
-		if (rc) {
-			pr_err("%s: LDO12 regulator disable failed (%d)\n",
-			       __func__, rc);
-			return rc;
-		}
-*/
 /*
 		rc = pmapp_display_clock_config(0);
 		if (rc) {
@@ -5687,21 +5725,13 @@ static struct mddi_platform_data mddi_pdata = {
 	.mddi_client_power = msm_fb_mddi_client_power,
 };
 
-int mdp_core_clk_rate_table[] = {
-	192000000,
-	192000000,
-	192000000,
-	192000000,
-};
-
 static struct msm_panel_common_pdata mdp_pdata = {
+	.ov0_wb_size = MSM_FB_OVERLAY0_WRITEBACK_SIZE,
+	.mem_hid = BIT(ION_CP_WB_HEAP_ID),
 	.hw_revision_addr = 0xac001270,
 	.gpio = 30,
-	.mdp_core_clk_rate = 192000000,
-	.mdp_core_clk_table = mdp_core_clk_rate_table,
-	.num_mdp_clk = ARRAY_SIZE(mdp_core_clk_rate_table),
+	.mdp_max_clk = 192000000,
 	.mdp_rev = MDP_REV_40,
-	.mem_hid = MEMTYPE_EBI0,
 #if defined(CONFIG_SAMSUNG_LCDC_AUTO_DETECT)
 	.check_polarity = mdp_polarity,
 #endif
@@ -6344,7 +6374,7 @@ static int bluetooth_power(int on)
 
 	int bahama_not_marimba = bahama_present();
 
-	if (bahama_not_marimba == -1) {
+	if (bahama_not_marimba < 0) {
 		printk(KERN_WARNING "%s: bahama_present: %d\n",
 		       __func__, bahama_not_marimba);
 		return -ENODEV;
@@ -6553,6 +6583,9 @@ static struct platform_device *devices[] __initdata = {
 #endif
 	&android_pmem_device,
 	&msm_fb_device,
+#ifdef CONFIG_MSM_V4L2_VIDEO_OVERLAY_DEVICE
+	&msm_v4l2_video_overlay_device,
+#endif
 	&msm_migrate_pages_device,
 	/*&mddi_toshiba_device, */
 	/*&lcdc_toshiba_panel_device, */
@@ -6671,7 +6704,10 @@ static struct platform_device *devices[] __initdata = {
 	#endif /* CONFIG_VIBETONZ */
 	&msm_adc_device,
 	&msm_ebi0_thermal,
-	&msm_ebi1_thermal
+	&msm_ebi1_thermal,
+#ifdef CONFIG_ION_MSM
+	&ion_dev,
+#endif
 };
 
 static struct platform_device *devices_02[] __initdata = {
@@ -7526,7 +7562,9 @@ static struct mmc_platform_data msm7x30_sdc3_data = {
 	.ocr_mask = MMC_VDD_27_28 | MMC_VDD_28_29,
 	.translate_vdd = msm_sdcc_setup_power,
 	.mmc_bus_width = MMC_CAP_4_BIT_DATA,
+#ifdef CONFIG_MMC_MSM_SDIO_SUPPORT
 	.sdiowakeup_irq = MSM_GPIO_TO_INT(118),
+#endif
 	.msmsdcc_fmin = 144000,
 	.msmsdcc_fmid = 24576000,
 	.msmsdcc_fmax = 49152000,
@@ -8496,7 +8534,7 @@ static int __init pmem_sf_size_setup(char *p)
 
 early_param("pmem_sf_size", pmem_sf_size_setup);
 
-static unsigned fb_size;
+static unsigned fb_size = MSM_FB_SIZE;
 static int __init fb_size_setup(char *p)
 {
 	fb_size = memparse(p, NULL);
@@ -8541,6 +8579,73 @@ static int __init pmem_kernel_ebi0_size_setup(char *p)
 
 early_param("pmem_kernel_ebi0_size", pmem_kernel_ebi0_size_setup);
 
+#ifdef CONFIG_ION_MSM
+#ifdef CONFIG_MSM_MULTIMEDIA_USE_ION
+static struct ion_co_heap_pdata co_ion_pdata = {
+	.adjacent_mem_id = INVALID_HEAP_ID,
+	.align = PAGE_SIZE,
+};
+#endif
+
+/**
+ * These heaps are listed in the order they will be allocated.
+ * Don't swap the order unless you know what you are doing!
+ */
+static struct ion_platform_data ion_pdata = {
+	.nr = MSM_ION_HEAP_NUM,
+	.heaps = {
+		{
+			.id	= ION_SYSTEM_HEAP_ID,
+			.type	= ION_HEAP_TYPE_SYSTEM,
+			.name	= ION_VMALLOC_HEAP_NAME,
+		},
+#ifdef CONFIG_MSM_MULTIMEDIA_USE_ION
+		/* PMEM_ADSP = CAMERA */
+		{
+			.id	= ION_CAMERA_HEAP_ID,
+			.type	= ION_HEAP_TYPE_CARVEOUT,
+			.name	= ION_CAMERA_HEAP_NAME,
+			.memory_type = ION_EBI_TYPE,
+			.has_outer_cache = 1,
+			.extra_data = (void *)&co_ion_pdata,
+		},
+		/* PMEM_AUDIO */
+		{
+			.id	= ION_AUDIO_HEAP_ID,
+			.type	= ION_HEAP_TYPE_CARVEOUT,
+			.name	= ION_AUDIO_HEAP_NAME,
+			.memory_type = ION_EBI_TYPE,
+			.has_outer_cache = 1,
+			.extra_data = (void *)&co_ion_pdata,
+		},
+		/* PMEM_MDP = SF */
+		{
+			.id	= ION_SF_HEAP_ID,
+			.type	= ION_HEAP_TYPE_CARVEOUT,
+			.name	= ION_SF_HEAP_NAME,
+			.memory_type = ION_EBI_TYPE,
+			.has_outer_cache = 1,
+			.extra_data = (void *)&co_ion_pdata,
+		},
+		{
+			.id	= ION_CP_WB_HEAP_ID,
+			.type	= ION_HEAP_TYPE_CARVEOUT,
+			.name	= ION_WB_HEAP_NAME,
+			.memory_type = ION_EBI_TYPE,
+			.has_outer_cache = 1,
+			.extra_data = (void *)&co_ion_pdata,
+		},
+#endif
+	}
+};
+
+static struct platform_device ion_dev = {
+	.name = "ion-msm",
+	.id = 1,
+	.dev = { .platform_data = &ion_pdata },
+};
+#endif
+
 static struct memtype_reserve msm7x30_reserve_table[] __initdata = {
 	[MEMTYPE_SMI] = {
 			 },
@@ -8552,47 +8657,90 @@ static struct memtype_reserve msm7x30_reserve_table[] __initdata = {
 			  },
 };
 
-static void __init size_pmem_devices(void)
-{
-#ifdef CONFIG_ANDROID_PMEM
-	unsigned long size;
+unsigned long size;
+unsigned long msm_ion_camera_size;
 
-	if (machine_is_msm7x30_fluid())
+static void fix_sizes(void)
+{
+	if machine_is_msm7x30_fluid()
 		size = fluid_pmem_adsp_size;
 	else
 		size = pmem_adsp_size;
+
+#ifdef CONFIG_ION_MSM
+	msm_ion_camera_size = size;
+#endif
+}
+
+static void __init size_pmem_devices(void)
+{
+#ifdef CONFIG_ANDROID_PMEM
+#ifndef CONFIG_MSM_MULTIMEDIA_USE_ION
+
 	android_pmem_adsp_pdata.size = size;
 	android_pmem_audio_pdata.size = pmem_audio_size;
 	android_pmem_pdata.size = pmem_sf_size;
 #endif
+#endif
 }
 
+#ifdef CONFIG_ANDROID_PMEM
+#ifndef CONFIG_MSM_MULTIMEDIA_USE_ION
 static void __init reserve_memory_for(struct android_pmem_platform_data *p)
 {
 	msm7x30_reserve_table[p->memory_type].size += p->size;
 }
+#endif
+#endif
 
 static void __init reserve_pmem_memory(void)
 {
 #ifdef CONFIG_ANDROID_PMEM
+#ifndef CONFIG_MSM_MULTIMEDIA_USE_ION
 	reserve_memory_for(&android_pmem_adsp_pdata);
 	reserve_memory_for(&android_pmem_audio_pdata);
 	reserve_memory_for(&android_pmem_pdata);
 	msm7x30_reserve_table[MEMTYPE_EBI0].size += pmem_kernel_ebi0_size;
 #endif
+#endif
 }
 
 static void __init reserve_mdp_memory(void)
 {
-	mdp_pdata.ov0_wb_size = MSM_FB_OVERLAY0_WRITEBACK_SIZE;
-	msm7x30_reserve_table[mdp_pdata.mem_hid].size += mdp_pdata.ov0_wb_size;
+       mdp_pdata.ov0_wb_size = MSM_FB_OVERLAY0_WRITEBACK_SIZE;
+#if defined(CONFIG_ANDROID_PMEM) && !defined(CONFIG_MSM_MULTIMEDIA_USE_ION)
+       msm7x30_reserve_table[mdp_pdata.mem_hid].size += mdp_pdata.ov0_wb_size;
+#endif
+}
+
+static void __init size_ion_devices(void)
+{
+#ifdef CONFIG_MSM_MULTIMEDIA_USE_ION
+	ion_pdata.heaps[1].size = msm_ion_camera_size;
+	ion_pdata.heaps[2].size = MSM_ION_AUDIO_SIZE;
+	ion_pdata.heaps[3].size = MSM_ION_SF_SIZE;
+	ion_pdata.heaps[4].size = MSM_ION_WB_SIZE;
+#endif
+}
+
+static void __init reserve_ion_memory(void)
+{
+#if defined(CONFIG_ION_MSM) && defined(CONFIG_MSM_MULTIMEDIA_USE_ION)
+	msm7x30_reserve_table[MEMTYPE_EBI0].size += msm_ion_camera_size;
+	msm7x30_reserve_table[MEMTYPE_EBI0].size += MSM_ION_AUDIO_SIZE;
+	msm7x30_reserve_table[MEMTYPE_EBI0].size += MSM_ION_SF_SIZE;
+	msm7x30_reserve_table[MEMTYPE_EBI0].size += MSM_ION_WB_SIZE;
+#endif
 }
 
 static void __init msm7x30_calculate_reserve_sizes(void)
 {
+	fix_sizes();
 	size_pmem_devices();
 	reserve_pmem_memory();
 	reserve_mdp_memory();
+	size_ion_devices();
+	reserve_ion_memory();
 }
 
 static int msm7x30_paddr_to_memtype(unsigned int paddr)
@@ -8627,6 +8775,16 @@ static void __init msm7x30_allocate_memory_regions(void)
 	msm_fb_resources[0].end = msm_fb_resources[0].start + size - 1;
 	pr_info("allocating %lu bytes at %p (%lx physical) for fb\n",
 		size, addr, __pa(addr));
+
+#ifdef CONFIG_MSM_V4L2_VIDEO_OVERLAY_DEVICE
+	size = MSM_V4L2_VIDEO_OVERLAY_BUF_SIZE;
+	addr = alloc_bootmem_align(size, 0x1000);
+	msm_v4l2_video_overlay_resources[0].start = __pa(addr);
+	msm_v4l2_video_overlay_resources[0].end =
+		msm_v4l2_video_overlay_resources[0].start + size - 1;
+	pr_debug("allocating %lu bytes at %p (%lx physical) for v4l2\n",
+		size, addr, __pa(addr));
+#endif
 }
 
 static void __init msm7x30_map_io(void)

@@ -32,6 +32,7 @@
 #include <linux/input/mt.h>
 #endif
 
+#define SEC_TSP_DEBUG
 #ifdef CONFIG_SEC_DVFS
 #define TOUCH_BOOSTER			1
 #define TOUCH_BOOSTER_OFF_TIME	100
@@ -44,7 +45,7 @@
 
 #define VERSION							3
 #define FTK_TS_DRV_NAME					"ftk"
-#define FTK_TS_DRV_VERSION				"0702"
+#define FTK_TS_DRV_VERSION				"1008"
 
 #define X_AXIS_MAX						480
 #define X_AXIS_MIN						0
@@ -73,6 +74,9 @@
 
 #define SLEEPIN					0x80
 #define SLEEPOUT				0x81
+#define SENSEOFF				0x82
+#define SENSEON					0x83
+
 #define FLUSHBUFFER				0x88
 #define SOFTRESET				0x9E
 #define FORCECALIBRATION		0xA0
@@ -206,7 +210,8 @@ struct ftk_ts_info {
 	struct i2c_client *client;
 	struct input_dev *input_dev;
 	struct hrtimer timer;
-	struct timer_list timer_charger;
+/*	struct timer_list timer_charger; */
+	struct hrtimer timer_charger;
 	struct timer_list timer_firmware;
 	struct work_struct work;
 	struct work_struct work_charger;
@@ -355,6 +360,17 @@ static void ftk_command(struct ftk_ts_info *info, unsigned char cmd)
 		ftk_delay(30);
 	else
 		ftk_delay(5);
+}
+
+static void ftk_softreset(struct ftk_ts_info *info)
+{
+	u8 regAdd[7] = {0xB3, 0xFF, 0xFF, 0xB1, 0xFC, 0x34, 0x01};
+
+	printk(KERN_ERR "FTK Softreset\n");
+	ftk_write_reg(info, &regAdd[0], 3);
+	ftk_write_reg(info, &regAdd[3], 4);
+
+	ftk_delay(30);
 }
 
 static void ftk_interrupt(struct ftk_ts_info *info, int enable)
@@ -517,8 +533,6 @@ static u8 firmware_load_config(struct ftk_ts_info *info,
 	regAdd[1] = 0x03;
 	ftk_read_reg(info, &regAdd[0], 2, &ret, 1);
 	printk(KERN_ERR "FTK Patch Version %d\n", ret);
-
-	ftk_command(info, FORCECALIBRATION);
 
 	return ret;
 }
@@ -730,12 +744,12 @@ static int firmware_readdata(unsigned char *filename, unsigned char *data)
 	return rc;
 }
 
-static void firmware_load(struct ftk_ts_info *info, unsigned char *name)
+static u8 firmware_load(struct ftk_ts_info *info, unsigned char *name)
 {
 	const struct firmware *firmware;
-	int rc;
+	u8 rc = 0;
 
-	ftk_command(info, SOFTRESET);
+	ftk_softreset(info);
 
 	rc = firmware_request(&firmware, name, info->dev);
 	if (rc == 0)
@@ -752,17 +766,20 @@ static void firmware_load(struct ftk_ts_info *info, unsigned char *name)
 			firmware->data[1] >> 4, firmware_month, firmware_day);
 
 		firmware_load_patch(info, firmware);
-		firmware_load_config(info, firmware);
+		rc = firmware_load_config(info, firmware);
 		firmware_load_charger(info, firmware);
 	} else
 		printk(KERN_ERR "FTK firmware_verify fail\n");
 
 	firmware_release(firmware);
+
 	touch_is_pressed = 0;
 	#if TOUCH_BOOSTER
 	set_dvfs_lock(info, 2);
 	pr_info("[TSP] dvfs_lock free.\n ");
 	#endif
+
+	return rc;
 }
 
 #ifdef SEC_TSP_FACTORY_TEST
@@ -841,6 +858,9 @@ static int init_ftk(struct ftk_ts_info *info)
 	printk(KERN_ERR "FTK Chip ID = %02x %02x %02x\n",
 		val[0], val[1], val[2]);
 
+	if (val[0] != 0x28 &&  val[1] != 0x55)
+		return 1;
+
 	ftk_write_signature(info, 0);
 	firmware_load(info, FIRMWARE_IC);
 	ftk_write_signature(info, 1);
@@ -895,6 +915,23 @@ static void ts_controller_ready(struct ftk_ts_info *info, unsigned char data[])
 	}
 }
 
+static void ts_error_handler(struct ftk_ts_info *info, unsigned char data[])
+{
+	u8 regAdd[7] = {0xB3, 0xFF, 0xFF, 0xB1, 0xFC, 0x34, 0x01};
+
+	printk(KERN_ERR "FTK ts_error_handler\n");
+	printk(KERN_ERR "%02X %02X %02X %02X %02X %02X %02X %02X\n",
+		data[0], data[1], data[2], data[3],
+		data[4], data[5], data[6], data[7]);
+
+	if (data[1] == 0x1 || data[1] == 0x2 ||
+	   (data[1] == 0x3 && data[6] != 0x1)) {
+		printk(KERN_ERR "FTK p70 restart\n");
+		ftk_write_reg(info, &regAdd[0], 3);
+		ftk_write_reg(info, &regAdd[3], 4);
+	}
+}
+
 #ifdef CONFIG_MULTI_TOUCH_PROTOCOL_TYPE_B
 static u8 decode_data_packet_type_b(struct ftk_ts_info *info,
 				unsigned char data[], unsigned char LeftEvent)
@@ -939,21 +976,32 @@ static u8 decode_data_packet_type_b(struct ftk_ts_info *info,
 			input_report_abs(info->input_dev,
 				ABS_MT_PRESSURE, z);
 
+#if defined(SEC_TSP_DEBUG2)
 			printk(KERN_ERR "FTK ID[%d] X[%3d] Y[%3d] Z[%d]\n",
 			TouchID, x, y, z);
 			break;
+#else
+		if (EventID == 0x03)
+			printk(KERN_ERR "FTK ID[%d] down\n",
+			TouchID);
+			break;
+#endif
 
 		case EVENTID_LEAVE_POINTER:
 			ID_Indx[TouchID] = 0;
 			input_mt_slot(info->input_dev, TouchID);
 			input_report_abs(
 				info->input_dev, ABS_MT_TRACKING_ID, -1);
-			printk(KERN_ERR "FTK ID[%d] release\n",
+			printk(KERN_ERR "FTK ID[%d] up\n",
 			TouchID);
 			break;
 
 		case EVENTID_CONTROLLER_READY:
 			ts_controller_ready(info, &data[EventNum * 8]);
+			break;
+
+		case EVENTID_ERROR:
+			ts_error_handler(info, &data[EventNum * 8]);
 			break;
 		}
 
@@ -1128,6 +1176,43 @@ static void ts_event_handler(struct work_struct *work)
 		enable_irq(info->client->irq);
 }
 
+#ifdef FTK_USE_CHARGER_DETECTION
+/* Changing to hr_timer as in ICS code base */
+static enum hrtimer_restart ftk_charger_tmer_func(struct hrtimer *timer)
+{
+	struct ftk_ts_info *info =
+	container_of(timer, struct ftk_ts_info, timer_charger);
+
+	queue_work(stmtouch_wq_charger, &info->work_charger);
+	return 0; /* HRTIMER_NORESTART */
+}
+#endif
+
+static int ftk_charger_timer_start(struct ftk_ts_info *info)
+{
+	if (ftk_charger_cnt == 0)
+		return 0;
+
+	#ifdef FTK_USE_CHARGER_DETECTION
+	/* changing to hr timer implementaion as in ICS code base and starting the timer here*/
+	hrtimer_start(&info->timer_charger, ktime_set(0, 500000000),
+			HRTIMER_MODE_REL);
+	/*printk(KERN_ERR "FTK Charger Timer Start %d\n", ftk_charger_cnt);*/
+	#endif
+	return 0;
+}
+static int ftk_charger_timer_stop(struct ftk_ts_info *info)
+{
+	int ret = 0;
+	if (ftk_charger_cnt == 0)
+		return ret;
+	#ifdef FTK_USE_CHARGER_DETECTION
+	printk(KERN_ERR "FTK Charger Timer Stop\n");
+	hrtimer_cancel(&info->timer_charger);
+	#endif
+	return ret;
+}
+
 static void ts_charger_event_handler(struct work_struct *work_charger)
 {
 	struct ftk_ts_info *info = container_of(
@@ -1144,6 +1229,9 @@ static void ts_charger_event_handler(struct work_struct *work_charger)
 
 	if (ftk_charger_previous != ftk_charger_status) {
 		ftk_charger_previous = ftk_charger_status;
+
+		ftk_command(info, SENSEOFF);
+		ftk_interrupt(info, INT_DISABLE);
 
 		regAdd[0] = 0xB0;
 
@@ -1173,52 +1261,35 @@ static void ts_charger_event_handler(struct work_struct *work_charger)
 			break;
 		}
 
-		#ifdef FORCE_CALIBRATION_WHEN_DETECT_CHARGER
 		printk(KERN_ERR "FTK Force Calibration\n");
-		ftk_command(info, FORCECALIBRATION);
-		#endif
+		ftk_command(info, SENSEON);
+		ftk_command(info, SLEEPIN);
+		ftk_delay(300);
+		ftk_command(info, FLUSHBUFFER);
 
-	}
-}
+		for (i = 0; i < FINGER_MAX; i++)
+			ID_Indx[i] = 0;
+		touch_is_pressed = 0;
 
-#ifdef FTK_USE_CHARGER_DETECTION
-static void ftk_charger_tmer_func(unsigned long arg)
-{
-	struct ftk_ts_info *info = (struct ftk_ts_info *)arg;
-
-	queue_work(stmtouch_wq_charger, &info->work_charger);
-
-	mod_timer(&info->timer_charger, jiffies + (HZ/2));
-}
+#ifdef CONFIG_MULTI_TOUCH_PROTOCOL_TYPE_B
+		for (i = 0; i < FINGER_MAX; i++) {
+			input_mt_slot(info->input_dev, i);
+			input_report_abs(info->input_dev,
+				ABS_MT_TRACKING_ID, -1);
+		}
+#else /* TYPE A */
+		input_mt_sync(info->input_dev);
 #endif
+		input_sync(info->input_dev);
 
-static int ftk_charger_timer_start(struct ftk_ts_info *info)
-{
-	if (ftk_charger_cnt == 0)
-		return 0;
+		ftk_interrupt(info, INT_ENABLE);
+	}
 
-	#ifdef FTK_USE_CHARGER_DETECTION
-	init_timer(&info->timer_charger);
-	info->timer_charger.expires = jiffies + (HZ/2);
-	info->timer_charger.function = ftk_charger_tmer_func;
-	info->timer_charger.data = (ulong)info;
-	add_timer(&info->timer_charger);
-	printk(KERN_ERR "FTK Charger Timer Start %d\n", ftk_charger_cnt);
-	#endif
-	return 0;
-}
-
-static int ftk_charger_timer_stop(struct ftk_ts_info *info)
-{
-	int ret = 0;
-	if (ftk_charger_cnt == 0)
-		return ret;
-
-	#ifdef FTK_USE_CHARGER_DETECTION
-	printk(KERN_ERR "FTK Charger Timer Stop\n");
-	ret = del_timer(&info->timer_charger);
-	#endif
-	return ret;
+	
+	if (hrtimer_active(&info->timer_charger))
+		ftk_charger_timer_stop(info);
+	
+		ftk_charger_timer_start(info);
 }
 
 static void ftk_firmware_handler(struct work_struct *work_firmware)
@@ -1435,6 +1506,9 @@ static int stm_ts_probe(struct i2c_client *client,
 		}
 	}
 
+	hrtimer_init(&info->timer_charger, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
+	info->timer_charger.function = ftk_charger_tmer_func;
+
 #ifdef CONFIG_HAS_EARLYSUSPEND
 	info->early_suspend.level = EARLY_SUSPEND_LEVEL_DISABLE_FB + 50;
 	info->early_suspend.suspend = stm_ts_early_suspend;
@@ -1461,6 +1535,9 @@ static int stm_ts_probe(struct i2c_client *client,
 		printk(KERN_ERR "FTK Failed to create sysfs group\n");
 #endif
 
+	msleep(500);
+
+	printk(KERN_ERR "%s:FTK Charger Timer Start %d\n",__func__, ftk_charger_cnt);
 	ftk_charger_timer_start(info);
 	ftk_firmware_timer_start(info);
 

@@ -10,7 +10,7 @@
  */
 
 #if defined(CONFIG_MACH_ICON)
-#define BIN_FW_VERSION		0x06
+#define BIN_FW_VERSION		0x0e
 #ifdef _CYPRESS_TKEY_FW_H
 #include "icon_tkey_fw.h"
 #endif

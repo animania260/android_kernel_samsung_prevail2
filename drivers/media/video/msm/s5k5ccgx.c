@@ -1856,8 +1856,10 @@ s5k5ccg_set_sensor_mode(int mode)
 			s5k5ccg_sensor_write_list(s5k5ccg_preview,
 					"s5k5ccg_preview");
 #endif
-			if (sceneNight == 1 || fireWorks == 1)
+			if (sceneNight == 1)
 				msleep(300);
+			if(fireWorks ==1 )
+				msleep(800);
 		}
 		break;
 
@@ -2083,18 +2085,18 @@ cam_hw_init()
 
 	gpio_set_value(CAM_VT_nSTBY, 0); /*VT_nSTBY -> DOWN*/
 	/*mdelay(10);*/
-	mdelay(5);
+	mdelay(10); //Fix for PLM P130226-0763 - increased by 5ms
 
 	gpio_set_value(CAM_STANDBY, 1); /*STBY -> UP*/
 	udelay(15);
 
 	gpio_set_value(CAM_RESET, 1); /*REST -> UP*/
 	/*mdelay(10);*/
-	mdelay(5);
+	mdelay(10); //Fix for PLM P130226-0763 - increased by 5ms
 
 
 	vreg_enable(vreg_L16);
-	mdelay(1);
+	mdelay(4.8); //Fix for PLM P130226-0763 - increased by 3.8ms
 
 	return rc;
 }

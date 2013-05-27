@@ -1998,10 +1998,6 @@ static void msm_hs_shutdown(struct uart_port *uport)
 	struct msm_hs_port *msm_uport = UARTDM_TO_MSM(uport);
 
 	pr_warn("%s : start", __func__);
-
-	if ((msm_uport->rx.flush < FLUSH_STOP) && (uport->line == 0))
-		msm_hs_stop_rx_locked(uport);
-
 	BUG_ON(msm_uport->rx.flush < FLUSH_STOP);
 	tasklet_kill(&msm_uport->tx.tlet);
 	wait_event(msm_uport->rx.wait, msm_uport->rx.flush == FLUSH_SHUTDOWN);
@@ -2051,7 +2047,7 @@ static void msm_hs_shutdown(struct uart_port *uport)
 	if (use_low_power_wakeup(msm_uport))
 		free_irq(msm_uport->wakeup.irq, msm_uport);
 
-	pr_warn("%s : end", __func__);
+	pr_warn("%s : start", __func__);
 }
 
 static void __exit msm_serial_hs_exit(void)

@@ -105,6 +105,7 @@ struct r69329_state_type {
 	boolean display_on;
 	boolean disp_powered_up;
 	boolean disp_cabc;
+	boolean	force_backlight_on;
 };
 
 static struct r69329_state_type r69329_state = { 0 };
@@ -132,113 +133,93 @@ struct spi_cmd_desc {
 
 static char sleep_out_seq[1] = { 0x11 };
 static char disp_on_seq[1] = { 0x29 };
-/*static char disp_off_seq[1] = { 0x28 };*/
+static char disp_off_seq[1] = { 0x28 };
 static char sleep_in_seq[1] = { 0x10 };
 /*static char sw_reset_seq[1] = { 0x01 };*/
-
-static char set_negative_on[1] = { 0x21 };
-static char set_negative_off[1] = { 0x20 };
-
-static char set_cabc_on[2] = {
-	0xB8,
-	0x01
-};
-
-static char set_cabc_off[2] = {
-	0xB8,
-	0x00
-};
-
-static struct spi_cmd_desc set_negative_on_cmd[] = {
-	{sizeof(set_negative_on), set_negative_on, 0},
-};
-
-static struct spi_cmd_desc set_negative_off_cmd[] = {
-	{sizeof(set_negative_off), set_negative_off, 0},
-};
-
-static struct spi_cmd_desc set_cabc_on_cmd[] = {
-	{sizeof(set_cabc_on), set_cabc_on, 0},
-};
-
-static struct spi_cmd_desc set_cabc_off_cmd[] = {
-	{sizeof(set_cabc_off), set_cabc_off, 0},
-};
-
 
 #ifdef PWM_CABC
 static char initial_setting_seq1[2] = {
 	0xB0,
 	0x04
 };
+/*
+static char initial_setting_seq2[6] = {
+	0xC1,
+	0x00, 0x03, 0x33, 0x11, 0x03
+};
 
-static char initial_setting_seq2[2] = {
+static char initial_setting_seq3[5] = {
+	0xFD,
+	0x20, 0x30, 0x20, 0x10
+};
+*/
+static char initial_setting_seq4[2] = {
 	0x36,
 	0x88
 };
 
-static char initial_setting_seq3[7] = {
+static char initial_setting_seq5[7] = {
 	0xCE,
 	0x05, 0x84, 0x00, 0xFF, 0x0A,
 	0x01
 };
 
-static char initial_setting_seq4[10] = {
+static char initial_setting_seq6[10] = {
 	0xBD,
 	0xC1, 0x05, 0x00, 0x05, 0x00,
 	0x02, 0x00, 0x05, 0x03
 };
 
-static char initial_setting_seq5[4] = {
+static char initial_setting_seq7[4] = {
 	0xBE,
 	0xF0, 0x04, 0x14
 };
 
-static char initial_setting_seq6[10] = {
+static char initial_setting_seq8[10] = {
 	0xC0,
 	0x00, 0x1F, 0x03, 0x6E, 0x01,
 	0x02, 0x0A, 0x0A, 0x02,
 };
 
-static char initial_setting_seq7[5] = {
+static char initial_setting_seq9[5] = {
 	0xC2,
 	0x0F, 0x04, 0x0A, 0x0A,
 };
-
-static char initial_setting_seq8[6] = {
+static char initial_setting_seq10[6] = {
 	0xC1,
 	0x00, 0x83, 0x22, 0x11, 0x03
 };
-
-static char initial_setting_seq9[7] = {
+static char initial_setting_seq11[7] = {
 	0xD0,
 	0x54, 0x19, 0xAA, 0xC7, 0x8B,
 	0x8E
 };
 
-static char initial_setting_seq10[15] = {
+static char initial_setting_seq12[18] = {
 	0xD1,
 	0x0D, 0x11, 0x02, 0x22, 0x32,
 	0x03, 0x22, 0x43, 0x06, 0x77,
 	0x87, 0x06, 0x77, 0x97
 };
 
-static char initial_setting_seq11[3] = {
+static char initial_setting_seq13[3] = {
 	0xD4,
 	0x0F, 0x0E
 };
 
-static char initial_setting_seq12[3] = {
+static char initial_setting_seq14[3] = {
 	0xD5,
 	0x34, 0x34
 };
 /*
-static char initial_setting_seq13[2] = {
+* CABC Setting
+* ON : 0x01, OFF : 0x00
+static char initial_setting_seq15[2] = {
 	0xB8,
 	0x00
-}; CABC Setting */
-
-static char initial_setting_seq14[2] = {
+};
+*/
+static char initial_setting_seq16[2] = {
 	0x53,
 	0x2C
 };
@@ -282,52 +263,153 @@ static char deep_standby_mode_setting_seq[2] = {
 	0xB1,
 	0x01
 };
+
+static char disp_on_seq1[5] = {
+	0xFD,
+	0x00, 0x00, 0x00, 0x00
+};
+
+static char disp_on_seq2[6] = {
+	0xC1,
+	0x00, 0x83, 0x33, 0x11, 0x03
+};
+
+static char disp_on_seq3[2] = {
+	0xBD,
+	0xC1
+};
 */
+static char set_negative[1] = {
+	0x20
+};
+
+static char set_cabc1[6] = {
+	0xB8,
+	0x01, 0x00, 0x3F, 0x18, 0x18
+};
+
+static char set_cabc2[7] = {
+	0xB9,
+	0x18, 0x00, 0x18, 0x18, 0x1F,
+	0x1F
+};
+
+static char set_cabc3[23] = {
+	0xBA,
+	0x00, 0x00, 0x0C, 0x13, 0xAC,
+	0x13, 0x6C, 0x13, 0x0C, 0x13,
+	0x00, 0xDA, 0x6D, 0x03, 0xFF,
+	0xFF, 0x10, 0x67, 0x89, 0xAF,
+	0xD6, 0xFF
+};
+
+static char set_cabc_on[2] = {
+	0xB8,
+	0x01
+};
+
+static char set_cabc_off[2] = {
+	0xB8,
+	0x00
+};
+
+static char set_cabc_off1[8] = {
+	0xB9,
+	0x18, 0x00, 0x18, 0x18, 0x00,
+	0x00
+};
+
+
+static char set_cabc_off2[23] = {
+	0xBA,
+	0x00, 0x00, 0x0C, 0x11, 0xAC,
+	0x11, 0x6C, 0x11, 0x0C, 0x11,
+	0x00, 0xDA, 0x6D, 0x03, 0xFF,
+	0xFF, 0x10, 0x7F, 0x9F, 0xBF,
+	0xDF, 0xFF
+};
+
+static char set_cabc_off3[23] = {
+	0xBA,
+	0x00, 0x00, 0x0C, 0x0E, 0xAC,
+	0x0E, 0x6C, 0x0E, 0x0C, 0x0E,
+	0x00, 0xDA, 0x6D, 0x03, 0xFF,
+	0xFF, 0x10, 0x9F, 0xB7, 0xCF,
+	0xE7, 0xFF
+};
+
+static char set_cabc_off4[23] = {
+	0xBA,
+	0x00, 0x00, 0x0C, 0x0C, 0xAC,
+	0x0C, 0x6C, 0x0C, 0x0C, 0x0C,
+	0x00, 0xDA, 0x6D, 0x03, 0xFF,
+	0xFF, 0x10, 0xBF, 0xCF, 0xDF,
+	0xEF, 0xFF
+};
+
+static char set_cabc_off5[23] = {
+	0xBA,
+	0x00, 0x00, 0x0C, 0x0B, 0xAC,
+	0x0B, 0x6C, 0x0B, 0x0C, 0x0B,
+	0x00, 0xDA, 0x6D, 0x03, 0xFF,
+	0xFF, 0x10, 0xDF, 0xE7, 0xEF,
+	0xF7, 0xFF
+};
 static struct spi_cmd_desc display_on_cmds[] = {
 	{sizeof(sleep_out_seq), sleep_out_seq, 100},
 
 	{sizeof(initial_setting_seq1), initial_setting_seq1, 0},
-	{sizeof(initial_setting_seq2), initial_setting_seq2, 0},
-	{sizeof(initial_setting_seq3), initial_setting_seq3, 0},
+	/*{sizeof(initial_setting_seq2), initial_setting_seq2, 0},
+	{sizeof(initial_setting_seq3), initial_setting_seq3, 60},*/
 	{sizeof(initial_setting_seq4), initial_setting_seq4, 0},
 	{sizeof(initial_setting_seq5), initial_setting_seq5, 0},
 	{sizeof(initial_setting_seq6), initial_setting_seq6, 0},
 	{sizeof(initial_setting_seq7), initial_setting_seq7, 0},
 	{sizeof(initial_setting_seq8), initial_setting_seq8, 0},
+	{sizeof(initial_setting_seq9), initial_setting_seq9, 0},
+	{sizeof(initial_setting_seq10), initial_setting_seq10, 0},
 
 	{sizeof(red28_gamma_setting_seq), red28_gamma_setting_seq, 0},
 	{sizeof(green28_gamma_setting_seq), green28_gamma_setting_seq, 0},
 	{sizeof(blue28_gamma_setting_seq), blue28_gamma_setting_seq, 0},
 
-	{sizeof(initial_setting_seq9), initial_setting_seq9, 0},
-	{sizeof(initial_setting_seq10), initial_setting_seq10, 0},
 	{sizeof(initial_setting_seq11), initial_setting_seq11, 0},
 	{sizeof(initial_setting_seq12), initial_setting_seq12, 0},
-	/* {sizeof(initial_setting_seq13), initial_setting_seq13, 0}, CABC */
+	{sizeof(initial_setting_seq13), initial_setting_seq13, 0},
 	{sizeof(initial_setting_seq14), initial_setting_seq14, 0},
+	/*{sizeof(initial_setting_seq15), initial_setting_seq15, 0}, CABC*/
+/*	{sizeof(set_cabc1), set_cabc1, 0},
+	{sizeof(set_cabc2), set_cabc2, 0},
+	{sizeof(set_cabc3), set_cabc3, 0},*/
+
+	{sizeof(initial_setting_seq16), initial_setting_seq16, 0},
+	/*{sizeof(set_negative), set_negative, 0},*/
 
 	{sizeof(disp_on_seq), disp_on_seq, 0},
+/*	{sizeof(disp_on_seq1), disp_on_seq1, 0},
+	{sizeof(disp_on_seq2), disp_on_seq2, 0},
+	{sizeof(disp_on_seq3), disp_on_seq3, 0},*/
 };
 
 static struct spi_cmd_desc display_off_cmds[] = {
 	{sizeof(sleep_in_seq), sleep_in_seq, 80},
 };
-/*
+
 static char set_brightness_max[3] = {
 	0x51,
-	0x0F, 0xFF
+	0x0D, 0x34
 };
 
 static char set_brightness_min[3] = {
 	0x51,
 	0x00, 0x00
 };
-*/
+
 static char backlight_level[3] = {
 	0x51,
 	0x00, 0x00
 };
-/*
+
 static struct spi_cmd_desc backlight_on_cmd[] = {
 	{sizeof(set_brightness_max), set_brightness_max, 1},
 };
@@ -335,10 +417,32 @@ static struct spi_cmd_desc backlight_on_cmd[] = {
 static struct spi_cmd_desc backlight_off_cmd[] = {
 	{sizeof(set_brightness_min), set_brightness_min, 1},
 };
-*/
+
 static struct spi_cmd_desc set_backlight_cmd[] = {
 	{sizeof(backlight_level), backlight_level, 1},
 };
+
+static char set_negative_on[1] = { 0x21 };
+static char set_negative_off[1] = { 0x20 };
+
+static struct spi_cmd_desc set_negative_on_cmd[] = {
+	{sizeof(set_negative_on), set_negative_on, 0},
+};
+
+static struct spi_cmd_desc set_negative_off_cmd[] = {
+	{sizeof(set_negative_off), set_negative_off, 0},
+};
+
+static struct spi_cmd_desc set_cabc_on_cmd[] = {
+	{sizeof(set_cabc1), set_cabc1, 0},
+	{sizeof(set_cabc2), set_cabc2, 0},
+	{sizeof(set_cabc3), set_cabc3, 0},
+};
+
+static struct spi_cmd_desc set_cabc_off_cmd[] = {
+	{sizeof(set_cabc_off), set_cabc_off, 0},
+};
+
 #else
 
 /*
@@ -551,24 +655,20 @@ static void spi_init(void)
 
 	gpio_set_value(spi_sdo, 0);
 }
-/*
+
 static void lcdc_panel_reset(int on)
 {
+	DPRINT("start %s, lcd_reset flag : %d\n", __func__, on);
 	if (on) {
-		pr_info("@LCDINIT@:LCD RST high with 0x%x\n", on);
-
-		msleep(150);
-		gpio_set_value(lcd_reset, 1);
-		msleep(20);
 		gpio_set_value(lcd_reset, 0);
-		msleep(20);
+		usleep(2000);
 		gpio_set_value(lcd_reset, 1);
-		msleep(150);
+		usleep(10000);
 	} else {
 		gpio_set_value(lcd_reset, 0);
 	}
 }
-*/
+
 static void r69329_disp_powerup(void)
 {
 	DPRINT("start %s, lcd_reset:gpio %d\n", __func__, lcd_reset);
@@ -576,7 +676,7 @@ static void r69329_disp_powerup(void)
 	if (!r69329_state.disp_powered_up && !r69329_state.display_on) {
 		/* Reset the hardware first */
 
-		/*lcdc_panel_reset(1);*/
+		lcdc_panel_reset(1);
 		/* Include DAC power up implementation here */
 
 	    r69329_state.disp_powered_up = TRUE;
@@ -627,9 +727,19 @@ void r69329_sleep_in(void)
 	lcd_prf = 0;
 }
 
+static void r69329_set_backlight(int level)
+{
+	int flag = !!level;
+
+	if (flag)
+		spi_cmds_tx(backlight_on_cmd, ARRAY_SIZE(backlight_on_cmd));
+	else
+		spi_cmds_tx(backlight_off_cmd, ARRAY_SIZE(backlight_off_cmd));
+}
+extern void is_negate_mode_on(void);
 static int lcdc_r69329_panel_on(struct platform_device *pdev)
 {
-	static int bring_up_condition;
+	static int bring_up_condition = 0;
 	/*unsigned size;*/
 	msleep(20);
 
@@ -646,17 +756,32 @@ static int lcdc_r69329_panel_on(struct platform_device *pdev)
 		r69329_state.disp_powered_up = TRUE;
 		r69329_state.display_on = TRUE;
 		r69329_state.disp_initialized = TRUE;
+
+		/* Recover the TSP_VSYNC */
+		r69329_set_backlight(0x0);
 		lcdc_r69329_panel_off(pdev);
 		lcdc_r69329_panel_on(pdev);
+		msleep(70);
+		r69329_set_backlight(0xFF);
 	} else {
 		if (!r69329_state.disp_initialized) {
 			/* Configure reset GPIO that drives DAC */
-			r69329_disp_powerup();
 			spi_init();	/* LCD needs SPI */
+			r69329_disp_powerup();
 			lcdc_r69329_pdata->panel_config_gpio(1);
 			r69329_disp_on();
 			r69329_state.disp_initialized = TRUE;
 
+			/*
+			* This part working for recovery mode only
+			*/
+			if (r69329_state.force_backlight_on) {
+				r69329_state.force_backlight_on = FALSE;
+				DPRINT("%s : Panel on without backlight on\n",
+							__func__);
+				msleep(70);
+				r69329_set_backlight(0xFF);
+			}
 #ifdef ESD_RECOVERY
 			if (irq_disabled) {
 				enable_irq(lcd_det_irq);
@@ -665,23 +790,48 @@ static int lcdc_r69329_panel_on(struct platform_device *pdev)
 #endif
 		}
 	}
-
+	is_negate_mode_on();
 	return 0;
 }
+static unsigned int recovery_boot_mode;
+static int __init current_boot_mode(char *mode)
+{
+	/*
+	*	1 is recovery booting
+	*	0 is normal booting
+	*/
 
+	if (strncmp(mode, "1", 1) == 0)
+		recovery_boot_mode = 1;
+	else
+		recovery_boot_mode = 0;
+	pr_debug("%s %s", __func__, recovery_boot_mode == 1 ?
+						"recovery" : "normal");
+	return 1;
+}
+__setup("androidboot.boot_recovery=", current_boot_mode);
 static int lcdc_r69329_panel_off(struct platform_device *pdev)
 {
 	/*int i;*/
 
 	DPRINT("start %s\n", __func__);
 
-
 	if (r69329_state.disp_powered_up && r69329_state.display_on) {
 #ifdef ESD_RECOVERY
 		disable_irq_nosync(lcd_det_irq);
 		irq_disabled = TRUE;
 #endif
-
+		/*
+		* This part working for recovery mode only
+		*/
+		
+		if (!lcd_prf && recovery_boot_mode) {
+			DPRINT("%s : Panel off without backlight off\n",
+						__func__);
+			r69329_set_backlight(0xFF);
+			r69329_state.force_backlight_on = TRUE;
+		}
+	
 		spi_cmds_tx(display_off_cmds, ARRAY_SIZE(display_off_cmds));
 
 
@@ -700,9 +850,11 @@ int apply_negative_value_r69329(enum eNegative_Mode negative_mode)
 	if (negative_mode == NEGATIVE_ON_MODE) {
 		spi_cmds_tx(set_negative_on_cmd,
 					ARRAY_SIZE(set_negative_on_cmd));
+		set_negative[0] = set_negative_on[0];
 	} else {
 		spi_cmds_tx(set_negative_off_cmd,
 					ARRAY_SIZE(set_negative_off_cmd));
+		set_negative[0] = set_negative_off[0];
 		if (r69329_state.disp_cabc == TRUE)
 			spi_cmds_tx(set_cabc_on_cmd,
 					ARRAY_SIZE(set_cabc_on_cmd));
@@ -716,9 +868,11 @@ int apply_negative_value_r69329(enum eNegative_Mode negative_mode)
 int apply_cabc_value_r69329(enum eCabc_Mode cabc_mode)
 {
 	if (cabc_mode == CABC_ON_MODE) {
+		set_cabc1[1] = set_cabc_on[1];
 		spi_cmds_tx(set_cabc_on_cmd, ARRAY_SIZE(set_cabc_on_cmd));
 		r69329_state.disp_cabc = TRUE;
 	} else {
+		set_cabc1[1] = set_cabc_off[1];
 		spi_cmds_tx(set_cabc_off_cmd, ARRAY_SIZE(set_cabc_off_cmd));
 		r69329_state.disp_cabc = FALSE;
 	}
@@ -780,9 +934,10 @@ static int __devinit r69329_probe(struct platform_device *pdev)
 	/*unsigned size;*/
 	DPRINT("start %s\n", __func__);
 
-	r69329_state.disp_initialized = TRUE; /*signal_timing*/
-	r69329_state.disp_powered_up = TRUE;
-	r69329_state.display_on = TRUE;
+	r69329_state.disp_initialized = FALSE; /*signal_timing*/
+	r69329_state.disp_powered_up = FALSE;
+	r69329_state.display_on = FALSE;
+	r69329_state.force_backlight_on = TRUE;
 
 	if (pdev->id == 0) {
 		lcdc_r69329_pdata = pdev->dev.platform_data;

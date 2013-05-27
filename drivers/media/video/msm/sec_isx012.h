@@ -119,6 +119,7 @@ struct isx012_ctrl_t {
 	struct isx012_status_struct status;
 
 	struct isx012_setting_struct setting;
+	int8_t lux;
 };
 
 

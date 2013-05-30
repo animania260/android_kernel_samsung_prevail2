@@ -131,4 +131,4 @@ use-cases in order to determine the best solution for this.
 This will be implemented as a second phase.
 
 Design and implement additional services for block devices that
-supports High Priority Requests.
+supports High Priority Requests. 

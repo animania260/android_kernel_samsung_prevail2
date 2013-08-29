@@ -157,9 +157,9 @@ EXPORT_SYMBOL(charging_boot);
 //#define MSM_FB_SIZE roundup(MSM_FB_PRIM_BUF_SIZE + MSM_FB_EXT_BUF_SIZE, 4096)
 #ifdef CONFIG_FB_MSM_TRIPLE_BUFFER
 
-#define MSM_FB_SIZE            0x780000
+#define MSM_FB_SIZE            0x1C2000
 #else
-#define MSM_FB_SIZE            0x500000
+#define MSM_FB_SIZE            0x12C000
 #endif
 /*
  * Reserve space for double buffered full screen
@@ -168,8 +168,8 @@ EXPORT_SYMBOL(charging_boot);
 #define MSM_V4L2_VIDEO_OVERLAY_BUF_SIZE 2764800
 
 #define MSM_PMEM_ADSP_SIZE      0x21B4000
-#define MSM_FLUID_PMEM_ADSP_SIZE	0x2800000
-#define PMEM_KERNEL_EBI0_SIZE   0x600000
+#define MSM_FLUID_PMEM_ADSP_SIZE	0x1800000
+#define PMEM_KERNEL_EBI0_SIZE   0x060000
 #define MSM_PMEM_AUDIO_SIZE     0x200000
 
 #ifdef CONFIG_ION_MSM

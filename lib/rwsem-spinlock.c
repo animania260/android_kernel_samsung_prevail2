@@ -7,7 +7,6 @@
  */
 #include <linux/rwsem.h>
 #include <linux/sched.h>
-#include <linux/module.h>
 #include <linux/export.h>
 
 enum rwsem_waiter_type {
@@ -193,7 +192,6 @@ void __sched __down_write_nested(struct rw_semaphore *sem, int subclass)
 
 	raw_spin_lock_irqsave(&sem->wait_lock, flags);
 
-		raw_spin_unlock_irqrestore(&sem->wait_lock, flags);
 	/* set up my own style of waitqueue */
 	tsk = current;
 	waiter.task = tsk;
@@ -201,7 +199,6 @@ void __sched __down_write_nested(struct rw_semaphore *sem, int subclass)
 	list_add_tail(&waiter.list, &sem->wait_list);
 
 	/* wait for someone to release the lock */
-	raw_spin_unlock_irqrestore(&sem->wait_lock, flags);
 	for (;;) {
 		/*
 		 * That is the key to support write lock stealing: allows the
@@ -212,15 +209,15 @@ void __sched __down_write_nested(struct rw_semaphore *sem, int subclass)
 		if (sem->activity == 0)
 			break;
 		set_task_state(tsk, TASK_UNINTERRUPTIBLE);
-		spin_unlock_irqrestore(&sem->wait_lock, flags);
+		raw_spin_unlock_irqrestore(&sem->wait_lock, flags);
 		schedule();
-		spin_lock_irqsave(&sem->wait_lock, flags);
+		raw_spin_lock_irqsave(&sem->wait_lock, flags);
 	}
 	/* got the lock */
 	sem->activity = -1;
 	list_del(&waiter.list);
 
-	spin_unlock_irqrestore(&sem->wait_lock, flags);
+	raw_spin_unlock_irqrestore(&sem->wait_lock, flags);
 }
 
 void __sched __down_write(struct rw_semaphore *sem)

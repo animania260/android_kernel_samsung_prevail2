@@ -1,12 +1,16 @@
 VERSION = 3
 PATCHLEVEL = 0
+<<<<<<< .merge_file_mVzkG8
 <<<<<<< HEAD
 SUBLEVEL = 72
 =======
 SUBLEVEL = 75
 >>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
+=======
+SUBLEVEL = 101
+>>>>>>> .merge_file_5g2je8
 EXTRAVERSION =
-NAME = Sneaky Weasel
+NAME = Sodden Ben Lomond
 
 # *DOCUMENTATION*
 # To see a list of typical targets execute "make help"

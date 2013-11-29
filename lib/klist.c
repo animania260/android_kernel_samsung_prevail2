@@ -197,6 +197,7 @@ static void klist_release(struct kref *kref)
 		if (waiter->node != n)
 			continue;
 
+<<<<<<< .merge_file_j2Irid
 <<<<<<< HEAD
 		list_del(&waiter->list);
 		waiter->woken = 1;
@@ -208,6 +209,12 @@ static void klist_release(struct kref *kref)
 		wake_up_process(waiter->process);
 		list_del(&waiter->list);
 >>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
+=======
+		list_del(&waiter->list);
+		waiter->woken = 1;
+		mb();
+		wake_up_process(waiter->process);
+>>>>>>> .merge_file_i2jIjd
 	}
 	spin_unlock(&klist_remove_lock);
 	knode_set_klist(n, NULL);

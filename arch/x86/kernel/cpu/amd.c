@@ -578,6 +578,7 @@ static void __cpuinit init_amd(struct cpuinfo_x86 *c)
 		}
 	}
 
+<<<<<<< .merge_file_CRz1gm
 	/*
 	 * The way access filter has a performance penalty on some workloads.
 	 * Disable it on the affected CPUs.
@@ -593,6 +594,8 @@ static void __cpuinit init_amd(struct cpuinfo_x86 *c)
 	}
 
 >>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
+=======
+>>>>>>> .merge_file_zeG4mm
 	cpu_detect_cache_sizes(c);
 
 	/* Multi core CPU? */

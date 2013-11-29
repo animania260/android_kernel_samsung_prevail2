@@ -1275,6 +1275,8 @@ finished:
 <<<<<<< HEAD
 =======
 	fbcon_free_font(p, free_font);
+	if (free_font)
+		vc->vc_font.data = NULL;
 
 >>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	if (!con_is_bound(&fb_con))

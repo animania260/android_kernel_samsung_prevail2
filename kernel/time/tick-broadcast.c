@@ -66,9 +66,14 @@ static void tick_broadcast_start_periodic(struct clock_event_device *bc)
  */
 int tick_check_broadcast_device(struct clock_event_device *dev)
 {
+<<<<<<< .merge_file_yUFIhJ
 <<<<<<< HEAD
 	if ((tick_broadcast_device.evtdev &&
 =======
+=======
+	struct clock_event_device *cur = tick_broadcast_device.evtdev;
+
+>>>>>>> .merge_file_wOIvnJ
 	if ((dev->features & CLOCK_EVT_FEAT_DUMMY) ||
 	    (tick_broadcast_device.evtdev &&
 >>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
@@ -80,7 +85,12 @@ int tick_check_broadcast_device(struct clock_event_device *dev)
 	clockevents_exchange_device(NULL, dev);
 =======
 	clockevents_exchange_device(tick_broadcast_device.evtdev, dev);
+<<<<<<< .merge_file_yUFIhJ
 >>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
+=======
+	if (cur)
+		cur->event_handler = clockevents_handle_noop;
+>>>>>>> .merge_file_wOIvnJ
 	tick_broadcast_device.evtdev = dev;
 	if (!cpumask_empty(tick_get_broadcast_mask()))
 		tick_broadcast_start_periodic(dev);
@@ -400,7 +410,15 @@ void tick_check_oneshot_broadcast(int cpu)
 	if (cpumask_test_cpu(cpu, to_cpumask(tick_broadcast_oneshot_mask))) {
 		struct tick_device *td = &per_cpu(tick_cpu_device, cpu);
 
-		clockevents_set_mode(td->evtdev, CLOCK_EVT_MODE_ONESHOT);
+		/*
+		 * We might be in the middle of switching over from
+		 * periodic to oneshot. If the CPU has not yet
+		 * switched over, leave the device alone.
+		 */
+		if (td->mode == TICKDEV_MODE_ONESHOT) {
+			clockevents_set_mode(td->evtdev,
+					     CLOCK_EVT_MODE_ONESHOT);
+		}
 	}
 }
 

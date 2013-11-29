@@ -93,6 +93,7 @@ static int __devinit sja1000_ofp_probe(struct platform_device *ofdev)
 	struct net_device *dev;
 	struct sja1000_priv *priv;
 	struct resource res;
+<<<<<<< .merge_file_j742kn
 <<<<<<< HEAD
 	const u32 *prop;
 	int err, irq, res_size, prop_size;
@@ -100,6 +101,10 @@ static int __devinit sja1000_ofp_probe(struct platform_device *ofdev)
 	u32 prop;
 	int err, irq, res_size;
 >>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
+=======
+	const u32 *prop;
+	int err, irq, res_size, prop_size;
+>>>>>>> .merge_file_IED0Lm
 	void __iomem *base;
 
 	err = of_address_to_resource(np, 0, &res);
@@ -140,6 +145,7 @@ static int __devinit sja1000_ofp_probe(struct platform_device *ofdev)
 	priv->read_reg = sja1000_ofp_read_reg;
 	priv->write_reg = sja1000_ofp_write_reg;
 
+<<<<<<< .merge_file_j742kn
 <<<<<<< HEAD
 	prop = of_get_property(np, "nxp,external-clock-frequency", &prop_size);
 	if (prop && (prop_size ==  sizeof(u32)))
@@ -166,25 +172,36 @@ static int __devinit sja1000_ofp_probe(struct platform_device *ofdev)
 	err = of_property_read_u32(np, "nxp,external-clock-frequency", &prop);
 	if (!err)
 		priv->can.clock.freq = prop / 2;
+=======
+	prop = of_get_property(np, "nxp,external-clock-frequency", &prop_size);
+	if (prop && (prop_size ==  sizeof(u32)))
+		priv->can.clock.freq = *prop / 2;
+>>>>>>> .merge_file_IED0Lm
 	else
 		priv->can.clock.freq = SJA1000_OFP_CAN_CLOCK; /* default */
 
-	err = of_property_read_u32(np, "nxp,tx-output-mode", &prop);
-	if (!err)
-		priv->ocr |= prop & OCR_MODE_MASK;
+	prop = of_get_property(np, "nxp,tx-output-mode", &prop_size);
+	if (prop && (prop_size == sizeof(u32)))
+		priv->ocr |= *prop & OCR_MODE_MASK;
 	else
 		priv->ocr |= OCR_MODE_NORMAL; /* default */
 
-	err = of_property_read_u32(np, "nxp,tx-output-config", &prop);
-	if (!err)
-		priv->ocr |= (prop << OCR_TX_SHIFT) & OCR_TX_MASK;
+	prop = of_get_property(np, "nxp,tx-output-config", &prop_size);
+	if (prop && (prop_size == sizeof(u32)))
+		priv->ocr |= (*prop << OCR_TX_SHIFT) & OCR_TX_MASK;
 	else
 		priv->ocr |= OCR_TX0_PULLDOWN; /* default */
 
+<<<<<<< .merge_file_j742kn
 	err = of_property_read_u32(np, "nxp,clock-out-frequency", &prop);
 	if (!err && prop) {
 		u32 divider = priv->can.clock.freq * 2 / prop;
 >>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
+=======
+	prop = of_get_property(np, "nxp,clock-out-frequency", &prop_size);
+	if (prop && (prop_size == sizeof(u32)) && *prop) {
+		u32 divider = priv->can.clock.freq * 2 / *prop;
+>>>>>>> .merge_file_IED0Lm
 
 		if (divider > 1)
 			priv->cdr |= divider / 2 - 1;
@@ -194,12 +211,17 @@ static int __devinit sja1000_ofp_probe(struct platform_device *ofdev)
 		priv->cdr |= CDR_CLK_OFF; /* default */
 	}
 
+<<<<<<< .merge_file_j742kn
 <<<<<<< HEAD
 	prop = of_get_property(np, "nxp,no-comparator-bypass", NULL);
 	if (!prop)
 =======
 	if (!of_property_read_bool(np, "nxp,no-comparator-bypass"))
 >>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
+=======
+	prop = of_get_property(np, "nxp,no-comparator-bypass", NULL);
+	if (!prop)
+>>>>>>> .merge_file_IED0Lm
 		priv->cdr |= CDR_CBP; /* default */
 
 	priv->irq_flags = IRQF_SHARED;

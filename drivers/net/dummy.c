@@ -203,6 +203,8 @@ static int __init dummy_init_module(void)
 
 	rtnl_lock();
 	err = __rtnl_link_register(&dummy_link_ops);
+	if (err < 0)
+		goto out;
 
 <<<<<<< HEAD
 	for (i = 0; i < numdummies && !err; i++)
@@ -215,6 +217,8 @@ static int __init dummy_init_module(void)
 >>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	if (err < 0)
 		__rtnl_link_unregister(&dummy_link_ops);
+
+out:
 	rtnl_unlock();
 
 	return err;

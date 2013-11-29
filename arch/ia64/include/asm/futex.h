@@ -107,6 +107,7 @@ futex_atomic_cmpxchg_inatomic(u32 *uval, u32 __user *uaddr,
 		return -EFAULT;
 
 	{
+<<<<<<< .merge_file_y5f4PG
 <<<<<<< HEAD
 		register unsigned long r8 __asm ("r8") = 0;
 		unsigned long prev;
@@ -119,16 +120,22 @@ futex_atomic_cmpxchg_inatomic(u32 *uval, u32 __user *uaddr,
 			: "=r" (prev)
 =======
 		register unsigned long r8 __asm ("r8");
+=======
+		register unsigned long r8 __asm ("r8") = 0;
+>>>>>>> .merge_file_rjz00G
 		unsigned long prev;
 		__asm__ __volatile__(
 			"	mf;;					\n"
-			"	mov %0=r0				\n"
 			"	mov ar.ccv=%4;;				\n"
 			"[1:]	cmpxchg4.acq %1=[%2],%3,ar.ccv		\n"
 			"	.xdata4 \"__ex_table\", 1b-., 2f-.	\n"
 			"[2:]"
+<<<<<<< .merge_file_y5f4PG
 			: "=r" (r8), "=r" (prev)
 >>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
+=======
+			: "+r" (r8), "=&r" (prev)
+>>>>>>> .merge_file_rjz00G
 			: "r" (uaddr), "r" (newval),
 			  "rO" ((long) (unsigned) oldval)
 			: "memory");

@@ -6078,8 +6078,13 @@ M:	Greg Kroah-Hartman <greg@kroah.com>
 L:	stable@kernel.org
 =======
 L:	stable@vger.kernel.org
+<<<<<<< .merge_file_GSds62
 >>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 S:	Maintained
+=======
+S:	Supported
+F:	Documentation/stable_kernel_rules.txt
+>>>>>>> .merge_file_U8bec3
 
 STAGING SUBSYSTEM
 M:	Greg Kroah-Hartman <gregkh@suse.de>

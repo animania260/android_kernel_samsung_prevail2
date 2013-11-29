@@ -783,7 +783,11 @@ static inline int io_remap_pfn_range(struct vm_area_struct *vma,
 	return remap_pfn_range(vma, from, phys_base >> PAGE_SHIFT, size, prot);
 }
 
+<<<<<<< .merge_file_nek1d7
 >>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
+=======
+#include <asm/tlbflush.h>
+>>>>>>> .merge_file_kqW3Y7
 #include <asm-generic/pgtable.h>
 
 /* We provide our own get_unmapped_area to cope with VA holes and

@@ -348,6 +348,7 @@ struct sock *cookie_v4_check(struct sock *sk, struct sk_buff *skb,
 	 * hasn't changed since we received the original syn, but I see
 	 * no easy way to do this.
 	 */
+<<<<<<< .merge_file_i8IWgH
 <<<<<<< HEAD
 	{
 		struct flowi4 fl4;
@@ -366,6 +367,10 @@ struct sock *cookie_v4_check(struct sock *sk, struct sk_buff *skb,
 =======
 	flowi4_init_output(&fl4, 0, sk->sk_mark, RT_CONN_FLAGS(sk),
 			   RT_SCOPE_UNIVERSE, IPPROTO_TCP,
+=======
+	flowi4_init_output(&fl4, sk->sk_bound_dev_if, sk->sk_mark,
+			   RT_CONN_FLAGS(sk), RT_SCOPE_UNIVERSE, IPPROTO_TCP,
+>>>>>>> .merge_file_nx7PmH
 			   inet_sk_flowi_flags(sk),
 			   (opt && opt->srr) ? opt->faddr : ireq->rmt_addr,
 			   ireq->loc_addr, th->source, th->dest);

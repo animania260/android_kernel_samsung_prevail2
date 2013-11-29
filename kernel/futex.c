@@ -62,7 +62,11 @@
 <<<<<<< HEAD
 =======
 #include <linux/ptrace.h>
+<<<<<<< .merge_file_kfXWdv
 >>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
+=======
+#include <linux/hugetlb.h>
+>>>>>>> .merge_file_uPkfRv
 
 #include <asm/futex.h>
 
@@ -380,7 +384,7 @@ again:
 	} else {
 		key->both.offset |= FUT_OFF_INODE; /* inode-based key */
 		key->shared.inode = page_head->mapping->host;
-		key->shared.pgoff = page_head->index;
+		key->shared.pgoff = basepage_index(page);
 	}
 
 	get_futex_key_refs(key);

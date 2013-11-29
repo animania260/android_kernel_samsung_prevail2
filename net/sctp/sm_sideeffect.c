@@ -1604,6 +1604,7 @@ static int sctp_cmd_interpreter(sctp_event_t event_type,
 					asoc->outqueue.outstanding_bytes;
 			sackh.num_gap_ack_blocks = 0;
 			sackh.num_dup_tsns = 0;
+<<<<<<< .merge_file_rUFHjM
 <<<<<<< HEAD
 			sctp_add_cmd_sf(commands, SCTP_CMD_PROCESS_SACK,
 					SCTP_SACKH(&sackh));
@@ -1612,6 +1613,10 @@ static int sctp_cmd_interpreter(sctp_event_t event_type,
 			sctp_add_cmd_sf(commands, SCTP_CMD_PROCESS_SACK,
 					SCTP_CHUNK(chunk));
 >>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
+=======
+			sctp_add_cmd_sf(commands, SCTP_CMD_PROCESS_SACK,
+					SCTP_SACKH(&sackh));
+>>>>>>> .merge_file_Kqk0mM
 			break;
 
 		case SCTP_CMD_DISCARD_PACKET:

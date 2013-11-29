@@ -1182,6 +1182,7 @@ static int nr_recvmsg(struct kiocb *iocb, struct socket *sock,
 >>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 
 	if (sax != NULL) {
+		memset(sax, 0, sizeof(*sax));
 		sax->sax25_family = AF_NETROM;
 		skb_copy_from_linear_data_offset(skb, 7, sax->sax25_call.ax25_call,
 			      AX25_ADDR_LEN);

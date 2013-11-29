@@ -550,12 +550,15 @@ again:
 		status = nlmclnt_block(block, req, NLMCLNT_POLL_TIMEOUT);
 		if (status < 0)
 			break;
+<<<<<<< .merge_file_HP9JRu
 <<<<<<< HEAD
 =======
 		/* Resend the blocking lock request after a server reboot */
 		if (resp->status ==  nlm_lck_denied_grace_period)
 			continue;
 >>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
+=======
+>>>>>>> .merge_file_Dm2rtu
 		if (resp->status != nlm_lck_blocked)
 			break;
 	}

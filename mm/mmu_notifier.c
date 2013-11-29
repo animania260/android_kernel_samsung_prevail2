@@ -48,24 +48,41 @@ static struct srcu_struct srcu;
 void __mmu_notifier_release(struct mm_struct *mm)
 {
 	struct mmu_notifier *mn;
+<<<<<<< .merge_file_NulVdB
 <<<<<<< HEAD
 
 =======
+=======
+	struct hlist_node *node;
+>>>>>>> .merge_file_RPfYoB
 	int id;
 
 	/*
-	 * srcu_read_lock() here will block synchronize_srcu() in
-	 * mmu_notifier_unregister() until all registered
-	 * ->release() callouts this function makes have
-	 * returned.
+	 * SRCU here will block mmu_notifier_unregister until
+	 * ->release returns.
 	 */
 	id = srcu_read_lock(&srcu);
+<<<<<<< .merge_file_NulVdB
 >>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
+=======
+	hlist_for_each_entry_rcu(mn, node, &mm->mmu_notifier_mm->list, hlist)
+		/*
+		 * If ->release runs before mmu_notifier_unregister it must be
+		 * handled, as it's the only way for the driver to flush all
+		 * existing sptes and stop the driver from establishing any more
+		 * sptes before all the pages in the mm are freed.
+		 */
+		if (mn->ops->release)
+			mn->ops->release(mn, mm);
+	srcu_read_unlock(&srcu, id);
+
+>>>>>>> .merge_file_RPfYoB
 	spin_lock(&mm->mmu_notifier_mm->lock);
 	while (unlikely(!hlist_empty(&mm->mmu_notifier_mm->list))) {
 		mn = hlist_entry(mm->mmu_notifier_mm->list.first,
 				 struct mmu_notifier,
 				 hlist);
+<<<<<<< .merge_file_NulVdB
 <<<<<<< HEAD
 		/*
 		 * We arrived before mmu_notifier_unregister so
@@ -92,11 +109,16 @@ void __mmu_notifier_release(struct mm_struct *mm)
 		rcu_read_unlock();
 =======
 
+=======
+>>>>>>> .merge_file_RPfYoB
 		/*
-		 * Unlink.  This will prevent mmu_notifier_unregister()
-		 * from also making the ->release() callout.
+		 * We arrived before mmu_notifier_unregister so
+		 * mmu_notifier_unregister will do nothing other than to wait
+		 * for ->release to finish and for mmu_notifier_unregister to
+		 * return.
 		 */
 		hlist_del_init_rcu(&mn->hlist);
+<<<<<<< .merge_file_NulVdB
 		spin_unlock(&mm->mmu_notifier_mm->lock);
 
 		/*
@@ -107,10 +129,13 @@ void __mmu_notifier_release(struct mm_struct *mm)
 
 >>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 		spin_lock(&mm->mmu_notifier_mm->lock);
+=======
+>>>>>>> .merge_file_RPfYoB
 	}
 	spin_unlock(&mm->mmu_notifier_mm->lock);
 
 	/*
+<<<<<<< .merge_file_NulVdB
 <<<<<<< HEAD
 	 * synchronize_rcu here prevents mmu_notifier_release to
 	 * return to exit_mmap (which would proceed freeing all pages
@@ -134,6 +159,15 @@ void __mmu_notifier_release(struct mm_struct *mm)
 	 * to ensure that all notifier callouts for this mm have been
 	 * completed and the sptes are really cleaned up before returning
 	 * to exit_mmap().
+=======
+	 * synchronize_srcu here prevents mmu_notifier_release from returning to
+	 * exit_mmap (which would proceed with freeing all pages in the mm)
+	 * until the ->release method returns, if it was invoked by
+	 * mmu_notifier_unregister.
+	 *
+	 * The mmu_notifier_mm can't go away from under us because one mm_count
+	 * is held by exit_mmap.
+>>>>>>> .merge_file_RPfYoB
 	 */
 	synchronize_srcu(&srcu);
 >>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
@@ -419,8 +453,8 @@ void mmu_notifier_unregister(struct mmu_notifier *mn, struct mm_struct *mm)
 {
 	BUG_ON(atomic_read(&mm->mm_count) <= 0);
 
-	spin_lock(&mm->mmu_notifier_mm->lock);
 	if (!hlist_unhashed(&mn->hlist)) {
+<<<<<<< .merge_file_NulVdB
 <<<<<<< HEAD
 		hlist_del_rcu(&mn->hlist);
 
@@ -439,28 +473,40 @@ void mmu_notifier_unregister(struct mmu_notifier *mn, struct mm_struct *mm)
 			mn->ops->release(mn, mm);
 		rcu_read_unlock();
 =======
+=======
+		/*
+		 * SRCU here will force exit_mmap to wait for ->release to
+		 * finish before freeing the pages.
+		 */
+>>>>>>> .merge_file_RPfYoB
 		int id;
 
-		/*
-		 * Ensure we synchronize up with __mmu_notifier_release().
-		 */
 		id = srcu_read_lock(&srcu);
-
-		hlist_del_rcu(&mn->hlist);
-		spin_unlock(&mm->mmu_notifier_mm->lock);
-
+		/*
+		 * exit_mmap will block in mmu_notifier_release to guarantee
+		 * that ->release is called before freeing the pages.
+		 */
 		if (mn->ops->release)
 			mn->ops->release(mn, mm);
+		srcu_read_unlock(&srcu, id);
 
+		spin_lock(&mm->mmu_notifier_mm->lock);
 		/*
-		 * Allow __mmu_notifier_release() to complete.
+		 * Can not use list_del_rcu() since __mmu_notifier_release
+		 * can delete it before we hold the lock.
 		 */
+<<<<<<< .merge_file_NulVdB
 		srcu_read_unlock(&srcu, id);
 >>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
 	} else
+=======
+		hlist_del_init_rcu(&mn->hlist);
+>>>>>>> .merge_file_RPfYoB
 		spin_unlock(&mm->mmu_notifier_mm->lock);
+	}
 
 	/*
+<<<<<<< .merge_file_NulVdB
 <<<<<<< HEAD
 	 * Wait any running method to finish, of course including
 	 * ->release if it was run by mmu_notifier_relase instead of us.
@@ -469,6 +515,10 @@ void mmu_notifier_unregister(struct mmu_notifier *mn, struct mm_struct *mm)
 =======
 	 * Wait for any running method to finish, including ->release() if it
 	 * was run by __mmu_notifier_release() instead of us.
+=======
+	 * Wait for any running method to finish, of course including
+	 * ->release if it was run by mmu_notifier_relase instead of us.
+>>>>>>> .merge_file_RPfYoB
 	 */
 	synchronize_srcu(&srcu);
 >>>>>>> korg_linux-3.0.y/korg/linux-3.0.y

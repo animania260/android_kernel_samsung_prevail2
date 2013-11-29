@@ -1572,7 +1572,11 @@ int dev_forward_skb(struct net_device *dev, struct sk_buff *skb)
 	skb->mark = 0;
 	secpath_reset(skb);
 	nf_reset(skb);
+<<<<<<< .merge_file_8ogjeu
 >>>>>>> korg_linux-3.0.y/korg/linux-3.0.y
+=======
+	nf_reset_trace(skb);
+>>>>>>> .merge_file_jUncTt
 	return netif_rx(skb);
 }
 EXPORT_SYMBOL_GPL(dev_forward_skb);

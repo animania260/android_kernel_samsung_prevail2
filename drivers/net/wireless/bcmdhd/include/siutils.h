@@ -2,7 +2,7 @@
  * Misc utility routines for accessing the SOC Interconnects
  * of Broadcom HNBU chips.
  *
- * Copyright (C) 1999-2012, Broadcom Corporation
+ * Copyright (C) 1999-2013, Broadcom Corporation
  * 
  *      Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
@@ -22,7 +22,7 @@
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
- * $Id: siutils.h 347614 2012-07-27 10:24:51Z $
+ * $Id: siutils.h 385510 2013-02-15 21:02:07Z $
  */
 
 #ifndef	_siutils_h_
@@ -149,6 +149,7 @@ extern bool si_pci_war16165(si_t *sih);
 extern uint si_corelist(si_t *sih, uint coreid[]);
 extern uint si_coreid(si_t *sih);
 extern uint si_flag(si_t *sih);
+extern uint si_flag_alt(si_t *sih);
 extern uint si_intflag(si_t *sih);
 extern uint si_coreidx(si_t *sih);
 extern uint si_coreunit(si_t *sih);
@@ -159,6 +160,7 @@ extern void si_setosh(si_t *sih, osl_t *osh);
 extern uint si_corereg(si_t *sih, uint coreidx, uint regoff, uint mask, uint val);
 extern void *si_coreregs(si_t *sih);
 extern uint si_wrapperreg(si_t *sih, uint32 offset, uint32 mask, uint32 val);
+extern void *si_wrapperregs(si_t *sih);
 extern uint32 si_core_cflags(si_t *sih, uint32 mask, uint32 val);
 extern void si_core_cflags_wo(si_t *sih, uint32 mask, uint32 val);
 extern uint32 si_core_sflags(si_t *sih, uint32 mask, uint32 val);
@@ -176,6 +178,7 @@ extern int si_corebist(si_t *sih);
 extern void si_core_reset(si_t *sih, uint32 bits, uint32 resetbits);
 extern void si_core_disable(si_t *sih, uint32 bits);
 extern uint32 si_clock_rate(uint32 pll_type, uint32 n, uint32 m);
+extern uint si_chip_hostif(si_t *sih);
 extern bool si_read_pmu_autopll(si_t *sih);
 extern uint32 si_clock(si_t *sih);
 extern uint32 si_alp_clock(si_t *sih);
@@ -312,6 +315,7 @@ extern bool si_taclear(si_t *sih, bool details);
 
 
 
+extern uint32 si_ccreg(si_t *sih, uint32 offset, uint32 mask, uint32 val);
 extern uint32 si_pciereg(si_t *sih, uint32 offset, uint32 mask, uint32 val, uint type);
 extern uint32 si_pcieserdesreg(si_t *sih, uint32 mdioslave, uint32 offset, uint32 mask, uint32 val);
 extern void si_pcie_set_request_size(si_t *sih, uint16 size);
@@ -329,4 +333,20 @@ extern uint32 si_tcm_size(si_t *sih);
 
 extern int si_set_sromctl(si_t *sih, uint32 value);
 extern uint32 si_get_sromctl(si_t *sih);
+
+#define CHIPCTRLREG2 0x2
+#define CHIPCTRLREG3 0x3
+#define CHIPCTRLREG4 0x4
+#define MINRESMASKREG 0x618
+#define CHIPCTRLADDR 0x650
+#define CHIPCTRLDATA 0x654
+#define RSRCTABLEADDR 0x620
+#define RSRCUPDWNTIME 0x628
+#define PMUREG_RESREQ_MASK 0x68c
+
+void
+si_update_masks(si_t *sih);
+
+void
+si_force_islanding(si_t *sih, bool enable);
 #endif	

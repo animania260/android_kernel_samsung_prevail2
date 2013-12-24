@@ -1,7 +1,7 @@
 /*
  * Linux cfg80211 driver - Dongle Host Driver (DHD) related
  *
- * Copyright (C) 1999-2013, Broadcom Corporation
+ * Copyright (C) 1999-2012, Broadcom Corporation
  * 
  *      Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
@@ -250,8 +250,8 @@ static bool btcoex_is_sco_active(struct net_device *dev)
 		}
 
 		if (sco_id_cnt > 2) {
-			WL_TRACE(("sco/esco detected, pkt id_cnt:%d  samples:%d\n",
-				sco_id_cnt, i));
+			WL_TRACE(("%s, sco/esco detected, pkt id_cnt:%d  samples:%d\n",
+				__FUNCTION__, sco_id_cnt, i));
 			res = TRUE;
 			break;
 		}
@@ -420,7 +420,7 @@ static void wl_cfg80211_bt_handler(struct work_struct *work)
 			 * provide OPPORTUNITY window to get DHCP address
 			 */
 			WL_TRACE(("%s bt_dhcp stm: started \n",
-
+				__FUNCTION__));
 			btcx_inf->bt_state = BT_DHCP_OPPR_WIN;
 			mod_timer(&btcx_inf->timer,
 				jiffies + msecs_to_jiffies(BT_DHCP_OPPR_WIN_TIME));
@@ -467,7 +467,7 @@ btc_coex_idle:
 			break;
 
 		default:
-			WL_ERR(("error g_status=%d !!!\n",	btcx_inf->bt_state));
+			WL_ERR(("%s error g_status=%d !!!\n", __FUNCTION__,
 				btcx_inf->bt_state));
 			if (btcx_inf->dev)
 				wl_cfg80211_bt_setflag(btcx_inf->dev, FALSE);
@@ -551,7 +551,6 @@ int wl_cfg80211_set_btcoex_dhcp(struct net_device *dev, char *command)
 	if (strnicmp((char *)&powermode_val, "1", strlen("1")) == 0) {
 		WL_TRACE_HW4(("%s: DHCP session starts\n", __FUNCTION__));
 
-
 #ifdef PKT_FILTER_SUPPORT
 		dhd->dhcp_in_progress = 1;
 
@@ -605,7 +604,6 @@ int wl_cfg80211_set_btcoex_dhcp(struct net_device *dev, char *command)
 	else if (strnicmp((char *)&powermode_val, "2", strlen("2")) == 0) {
 
 
-
 #ifdef PKT_FILTER_SUPPORT
 		dhd->dhcp_in_progress = 0;
 		WL_TRACE_HW4(("%s: DHCP is complete \n", __FUNCTION__));
@@ -615,7 +613,7 @@ int wl_cfg80211_set_btcoex_dhcp(struct net_device *dev, char *command)
 			WL_TRACE_HW4(("DHCP is complete , enable packet filter!!!\n"));
 			dhd_enable_packet_filter(1, dhd);
 		}
-#endif /* PKT_FILTER_SUPPORT */
+#endif
 
 		/* Restoring PM mode */
 

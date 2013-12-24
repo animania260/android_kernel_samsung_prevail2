@@ -4,7 +4,7 @@
  * Provides type definitions and function prototypes used to link the
  * DHD OS, bus, and protocol modules.
  *
- * Copyright (C) 1999-2013, Broadcom Corporation
+ * Copyright (C) 1999-2012, Broadcom Corporation
  * 
  *      Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
@@ -24,7 +24,7 @@
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
- * $Id: dhd_proto.h 390836 2013-03-13 23:43:53Z $
+ * $Id: dhd_proto.h 343390 2012-07-06 22:34:19Z $
  */
 
 #ifndef _dhd_proto_h_
@@ -86,6 +86,12 @@ extern void dhd_prot_dstats(dhd_pub_t *dhdp);
 extern int dhd_ioctl(dhd_pub_t * dhd_pub, dhd_ioctl_t *ioc, void * buf, uint buflen);
 
 extern int dhd_preinit_ioctls(dhd_pub_t *dhd);
+
+#ifdef PROP_TXSTATUS
+extern int dhd_wlfc_enque_sendq(void* state, int prec, void* p);
+extern int dhd_wlfc_commit_packets(void* state, f_commitpkt_t fcommit, void* commit_ctx);
+extern void dhd_wlfc_cleanup(dhd_pub_t *dhd);
+#endif /* PROP_TXSTATUS */
 
 extern int dhd_process_pkt_reorder_info(dhd_pub_t *dhd, uchar *reorder_info_buf,
 	uint reorder_info_len, void **pkt, uint32 *free_buf_count);

@@ -4,7 +4,7 @@
  *
  * Definitions subject to change without notice.
  *
- * Copyright (C) 1999-2013, Broadcom Corporation
+ * Copyright (C) 1999-2012, Broadcom Corporation
  * 
  *      Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
@@ -24,7 +24,7 @@
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
- * $Id: wlioctl.h 429124 2013-10-11 09:47:05Z $
+ * $Id: wlioctl.h 362236 2012-10-11 13:29:56Z $
  */
 
 #ifndef _wlioctl_h_
@@ -32,7 +32,6 @@
 
 #include <typedefs.h>
 #include <proto/ethernet.h>
-#include <proto/bcmip.h>
 #include <proto/bcmeth.h>
 #include <proto/bcmevent.h>
 #include <proto/802.11.h>
@@ -63,12 +62,6 @@ typedef struct remote_ioctl {
 	char            intf_name[INTF_NAME_SIZ];
 } rem_ioctl_t;
 #define REMOTE_SIZE	sizeof(rem_ioctl_t)
-
-
-typedef struct {
-	uint32 num;
-	chanspec_t list[1];
-} chanspec_list_t;
 
 #define ACTION_FRAME_SIZE 1800
 
@@ -365,7 +358,6 @@ typedef struct wl_extdscan_params {
 #define WL_SCANFLAGS_PASSIVE	0x01	/* force passive scan */
 #define WL_SCANFLAGS_RESERVED	0x02	/* Reserved */
 #define WL_SCANFLAGS_PROHIBITED	0x04	/* allow scanning prohibited channels */
-#define WL_SCANFLAGS_HOTSPOT	0x10	/* automatic ANQP to hotspot APs */
 
 #define WL_SCAN_PARAMS_SSID_MAX 	10
 
@@ -1711,8 +1703,7 @@ typedef struct wlc_iov_trx_s {
 /* #define WLC_SET_WAI_REKEY			315 */	/* for WAPI, deprecated use iovar instead */
 #define WLC_SET_NAT_CONFIG			316	/* for configuring NAT filter driver */
 #define WLC_GET_NAT_STATE			317
-#define WLC_GET_RSSI_QDB			318 /* qdB portion of the RSSI */
-#define WLC_LAST				319
+#define WLC_LAST				318
 
 #ifndef EPICTRL_COOKIE
 #define EPICTRL_COOKIE		0xABADCEDE
@@ -1784,8 +1775,8 @@ typedef struct {
 #define WL_AUTH_OPEN_SYSTEM		0	/* d11 open authentication */
 #define WL_AUTH_SHARED_KEY		1	/* d11 shared authentication */
 #ifdef BCM4330_CHIP
-#define WL_AUTH_OPEN_SHARED		2	 /* try open, then shared if open failed w/rc 13 */
-
+#define WL_AUTH_OPEN_SHARED		2	/* try open, then shared if open failed w/rc 13 */
+#else
 /* BCM4334(Phoenex branch) value changed to 3 */
 #define WL_AUTH_OPEN_SHARED		3	/* try open, then shared if open failed w/rc 13 */
 #endif
@@ -1800,17 +1791,6 @@ typedef struct {
 #define	WL_SPURAVOID_OFF	0
 #define	WL_SPURAVOID_ON1	1
 #define	WL_SPURAVOID_ON2	2
-
-
-#define WL_4335_SPURAVOID_ON1	1
-#define WL_4335_SPURAVOID_ON2	2
-#define WL_4335_SPURAVOID_ON3	3
-#define WL_4335_SPURAVOID_ON4	4
-#define WL_4335_SPURAVOID_ON5	5
-#define WL_4335_SPURAVOID_ON6	6
-#define WL_4335_SPURAVOID_ON7	7
-#define WL_4335_SPURAVOID_ON8	8
-#define WL_4335_SPURAVOID_ON9	9
 
 /* Override bit for WLC_SET_TXPWR.  if set, ignore other level limits */
 #define WL_TXPWR_OVERRIDE	(1U<<31)
@@ -2090,7 +2070,6 @@ typedef struct wl_sampledata {
 	uint32 flag;	/* bit def */
 } wl_sampledata_t;
 
-#define WL_OTA_ARG_PARSE_BLK_SIZE 	1200
 /* wl_radar_args_t */
 typedef struct {
 	int npulses; 	/* required number of pulses at n * t_int */
@@ -2627,7 +2606,6 @@ typedef struct {
 	chanspec_t chanspec;			/* txpwr report for this channel */
 	chanspec_t local_chanspec;		/* channel on which we are associated */
 	uint8 ppr[WL_TX_POWER_RATES];		/* Latest target power */
-	uint8      pprbuf[1];			/* Latest target power buffer */
 } wl_txppr_t;
 
 #define WL_TXPPR_VERSION	0
@@ -2638,7 +2616,6 @@ typedef struct {
 #define WL_BW_20MHZ 		0
 #define WL_BW_40MHZ 		1
 #define WL_BW_80MHZ 		2
-#define WL_BW_160MHZ 		3
 
 /* tx_power_t.flags bits */
 #ifdef PPR_API
@@ -2826,17 +2803,7 @@ typedef struct wl_txchain_pwr_offsets {
 #define WL_PSTA_VAL		0x00008000
 #define WL_TBTT_VAL		0x00010000
 #define WL_NIC_VAL		0x00020000
-#define WL_PWRSEL_VAL		0x00040000
-#define WL_TRF_MGMT_VAL		0x00080000
-#define WL_L2FILTER_VAL		0x00100000
-/* These 3 levels are currently not used in trunk but in Aardvark and Phoenix2 with != values */
-#define WL_LPC_VAL	        0x00800000
-#define WL_TXBF_VAL		0x01000000
-#define WL_P2PO_VAL		0x02000000
-/* This level is synchronized with other branches */
-#define WL_WNM_VAL		0x04000000
-/* This level is currently not used in trunk but used in Phoenix2 */
-#define WL_SRSCAN_VAL	0x08000000
+#define WL_PWRSEL_VAL	0x00040000
 /* use top-bit for WL_TIME_STAMP_VAL because this is a modifier
  * rather than a message-type of its own
  */
@@ -2886,8 +2853,8 @@ typedef struct wl_txchain_pwr_offsets {
 #define WL_WDS_WPA_ROLE_SUP	1	/* supplicant */
 #define WL_WDS_WPA_ROLE_AUTO	255	/* auto, based on mac addr value */
 
-/* number of bytes needed to define a mask for MAC event reporting */
-#define WL_EVENTING_MASK_LEN	((WLC_E_LAST + 7) / 8)
+/* number of bytes needed to define a 128-bit mask for MAC event reporting */
+#define WL_EVENTING_MASK_LEN	16
 
 /*
  * Join preference iovar value is an array of tuples. Each tuple has a one-byte type,
@@ -3191,7 +3158,6 @@ typedef struct {
 	uint32  pstatxbcmc;	/* count of bcmc frames transmitted on all psta */
 
 	uint32  cso_passthrough; /* hw cso required but passthrough */
-	uint32 	cso_normal;	/* hw cso hdr for normal process */
 } wl_cnt_t;
 
 #ifndef LINUX_POSTMOGRIFY_REMOVAL
@@ -3463,22 +3429,6 @@ typedef struct {
 	uint32  rx486mbps;	/* packets rx at 486 mbps */
 	uint32  rx540mbps;	/* packets rx at 540 mbps */
 } wl_delta_stats_t;
-
-/* structure to store per-rate rx statistics */
-typedef struct wl_scb_rx_rate_stats {
-	uint32  rx1mbps[2];	/* packets rx at 1Mbps */
-	uint32  rx2mbps[2];	/* packets rx at 2Mbps */
-	uint32  rx5mbps5[2];	/* packets rx at 5.5Mbps */
-	uint32  rx6mbps[2];	/* packets rx at 6Mbps */
-	uint32  rx9mbps[2];	/* packets rx at 9Mbps */
-	uint32  rx11mbps[2];	/* packets rx at 11Mbps */
-	uint32  rx12mbps[2];	/* packets rx at 12Mbps */
-	uint32  rx18mbps[2];	/* packets rx at 18Mbps */
-	uint32  rx24mbps[2];	/* packets rx at 24Mbps */
-	uint32  rx36mbps[2];	/* packets rx at 36Mbps */
-	uint32  rx48mbps[2];	/* packets rx at 48Mbps */
-	uint32  rx54mbps[2];	/* packets rx at 54Mbps */
-} wl_scb_rx_rate_stats_t;
 #endif /* LINUX_POSTMOGRIFY_REMOVAL */
 
 #define WL_WME_CNT_VERSION	1	/* current version of wl_wme_cnt_t */
@@ -3665,10 +3615,9 @@ typedef struct tdls_iovar {
 } tdls_iovar_t;
 
 /* modes */
-#define TDLS_WFD_IE_TX 			0
-#define TDLS_WFD_IE_RX 			1
+#define TDLS_WFD_IE_TX 0
+#define TDLS_WFD_IE_RX 1
 #define TDLS_WFD_IE_SIZE 255
-#define TDLS_WFD_IE_SIZE 		512
 /* structure for tdls wfd ie */
 typedef struct tdls_wfd_ie_iovar {
 	struct ether_addr ea;		/* Station address */
@@ -3805,16 +3754,14 @@ enum {
 
 #define SORT_CRITERIA_BIT		0
 #define AUTO_NET_SWITCH_BIT		1
-#define ENABLE_BKGRD_SCAN_BIT	2
+#define ENABLE_BKGRD_SCAN_BIT		2
 #define IMMEDIATE_SCAN_BIT		3
 #define	AUTO_CONNECT_BIT		4
 #define	ENABLE_BD_SCAN_BIT		5
-#define ENABLE_ADAPTSCAN_BIT	6
+#define ENABLE_ADAPTSCAN_BIT		6
 #define IMMEDIATE_EVENT_BIT		8
 #define SUPPRESS_SSID_BIT		9
 #define ENABLE_NET_OFFLOAD_BIT		10
-/* report found/lost events for SSID and BSSID networks seperately */
-#define REPORT_SEPERATELY_BIT		11
 
 #define SORT_CRITERIA_MASK		0x0001
 #define AUTO_NET_SWITCH_MASK	0x0002
@@ -3827,8 +3774,6 @@ enum {
 #define IMMEDIATE_EVENT_MASK	0x0100
 #define SUPPRESS_SSID_MASK	0x0200
 #define ENABLE_NET_OFFLOAD_MASK	0x0400
-/* report found/lost events for SSID and BSSID networks seperately */
-#define REPORT_SEPERATELY_MASK	0x0800
 
 #define PFN_VERSION				2
 #define PFN_SCANRESULT_VERSION	1
@@ -3841,9 +3786,6 @@ enum {
 #define DEFAULT_MSCAN			0
 #define DEFAULT_REPEAT			10
 #define DEFAULT_EXP				2
-
-#define PFN_PARTIAL_SCAN_BIT		0
-#define PFN_PARTIAL_SCAN_MASK		1
 
 /* PFN network info structure */
 typedef struct wl_pfn_subnet_info {
@@ -3858,22 +3800,6 @@ typedef struct wl_pfn_net_info {
 	int16	RSSI; /* receive signal strength (in dBm) */
 	uint16	timestamp; /* age in seconds */
 } wl_pfn_net_info_t;
-
-typedef struct wl_pfn_lnet_info {
-	wl_pfn_subnet_info_t pfnsubnet; /* BSSID + channel + SSID len + SSID */
-	uint16	flags; /* partial scan, etc */
-	int16	RSSI; /* receive signal strength (in dBm) */
-	uint32	timestamp; /* age in miliseconds */
-	uint16	rtt0; /* estimated distance to this AP in centimeters */
-	uint16	rtt1; /* standard deviation of the distance to this AP in centimeters */
-} wl_pfn_lnet_info_t;
-
-typedef struct wl_pfn_lscanresults {
-	uint32 version;
-	uint32 status;
-	uint32 count;
-	wl_pfn_lnet_info_t netinfo[1];
-} wl_pfn_lscanresults_t;
 
 typedef struct wl_pfn_scanresults {
 	uint32 version;
@@ -3914,17 +3840,13 @@ typedef struct wl_pfn_bssid {
 #define WL_PFN_SUPPRESSLOST_MASK	0x10
 
 typedef struct wl_pfn_cfg {
-	uint32	reporttype;
-	int32	channel_num;
-	uint16	channel_list[WL_NUMCHANNELS];
-	uint32	flags;
+	uint32				reporttype;
+	int32				channel_num;
+	uint16				channel_list[WL_NUMCHANNELS];
 } wl_pfn_cfg_t;
 #define WL_PFN_REPORT_ALLNET 	0
 #define WL_PFN_REPORT_SSIDNET 	1
 #define WL_PFN_REPORT_BSSIDNET 	2
-
-#define WL_PFN_CFG_FLAGS_PROHIBITED	0x00000001	/* Accept and use prohibited channels */
-#define WL_PFN_CFG_FLAGS_RESERVED	0xfffffffe	/* Remaining reserved for future use */
 
 typedef struct wl_pfn {
 	wlc_ssid_t		ssid;			/* ssid name and its length */
@@ -3934,77 +3856,13 @@ typedef struct wl_pfn {
 	int32			wpa_auth;		/* WPA type */
 	int32			wsec;			/* wsec value */
 } wl_pfn_t;
-typedef struct wl_pfn_list {
-	uint32		version;
-	uint32		enabled;
-	uint32		count;
-	wl_pfn_t	pfn[1];
-} wl_pfn_list_t;
 #define WL_PFN_HIDDEN_BIT		2
 #define PNO_SCAN_MAX_FW		508*1000	/* max time scan time in msec */
 #define PNO_SCAN_MAX_FW_SEC	PNO_SCAN_MAX_FW/1000 /* max time scan time in SEC */
 #define PNO_SCAN_MIN_FW_SEC	10			/* min time scan time in SEC */
 #define WL_PFN_HIDDEN_MASK		0x4
-#ifndef BESTN_MAX
-#define BESTN_MAX			3
-#endif
-
-#ifndef MSCAN_MAX
-#define MSCAN_MAX			90
-#endif
 
 #endif /* LINUX_POSTMOGRIFY_REMOVAL */
-
-/* Service discovery */
-typedef struct {
-	uint8	transaction_id;	/* Transaction id */
-	uint8	protocol;	/* Service protocol type */
-	uint16	query_len;	/* Length of query */
-	uint16	response_len;	/* Length of response */
-	uint8	qrbuf[1];
-} wl_p2po_qr_t;
-
-typedef struct {
-	uint16			period;			/* extended listen period */
-	uint16			interval;		/* extended listen interval */
-} wl_p2po_listen_t;
-
-/* ANQP offload */
-
-#define ANQPO_MAX_QUERY_SIZE		256
-typedef struct {
-	uint16 max_retransmit;		/* -1 use default, max retransmit on no ACK from peer */
-	uint16 response_timeout;	/* -1 use default, msec to wait for resp after tx packet */
-	uint16 max_comeback_delay;	/* -1 use default, max comeback delay in resp else fail */
-	uint16 max_retries;			/* -1 use default, max retries on failure */
-	uint16 query_len;			/* length of ANQP query */
-	uint8 query_data[1];		/* ANQP encoded query (max ANQPO_MAX_QUERY_SIZE) */
-} wl_anqpo_set_t;
-
-typedef struct {
-	uint16 channel;				/* channel of the peer */
-	struct ether_addr addr;		/* addr of the peer */
-} wl_anqpo_peer_t;
-
-#define ANQPO_MAX_PEER_LIST			64
-typedef struct {
-	uint16 count;				/* number of peers in list */
-	wl_anqpo_peer_t peer[1];	/* max ANQPO_MAX_PEER_LIST */
-} wl_anqpo_peer_list_t;
-
-#define ANQPO_MAX_IGNORE_SSID		64
-typedef struct {
-	bool is_clear;				/* set to clear list (not used on GET) */
-	uint16 count;				/* number of SSID in list */
-	wlc_ssid_t ssid[1];			/* max ANQPO_MAX_IGNORE_SSID */
-} wl_anqpo_ignore_ssid_list_t;
-
-#define ANQPO_MAX_IGNORE_BSSID		64
-typedef struct {
-	bool is_clear;				/* set to clear list (not used on GET) */
-	uint16 count;				/* number of addr in list */
-	struct ether_addr bssid[1];	/* max ANQPO_MAX_IGNORE_BSSID */
-} wl_anqpo_ignore_bssid_list_t;
 
 /* TCP Checksum Offload defines */
 #define TOE_TX_CSUM_OL		0x00000001
@@ -4166,15 +4024,6 @@ typedef struct wl_pkt_filter_stats {
 	uint32	num_pkts_discarded;	/* # packets discarded by dongle for all filters */
 } wl_pkt_filter_stats_t;
 
-#define RSN_KCK_LENGTH 16
-#define RSN_KEK_LENGTH 16
-#define RSN_REPLAY_LEN 8
-typedef struct _gtkrefresh {
-	uchar	KCK[RSN_KCK_LENGTH];
-	uchar	KEK[RSN_KEK_LENGTH];
-	uchar	ReplayCounter[RSN_REPLAY_LEN];
-} gtk_keyinfo_t, *pgtk_keyinfo_t;
-
 /* Sequential Commands ioctl */
 typedef struct wl_seq_cmd_ioctl {
 	uint32 cmd;		/* common ioctl definition */
@@ -4226,7 +4075,6 @@ typedef struct wl_pkteng_stats {
 	int32 rssi;			/* RSSI */
 	int32 snr;			/* signal to noise ratio */
 	uint16 rxpktcnt[NUM_80211_RATES+1];
-	uint8 rssi_qdb; /* qdB portion of the computed rssi */
 } wl_pkteng_stats_t;
 
 
@@ -4636,27 +4484,7 @@ typedef BWL_PRE_PACKED_STRUCT struct {
 } BWL_POST_PACKED_STRUCT txfailinfo_t;
 #endif /* WLMEDIA_TXFAILEVENT */
 
-typedef BWL_PRE_PACKED_STRUCT struct {
-	struct ipv4_addr	ipv4_addr;
-	struct ether_addr nexthop;
-} BWL_POST_PACKED_STRUCT ibss_route_entry_t;
-typedef BWL_PRE_PACKED_STRUCT struct {
-	uint32 num_entry;
-	ibss_route_entry_t route_entry[1];
-} BWL_POST_PACKED_STRUCT ibss_route_tbl_t;
-
-#define MAX_IBSS_ROUTE_TBL_ENTRY	64
 #endif /* LINUX_POSTMOGRIFY_REMOVAL */
-
-#define AIBSS_TXFAIL_CONFIG_VER_0    0
-
-/* structure used to configure AIBSS beacon force xmit */
-typedef BWL_PRE_PACKED_STRUCT struct {
-	uint16  version;
-	uint16  len;
-	uint32 bcn_timeout;     /* dur in seconds to receive 1 bcn */
-	uint32 max_tx_retry;     /* no of consecutive no acks to send txfail event */
-} BWL_POST_PACKED_STRUCT aibss_txfail_config_t;
 
 /* no strict structure packing */
 #include <packed_section_end.h>
@@ -5312,161 +5140,5 @@ typedef struct powersel_params {
 	uint8		pwr_sel_exp_time; /* Time lapse for expiry of database */
 } powersel_params_t;
 
-/* tx pkt delay statistics */
-#define	SCB_RETRY_SHORT_DEF	7	/* Default Short retry Limit */
-#define WLPKTDLY_HIST_NBINS	16	/* number of bins used in the Delay histogram */
-
-/* structure to store per-AC delay statistics */
-typedef struct scb_delay_stats {
-	uint32 txmpdu_lost;	/* number of MPDUs lost */
-	uint32 txmpdu_cnt[SCB_RETRY_SHORT_DEF]; /* retry times histogram */
-	uint32 delay_sum[SCB_RETRY_SHORT_DEF]; /* cumulative packet latency */
-	uint32 delay_min;	/* minimum packet latency observed */
-	uint32 delay_max;	/* maximum packet latency observed */
-	uint32 delay_avg;	/* packet latency average */
-	uint32 delay_hist[WLPKTDLY_HIST_NBINS];	/* delay histogram */
-} scb_delay_stats_t;
-
-/* structure for txdelay event */
-typedef struct txdelay_event {
-	uint8	status;
-	int		rssi;
-	chanim_stats_t		chanim_stats;
-	scb_delay_stats_t	delay_stats[AC_COUNT];
-} txdelay_event_t;
-
-/* structure for txdelay parameters */
-typedef struct txdelay_params {
-	uint16	ratio;	/* Avg Txdelay Delta */
-	uint8	cnt;	/* Sample cnt */
-	uint8	period;	/* Sample period */
-	uint8	tune;	/* Debug */
-} txdelay_params_t;
-
-#define WL_RELMCAST_MAX_CLIENT 			32
-#define WL_RELMCAST_FLAG_INBLACKLIST	1
-#define WL_RELMCAST_FLAG_ACTIVEACKER	2
-#define WL_RELMCAST_FLAG_RELMCAST		4
-#define WL_RELMCAST_MAX_TABLE_ENTRY     4
-
-#define WL_RELMCAST_VER					1
-#define WL_RELMCAST_INDEX_ACK_ALL       255
-#define WL_RELMCAST_NUM_OF_MC_STREAMS   4
-#define WL_RELMCAST_MAX_TRS_PER_GROUP   1
-#define WL_RELMCAST_ACK_MCAST0          0x02
-#define WL_RELMCAST_ACK_MCAST_ALL             0x01
-#define WL_RELMCAST_ACTF_TIME_MIN          300	 /* time in ms */
-#define WL_RELMCAST_ACTF_TIME_MAX          20000 /* time in ms */
-
-enum {
-	RELMCAST_ENTRY_OP_DISABLE = 0,
-	RELMCAST_ENTRY_OP_DELETE,
-	RELMCAST_ENTRY_OP_ENABLE,
-	RELMCAST_ENTRY_OP_ACK_ALL
-};
-
-enum {
-	WL_RELMCAST_MODE_RECEIVER = 0,
-	WL_RELMCAST_MODE_TRANSMITTER,
-	WL_RELMCAST_MODE_INITIATOR
-};
-
-typedef struct wl_relmcast_client {
-	uint8 flag;
-	int16 rssi;
-	struct ether_addr addr;
-} wl_relmcast_client_t;
-
-typedef struct wl_relmcast_st {
-	uint8 ver;
-	uint8 num;
-	wl_relmcast_client_t clients[WL_RELMCAST_MAX_CLIENT];
-	uint16 err;
-} wl_relmcast_status_t;
-
-typedef struct wl_relmcast_entry {
-	int8 flag;
-	struct ether_addr addr;
-} wl_relmcast_entry_t;
-
-typedef struct wl_relmcast_entry_table {
-	int8 index;
-	int8 opcode;
-	wl_relmcast_entry_t entry[WL_RELMCAST_MAX_TABLE_ENTRY];
-} wl_relmcast_entry_table_t;
-
-typedef struct wl_tr_Info {
-	struct ether_addr addr;
-	uint32 timeVal;
-	uint16 seq;
-} wl_tr_Info_t;
-
-typedef struct wl_mcGrpEntry {
-	struct ether_addr mcaddr;
-	struct ether_addr ar;
-	wl_tr_Info_t trInfo[WL_RELMCAST_MAX_TRS_PER_GROUP];
-} wl_mcGrpEntry_t;
-
-typedef struct wl_mcAckAllEntry {
-	struct ether_addr ar;
-	wl_tr_Info_t trInfo[WL_RELMCAST_NUM_OF_MC_STREAMS];
-} wl_mcAckAllEntry_t;
-
-typedef struct wl_relmcast_globalMcTbl {
-	uint8 activeMask;
-	wl_mcAckAllEntry_t ackAll;
-	wl_mcGrpEntry_t mcEntry[WL_RELMCAST_NUM_OF_MC_STREAMS];
-} wl_relmcast_globalMcTbl_t;
 #endif /* LINUX_POSTMOGRIFY_REMOVAL */
-
-/* fbt_cap: FBT assoc / reassoc modes. */
-#define WLC_FBT_CAP_DRV_4WAY_AND_REASSOC  1 /* Driver 4-way handshake & reassoc (WLFBT). */
-
-typedef struct bcnreq {
-	uint8 bcn_mode;
-	int dur;
-	int channel;
-	struct ether_addr da;
-	uint16 random_int;
-	wlc_ssid_t ssid;
-	uint16 reps;
-} bcnreq_t;
-
-typedef struct rrmreq {
-	struct ether_addr da;
-	uint8 reg;
-	uint8 chan;
-	uint16 random_int;
-	uint16 dur;
-	uint16 reps;
-} rrmreq_t;
-
-typedef struct framereq {
-	struct ether_addr da;
-	uint8 reg;
-	uint8 chan;
-	uint16 random_int;
-	uint16 dur;
-	struct ether_addr ta;
-	uint16 reps;
-} framereq_t;
-
-typedef struct statreq {
-	struct ether_addr da;
-	struct ether_addr peer;
-	uint16 random_int;
-	uint16 dur;
-	uint8 group_id;
-	uint16 reps;
-} statreq_t;
-
-typedef struct wl_el_set_params_s {
-	uint8 set;	/* Set number */
-	uint32 size;	/* Size to make/expand */
-} wl_el_set_params_t;
-typedef struct wl_el_tag_params_s {
-	uint16 tag;
-	uint8 set;
-	uint8 flags;
-} wl_el_tag_params_t;
 #endif /* _wlioctl_h_ */

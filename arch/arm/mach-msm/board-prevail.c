@@ -135,7 +135,7 @@
 int charging_boot;
 EXPORT_SYMBOL(charging_boot);
 
-#define MSM_PMEM_SF_SIZE	0x0800000
+#define MSM_PMEM_SF_SIZE	0x1000000
 #ifdef CONFIG_FB_MSM_TRIPLE_BUFFER
 #define MSM_FB_PRIM_BUF_SIZE   (320 * 480 * 4 * 3) /* 4bpp * 3 Pages */
 #else
@@ -164,9 +164,8 @@ EXPORT_SYMBOL(charging_boot);
 /*
  * Reserve space for double buffered full screen
  * res V4L2 video overlay - i.e. 1280x720x1.5x2
- * #define MSM_V4L2_VIDEO_OVERLAY_BUF_SIZE 2764800
  */
-
+#define MSM_V4L2_VIDEO_OVERLAY_BUF_SIZE 2764800
 
 #define MSM_PMEM_ADSP_SIZE      0x21B4000
 #define MSM_FLUID_PMEM_ADSP_SIZE	0x1800000

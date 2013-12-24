@@ -1,7 +1,7 @@
 /*
  * Customer HW 4 dependant file
  *
- * Copyright (C) 1999-2013, Broadcom Corporation
+ * Copyright (C) 1999-2012, Broadcom Corporation
  *
  *      Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
@@ -63,6 +63,10 @@
 #define WIFI_TURNOFF_DELAY	200
 #endif
 
+#ifdef CONFIG_MACH_M0
+#define WL11U
+#endif
+
 /* REGION CODE */
 
 #if (WLAN_REGION_CODE >= 100) && (WLAN_REGION_CODE < 200) /*EUR*/
@@ -98,12 +102,13 @@
 #else
 #define RDWR_MACADDR
 #endif /* CONFIG_BCM4334 */
+
 #if (WLAN_REGION_CODE == 201) /* SKT */
 #endif /* WLAN_REGION_CODE == 201 */
 
 #if (WLAN_REGION_CODE == 202) /* KTT */
 #define VLAN_MODE_OFF
-#define CUSTOM_KEEP_ALIVE_SETTING	30000
+#define KEEP_ALIVE_PACKET_PERIOD_30_SEC
 #define FULL_ROAMING_SCAN_PERIOD_60_SEC
 #endif /* WLAN_REGION_CODE == 202 */
 
@@ -114,9 +119,10 @@
 #if (WLAN_REGION_CODE >= 300) && (WLAN_REGION_CODE < 400) /* CHN */
 #define BCMWAPI_WPI
 #define BCMWAPI_WAI
+#endif /* WLAN_REGION_CODE >= 300 && WLAN_REGION_CODE < 400 */
 
-#if !defined(READ_MACADDR) && !defined(WRITE_MACADDR) && !defined(RDWR_KORICS_MACADDR) \
-	&& !defined(RDWR_MACADDR)
+#if !defined(READ_MACADDR) && !defined(WRITE_MACADDR)\
+	&& !defined(RDWR_KORICS_MACADDR) && !defined(RDWR_MACADDR)
 #define GET_MAC_FROM_OTP
 #endif /* !READ_MACADDR && !WRITE_MACADDR && !RDWR_KORICS_MACADDR && !RDWR_MACADDR */
 

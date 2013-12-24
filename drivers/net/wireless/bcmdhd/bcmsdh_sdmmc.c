@@ -1,7 +1,7 @@
 /*
  * BCMSDH Function Driver for the native SDIO/MMC driver in the Linux Kernel
  *
- * Copyright (C) 1999-2013, Broadcom Corporation
+ * Copyright (C) 1999-2012, Broadcom Corporation
  * 
  *      Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
@@ -21,7 +21,7 @@
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
- * $Id: bcmsdh_sdmmc.c 427054 2013-10-02 03:38:35Z $
+ * $Id: bcmsdh_sdmmc.c 362913 2012-10-15 11:26:11Z $
  */
 #include <typedefs.h>
 
@@ -830,6 +830,10 @@ sdioh_request_byte(sdioh_info_t *sd, uint rw, uint func, uint regaddr, uint8 *by
 #if defined(MMC_SDIO_ABORT)
 			/* to allow abort command through F1 */
 			else if (regaddr == SDIOD_CCCR_IOABORT) {
+				/* Because of SDIO3.0 host issue on Manta,
+				  * sometimes the abort fails.
+				  * Retrying again will fix this issue.
+				  */
 				while (sdio_abort_retry--) {
 					if (gInstance->func[func]) {
 						sdio_claim_host(gInstance->func[func]);
@@ -1076,7 +1080,6 @@ sdioh_request_packet(sdioh_info_t *sd, uint fix_inc, uint write, uint func,
 		for (pnext = pkt; pnext; pnext = PKTNEXT(sd->osh, pnext)) {
 			uint8 *buf = (uint8*)PKTDATA(sd->osh, pnext) +
 				xfred_len;
-			int pad = 0;
 			pkt_len = PKTLEN(sd->osh, pnext);
 			if (0 != xfred_len) {
 				pkt_len -= xfred_len;
@@ -1091,9 +1094,7 @@ sdioh_request_packet(sdioh_info_t *sd, uint fix_inc, uint write, uint func,
 				pkt_len = (pkt_len + 3) & 0xFFFFFFFC;
 			else if (pkt_len % blk_size)
 				pkt_len += blk_size - (pkt_len % blk_size);
-				int align_pkt_len = 0;
-				align_pkt_len = sdioh_request_packet_align(pkt_len, write,
-				pad = align_pkt_len - pkt_len;
+
 #if defined(CUSTOMER_HW4) && defined(USE_DYNAMIC_F2_BLKSIZE)
 			if (write && pkt_len > 64 && (pkt_len % 64) == 32)
 				pkt_len += 32;
@@ -1158,51 +1159,87 @@ sdioh_request_packet(sdioh_info_t *sd, uint fix_inc, uint write, uint func,
  */
 extern SDIOH_API_RC
 sdioh_request_buffer(sdioh_info_t *sd, uint pio_dma, uint fix_inc, uint write, uint func,
-	uint addr, uint reg_width, uint buflen_u, uint8 *buffer, void *pkt)
+                     uint addr, uint reg_width, uint buflen_u, uint8 *buffer, void *pkt)
 {
 	SDIOH_API_RC Status;
-	void *tmppkt;
-	void *orig_buf = NULL;
-	uint copylen = 0;
+	void *mypkt = NULL;
 
 	sd_trace(("%s: Enter\n", __FUNCTION__));
 
 	DHD_PM_RESUME_WAIT(sdioh_request_buffer_wait);
 	DHD_PM_RESUME_RETURN_ERROR(SDIOH_API_RC_FAIL);
-
+	/* Case 1: we don't have a packet. */
 	if (pkt == NULL) {
-		/* Case 1: we don't have a packet. */
-		orig_buf = buffer;
-		copylen = buflen_u;
-	} else if ((ulong)PKTDATA(sd->osh, pkt) & DMA_ALIGN_MASK) {
-		/* Case 2: We have a packet, but it is unaligned.
-		 * in this case, we cannot have a chain.
-		 */
-		ASSERT(PKTNEXT(sd->osh, pkt) == NULL);
-
-		orig_buf =	PKTDATA(sd->osh, pkt);
-		copylen = PKTLEN(sd->osh, pkt);
-	}
-
-	tmppkt = pkt;
-	if (copylen) {
-		tmppkt = PKTGET_STATIC(sd->osh, copylen, write ? TRUE : FALSE);
-		if (tmppkt == NULL) {
-			sd_err(("%s: PKTGET failed: len %d\n", __FUNCTION__, copylen));
+		sd_data(("%s: Creating new %s Packet, len=%d\n",
+		         __FUNCTION__, write ? "TX" : "RX", buflen_u));
+#ifdef CONFIG_DHD_USE_STATIC_BUF
+		if (!(mypkt = PKTGET_STATIC(sd->osh, buflen_u, write ? TRUE : FALSE))) {
+#else
+		if (!(mypkt = PKTGET(sd->osh, buflen_u, write ? TRUE : FALSE))) {
+#endif /* CONFIG_DHD_USE_STATIC_BUF */
+			sd_err(("%s: PKTGET failed: len %d\n",
+			           __FUNCTION__, buflen_u));
 			return SDIOH_API_RC_FAIL;
 		}
+
 		/* For a write, copy the buffer data into the packet. */
-		if (write)
-			bcopy(orig_buf, PKTDATA(sd->osh, tmppkt), copylen);
-	}
+		if (write) {
+			bcopy(buffer, PKTDATA(sd->osh, mypkt), buflen_u);
+		}
 
-	Status = sdioh_request_packet(sd, fix_inc, write, func, addr, tmppkt);
+		Status = sdioh_request_packet(sd, fix_inc, write, func, addr, mypkt);
 
-	if (copylen) {
 		/* For a read, copy the packet data back to the buffer. */
-		if (!write)
-			bcopy(PKTDATA(sd->osh, tmppkt), orig_buf, PKTLEN(sd->osh, tmppkt));
-		PKTFREE_STATIC(sd->osh, tmppkt, write ? TRUE : FALSE);
+		if (!write) {
+			bcopy(PKTDATA(sd->osh, mypkt), buffer, buflen_u);
+		}
+#ifdef CONFIG_DHD_USE_STATIC_BUF
+		PKTFREE_STATIC(sd->osh, mypkt, write ? TRUE : FALSE);
+#else
+		PKTFREE(sd->osh, mypkt, write ? TRUE : FALSE);
+#endif /* CONFIG_DHD_USE_STATIC_BUF */
+	} else if (((uint32)(PKTDATA(sd->osh, pkt)) & DMA_ALIGN_MASK) != 0) {
+		/* Case 2: We have a packet, but it is unaligned. */
+
+		/* In this case, we cannot have a chain. */
+		ASSERT(PKTNEXT(sd->osh, pkt) == NULL);
+
+		sd_data(("%s: Creating aligned %s Packet, len=%d\n",
+		         __FUNCTION__, write ? "TX" : "RX", PKTLEN(sd->osh, pkt)));
+#ifdef CONFIG_DHD_USE_STATIC_BUF
+		if (!(mypkt = PKTGET_STATIC(sd->osh, PKTLEN(sd->osh, pkt), write ? TRUE : FALSE))) {
+#else
+		if (!(mypkt = PKTGET(sd->osh, PKTLEN(sd->osh, pkt), write ? TRUE : FALSE))) {
+#endif /* CONFIG_DHD_USE_STATIC_BUF */
+			sd_err(("%s: PKTGET failed: len %d\n",
+			           __FUNCTION__, PKTLEN(sd->osh, pkt)));
+			return SDIOH_API_RC_FAIL;
+		}
+
+		/* For a write, copy the buffer data into the packet. */
+		if (write) {
+			bcopy(PKTDATA(sd->osh, pkt),
+			      PKTDATA(sd->osh, mypkt),
+			      PKTLEN(sd->osh, pkt));
+		}
+
+		Status = sdioh_request_packet(sd, fix_inc, write, func, addr, mypkt);
+
+		/* For a read, copy the packet data back to the buffer. */
+		if (!write) {
+			bcopy(PKTDATA(sd->osh, mypkt),
+			      PKTDATA(sd->osh, pkt),
+			      PKTLEN(sd->osh, mypkt));
+		}
+#ifdef CONFIG_DHD_USE_STATIC_BUF
+		PKTFREE_STATIC(sd->osh, mypkt, write ? TRUE : FALSE);
+#else
+		PKTFREE(sd->osh, mypkt, write ? TRUE : FALSE);
+#endif /* CONFIG_DHD_USE_STATIC_BUF */
+	} else { /* case 3: We have a packet and it is aligned. */
+		sd_data(("%s: Aligned %s Packet, direct DMA\n",
+		         __FUNCTION__, write ? "Tx" : "Rx"));
+		Status = sdioh_request_packet(sd, fix_inc, write, func, addr, pkt);
 	}
 
 	return (Status);

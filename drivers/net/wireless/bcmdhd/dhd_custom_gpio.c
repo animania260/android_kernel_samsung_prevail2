@@ -1,6 +1,6 @@
 /*
 * Customer code to add GPIO control during WLAN start/stop
-* Copyright (C) 1999-2013, Broadcom Corporation
+* Copyright (C) 1999-2012, Broadcom Corporation
 * 
 *      Unless you and Broadcom execute a separate written software license
 * agreement governing use of this software, this software is licensed to you
@@ -20,7 +20,7 @@
 * software in any way with any other Broadcom software provided under a license
 * other than the GPL, without Broadcom's express prior written consent.
 *
-* $Id: dhd_custom_gpio.c 417465 2013-08-09 11:47:27Z $
+* $Id: dhd_custom_gpio.c 353167 2012-08-24 22:11:30Z $
 */
 
 #include <typedefs.h>
@@ -38,11 +38,10 @@
 #define WL_TRACE(x)
 
 #ifdef CUSTOMER_HW
-
-#if defined(PLATFORM_MPS)
-int __attribute__ ((weak)) wifi_get_fw_nv_path(char *fw, char *nv) { return 0;};
-#endif
-
+extern  void bcm_wlan_power_off(int);
+extern  void bcm_wlan_power_on(int);
+#endif /* CUSTOMER_HW */
+#if defined(CUSTOMER_HW2) || defined(CUSTOMER_HW4)
 #ifdef CONFIG_WIFI_CONTROL_FUNC
 int wifi_set_power(int on, unsigned long msec);
 int wifi_get_irq_number(unsigned long *irq_flags_ptr);
@@ -62,7 +61,7 @@ void *wifi_get_country_code(char *ccode) { return NULL; }
 extern int sdioh_mmc_irq(int irq);
 #endif /* (BCMLXSDMMC)  */
 
-#if defined(PLATFORM_MPS)
+#ifdef CUSTOMER_HW3
 #include <mach/gpio.h>
 #endif
 
@@ -87,7 +86,7 @@ int dhd_customer_oob_irq_map(unsigned long *irq_flags_ptr)
 {
 	int  host_oob_irq = 0;
 
-#if defined(CUSTOMER_HW4) && !defined(PLATFORM_MPS)
+#if defined(CUSTOMER_HW2) || defined(CUSTOMER_HW4)
 	host_oob_irq = wifi_get_irq_number(irq_flags_ptr);
 
 #else
@@ -106,11 +105,11 @@ int dhd_customer_oob_irq_map(unsigned long *irq_flags_ptr)
 	WL_ERROR(("%s: customer specific Host GPIO number is (%d)\n",
 	         __FUNCTION__, dhd_oob_gpio_num));
 
-#if defined(PLATFORM_MPS)
+#if defined CUSTOMER_HW
+	host_oob_irq = MSM_GPIO_TO_INT(dhd_oob_gpio_num);
+#elif defined CUSTOMER_HW3
 	gpio_request(dhd_oob_gpio_num, "oob irq");
 	host_oob_irq = gpio_to_irq(dhd_oob_gpio_num);
-	gpio_direction_input(dhd_oob_gpio_num);
-#endif 
 	gpio_direction_input(dhd_oob_gpio_num);
 #endif /* CUSTOMER_HW */
 #endif /* CUSTOMER_HW2 || CUSTOMER_HW4 */
@@ -196,7 +195,7 @@ dhd_custom_get_mac_address(unsigned char *buf)
 }
 #endif /* GET_CUSTOM_MAC_ENABLE */
 
-#if !defined(CUSTOMER_HW4) || defined(PLATFORM_MPS)
+#ifndef CUSTOMER_HW4
 /* Customized Locale table : OPTIONAL feature */
 const struct cntry_locales_custom translate_custom_table[] = {
 /* Table should be filled out based on custom platform regulatory requirement */

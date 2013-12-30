@@ -135,7 +135,7 @@
 int charging_boot;
 EXPORT_SYMBOL(charging_boot);
 
-#define MSM_PMEM_SF_SIZE	0x1000000
+#define MSM_PMEM_SF_SIZE	0x0800000
 #ifdef CONFIG_FB_MSM_TRIPLE_BUFFER
 #define MSM_FB_PRIM_BUF_SIZE   (320 * 480 * 4 * 3) /* 4bpp * 3 Pages */
 #else

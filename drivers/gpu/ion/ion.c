@@ -781,12 +781,12 @@ out:
 }
 EXPORT_SYMBOL(ion_unmap_iommu);
 
-struct sg_table *ion_map_dma(struct ion_client *client,
+struct scatterlist *ion_map_dma(struct ion_client *client,
 				struct ion_handle *handle,
 				unsigned long flags)
 {
 	struct ion_buffer *buffer;
-	struct sg_table *table;
+	struct scatterlist *sglist;
 
 	mutex_lock(&client->lock);
 	if (!ion_handle_validate(client, handle)) {
@@ -812,18 +812,18 @@ struct sg_table *ion_map_dma(struct ion_client *client,
 	}
 
 	if (_ion_map(&buffer->dmap_cnt, &handle->dmap_cnt)) {
-		table = buffer->heap->ops->map_dma(buffer->heap, buffer);
-		if (IS_ERR_OR_NULL(table))
+		sglist = buffer->heap->ops->map_dma(buffer->heap, buffer);
+		if (IS_ERR_OR_NULL(sglist))
 			_ion_unmap(&buffer->dmap_cnt, &handle->dmap_cnt);
-		buffer->sg_table = table;
+		buffer->sglist = sglist;
 	} else {
-		table = buffer->sg_table;
+		sglist = buffer->sglist;
 	}
 
 out:
 	mutex_unlock(&buffer->lock);
 	mutex_unlock(&client->lock);
-	return table;
+	return sglist;
 }
 EXPORT_SYMBOL(ion_map_dma);
 
@@ -852,7 +852,7 @@ void ion_unmap_dma(struct ion_client *client, struct ion_handle *handle)
 	mutex_lock(&buffer->lock);
 	if (_ion_unmap(&buffer->dmap_cnt, &handle->dmap_cnt)) {
 		buffer->heap->ops->unmap_dma(buffer->heap, buffer);
-		buffer->sg_table = NULL;
+		buffer->sglist = NULL;
 	}
 	mutex_unlock(&buffer->lock);
 	mutex_unlock(&client->lock);

@@ -353,6 +353,7 @@ void ion_unmap_kernel(struct ion_client *client, struct ion_handle *handle);
  */
 struct scatterlist *ion_map_dma(struct ion_client *client,
 				struct ion_handle *handle,
+				unsigned long flags);
 
 /**
  * ion_unmap_dma() - destroy a dma mapping for a handle

@@ -664,9 +664,6 @@ static int ping_recvmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *msg,
 	}
 	if (isk->cmsg_flags)
 		ip_cmsg_recv(msg, skb);
-		sin6->sin6_flowinfo = 0;
-		sin6->sin6_scope_id = ipv6_iface_scope_id(&sin6->sin6_addr,
-							  IP6CB(skb)->iif);
 	err = copied;
 
 done:
